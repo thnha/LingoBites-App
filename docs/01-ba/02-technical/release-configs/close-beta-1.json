@@ -1,0 +1,34 @@
+{
+  "releaseName": "close-beta-1",
+  "description": "P0 closed beta — MT-Core only (M5). Matches Phase 0 MVP scope.",
+  "features": {
+    "pasteTextInput": true,
+    "imageInput": true,
+    "ocrScanner": true,
+    "ocrReviewEdit": true,
+    "aiLessonAnalysis": true,
+    "lessonResultView": true,
+    "lessonSave": true,
+    "lessonHistory": true,
+    "shortPractice": true,
+    "pronunciationSupport": true,
+
+    "themeSystem": false,
+    "themeSwitcher": false,
+    "darkTheme": false,
+    "pastelKidsTheme": false,
+
+    "reviewSystem": false,
+    "miniGame": false,
+    "wordMatchGame": false,
+    "fillBlankGame": false,
+    "tenseQuizGame": false,
+    "sentenceOrderGame": false,
+    "flashcardChallenge": false,
+
+    "situationLearning": false,
+    "dialogueGenerator": false,
+    "phraseExtractor": false,
+    "situationPractice": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "_note": "INVALID fixture: missing required fields `vocabulary` and `warnings`. Used to test AI_INVALID_OUTPUT + retry error path (TC-010). validateAIOutput() must return { valid: false }.",
+  "title": "Broken Output",
+  "detected_language": "English",
+  "level": "Beginner",
+  "original_text": "Please keep the door closed.",
+  "vietnamese_translation": "Vui lòng đóng cửa.",
+  "sentences": [],
+  "grammar_points": []
+}

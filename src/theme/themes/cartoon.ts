@@ -1,0 +1,99 @@
+import {fontSize, gutter, typographyPresets} from '../tokens';
+import type {AppTheme} from '../types';
+
+// Ported from LingoScan standalone [data-theme="cartoon"]: soft "lumi" look.
+// Cool light surfaces, teal accent, gentle light-gray bottom shadows, big
+// friendly rounding.
+const handoffSpacing = {xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 48};
+
+export const cartoonTheme: AppTheme = {
+  id: 'cartoon',
+  name: 'Cartoon',
+  colors: {
+    background: '#f7f9fb',
+    surface: '#ffffff',
+    surfaceMuted: '#f2f4f6',
+    surfaceLow: '#f2f4f6',
+    surfaceContainer: '#eceef0',
+    surfaceHigh: '#e6e8ea',
+    border: '#bacac5',
+    outline: '#6b7a76',
+    outlineVariant: '#bacac5',
+    primary: '#006b5f',
+    primaryPressed: '#00574d',
+    primaryContainer: '#2dd4bf',
+    onPrimaryContainer: '#00574d',
+    secondary: '#912038',
+    secondaryContainer: '#ff8a98',
+    secondarySoft: 'rgba(255,138,152,0.16)',
+    onSecondaryContainer: '#5a0017',
+    tertiary: '#735c00',
+    tertiaryContainer: '#fed01b',
+    tertiaryFixed: '#fed01b',
+    tertiarySoft: 'rgba(254,208,27,0.22)',
+    onTertiaryContainer: '#574500',
+    accent: '#2dd4bf',
+    accentInk: '#00413a',
+    accentSoft: 'rgba(45,212,191,0.14)',
+    danger: '#ba1a1a',
+    text: {
+      primary: '#191c1e',
+      secondary: '#3c4a46',
+      inverse: '#ffffff',
+      muted: '#6b7a76',
+    },
+  },
+  states: {disabledOpacity: 0.38, pressedOpacity: 0.85},
+  typography: {
+    fontFamily: {},
+    size: {...fontSize},
+    weight: {regular: '400', medium: '600', bold: '700'},
+    presets: {...typographyPresets},
+  },
+  gutter,
+  spacing: {...handoffSpacing},
+  radius: {sm: 12, md: 18, lg: 24, xl: 30, pill: 999},
+  shadow: {
+    soft: {
+      shadowColor: '#c9d2e3',
+      shadowOffset: {width: 0, height: 4},
+      shadowOpacity: 0.9,
+      shadowRadius: 0,
+      elevation: 2,
+    },
+    medium: {
+      shadowColor: '#c9d2e3',
+      shadowOffset: {width: 0, height: 6},
+      shadowOpacity: 0.9,
+      shadowRadius: 0,
+      elevation: 4,
+    },
+    strong: {
+      shadowColor: '#006b5f',
+      shadowOffset: {width: 0, height: 6},
+      shadowOpacity: 0.18,
+      shadowRadius: 12,
+      elevation: 6,
+    },
+  },
+  components: {
+    button: {
+      primary: {background: '#006b5f', text: '#ffffff', height: 52, radius: 24},
+      secondary: {
+        background: '#ffffff',
+        text: '#5a0017',
+        border: '#ff8a98',
+        height: 48,
+        radius: 24,
+      },
+    },
+    card: {background: '#ffffff', radius: 24, padding: 16, shadow: 'soft'},
+    input: {
+      background: '#ffffff',
+      text: '#191c1e',
+      placeholder: '#6b7a76',
+      border: '#bacac5',
+      radius: 18,
+    },
+  },
+};

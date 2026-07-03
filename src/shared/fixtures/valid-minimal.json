@@ -1,0 +1,17 @@
+{
+  "title": "Staff Notice",
+  "detected_language": "English",
+  "level": "Beginner",
+  "original_text": "Staff only.",
+  "vietnamese_translation": "Chỉ dành cho nhân viên.",
+  "sentences": [
+    {
+      "id": "s1",
+      "original": "Staff only.",
+      "translation": "Chỉ dành cho nhân viên."
+    }
+  ],
+  "grammar_points": [],
+  "vocabulary": [],
+  "warnings": []
+}

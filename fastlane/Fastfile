@@ -1,0 +1,218 @@
+require "base64"
+require "open3"
+require "plist"
+require "shellwords"
+require "tempfile"
+
+IOS_XCODEPROJ = "ios/ScanLearnEnglish.xcodeproj"
+IOS_WORKSPACE = "ios/ScanLearnEnglish.xcworkspace"
+IPA_OUTPUT_PREFIX = "LingoBites"
+
+def mobile_project_root
+  File.expand_path("..", __dir__)
+end
+
+def read_env_value(envfile, key)
+  path = File.join(mobile_project_root, envfile)
+  UI.user_error!("Env file not found: #{path}") unless File.exist?(path)
+
+  File.foreach(path) do |line|
+    stripped = line.strip
+    next if stripped.empty? || stripped.start_with?("#")
+
+    name, value = stripped.split("=", 2)
+    next unless name == key
+
+    return value.to_s.strip
+  end
+
+  UI.user_error!("Missing #{key} in #{envfile}")
+end
+
+default_platform(:ios)
+
+platform :ios do
+  before_all do
+    setup_ci if ENV["CI"]
+  end
+
+  desc "Build and upload the Staging app to TestFlight"
+  lane :staging do
+    envfile = ".env.staging"
+    build_for_testflight(
+      app_identifier: read_env_value(envfile, "IOS_BUNDLE_ID"),
+      scheme: "Staging",
+      configuration: "ReleaseStag",
+      envfile: envfile
+    )
+  end
+
+  desc "Build and upload the Production app to TestFlight"
+  lane :production do
+    envfile = ".env.production"
+    build_for_testflight(
+      app_identifier: read_env_value(envfile, "IOS_BUNDLE_ID"),
+      scheme: "Production",
+      configuration: "ReleaseProd",
+      envfile: envfile
+    )
+  end
+
+  private_lane :build_for_testflight do |options|
+    key_id = ENV.fetch("APP_STORE_CONNECT_KEY_ID")
+    issuer_id = ENV.fetch("APP_STORE_CONNECT_ISSUER_ID")
+    api_key_content = ENV.fetch("APP_STORE_CONNECT_API_KEY")
+    development_team = ENV.fetch("IOS_DEVELOPMENT_TEAM")
+
+    api_key = app_store_connect_api_key(
+      key_id: key_id,
+      issuer_id: issuer_id,
+      key_content: api_key_content,
+      is_key_content_base64: true,
+      in_house: false
+    )
+
+    ENV["APP_IDENTIFIER"] = options[:app_identifier]
+    ENV["ENVFILE"] = options[:envfile]
+
+    project_root = mobile_project_root
+    hermes_cli_path = [
+      File.join(project_root, "ios/Pods/hermes-engine/destroot/bin/hermesc"),
+      File.join(project_root, "node_modules/hermes-compiler/hermesc/osx-bin/hermesc")
+    ].find { |path| File.exist?(path) }
+
+    if hermes_cli_path
+      ENV["HERMES_CLI_PATH"] = hermes_cli_path
+    else
+      ENV.delete("HERMES_CLI_PATH")
+    end
+
+    ENV.delete("APP_STORE_CONNECT_API_KEY")
+
+    increment_build_number(
+      xcodeproj: IOS_XCODEPROJ,
+      build_number: ENV["IOS_APP_BUILD_NUMBER"] || ENV.fetch("BUILD_NUMBER", Time.now.utc.strftime("%Y%m%d%H%M"))
+    )
+
+    Tempfile.create(["AuthKey_#{key_id}", ".p8"]) do |key_file|
+      key_file.write(Base64.decode64(api_key_content))
+      key_file.flush
+      File.chmod(0o600, key_file.path)
+
+      profile_path = ENV["IOS_PROVISIONING_PROFILE_PATH"]
+      profile_name = ENV["IOS_PROVISIONING_PROFILE_SPECIFIER"]
+
+      if profile_path && !profile_path.empty?
+        UI.user_error!("Provisioning profile not found: #{profile_path}") unless File.exist?(profile_path)
+
+        install_provisioning_profile(path: profile_path)
+
+        decoded_profile, profile_status = Open3.capture2("security", "cms", "-D", "-i", profile_path)
+        UI.user_error!("Unable to read provisioning profile: #{profile_path}") unless profile_status.success?
+
+        profile_name = Plist.parse_xml(decoded_profile).fetch("Name")
+      end
+
+      store_profile_name = profile_name || "iOS Team Store Provisioning Profile: #{options[:app_identifier]}"
+      signing_style = profile_name ? "manual" : "automatic"
+
+      provisioning_xcargs = [
+        "-allowProvisioningUpdates",
+        "-authenticationKeyPath #{Shellwords.escape(key_file.path)}",
+        "-authenticationKeyID #{Shellwords.escape(key_id)}",
+        "-authenticationKeyIssuerID #{Shellwords.escape(issuer_id)}"
+      ].join(" ")
+
+      archive_xcargs = [
+        provisioning_xcargs,
+        profile_name ? "CODE_SIGN_STYLE=Manual" : nil,
+        profile_name ? "PROVISIONING_PROFILE_SPECIFIER=#{Shellwords.escape(profile_name)}" : nil,
+        "DEVELOPMENT_TEAM=#{development_team}"
+      ].compact.join(" ")
+
+      build_app(
+        workspace: IOS_WORKSPACE,
+        scheme: options[:scheme],
+        configuration: options[:configuration],
+        clean: true,
+        export_method: "app-store",
+        export_team_id: development_team,
+        export_options: {
+          method: "app-store-connect",
+          teamID: development_team,
+          signingStyle: signing_style,
+          signingCertificate: "Apple Distribution",
+          provisioningProfiles: {
+            options[:app_identifier] => store_profile_name
+          }
+        },
+        xcargs: archive_xcargs,
+        output_directory: "build/ios",
+        output_name: "#{IPA_OUTPUT_PREFIX}-#{options[:scheme]}.ipa"
+      )
+    end
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true
+    )
+  end
+end
+
+platform :android do
+  desc "Build Staging APK/AAB and upload the AAB to Google Play"
+  lane :staging do
+    envfile = ".env.staging"
+    build_android_for_play(
+      package_name: read_env_value(envfile, "ANDROID_BUNDLE_ID"),
+      build_type: "stagingRelease",
+      envfile: envfile
+    )
+  end
+
+  desc "Build Production APK/AAB and upload the AAB to Google Play"
+  lane :production do
+    envfile = ".env.production"
+    build_android_for_play(
+      package_name: read_env_value(envfile, "ANDROID_BUNDLE_ID"),
+      build_type: "productionRelease",
+      envfile: envfile
+    )
+  end
+
+  private_lane :build_android_for_play do |options|
+    ENV["ENVFILE"] = options[:envfile]
+
+    gradle(
+      task: "clean",
+      project_dir: "android"
+    )
+
+    gradle(
+      task: "assemble",
+      build_type: options[:build_type],
+      project_dir: "android"
+    )
+
+    gradle(
+      task: "bundle",
+      build_type: options[:build_type],
+      project_dir: "android"
+    )
+
+    aab_path = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+
+    upload_to_play_store(
+      package_name: options[:package_name],
+      track: ENV.fetch("PLAY_STORE_TRACK", "internal"),
+      release_status: ENV.fetch("PLAY_STORE_RELEASE_STATUS", "completed"),
+      json_key: ENV.fetch("PLAY_STORE_JSON_KEY_FILE"),
+      aab: aab_path,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end

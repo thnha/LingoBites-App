@@ -1,0 +1,76 @@
+{
+  "title": "Special Discount Flyer",
+  "detected_language": "English",
+  "level": "Beginner",
+  "original_text": "We are offering a special discount for new customers. Please visit our store before Friday.",
+  "vietnamese_translation": "Chúng tôi đang cung cấp một chương trình giảm giá đặc biệt cho khách hàng mới. Vui lòng ghé cửa hàng của chúng tôi trước thứ Sáu.",
+  "summary": "Đoạn này nói về một chương trình giảm giá đặc biệt dành cho khách hàng mới và yêu cầu khách ghé cửa hàng trước thứ Sáu.",
+  "sentences": [
+    {
+      "id": "s1",
+      "original": "We are offering a special discount for new customers.",
+      "translation": "Chúng tôi đang cung cấp một chương trình giảm giá đặc biệt cho khách hàng mới.",
+      "simple_meaning": "Cửa hàng đang có giảm giá cho khách hàng mới.",
+      "breakdown": [
+        { "text": "We", "meaning": "Chúng tôi", "role": "Subject", "simple_role_vi": "Chủ ngữ - người thực hiện hành động" },
+        { "text": "are offering", "meaning": "đang cung cấp", "role": "Verb phrase", "simple_role_vi": "Cụm động từ - hành động đang diễn ra" },
+        { "text": "a special discount", "meaning": "một chương trình giảm giá đặc biệt", "role": "Object", "simple_role_vi": "Tân ngữ - thứ được cung cấp" },
+        { "text": "for new customers", "meaning": "cho khách hàng mới", "role": "Prepositional phrase", "simple_role_vi": "Cụm giới từ - nói rõ dành cho ai" }
+      ],
+      "patterns": [
+        { "pattern": "S + am/is/are + V-ing + Object", "meaning_vi": "Ai đó đang làm gì", "example": "They are selling coffee.", "example_translation": "Họ đang bán cà phê." }
+      ],
+      "related_grammar_ids": ["g1"],
+      "related_vocabulary_ids": ["v1"]
+    }
+  ],
+  "grammar_points": [
+    {
+      "id": "g1",
+      "name": "Present Continuous",
+      "vietnamese_name": "Thì hiện tại tiếp diễn",
+      "pattern": "S + am/is/are + V-ing",
+      "found_in": "We are offering...",
+      "explanation_vi": "Cấu trúc này dùng để nói ai đó đang làm gì hoặc một việc đang diễn ra trong hiện tại.",
+      "beginner_tip": "Khi thấy am/is/are đi với động từ thêm -ing, thường đó là dấu hiệu của thì hiện tại tiếp diễn.",
+      "examples": [
+        { "en": "I am learning English.", "vi": "Tôi đang học tiếng Anh." },
+        { "en": "They are opening a new store.", "vi": "Họ đang mở một cửa hàng mới." }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "v1",
+      "word": "offer",
+      "phrase_from_text": "are offering",
+      "word_type": "verb",
+      "meaning_vi": "cung cấp, đề nghị",
+      "pronunciation_guide_vi": "ó-fờ",
+      "ipa": "/ˈɔːfər/",
+      "cefr_level": "A2",
+      "why_important": "Từ này thường gặp trong quảng cáo, email, cửa hàng và dịch vụ.",
+      "source_sentence": "We are offering a special discount for new customers.",
+      "example": "We offer free tea.",
+      "example_translation": "Chúng tôi cung cấp trà miễn phí."
+    }
+  ],
+  "pronunciation": {
+    "sentence_audio_texts": ["We are offering a special discount for new customers."],
+    "focus_words": [
+      { "word": "discount", "pronunciation_guide_vi": "đis-kaunt", "tip_vi": "Nhấn âm đầu: DIS-count." }
+    ]
+  },
+  "practice": [
+    {
+      "id": "p1",
+      "type": "multiple_choice",
+      "question": "\"discount\" nghĩa là gì?",
+      "options": ["khách hàng", "giảm giá", "cửa hàng"],
+      "answer": "giảm giá",
+      "explanation_vi": "Discount nghĩa là giảm giá.",
+      "skill": "vocabulary"
+    }
+  ],
+  "warnings": []
+}

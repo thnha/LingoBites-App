@@ -1,0 +1,34 @@
+{
+  "releaseName": "situation-learning-release",
+  "description": "MT-Core + situation learning. Mini games optional and off in this preset.",
+  "features": {
+    "pasteTextInput": true,
+    "imageInput": true,
+    "ocrScanner": true,
+    "ocrReviewEdit": true,
+    "aiLessonAnalysis": true,
+    "lessonResultView": true,
+    "lessonSave": true,
+    "lessonHistory": true,
+    "shortPractice": true,
+    "pronunciationSupport": true,
+
+    "themeSystem": true,
+    "themeSwitcher": true,
+    "darkTheme": true,
+    "pastelKidsTheme": false,
+
+    "reviewSystem": true,
+    "miniGame": false,
+    "wordMatchGame": false,
+    "fillBlankGame": false,
+    "tenseQuizGame": false,
+    "sentenceOrderGame": false,
+    "flashcardChallenge": false,
+
+    "situationLearning": true,
+    "dialogueGenerator": true,
+    "phraseExtractor": true,
+    "situationPractice": true
+  }
+}

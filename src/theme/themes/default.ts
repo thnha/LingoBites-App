@@ -1,0 +1,98 @@
+import {fontSize, gutter, typographyPresets} from '../tokens';
+import type {AppTheme} from '../types';
+
+// LingoScan design handoff is the brand default — palette/tokens ported from
+// design_handoff_lingoscan/app.css (:root).
+const handoffSpacing = {xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 48};
+
+export const defaultTheme: AppTheme = {
+  id: 'default',
+  name: 'Mặc định',
+  colors: {
+    background: '#fcfae6',
+    surface: '#ffffff',
+    surfaceMuted: '#f6f4e1',
+    surfaceLow: '#f6f4e1',
+    surfaceContainer: '#f0efdb',
+    surfaceHigh: '#ebe9d5',
+    border: '#bacac5',
+    outline: '#6b7a76',
+    outlineVariant: '#bacac5',
+    primary: '#006b5f',
+    primaryPressed: '#00574d',
+    primaryContainer: '#2dd4bf',
+    onPrimaryContainer: '#00574d',
+    secondary: '#a93349',
+    secondaryContainer: '#fe7488',
+    secondarySoft: 'rgba(254,116,136,0.16)',
+    onSecondaryContainer: '#730425',
+    tertiary: '#6d5e00',
+    tertiaryContainer: '#d8bd23',
+    tertiaryFixed: '#ffe24c',
+    tertiarySoft: 'rgba(255,226,76,0.22)',
+    onTertiaryContainer: '#594c00',
+    accent: '#2dd4bf',
+    accentInk: '#00574d',
+    accentSoft: 'rgba(45,212,191,0.16)',
+    danger: '#ba1a1a',
+    text: {
+      primary: '#1c1c10',
+      secondary: '#3c4a46',
+      inverse: '#ffffff',
+      muted: '#6b7a76',
+    },
+  },
+  states: {disabledOpacity: 0.38, pressedOpacity: 0.85},
+  typography: {
+    fontFamily: {},
+    size: {...fontSize},
+    weight: {regular: '400', medium: '600', bold: '700'},
+    presets: {...typographyPresets},
+  },
+  gutter,
+  spacing: {...handoffSpacing},
+  radius: {sm: 8, md: 18, lg: 24, xl: 32, pill: 999},
+  shadow: {
+    soft: {
+      shadowColor: '#006b5f',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.12,
+      shadowRadius: 6,
+      elevation: 2,
+    },
+    medium: {
+      shadowColor: '#2dd4bf',
+      shadowOffset: {width: 0, height: 3},
+      shadowOpacity: 0.18,
+      shadowRadius: 10,
+      elevation: 4,
+    },
+    strong: {
+      shadowColor: '#fe7488',
+      shadowOffset: {width: 0, height: 5},
+      shadowOpacity: 0.22,
+      shadowRadius: 14,
+      elevation: 6,
+    },
+  },
+  components: {
+    button: {
+      primary: {background: '#006b5f', text: '#ffffff', height: 52, radius: 24},
+      secondary: {
+        background: 'transparent',
+        text: '#006b5f',
+        border: '#bacac5',
+        height: 48,
+        radius: 24,
+      },
+    },
+    card: {background: '#ffffff', radius: 24, padding: 16, shadow: 'soft'},
+    input: {
+      background: '#ffffff',
+      text: '#1c1c10',
+      placeholder: '#6b7a76',
+      border: '#bacac5',
+      radius: 18,
+    },
+  },
+};
