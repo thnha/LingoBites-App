@@ -9,10 +9,10 @@ Repo foundation so mobile and API can develop in parallel.
 ## In scope
 
 - React Native CLI + TypeScript scaffold (`this repo`)
-- Fastify + TypeScript scaffold (`LingoBites-Server`)
-- Linter/formatter, `.env.example` (mobile + API)
-- Request id, error code, schema version conventions
+- Linter/formatter, `.env.example` (mobile client configuration)
+- Request id, error code, schema version conventions on client
 - Copy AI fixtures from `01-schema/fixtures/` into mobile shared fixtures
+- (The corresponding backend setup is developed in `LingoBites-Server`)
 
 ## Out of scope
 
@@ -32,8 +32,7 @@ Repo foundation so mobile and API can develop in parallel.
 
 ```text
 **          (scaffold, config — not feature modules yet)
-LingoBites-Server/**             (scaffold, /health only)
-.env.example files
+.env.example
 Root tooling config (eslint, prettier, etc.)
 ```
 

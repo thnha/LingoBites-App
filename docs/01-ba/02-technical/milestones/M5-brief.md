@@ -42,7 +42,6 @@ src/modules/analytics/**
 src/modules/settings/**
 src/shared/errors/**
 src/release/**
-LingoBites-Server/src/observability/**
 docs/01-ba/03-requirements/05-traceability-matrix.md  (Status updates)
 ```
 

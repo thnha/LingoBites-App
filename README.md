@@ -1,97 +1,95 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# LingoBites Mobile App
 
-# Getting Started
+LingoBites is a mobile application concept designed for Vietnamese speakers who are new to English, helping them learn from real-world English content. The app turns everyday English text (captured via camera, imported from gallery, or pasted) into interactive, structured lessons in Vietnamese.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+This repository contains the mobile client application built using **React Native CLI** and **TypeScript**.
 
-## Step 1: Start Metro
+The backend API proxy is located in the separate `LingoBites-Server` repository.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 🚀 Getting Started
 
-```sh
-# Using npm
-npm start
+### Prerequisites
 
-# OR using Yarn
-yarn start
-```
+Ensure you have completed the [React Native Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide for React Native CLI.
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+### Step 1: Clone and Install Dependencies
 
 ```sh
-# Using npm
-npm run android
+# Clone the repository
+git clone <repo-url> LingoBites-App
+cd LingoBites-App
 
-# OR using Yarn
-yarn android
-```
+# Install npm dependencies
+npm install
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
+# For iOS, install CocoaPods
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### Step 2: Configure Environment Variables
+
+Copy `.env.example` to create your local environment file:
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+cp .env.example .env.development
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Edit `.env.development` and set:
+- `API_BASE_URL`: The URL of your local or staging backend API proxy (e.g., `http://localhost:3000` or the Cloud Run URL).
+- `USE_MOCK_AI`: Set to `true` to use mock AI fixtures (no backend API request) or `false` to connect to the actual backend API.
+- `USE_MOCK_OCR`: Set to `true` to mock OCR extraction.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### Step 3: Run the Application
 
-## Step 3: Modify your app
+First, start Metro (the JavaScript bundler):
 
-Now that you have successfully run the app, let's make changes!
+```sh
+npm start
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+In a new terminal window/pane, build and run the app:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+#### iOS
+```sh
+npm run ios
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+#### Android
+```sh
+npm run android
+```
 
-## Congratulations! :tada:
+---
 
-You've successfully run and modified your React Native App. :partying_face:
+## 📁 Repository Structure
 
-### Now what?
+```text
+android/                     # Android native project folder
+ios/                         # iOS native project folder
+src/                         # Mobile application source code
+  app/
+    navigation/              # Navigation config (React Navigation)
+  components/                # Common UI components (buttons, cards, etc.)
+  data/                      # Local data and constants
+  modules/                   # Feature modules (input, ocr, ai-analysis, lesson, etc.)
+  release/                   # Release config and feature registry
+  services/                  # Shared services (AI triggers, database)
+  shared/                    # Shareable utils, api client, database wrapper, fixtures
+  store/                     # Global state (e.g. Zustand)
+  theme/                     # Theme system and styles
+docs/                        # BA & Technical documentation
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+---
 
-# Troubleshooting
+## 📚 Documentation
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+The BA (Business Analysis) and technical documentation are located in the [docs/](docs) directory:
 
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- [Product Overview](docs/01_Product_Overview.md): Project positioning, target users, and Phase 0 scope.
+- [BA README](docs/01-ba/README.md): Entry point for all documentation roles.
+- [Technical Implementation Spec](docs/01-ba/02-technical/01-technical-implementation-spec.md): Technical stack, database models, API specs, and directory structures.
+- [Phase 0 Implementation Plan](docs/01-ba/02-technical/02-implementation-plan-m1-m5.md): Step-by-step milestones (M0-M5) for building the application.

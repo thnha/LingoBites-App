@@ -80,3 +80,5 @@ ios/tmp.xcconfig
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+# Added by code-review-graph
+.code-review-graph/

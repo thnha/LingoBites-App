@@ -119,9 +119,9 @@ Open additionally only when needed:
 
 | Milestone | Main scope | Source documents |
 |---|---|---|
-| M0 | Project setup, mobile/API scaffold, env, fixtures | `02-technical/02-implementation-plan-m1-m5.md` |
+| M0 | Project setup (mobile client), env, fixtures | `02-technical/02-implementation-plan-m1-m5.md` |
 | M1 | Paste text → mock AI fixture → validate schema → result screen | `02-technical/02-implementation-plan-m1-m5.md`, `01-schema/01-ai-output-v1.ts` |
-| M2 | Fastify backend proxy + real AI + schema validation + retry invalid output | `02-technical/01-technical-implementation-spec.md`, `02-technical/03-ai-output-requirements.md` |
+| M2 | Mobile API integration with backend proxy + schema validation | `02-technical/01-technical-implementation-spec.md`, `02-technical/03-ai-output-requirements.md` |
 | M3 | Camera/gallery → OCR → review/edit confirmed text | `02-technical/04-ai-ocr-integration.md`, `03-requirements/02-business-rules.md` |
 | M4 | Save/history/detail/delete local data, no AI recall for saved lesson | `02-technical/05-data-model.md`, `02-technical/01-technical-implementation-spec.md` |
 | M5 | Analytics, loading/error/empty states, privacy note, cost guard, beta readiness | `08-operations/01-analytics-kpi-events.md`, `07-release/01-release-production-readiness.md` |

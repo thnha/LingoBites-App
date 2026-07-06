@@ -210,8 +210,10 @@ Scan/Input → Confirm Text → Generate Lesson → Learn → Save → Review
 ## 12. Repo map
 
 ```text
-     RN CLI — modules: input, ai-analysis, lesson (M1+), ocr (M3), analytics, settings; shared/db (M4)
-LingoBites-Server/        Fastify — /health; /v1/ai/analyze (M2); /v1/ocr (M3)
-docs/01-ba/      BA canonical — KHÔNG load 90-archive/MASTER.md
-docs/superpowers/  Specs + plans (theme → UI); index: superpowers/README.md
+LingoBites-App/    This repository (React Native CLI mobile client + documentation)
+  ├── android/     Android project files
+  ├── ios/         iOS project files
+  ├── src/         Source code — modules: input, ocr, ai-analysis, lesson, shared/db, etc.
+  └── docs/        BA & Technical documentation (this folder)
+LingoBites-Server/ External repository (Fastify backend — /health, /v1/ai/analyze, /v1/ocr)
 ```

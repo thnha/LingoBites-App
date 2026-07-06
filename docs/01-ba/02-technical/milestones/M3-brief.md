@@ -40,10 +40,6 @@ src/modules/input/**
 src/modules/ocr/**
 ios/**
 android/**
-LingoBites-Server/src/routes/ocr.ts
-LingoBites-Server/src/providers/ocr/**
-LingoBites-Server/src/services/ocrService.ts
-LingoBites-Server/test/**
 ```
 
 ## Forbidden

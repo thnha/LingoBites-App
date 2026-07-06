@@ -53,7 +53,7 @@ __tests__/**
 
 - `src/modules/ocr/**`
 - `src/shared/db/**`
-- `LingoBites-Server/src/routes/aiAnalysis.ts` real provider wiring
+- Writing backend files (managed in separate `LingoBites-Server` repo)
 - New fields on `AIOutput` not in canonical schema
 - Sending text to network
 

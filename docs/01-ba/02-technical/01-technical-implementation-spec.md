@@ -106,59 +106,47 @@ The mobile app is responsible for UI, local persistence, basic validation, and r
 
 ---
 
-## 5. Recommended Directory Structure
+## 5. Directory Structure (Standalone Mobile App)
+
+This repository contains only the mobile client codebase. The backend API proxy is developed and maintained in the separate `LingoBites-Server` repository.
+
+### Mobile App Directory Structure
 
 ```text
-apps/
-  mobile/
-    ios/
-    android/
-    src/
-      app/
-        App.tsx
-        navigation/
-      modules/
-        input/
-        ocr/
-        ai-analysis/
-        lesson/
-        vocabulary/
-        grammar/
-        pronunciation/
-        practice/
-        analytics/
-      shared/
-        api/
-        components/
-        config/
-        db/
-        errors/
-        types/
-        utils/
-
-  api/
-    src/
-      routes/
-        health.ts
-        ocr.ts
-        aiAnalysis.ts
-        tts.ts
-      providers/
-        ocr/
-        ai/
-        tts/
-      schemas/
-      services/
-      config/
-      observability/
-```
-
-If not using a monorepo, keep the same module boundaries in one repo:
-
-```text
-mobile/
-api/
-docs/
+android/                     # Android native project folder
+ios/                         # iOS native project folder (CocoaPods)
+src/                         # Mobile application source code
+  app/
+    navigation/              # Navigation config (React Navigation)
+  components/                # Common UI components (buttons, cards, etc.)
+  data/                      # Local data/constants
+  modules/                   # Feature modules
+    input/                   # Scan, gallery, and manual input handlers
+    ocr/                     # OCR preview and text correction flow
+    ai-analysis/             # AI lesson generation triggers and screen
+    lesson/                  # Lesson detail renderers, history list
+    vocabulary/              # Vocabulary list & details section
+    grammar/                 # Grammar highlights section
+    pronunciation/           # Pronunciation/audio controls section
+    practice/                # Multiple choice & translation practice
+    analytics/               # Analytics logging setup
+  release/                   # Release config & feature registry logic
+  services/                  # Shared services (AI triggers, database)
+  shared/                    # Shared code/utilities across modules
+    api/                     # API client (analyzeClient, ocrClient)
+    copy/                    # User facing messages and error copy
+    db/                      # Database wrapper (SQLite/quick-sqlite)
+    errors/                  # Error classification helpers
+    fixtures/                # Mock AI output for testing
+    schemas/                 # Client-side validation schemas (ai-output-v1)
+    utils/                   # General utility functions
+  store/                     # Global state managers (e.g. Zustand)
+  theme/                     # Color schemes, typography, layout tokens
+  types/                     # Shared TypeScript definitions
+App.tsx                      # App root component
+index.js                     # Metro bundler entry point
+package.json                 # Dependency manifest
+tsconfig.json                # TypeScript configuration
 ```
 
 ---

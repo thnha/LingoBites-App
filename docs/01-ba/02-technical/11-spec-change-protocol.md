@@ -36,8 +36,8 @@ diverging across sessions.
 
 After editing `01-ai-output-v1.ts`, sync copies under:
 
-- `src/shared/schemas/ai-output-v1.ts`
-- `LingoBites-Server/src/schemas/ai-output-v1.ts`
+- `src/shared/schemas/ai-output-v1.ts` (in this repository)
+- `LingoBites-Server/src/schemas/ai-output-v1.ts` (in the external LingoBites-Server repository)
 
 ---
 

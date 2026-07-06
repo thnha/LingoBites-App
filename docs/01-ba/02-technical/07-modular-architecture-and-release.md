@@ -207,10 +207,10 @@ MT-Core exit criteria pass. Each future capability gets its own feature keys in
 ## 6. Architecture overview
 
 ```txt
-LingoBites
+LingoBites-App (Mobile Client)
 │
-├── Core Platform (src/core + LingoBites-Server)
-│   ├── API client
+├── Core Platform (src/core/ / src/shared/ + API Integration)
+│   ├── API client (rest client communicating with server)
 │   ├── Local storage (SQLite)
 │   ├── AI output validation (01-ai-output-v1.ts)
 │   ├── Analytics adapter
@@ -218,7 +218,7 @@ LingoBites
 │   ├── Theme engine (MT-Theme)
 │   └── Permissions / errors / logger
 │
-├── Feature Modules (src/modules → migrate to features/)
+├── Feature Modules (src/modules/ → migrate to features/)
 │   ├── input (paste, image)
 │   ├── ocr
 │   ├── ai-analysis
@@ -228,13 +228,13 @@ LingoBites
 │   ├── mini-games (future)
 │   └── situation-learning (future)
 │
-├── Backend API Proxy (LingoBites-Server)
-│   ├── /health
-│   ├── /v1/ocr
-│   ├── /v1/ai/analyze
-│   └── Feature guards per route (future modules)
+├── External Backend Integration
+│   └── Communicates via HTTPS with LingoBites-Server API proxy (separate repository)
+│       ├── /health
+│       ├── /v1/ocr
+│       └── /v1/ai/analyze
 │
-└── Release Config (docs + src/release/)
+└── Release Config (docs/ + src/release/)
     ├── release-manifest
     ├── feature-registry
     ├── feature-dependencies

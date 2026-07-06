@@ -21,9 +21,9 @@ Format: `11-spec-change-protocol.md §4`.
 ## 2026-06-06 — D-009
 
 - **Change:** Backend deployment path now uses an explicit Docker image (`deploy/api/Dockerfile`) pushed to Artifact Registry, then Cloud Run deploys with `--image`; Cloud Run `--source .` is only a prototype fallback.
-- **Reason:** The repository is a monorepo (`this repo`, `LingoBites-Server`), so explicit Docker builds are easier to reproduce, debug, and maintain across local, CI, staging, and production than buildpack/source detection.
-- **Canonical files:** `07-release/05-backend-deploy-google-cloud-run.md`, `08-operations/06-backend-gcloud-setup-deploy-spec.md` (both LingoBites-Server repo), `08-operations/05-environment-git-deployment-workflow.md`
-- **Code impact:** Future deployment setup should add/maintain `deploy/api/Dockerfile`, `.dockerignore`, Artifact Registry image naming, and GitHub Actions image build/push/deploy steps.
+- **Reason:** Explicit Docker builds for the backend are easier to reproduce, debug, and maintain across local, CI, staging, and production.
+- **Canonical files:** `07-release/05-backend-deploy-google-cloud-run.md`, `08-operations/06-backend-gcloud-setup-deploy-spec.md` (both in the external `LingoBites-Server` repo), `08-operations/05-environment-git-deployment-workflow.md`
+- **Code impact:** The mobile app codebase in `LingoBites-App` is unaffected. All backend Docker configurations and CI/CD deployment pipelines are managed in the external `LingoBites-Server` repository.
 - **Milestone:** M2+ deployment and release operations
 - **Out of scope until:** Immutable image promotion from staging to production by digest; advanced blue/green or canary automation.
 

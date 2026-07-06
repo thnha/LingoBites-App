@@ -4,23 +4,20 @@
 
 ## Goal
 
-Real AI via Fastify `/v1/ai/analyze` with schema validation and single retry.
+Connect mobile app to backend API (`/v1/ai/analyze`) and handle responses/errors.
 
 ## In scope
 
-- `/health` (if not done)
-- `/v1/ai/analyze` — input validation, provider adapter, Zod validation
-- Prompt builder per `03-ai-output-requirements.md`
-- Retry invalid output **at most once** → then `AI_INVALID_OUTPUT`
-- Mobile API client + `USE_MOCK_AI` env flag
-- No logging of raw `confirmed_text`
+- Mobile API client to communicate with Fastify backend proxy endpoint `/v1/ai/analyze`
+- Client-side error mapping and schema validation check for robustness
+- Support switching between Mock AI and real API via `USE_MOCK_AI` env flag
+- (The corresponding backend setup, including API endpoints, Gemini/OpenAI provider adapters, prompt building, and backend retries, is developed in `LingoBites-Server`)
 
 ## Out of scope
 
-- OCR routes (M3)
-- SQLite save (M4)
-- Analytics/crash reporting (M5)
-- Auth, rate limiting beyond basic (unless in technical-spec)
+- OCR API wiring on client (M3)
+- SQLite save/history (M4)
+- Client-side analytics/crash reporting (M5)
 
 ## Canonical reads (session)
 
@@ -35,38 +32,27 @@ Real AI via Fastify `/v1/ai/analyze` with schema validation and single retry.
 ## Allowed write paths
 
 ```text
-LingoBites-Server/src/routes/**
-LingoBites-Server/src/providers/ai/**
-LingoBites-Server/src/schemas/**
-LingoBites-Server/src/services/**
-LingoBites-Server/src/observability/**
-LingoBites-Server/test/**
 src/shared/api/**
 src/modules/ai-analysis/**
 .env.example
-LingoBites-Server/.env.example
 ```
 
 ## Forbidden
 
-- `LingoBites-Server/src/routes/ocr.ts`
 - `src/modules/ocr/**`
 - API keys in mobile bundle
 - Custom AI output schema separate from canonical
-- More than one retry on invalid output
+- Writing files in backend server repo
 
 ## Exit tests
 
-- `npm run api:test` passes (see `12-api-backend-development-rules.md` §5, LingoBites-Server repo)
-- API: valid provider output passes schema (`INT-AI-001`)
-- API: invalid → retry once → still invalid → `AI_INVALID_OUTPUT` (`INT-AI-002`, `INT-AI-003`)
-- Response envelope `{ request_id, status }` — not `{ ok, error_code }`
 - Mobile: `USE_MOCK_AI=true` still works (M1 path)
-- Mobile: `USE_MOCK_AI=false` renders real AI result
-- Invalid response does not crash app
+- Mobile: `USE_MOCK_AI=false` properly connects to local/staging Fastify proxy API and displays real AI result
+- Mobile client maps API error codes (e.g., `VALIDATION_EMPTY_TEXT`, `VALIDATION_TEXT_TOO_LONG`, `AI_INVALID_OUTPUT`) to correct user-facing messages
+- Invalid API response or schema validation failure does not crash the mobile app
 
 ## STOP triggers
 
-- Locking AI provider without user/env decision
-- Adding OCR endpoint
-- Skipping `validateAIOutput()` on backend
+- Storing API keys directly in mobile bundle
+- Implementing OCR UI or OCR services (belongs to M3)
+- Skipping client-side schema validation via `validateAIOutput()`

@@ -28,55 +28,45 @@ When implementing M2/M3, use `02-technical/04-ai-ocr-integration.md` as the deta
 
 ---
 
-## 3. Target Repo Structure
+## 3. Repo Structure (Standalone Mobile App)
+
+This repository contains only the mobile client codebase. The backend API proxy is developed and maintained in the separate `LingoBites-Server` repository.
+
+### Mobile App Repository Layout
 
 ```text
-apps/
-  mobile/
-    ios/
-    android/
-    src/
-      app/
-        App.tsx
-        navigation/
-      modules/
-        input/
-        ocr/
-        ai-analysis/
-        lesson/
-        vocabulary/
-        grammar/
-        pronunciation/
-        practice/
-        analytics/
-      shared/
-        api/
-        components/
-        config/
-        db/
-        errors/
-        fixtures/
-        schemas/
-        types/
-        utils/
-    __tests__/
-    .env.example
-
-  api/
-    src/
-      routes/
-      providers/
-      schemas/
-      services/
-      config/
-      observability/
-    test/
-    .env.example
-
-docs/
+android/                     # Android native folder
+ios/                         # iOS native folder
+src/                         # App source code
+  app/
+    navigation/              # Navigation system
+  components/                # Shared custom components
+  data/                      # Constants
+  modules/                   # Modules/Features
+    input/                   # Paste & capture screens
+    ocr/                     # Text review/correct screen
+    ai-analysis/             # AI generation & analyzing view
+    lesson/                  # Result view & saved lessons
+    vocabulary/              # Vocabulary sections
+    grammar/                 # Grammar highlights
+    pronunciation/           # Pronunciation
+    practice/                # Exercises
+    analytics/               # Analytics adaptor
+  release/                   # Release config
+  shared/                    # Shareable helpers/seams
+    api/                     # REST api client
+    copy/                    # User messaging
+    db/                      # Local SQLite database
+    errors/                  # Shared errors definitions
+    fixtures/                # Mock AI output JSONs
+    schemas/                 # Client validator schemas
+    utils/                   # General utils
+__tests__/                   # Unit/Integration tests
+.env.example                 # Environment template
+docs/                        # BA/Technical documentation (this folder)
 ```
 
-If the team does not want a monorepo, split into 2 repos, but module boundaries and contracts stay the same.
+The split into two separate repositories (`LingoBites-App` and `LingoBites-Server`) has been executed. All references to backend source files (`LingoBites-Server/*`) in the milestone scopes below are for integration reference only; backend code must be implemented in the server repository.
 
 ---
 
