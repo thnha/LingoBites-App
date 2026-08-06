@@ -1,8 +1,12 @@
-import {analyzeTextWithApi} from '../../shared/api/analyzeClient';
+import {runAnalysisJob} from '../../shared/api/analysisJobClient';
 import {getAppConfig} from '../../shared/api/appConfig';
 import {getTextLengthBucket, trackEvent} from '../analytics';
-import {analyzeTextWithMock} from './MockAIAnalysisService';
-import type {AnalyzeOptions, AnalyzeTextResult} from './types';
+import {simulateAnalysisJob} from './MockAIAnalysisService';
+import type {
+  AnalyzeOptions,
+  AnalyzeTextResult,
+  AnalysisProgressCallback,
+} from './types';
 
 const DEFAULT_PROMPT_VERSION = 'lesson-analysis-v1';
 const DEFAULT_LEVEL = 'Beginner';
@@ -10,6 +14,8 @@ const DEFAULT_LEVEL = 'Beginner';
 export async function analyzeText(
   confirmedText: string,
   options?: AnalyzeOptions,
+  onProgress?: AnalysisProgressCallback,
+  signal?: AbortSignal,
 ): Promise<AnalyzeTextResult> {
   const trimmed = confirmedText.trim();
   const textLengthBucket = getTextLengthBucket(trimmed.length);
@@ -24,8 +30,17 @@ export async function analyzeText(
   const {useMockAi} = getAppConfig();
 
   const result = useMockAi
-    ? await analyzeTextWithMock(trimmed, options)
-    : await analyzeTextWithApi(trimmed, options?.sourceType ?? 'paste_text');
+    ? await simulateAnalysisJob(trimmed, options, onProgress, signal)
+    : await runAnalysisJob(
+        trimmed,
+        options?.sourceType ?? 'paste_text',
+        onProgress,
+        signal,
+      );
+
+  if (!result.ok && result.cancelled) {
+    return result;
+  }
 
   const durationMs = Date.now() - startedAt;
 
