@@ -37,10 +37,12 @@
 	<string>LingoBites cần quyền camera để chụp ảnh chứa đoạn tiếng Anh bạn muốn học.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>LingoBites cần quyền thư viện ảnh để chọn ảnh chứa đoạn tiếng Anh bạn muốn học.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
 	<key>RCTNewArchEnabled</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>MaterialIcons.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>$(LAUNCH_SCREEN_NAME)</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -60,9 +62,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>MaterialIcons.ttf</string>
-	</array>
 </dict>
 </plist>

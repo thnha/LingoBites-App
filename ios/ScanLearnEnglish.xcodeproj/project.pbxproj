@@ -17,7 +17,7 @@
 
 /* Begin PBXFileReference section */
 		02C1DA64B3C32380ADBAFD46 /* Pods-ScanLearnEnglish.debugprod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScanLearnEnglish.debugprod.xcconfig"; path = "Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish.debugprod.xcconfig"; sourceTree = "<group>"; };
-		11924F791ADA40F899A29B1C /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = ../assets/fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
+		11924F791ADA40F899A29B1C /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = ../assets/fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ScanLearnEnglish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScanLearnEnglish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ScanLearnEnglish/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ScanLearnEnglish/Info.plist; sourceTree = "<group>"; };
@@ -81,7 +81,6 @@
 				11924F791ADA40F899A29B1C /* MaterialIcons.ttf */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -230,9 +229,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -269,9 +272,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -297,7 +304,7 @@
 			baseConfigurationReference = A00000000000000000000202 /* Config-DebugDev.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = ZS935V8BHL;
+				DEVELOPMENT_TEAM = SH8ZHVLYYL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ScanLearnEnglish/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -324,7 +331,7 @@
 			baseConfigurationReference = A00000000000000000000203 /* Config-ReleaseDev.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = ZS935V8BHL;
+				DEVELOPMENT_TEAM = SH8ZHVLYYL;
 				INFOPLIST_FILE = ScanLearnEnglish/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -349,7 +356,7 @@
 			baseConfigurationReference = A00000000000000000000204 /* Config-DebugStag.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = ZS935V8BHL;
+				DEVELOPMENT_TEAM = SH8ZHVLYYL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ScanLearnEnglish/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -376,7 +383,7 @@
 			baseConfigurationReference = A00000000000000000000205 /* Config-ReleaseStag.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = ZS935V8BHL;
+				DEVELOPMENT_TEAM = SH8ZHVLYYL;
 				INFOPLIST_FILE = ScanLearnEnglish/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -401,7 +408,7 @@
 			baseConfigurationReference = A00000000000000000000206 /* Config-DebugProd.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = ZS935V8BHL;
+				DEVELOPMENT_TEAM = SH8ZHVLYYL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ScanLearnEnglish/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -428,7 +435,7 @@
 			baseConfigurationReference = A00000000000000000000207 /* Config-ReleaseProd.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = ZS935V8BHL;
+				DEVELOPMENT_TEAM = SH8ZHVLYYL;
 				INFOPLIST_FILE = ScanLearnEnglish/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
