@@ -154,7 +154,7 @@ export function AnalyzingScreen({navigation, route}: Props) {
   const normalizedProgress = done
     ? 1
     : Math.max(0, Math.min(1, progress.percent / 100));
-  const percentLabel = `${done ? 100 : Math.round(progress.percent)}%`;
+  const percentLabel = `${done ? 100 : Math.round(normalizedProgress * 100)}%`;
   const subtitle = progress.message ?? FALLBACK_SUBTITLE;
 
   return (

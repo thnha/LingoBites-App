@@ -229,6 +229,40 @@ describe('AnalyzingScreen', () => {
       expect(track.props.progress).toBe(0.4);
     });
 
+    it.each([
+      [-10, '0%', 0],
+      [150, '100%', 1],
+    ])(
+      'clamps an out-of-range percent (%i) to %s for display without altering the raw snapshot',
+      (percent, expectedLabel, expectedTrackProgress) => {
+        act(() => {
+          onProgress({
+            percent,
+            stage: 'sentence_analysis',
+            message: 'Đang phân tích từng câu',
+            stages: [stage('sentence_analysis', 'processing')],
+          });
+        });
+
+        expect(textContent(renderer.root)).toContain(expectedLabel);
+        expect(textContent(renderer.root)).not.toContain(`${percent}%`);
+        const track = renderer.root.findByProps({label: expectedLabel});
+        expect(track.props.progress).toBe(expectedTrackProgress);
+
+        // Only the display is clamped: a subsequent in-range snapshot still
+        // renders its own real percent, proving no clamped value stuck around.
+        act(() => {
+          onProgress({
+            percent: 55,
+            stage: 'sentence_analysis',
+            message: 'Đang phân tích từng câu',
+            stages: [stage('sentence_analysis', 'processing')],
+          });
+        });
+        expect(textContent(renderer.root)).toContain('55%');
+      },
+    );
+
     it('shows the server message as the subtitle when present', () => {
       act(() => {
         onProgress({
