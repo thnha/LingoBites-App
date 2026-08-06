@@ -25,8 +25,10 @@ const CREATE_PATH = '/v1/ai/analyses';
 const DEFAULT_PROMPT_VERSION = 'lesson-analysis-v1';
 const DEFAULT_LEVEL = 'Beginner';
 const DEFAULT_RETRY_AFTER_MS = 1_000;
+const MAX_RETRY_AFTER_MS = 10_000;
 const POLL_INTERVAL_MS = 1_500;
 const POLL_DEADLINE_MS = 75_000;
+const FETCH_TIMEOUT_MS = 10_000;
 
 const cancelledResult = (): AnalyzeTextResult => ({ok: false, cancelled: true});
 
@@ -39,9 +41,32 @@ function parseRetryAfter(value: string | null): number {
     return DEFAULT_RETRY_AFTER_MS;
   }
   const seconds = Number(value);
-  return Number.isFinite(seconds) && seconds >= 0
-    ? seconds * 1_000
-    : DEFAULT_RETRY_AFTER_MS;
+  if (!Number.isFinite(seconds) || seconds < 0) {
+    return DEFAULT_RETRY_AFTER_MS;
+  }
+  return Math.min(seconds * 1_000, MAX_RETRY_AFTER_MS);
+}
+
+/**
+ * Bounds a single fetch call so a hung request can't outlive the overall
+ * poll deadline. The returned signal aborts when either the caller's own
+ * `externalSignal` aborts (user cancellation) or `timeoutMs` elapses
+ * (internal watchdog) — callers distinguish the two after the fact by
+ * checking whether `externalSignal` itself is aborted.
+ */
+function withTimeout(
+  timeoutMs: number,
+  externalSignal: AbortSignal | undefined,
+): {signal: AbortSignal; cleanup: () => void} {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const onExternalAbort = () => controller.abort();
+  externalSignal?.addEventListener('abort', onExternalAbort, {once: true});
+  const cleanup = () => {
+    clearTimeout(timer);
+    externalSignal?.removeEventListener('abort', onExternalAbort);
+  };
+  return {signal: controller.signal, cleanup};
 }
 
 function resolveStatusUrl(apiBaseUrl: string, statusUrl: string): string {
@@ -228,16 +253,24 @@ export async function runAnalysisJob(
 
   let createResponse: Response;
   try {
-    createResponse = await fetch(`${apiBaseUrl}${CREATE_PATH}`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Idempotency-Key': idempotencyKey,
-      },
-      body: JSON.stringify(requestBody),
+    const {signal: fetchSignal, cleanup} = withTimeout(
+      Math.min(FETCH_TIMEOUT_MS, deadline - Date.now()),
       signal,
-    });
+    );
+    try {
+      createResponse = await fetch(`${apiBaseUrl}${CREATE_PATH}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey,
+        },
+        body: JSON.stringify(requestBody),
+        signal: fetchSignal,
+      });
+    } finally {
+      cleanup();
+    }
   } catch {
     if (isAborted(signal)) return cancelledResult();
     return {ok: false, errorCode: 'NETWORK_ERROR', message: NETWORK_LOST_MESSAGE};
@@ -274,11 +307,19 @@ export async function runAnalysisJob(
 
     let pollResponse: Response;
     try {
-      pollResponse = await fetch(statusUrl, {
-        method: 'GET',
-        headers: {Accept: 'application/json'},
+      const {signal: fetchSignal, cleanup} = withTimeout(
+        Math.min(FETCH_TIMEOUT_MS, deadline - Date.now()),
         signal,
-      });
+      );
+      try {
+        pollResponse = await fetch(statusUrl, {
+          method: 'GET',
+          headers: {Accept: 'application/json'},
+          signal: fetchSignal,
+        });
+      } finally {
+        cleanup();
+      }
     } catch {
       if (isAborted(signal)) return cancelledResult();
       const outcome = await waitBeforeNextAttempt(POLL_INTERVAL_MS, deadline, signal);

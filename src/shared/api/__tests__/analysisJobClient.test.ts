@@ -148,6 +148,7 @@ describe('runAnalysisJob - create + happy-path polling', () => {
     ['-5', 1_000],
     ['NaN', 1_000],
     ['Infinity', 1_000],
+    ['200', 10_000], // capped at MAX_RETRY_AFTER_MS, not the full 200_000ms
   ])('waits %s -> %ims before the first poll', async (retryAfter, expectedDelayMs) => {
     mockFetch
       .mockResolvedValueOnce(response(created(), {status: 202, retryAfter}))
@@ -389,6 +390,46 @@ describe('runAnalysisJob - poll deadline', () => {
     const callsAtDeadline = mockFetch.mock.calls.length;
     await jest.advanceTimersByTimeAsync(10_000);
     expect(mockFetch).toHaveBeenCalledTimes(callsAtDeadline);
+  });
+});
+
+describe('runAnalysisJob - per-request timeout', () => {
+  it('abandons a poll GET that never resolves once the per-request timeout fires, retries at the next interval, and completes normally', async () => {
+    mockFetch
+      .mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '0'}))
+      .mockImplementationOnce(
+        (_url: string, options: {signal: AbortSignal}) =>
+          new Promise((_resolve, reject) => {
+            options.signal.addEventListener('abort', () => {
+              const err = new Error('The operation was aborted.');
+              err.name = 'AbortError';
+              reject(err);
+            });
+          }),
+      )
+      .mockResolvedValueOnce(response(completedBody(lessonData())));
+
+    const pending = runAnalysisJob('Sample text.');
+    await jest.advanceTimersByTimeAsync(0);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+
+    // Still within the 10s per-request timeout: the hung poll is not
+    // abandoned yet, so no retry has been issued.
+    await jest.advanceTimersByTimeAsync(10_000 - 1);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+
+    // Crossing the per-request timeout aborts the hung fetch, which is
+    // treated as a transient failure — the retry waits a full poll
+    // interval rather than firing immediately.
+    await jest.advanceTimersByTimeAsync(1);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+
+    await jest.advanceTimersByTimeAsync(1_500 - 1);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    await jest.advanceTimersByTimeAsync(1);
+    expect(mockFetch).toHaveBeenCalledTimes(3);
+
+    await expect(pending).resolves.toEqual(expect.objectContaining({ok: true}));
   });
 });
 
