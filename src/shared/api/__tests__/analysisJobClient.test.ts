@@ -485,7 +485,7 @@ describe('runAnalysisJob - progress snapshot immutability', () => {
   it('never hands out or mutates a previously delivered progress snapshot', async () => {
     mockFetch
       .mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '1'}))
-      .mockResolvedValueOnce(response(inProgress('queued', 0)))
+      .mockResolvedValueOnce(response(inProgress('paused', 0)))
       .mockResolvedValueOnce(response(inProgress('processing', 40)))
       .mockResolvedValueOnce(response(completedBody(lessonData())));
 
