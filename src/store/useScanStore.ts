@@ -28,6 +28,10 @@ export const useScanStore = create<ScanStore>(set => ({
       return;
     }
 
+    if (result.cancelled) {
+      return;
+    }
+
     set({job: {status: 'error', message: result.message}});
   },
 
