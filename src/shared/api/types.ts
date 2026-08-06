@@ -9,7 +9,16 @@ export type ApiErrorCode =
   | 'AI_TIMEOUT'
   | 'AI_INVALID_OUTPUT'
   | 'AI_PROVIDER_ERROR'
-  | 'NETWORK_ERROR';
+  | 'NETWORK_ERROR'
+  | 'VALIDATION_MISSING_IDEMPOTENCY_KEY'
+  | 'IDEMPOTENCY_CONFLICT'
+  | 'AI_STAGE_PROVIDER_ERROR'
+  | 'AI_STAGE_INVALID_OUTPUT'
+  | 'AI_STAGE_TIMEOUT'
+  | 'AI_JOB_TIMEOUT'
+  | 'AI_FINAL_VALIDATION_FAILED'
+  | 'AI_JOB_NOT_FOUND'
+  | 'AI_POLL_GIVE_UP';
 
 export type ApiErrorBody = {
   request_id: string;
@@ -89,3 +98,62 @@ export type AnalyzeTextRequestBody = {
     anonymous_user_id?: string;
   };
 };
+
+export type AnalysisJobStage = {
+  name: string;
+  status:
+    | 'pending'
+    | 'processing'
+    | 'retrying'
+    | 'completed'
+    | 'failed'
+    | 'skipped';
+  attempts: number;
+};
+
+export type AnalysisJobProgressBody = {
+  percent: number;
+  current_stage: string | null;
+  message: string | null;
+  stages: AnalysisJobStage[];
+};
+
+export type CreateAnalysisJobSuccessBody = {
+  request_id: string;
+  analysis_id: string;
+  status: string;
+  created_at: string;
+  status_url: string;
+};
+
+type AnalysisJobBaseBody = {
+  analysis_id: string;
+  progress: AnalysisJobProgressBody;
+  partial_data: null;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+};
+
+export type AnalysisJobStatusBody =
+  | (AnalysisJobBaseBody & {
+      request_id: string;
+      status: 'queued' | 'processing' | 'paused';
+    })
+  | (AnalysisJobBaseBody & {
+      request_id: string;
+      status: 'completed';
+      model: string;
+      schema_version: 'ai-output-v1';
+      prompt_version: string;
+      data: unknown;
+    })
+  | (AnalysisJobBaseBody & {
+      status: 'failed';
+      error: {
+        code: ApiErrorCode;
+        message: string;
+        stage?: string;
+        retryable?: boolean;
+      };
+    });
