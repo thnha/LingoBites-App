@@ -42,12 +42,12 @@ async path fully replaces the sync call in-app, the sync client is dead code.
 
 ```
 AnalyzingScreen
-   └─ analyzeText(text, options, onProgress)      [AIAnalysisService.ts]
+   └─ analyzeText(text, options, onProgress, signal) [AIAnalysisService.ts]
         ├─ useMockAi=true  → simulateAnalysisJob() [MockAIAnalysisService.ts]
         └─ useMockAi=false → runAnalysisJob()      [analysisJobClient.ts, new]
              ├─ POST /v1/ai/analyses  (Idempotency-Key header)
              └─ poll status_url every ~1.5s until completed/failed/give-up
-                   → onProgress({percent, stage, message}) per poll
+                   → onProgress({percent, stage, message, stages}) per poll
 ```
 
 `AIAnalysisService.analyzeText()` remains the seam the UI depends on — it
@@ -168,17 +168,25 @@ export type AnalysisProgress = {
   percent: number;        // 0-100
   stage: string | null;   // current_stage
   message: string | null; // ready-to-display Vietnamese string
+  stages: AnalysisJobStage[];
 };
 export type AnalysisProgressCallback = (progress: AnalysisProgress) => void;
 ```
 
-`AnalyzeTextResult` is unchanged (`{ok:true, lesson}` / `{ok:false, errorCode,
-message}`) — the job's `data` field validates through the same
-`validateAIOutput` used today, so no new lesson-parsing logic is needed.
+`AnalysisProgress` imports `AnalysisJobStage` from `src/shared/api/types.ts`.
+The callback carries the complete stage snapshot because `AnalyzingScreen`
+needs both the aggregate percent/message and each stage's status. The client
+must create a new snapshot for every successful poll rather than mutate a
+previous callback value.
+
+The successful lesson and ordinary failure variants of `AnalyzeTextResult`
+stay unchanged. A cancellation-only variant is added below. The job's `data`
+field validates through the same `validateAIOutput` used today, so no new
+lesson-parsing logic is needed.
 
 ### `analysisJobClient.ts`
 
-Exports `runAnalysisJob(confirmedText, sourceType, onProgress):
+Exports `runAnalysisJob(confirmedText, sourceType, onProgress, signal):
 Promise<AnalyzeTextResult>`:
 
 1. Generate a fresh Idempotency-Key (reuse `createRequestId()`) once per call
@@ -189,21 +197,54 @@ Promise<AnalyzeTextResult>`:
    action.
 2. `POST /v1/ai/analyses`. A network/parse failure here is an immediate
    `NETWORK_ERROR` result (same behavior as today's sync client).
-3. Wait `Retry-After` seconds from the 202 response (fallback to 1s if the
-   header is missing), then start polling `status_url` every 1.5s.
-4. Each poll: on success, call `onProgress({percent, stage: current_stage,
-   message})`. Treat `queued`, `processing`, and `paused` identically as
-   "still working" per the doc.
-5. A single poll's network/parse failure is swallowed and retried on the next
-   tick — it does not fail the job. Only an explicit `failed` status or the
-   give-up timeout ends the loop.
-6. Give up after 75s of total elapsed time (mid of the doc's 60–90s
-   recommendation) → stop polling, return failure with `errorCode:
-   'AI_POLL_GIVE_UP'`, same downstream handling as a `failed` job.
-7. On `status: 'completed'` → validate `data` via `validateAIOutput` (same
+3. Resolve `status_url` against `apiBaseUrl` before polling. The backend
+   currently returns a relative path such as `/v1/ai/analyses/:id`; if it ever
+   returns an absolute `http://` or `https://` URL, use it unchanged. Do not
+   rebuild the path from `analysis_id`.
+4. Parse `Retry-After` as a finite, non-negative number of seconds. Wait that
+   long before the first poll; fall back to 1s when the header is missing or
+   invalid. Subsequent polls use a fixed 1.5s interval.
+5. Each successful in-progress poll calls
+   `onProgress({percent, stage: current_stage, message, stages})`. Treat
+   `queued`, `processing`, and `paused` identically as "still working" per the
+   backend doc.
+6. Poll response handling is deterministic:
+   - `completed` and `failed` are terminal.
+   - A `404` error envelope with `AI_JOB_NOT_FOUND`, or any other `4xx` error
+     envelope, is a terminal failure mapped by `error.code`.
+   - Fetch throws, response JSON parse failures, `429`, and `5xx` responses are
+     transient and retried at the next interval until the deadline.
+   - A successful HTTP response with an unknown status or malformed envelope
+     is terminal `AI_INVALID_OUTPUT`; do not poll an unrecognized body until
+     timeout.
+7. Give up at a deadline 75s after `runAnalysisJob()` starts. This includes
+   the create request, initial `Retry-After` wait, transient errors, and all
+   polls. Check the deadline before scheduling or issuing another poll, then
+   return `AI_POLL_GIVE_UP` with `AI_ANALYSIS_FAILED_MESSAGE`.
+8. Accept an optional `AbortSignal`. Check it before/after waits and fetches,
+   and pass it to every fetch. If aborted, stop without another poll and return
+   `{ok: false, cancelled: true}`. Cancellation is control flow, not an API
+   error: it has no `errorCode` or user-facing message.
+9. On `status: 'completed'` → validate `data` via `validateAIOutput` (same
    validator used by the sync path today); invalid → `AI_INVALID_OUTPUT`.
-8. On `status: 'failed'` → map `error.code` to a display message via the
+10. On `status: 'failed'` → map `error.code` to a display message via the
    table below.
+
+The result type at the service boundary becomes:
+
+```ts
+export type AnalyzeTextResult =
+  | {ok: true; lesson: AIOutput}
+  | {ok: false; cancelled: true}
+  | {ok: false; cancelled?: false; errorCode: AnalyzeErrorCode; message: string};
+```
+
+`AIAnalysisService.analyzeText()` threads the optional signal to both real and
+mock implementations. It does not emit `ai_analysis_completed` for a cancelled
+run. `AnalyzingScreen` creates an `AbortController`, passes its signal to
+`analyzeText`, aborts it in the effect cleanup, and ignores a cancelled result.
+This prevents polling from continuing for up to 75s after Back/unmount. It is
+separate from the deferred AppState/background-polling policy.
 
 ## Error handling & messages
 
@@ -217,7 +258,11 @@ strings needed:
 | `VALIDATION_MISSING_IDEMPOTENCY_KEY`, `IDEMPOTENCY_CONFLICT` | `AI_ANALYSIS_FAILED_MESSAGE` (client always generates the key; these indicate a client bug, not a user-recoverable state) |
 | `AI_STAGE_PROVIDER_ERROR`, `AI_STAGE_INVALID_OUTPUT`, `AI_STAGE_TIMEOUT`, `AI_JOB_TIMEOUT`, `AI_FINAL_VALIDATION_FAILED`, `AI_JOB_NOT_FOUND`, `AI_INVALID_OUTPUT`, `AI_PROVIDER_ERROR`, `AI_TIMEOUT` | `AI_ANALYSIS_FAILED_MESSAGE` (matches today's handling of generic AI failures — the code is what analytics tracks, the message stays generic) |
 | `AI_POLL_GIVE_UP` (client-only) | `AI_ANALYSIS_FAILED_MESSAGE` |
-| fetch throw / non-JSON response | `NETWORK_LOST_MESSAGE` (unchanged) |
+| create-request fetch throw / non-JSON response | `NETWORK_LOST_MESSAGE` (unchanged) |
+
+A poll fetch throw, poll JSON parse failure, `429`, or `5xx` is transient and
+does not produce a user-facing result unless the 75s deadline is reached. A
+poll `4xx` error envelope is terminal and uses the code mapping above.
 
 `error.retryable` from the doc is not surfaced in the UI — there is no
 client-triggered retry endpoint in this slice, so a `failed` job (retryable or
@@ -239,9 +284,13 @@ step labels:
 | `practice` | Đang tạo bài luyện tập |
 | `finalizing` | Đang kiểm tra bài học |
 
-Each stage's UI state (`done`/`active`/`pending`) is derived from
-`progress.stages[]` (`completed`/`retrying`/`processing` → active or done;
-`pending`/`skipped` → pending), the same `StepIndicator` component as today.
+Each stage's UI state (`done`/`active`/`pending`) is derived deterministically
+from `progress.stages[]`: `completed` and `skipped` → `done`; `processing`,
+`retrying`, and `failed` → `active`; `pending` or a stage missing from the
+server snapshot → `pending`. More than one stage may therefore be active at
+once. The terminal job failure navigation normally replaces the screen
+immediately after the final failed snapshot; no separate persistent failed
+indicator is introduced in this slice.
 `HandoffProgressTrack`'s percent comes directly from `progress.percent / 100`
 instead of the random-cap simulation. The subtitle under the screen title
 shows `progress.message` when present, falling back to the existing static
@@ -253,28 +302,37 @@ exactly as today (same `COMPLETE_HOLD_MS` hold before transition).
 ## Mock behavior (`MockAIAnalysisService.ts`)
 
 `useMockAi=true` swaps `analyzeTextWithMock` for a new
-`simulateAnalysisJob(confirmedText, options, onProgress)` that emits synthetic
-progress through the same 6 stages (using the doc's weights: 15/35/25/10/10/5)
-on a short timer (comparable pacing to today's `STEP_INTERVAL_MS`), then
-resolves with the existing fixture data exactly as `analyzeTextWithMock` does
-today. This keeps dev/demo UX aligned with production and exercises the same
-progress-rendering code path in `AnalyzingScreen` without a real backend.
+`simulateAnalysisJob(confirmedText, options, onProgress, signal)` that emits
+synthetic progress through the same 6 stages (using the doc's weights:
+15/35/25/10/10/5) on a short timer (comparable pacing to today's
+`STEP_INTERVAL_MS`), then resolves with the existing fixture data exactly as
+`analyzeTextWithMock` does today. This keeps dev/demo UX aligned with
+production and exercises the same progress-rendering code path in
+`AnalyzingScreen` without a real backend.
+The mock checks the signal between timer waits and returns the same cancelled
+result without emitting further progress when aborted.
 
 ## Testing
 
 - `analysisJobClient.test.ts`: create success, `IDEMPOTENCY_CONFLICT`,
   validation errors, poll transitions (`queued`→`processing`→`completed`,
   →`failed`, `paused` treated as `processing`), give-up timeout, transient
-  poll-error swallowing. Use fake timers, following the existing patterns in
+  poll-error swallowing; relative and absolute `status_url`; valid, missing,
+  and invalid `Retry-After`; terminal `404`/`4xx`; transient `429`/`5xx`;
+  malformed/unknown success envelopes; and abort during initial wait and poll.
+  Use fake timers, following the existing patterns in
   `analyzeClient.test.ts`/`appConfig.test.ts`.
 - `MockAIAnalysisService.test.ts`: assert staged progress callbacks fire in
   stage order with increasing percent before the promise resolves.
 - `AIAnalysisService.test.ts`: update mocks from `analyzeTextWithApi` to
   `runAnalysisJob`; assert the progress callback is threaded through
-  unchanged.
+  unchanged; assert the signal is threaded through and cancellation does not
+  emit `ai_analysis_completed`.
 - `AnalyzingScreen.test.tsx`: drive progress via the callback instead of
   relying on the internal timer; assert the stage list renders from real
-  `progress.stages[]` data and percent tracks `progress.percent`.
+  `progress.stages[]` data and percent tracks `progress.percent`; cover
+  `completed`, `skipped`, `processing`, `retrying`, multiple active stages, and
+  missing stages; assert unmount aborts the run and causes no navigation.
 - Delete `analyzeClient.test.ts` alongside `analyzeClient.ts`.
 
 Smallest relevant check: `yarn test src/modules/ai-analysis src/shared/api`.
@@ -284,8 +342,9 @@ Smallest relevant check: `yarn test src/modules/ai-analysis src/shared/api`.
 - No client-side sync/async feature flag — sync is fully removed from the app.
 - No cancel button — matches the doc; a `failed`/give-up job requires a fresh
   user-initiated retry (new screen entry, new Idempotency-Key).
-- No AppState/background-polling handling — same exposure as today's single
-  blocking `fetch`, not addressed by this slice.
+- No AppState/background-polling handling. Screen unmount/Back cancellation is
+  included to prevent an orphan poll loop, but merely backgrounding the app
+  does not pause or cancel the job.
 - No new analytics events beyond the existing `ai_analysis_started` /
   `ai_analysis_completed`; `error_code` on failure now includes the new codes
   above, which analytics consumers should expect.
