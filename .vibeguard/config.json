@@ -1,0 +1,33 @@
+{
+  "longPromptChars": 300,
+  "complexThreshold": 3,
+  "shortPromptChars": 60,
+  "bigKeywords": [
+    "refactor", "rewrite", "migrate", "migration", "entire", "all",
+    "database", "schema", "auth", "authentication", "authorization",
+    "architecture", "restructure", "redesign", "integrate", "deployment",
+    "deploy", "ci/cd"
+  ],
+  "featureKeywords": [
+    "add feature", "new feature", "feature", "functionality", "implement",
+    "build", "create", "new API", "module"
+  ],
+  "vagueKeywords": [
+    "fix it", "make it pretty", "optimize", "improve", "clean up", "redo",
+    "fix bug", "make it better"
+  ],
+  "maxLogSizeMB": 5,
+  "dangerousPatterns": [
+    "git\\s+push\\s+[^|;&]*(--force(-with-lease)?\\b|(?<![\\w-])-f(?![\\w-]))",
+    "\\brm\\s+(?=[^|;&]*(?<!\\S)(?:-(?!-)[a-zA-Z]*[rR][a-zA-Z]*|--recursive)(?!\\S))(?=[^|;&]*(?<!\\S)(?:-(?!-)[a-zA-Z]*f[a-zA-Z]*|--force)(?!\\S))[^|;&]*",
+    "git\\s+reset\\s+--hard\\b",
+    "git\\s+clean\\s+-[a-z]*f",
+    "curl[^|;&]*\\|\\s*(sh|bash|zsh)\\b",
+    "wget[^|;&]*\\|\\s*(sh|bash|zsh)\\b",
+    "sudo\\s+(npm|pip|yarn|pnpm)\\s+(install|i|add)\\b",
+    "npm\\s+(install|i|add)\\s+[^|;&]*(-g\\b|--global\\b)",
+    "yarn\\s+global\\s+add\\b",
+    "pnpm\\s+add\\s+[^|;&]*(-g\\b|--global\\b)",
+    "\\bdrop\\s+(table|database)\\b"
+  ]
+}
