@@ -9,29 +9,43 @@ import {HandoffProgressTrack} from '../../components/HandoffProgressTrack';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import type {AppTheme} from '../../theme';
 import {useAppTheme} from '../../theme';
+import type {AnalysisJobStage} from '../../shared/api/types';
 import {analyzeText} from './AIAnalysisService';
+import type {AnalysisProgress} from './types';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Analyzing'>;
 
-const STEPS = [
-  {key: 'read', label: 'Đọc đoạn văn'},
-  {key: 'vocab', label: 'Tìm từ vựng'},
-  {key: 'lesson', label: 'Tạo bài học'},
+// Post-success hold: keep the "all done" state on screen briefly before
+// navigating, so the transition doesn't feel abrupt.
+const COMPLETE_HOLD_MS = 220;
+
+const FALLBACK_SUBTITLE =
+  'App đang phân tích đoạn text bạn xác nhận. Giữ app mở một chút nhé.';
+
+const STAGES = [
+  {key: 'source_analysis', label: 'Đang dịch và sắp xếp nội dung'},
+  {key: 'sentence_analysis', label: 'Đang phân tích từng câu'},
+  {key: 'learning_points', label: 'Đang tìm ngữ pháp và từ vựng'},
+  {key: 'pronunciation', label: 'Đang chuẩn bị hướng dẫn phát âm'},
+  {key: 'practice', label: 'Đang tạo bài luyện tập'},
+  {key: 'finalizing', label: 'Đang kiểm tra bài học'},
 ] as const;
 
-// Tiến độ mô phỏng: API không trả % thật nên các bước tự tick theo timer và
-// dừng ở bước cuối tại một mốc ngẫu nhiên 91–96% (KHÔNG tự chạm 100%) để người
-// dùng khó nhận ra là chạy giả. Khi API trả về, kết quả thật luôn thắng: tick
-// nốt tất cả bước cho complete rồi mới chuyển màn.
-const STEP_INTERVAL_MS = 450;
-const COMPLETE_HOLD_MS = 220;
-const STEP_PROGRESS = [0.15, 0.5];
-
-function randomProgressCap() {
-  return 0.91 + Math.random() * 0.05;
-}
-
 type StepState = 'done' | 'active' | 'pending';
+
+function getStepState(
+  stageName: string,
+  stages: AnalysisJobStage[],
+  done: boolean,
+): StepState {
+  if (done) return 'done';
+  const status = stages.find(stage => stage.name === stageName)?.status;
+  if (status === 'completed' || status === 'skipped') return 'done';
+  if (status === 'processing' || status === 'retrying' || status === 'failed') {
+    return 'active';
+  }
+  return 'pending';
+}
 
 function StepIndicator({state, theme}: {state: StepState; theme: AppTheme}) {
   const size = 26;
@@ -70,29 +84,35 @@ export function AnalyzingScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {confirmedText, sourceType, origin} = route.params;
 
-  const [activeStep, setActiveStep] = useState(0);
+  const [progress, setProgress] = useState<AnalysisProgress>({
+    percent: 0,
+    stage: null,
+    message: null,
+    stages: [],
+  });
   const [done, setDone] = useState(false);
-  // Mốc dừng ngẫu nhiên cho bước cuối, cố định trong một lần vào màn.
-  const [progressCap] = useState(randomProgressCap);
 
   useEffect(() => {
     let isActive = true;
     let finishTimer: ReturnType<typeof setTimeout> | undefined;
-
-    const tick = setInterval(() => {
-      setActiveStep(prev => (prev < STEPS.length - 1 ? prev + 1 : prev));
-    }, STEP_INTERVAL_MS);
+    const controller = new AbortController();
 
     (async () => {
-      const result = await analyzeText(confirmedText, {sourceType});
-      if (!isActive) {
+      const result = await analyzeText(
+        confirmedText,
+        {sourceType},
+        nextProgress => {
+          if (isActive) setProgress(nextProgress);
+        },
+        controller.signal,
+      );
+      if (!isActive || (!result.ok && result.cancelled)) {
         return;
       }
-      clearInterval(tick);
 
       if (result.ok) {
-        // Kết quả thật về: tick nốt các bước cho complete rồi chuyển màn.
-        setActiveStep(STEPS.length - 1);
+        // Kết quả thật về: chốt tiến độ 100% cho tất cả bước rồi mới chuyển màn.
+        setProgress(previous => ({...previous, percent: 100}));
         setDone(true);
         finishTimer = setTimeout(() => {
           if (!isActive) {
@@ -124,15 +144,18 @@ export function AnalyzingScreen({navigation, route}: Props) {
 
     return () => {
       isActive = false;
-      clearInterval(tick);
+      controller.abort();
       if (finishTimer) {
         clearTimeout(finishTimer);
       }
     };
   }, [confirmedText, sourceType, origin, navigation]);
 
-  const progress = done ? 1 : STEP_PROGRESS[activeStep] ?? progressCap;
-  const percentLabel = `${Math.round(progress * 100)}%`;
+  const normalizedProgress = done
+    ? 1
+    : Math.max(0, Math.min(1, progress.percent / 100));
+  const percentLabel = `${done ? 100 : Math.round(progress.percent)}%`;
+  const subtitle = progress.message ?? FALLBACK_SUBTITLE;
 
   return (
     <AppScreen>
@@ -150,17 +173,13 @@ export function AnalyzingScreen({navigation, route}: Props) {
             Đang tạo bài học…
           </AppText>
           <AppText color="secondary" style={{textAlign: 'center'}} variant="body">
-            App đang phân tích đoạn text bạn xác nhận. Giữ app mở một chút nhé.
+            {subtitle}
           </AppText>
         </View>
 
         <View style={{gap: theme.spacing.md}}>
-          {STEPS.map((step, index) => {
-            const stepState: StepState = done || index < activeStep
-              ? 'done'
-              : index === activeStep
-                ? 'active'
-                : 'pending';
+          {STAGES.map(step => {
+            const stepState = getStepState(step.key, progress.stages, done);
             return (
               <View
                 key={step.key}
@@ -181,7 +200,7 @@ export function AnalyzingScreen({navigation, route}: Props) {
           })}
         </View>
 
-        <HandoffProgressTrack label={percentLabel} progress={progress} />
+        <HandoffProgressTrack label={percentLabel} progress={normalizedProgress} />
       </View>
     </AppScreen>
   );
