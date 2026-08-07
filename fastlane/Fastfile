@@ -3,6 +3,7 @@ require "open3"
 require "plist"
 require "shellwords"
 require "tempfile"
+require_relative "signing_config"
 
 IOS_XCODEPROJ = "ios/ScanLearnEnglish.xcodeproj"
 IOS_WORKSPACE = "ios/ScanLearnEnglish.xcworkspace"
@@ -100,7 +101,7 @@ platform :ios do
       File.chmod(0o600, key_file.path)
 
       profile_path = ENV["IOS_PROVISIONING_PROFILE_PATH"]
-      profile_name = ENV["IOS_PROVISIONING_PROFILE_SPECIFIER"]
+      profile_name = SigningConfig.optional_env_value(ENV, "IOS_PROVISIONING_PROFILE_SPECIFIER")
 
       if profile_path && !profile_path.empty?
         UI.user_error!("Provisioning profile not found: #{profile_path}") unless File.exist?(profile_path)
