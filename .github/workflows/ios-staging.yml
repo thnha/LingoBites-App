@@ -15,6 +15,7 @@ jobs:
     name: Build Staging & upload to TestFlight
     runs-on: macos-latest
     timeout-minutes: 60
+    environment: staging
     env:
       ENVFILE: .env.staging
     steps:
