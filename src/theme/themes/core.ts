@@ -35,6 +35,10 @@ export const coreTheme: AppTheme = {
     accentInk: '#ffffff',
     accentSoft: 'rgba(33,112,228,0.12)',
     danger: '#ba1a1a',
+    overlayLight: 'rgba(255,255,255,0.34)',
+    overlay: 'rgba(0,0,0,0.55)',
+    onOverlay: '#ffffff',
+    tertiaryBorder: 'rgba(251,191,36,0.45)',
     text: {
       primary: '#151c27',
       secondary: '#424754',

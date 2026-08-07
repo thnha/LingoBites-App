@@ -36,6 +36,10 @@ export const cartoonTheme: AppTheme = {
     accentInk: '#00413a',
     accentSoft: 'rgba(45,212,191,0.14)',
     danger: '#ba1a1a',
+    overlayLight: 'rgba(255,255,255,0.34)',
+    overlay: 'rgba(0,0,0,0.55)',
+    onOverlay: '#ffffff',
+    tertiaryBorder: 'rgba(254,208,27,0.45)',
     text: {
       primary: '#191c1e',
       secondary: '#3c4a46',

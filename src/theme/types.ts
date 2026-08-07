@@ -35,6 +35,14 @@ export type ColorScale = {
   accentInk: string;
   accentSoft: string;
   danger: string;
+  /** Translucent white "glass" highlight over solid brand-colored surfaces. */
+  overlayLight: string;
+  /** Dark scrim behind captions/text overlaid on arbitrary photos. */
+  overlay: string;
+  /** Text color drawn on top of `overlay`. */
+  onOverlay: string;
+  /** Border for tertiary-tinted callouts (deeper alpha than tertiarySoft). */
+  tertiaryBorder: string;
   text: {
     primary: string;
     secondary: string;

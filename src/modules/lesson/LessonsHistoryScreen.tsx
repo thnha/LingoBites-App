@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {FlatList, Pressable, ScrollView, View} from 'react-native';
+import {FlatList, ScrollView, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -46,11 +46,11 @@ export function LessonsHistoryScreen({navigation}: Props) {
   const [lessons, setLessons] = useState<LibraryLessonCardView[]>(() =>
     useLibraryStore.getState().getLibraryCards(),
   );
-
-  const summary = useMemo(() => useLibraryStore.getState().getSummary(), [lessons]);
+  const [summary, setSummary] = useState(() => useLibraryStore.getState().getSummary());
 
   const refresh = useCallback(() => {
     setLessons(useLibraryStore.getState().getLibraryCards());
+    setSummary(useLibraryStore.getState().getSummary());
   }, []);
 
   useFocusEffect(

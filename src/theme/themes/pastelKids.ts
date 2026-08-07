@@ -33,6 +33,10 @@ export const pastelKidsTheme: AppTheme = {
     accentInk: '#00574d',
     accentSoft: 'rgba(45,212,191,0.16)',
     danger: '#ba1a1a',
+    overlayLight: 'rgba(255,255,255,0.34)',
+    overlay: 'rgba(0,0,0,0.55)',
+    onOverlay: '#ffffff',
+    tertiaryBorder: 'rgba(255,226,76,0.45)',
     text: {
       primary: '#1c1c10',
       secondary: '#3c4a46',

@@ -79,14 +79,14 @@ export function LessonHubView({
           <ImagePlaceholder height={170} label={imageLabel ?? lesson.title} />
           <View
             style={{
-              backgroundColor: 'rgba(0,40,36,0.55)',
+              backgroundColor: theme.colors.overlay,
               bottom: 0,
               left: 0,
               padding: 16,
               position: 'absolute',
               right: 0,
             }}>
-            <AppText style={{color: '#ffffff', fontSize: 22, fontWeight: '600'}}>
+            <AppText style={{color: theme.colors.onOverlay, fontSize: 22, fontWeight: '600'}}>
               {lesson.title}
             </AppText>
             <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8}}>

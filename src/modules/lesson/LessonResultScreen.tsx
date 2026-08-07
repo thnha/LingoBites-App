@@ -9,7 +9,6 @@ import {useFeatureEnabled} from '../../release';
 import {SAVE_LESSON_ERROR_MESSAGE} from '../../shared/copy/userMessages';
 import {findLessonByInputHash, saveLesson} from '../../shared/db/LessonRepository';
 import {computeLessonInputHash} from '../../shared/db/lessonInputHash';
-import {useAppTheme} from '../../theme';
 import {trackEvent} from '../analytics';
 import {LessonHubView} from './LessonHubView';
 import type {LessonSaveState} from './LessonResultView';
@@ -17,7 +16,6 @@ import type {LessonSaveState} from './LessonResultView';
 type Props = NativeStackScreenProps<HomeStackParamList, 'LessonResult'>;
 
 export function LessonResultScreen({navigation, route}: Props) {
-  const {theme} = useAppTheme();
   const {lesson, confirmedText, sourceType} = route.params;
   const practiceEnabled = useFeatureEnabled('shortPractice');
   const practice = lesson.practice ?? [];

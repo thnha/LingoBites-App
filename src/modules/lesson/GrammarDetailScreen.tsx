@@ -163,7 +163,7 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                 style={{
                   alignItems: 'flex-start',
                   backgroundColor: theme.colors.tertiarySoft,
-                  borderColor: 'rgba(255,226,76,0.45)',
+                  borderColor: theme.colors.tertiaryBorder,
                   borderRadius: 18,
                   borderWidth: 1,
                   flexDirection: 'row',

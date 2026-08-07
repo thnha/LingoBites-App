@@ -1,4 +1,4 @@
-import {AI_ANALYSIS_FAILED_MESSAGE, EMPTY_INPUT_MESSAGE} from '../../shared/copy/userMessages';
+import {AI_ANALYSIS_FAILED_MESSAGE} from '../../shared/copy/userMessages';
 import {validFullOutput} from '../../shared/fixtures';
 import {useScanStore} from '../useScanStore';
 

@@ -36,6 +36,10 @@ export const comicTheme: AppTheme = {
     accentInk: '#ffffff',
     accentSoft: '#dbe1ff',
     danger: '#ba1a1a',
+    overlayLight: 'rgba(255,255,255,0.34)',
+    overlay: 'rgba(0,0,0,0.55)',
+    onOverlay: '#ffffff',
+    tertiaryBorder: 'rgba(247,229,66,0.45)',
     text: {
       primary: '#1b1c17',
       secondary: '#434655',

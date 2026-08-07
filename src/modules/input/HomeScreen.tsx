@@ -116,7 +116,7 @@ export function HomeScreen({navigation}: Props) {
           <View
             style={{
               alignItems: 'center',
-              backgroundColor: 'rgba(255,255,255,0.34)',
+              backgroundColor: theme.colors.overlayLight,
               borderRadius: 999,
               height: 84,
               justifyContent: 'center',

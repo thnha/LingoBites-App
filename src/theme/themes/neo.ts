@@ -36,6 +36,10 @@ export const neoTheme: AppTheme = {
     accentInk: '#ffffff',
     accentSoft: '#ede0ff',
     danger: '#ba1a1a',
+    overlayLight: 'rgba(255,255,255,0.34)',
+    overlay: 'rgba(0,0,0,0.55)',
+    onOverlay: '#ffffff',
+    tertiaryBorder: 'rgba(250,204,21,0.45)',
     text: {
       primary: '#1c1c13',
       secondary: '#3a3540',
