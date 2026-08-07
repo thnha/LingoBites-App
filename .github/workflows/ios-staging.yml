@@ -53,7 +53,7 @@ jobs:
         run: |
           set -euo pipefail
           missing=()
-          for var_name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_API_KEY IOS_DEVELOPMENT_TEAM STAGING_API_BASE_URL STAGING_IOS_BUNDLE_ID; do
+          for var_name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_API_KEY IOS_DEVELOPMENT_TEAM IOS_DISTRIBUTION_CERTIFICATE_BASE64 IOS_DISTRIBUTION_CERTIFICATE_PASSWORD IOS_PROVISIONING_PROFILE_BASE64 STAGING_API_BASE_URL STAGING_IOS_BUNDLE_ID; do
             if [ -z "${!var_name:-}" ]; then
               missing+=("$var_name")
             fi
@@ -69,6 +69,9 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.IOS_APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.IOS_APP_STORE_CONNECT_API_KEY }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
           STAGING_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
           STAGING_IOS_BUNDLE_ID: ${{ vars.STAGING_IOS_BUNDLE_ID }}
 
@@ -122,6 +125,28 @@ jobs:
         env:
           STAGING_IOS_BUNDLE_ID: ${{ vars.STAGING_IOS_BUNDLE_ID }}
 
+      - name: Materialize iOS signing files
+        run: |
+          set -euo pipefail
+          umask 077
+          signing_dir="$RUNNER_TEMP/lingobites-signing"
+          certificate_path="$RUNNER_TEMP/lingobites-signing/distribution.p12"
+          profile_path="$RUNNER_TEMP/lingobites-signing/staging.mobileprovision"
+          mkdir -p "$signing_dir"
+
+          printf '%s' "$IOS_DISTRIBUTION_CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
+          printf '%s' "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$profile_path"
+
+          test -s "$certificate_path"
+          test -s "$profile_path"
+          security cms -D -i "$profile_path" >/dev/null
+
+          printf 'IOS_DISTRIBUTION_CERTIFICATE_PATH=%s\n' "$certificate_path" >> "$GITHUB_ENV"
+          printf 'IOS_PROVISIONING_PROFILE_PATH=%s\n' "$profile_path" >> "$GITHUB_ENV"
+        env:
+          IOS_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+
       - name: Build and upload to TestFlight (fastlane ios staging)
         run: bundle exec fastlane ios staging
         env:
@@ -129,16 +154,18 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.IOS_APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.IOS_APP_STORE_CONNECT_API_KEY }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
           APPLE_ID: ${{ secrets.IOS_APPLE_ID }}
           APP_STORE_CONNECT_TEAM_ID: ${{ secrets.IOS_APP_STORE_CONNECT_TEAM_ID }}
-          IOS_PROVISIONING_PROFILE_PATH: ${{ secrets.IOS_PROVISIONING_PROFILE_PATH }}
-          IOS_PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
 
       - name: Cleanup signing material
         if: always()
         run: |
           set -euo pipefail
           rm -f .env.staging ios/tmp.xcconfig ios/.xcode.env.local
+          rm -f "$RUNNER_TEMP/lingobites-signing/distribution.p12"
+          rm -f "$RUNNER_TEMP/lingobites-signing/staging.mobileprovision"
+          rmdir "$RUNNER_TEMP/lingobites-signing" 2>/dev/null || true
           if security list-keychains | grep -q fastlane_tmp_keychain; then
             security delete-keychain fastlane_tmp_keychain || true
           fi

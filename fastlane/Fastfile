@@ -34,7 +34,18 @@ default_platform(:ios)
 
 platform :ios do
   before_all do
-    setup_ci if ENV["CI"]
+    if ENV["CI"]
+      setup_ci
+
+      certificate_options = SigningConfig.certificate_import_options(ENV)
+      import_certificate(
+        certificate_path: certificate_options[:certificate_path],
+        certificate_password: certificate_options[:certificate_password],
+        keychain_name: certificate_options[:keychain_name],
+        keychain_password: certificate_options[:keychain_password],
+        log_output: false
+      )
+    end
   end
 
   desc "Build and upload the Staging app to TestFlight"
@@ -111,7 +122,12 @@ platform :ios do
         decoded_profile, profile_status = Open3.capture2("security", "cms", "-D", "-i", profile_path)
         UI.user_error!("Unable to read provisioning profile: #{profile_path}") unless profile_status.success?
 
-        profile_name = Plist.parse_xml(decoded_profile).fetch("Name")
+        profile = Plist.parse_xml(decoded_profile)
+        profile_name = SigningConfig.validate_profile!(
+          profile,
+          app_identifier: options[:app_identifier],
+          development_team: development_team
+        )
       end
 
       store_profile_name = profile_name || "iOS Team Store Provisioning Profile: #{options[:app_identifier]}"

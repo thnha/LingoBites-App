@@ -17,10 +17,23 @@ Set these as repository (or environment) **secrets** — never commit values, ne
 | `IOS_APP_STORE_CONNECT_ISSUER_ID` | App Store Connect API key issuer id |
 | `IOS_APP_STORE_CONNECT_API_KEY` | Base64-encoded `.p8` App Store Connect API key content |
 | `IOS_DEVELOPMENT_TEAM` | Apple Developer Team ID used for code signing |
+| `IOS_DISTRIBUTION_CERTIFICATE_BASE64` | Base64-encoded Apple Distribution `.p12` containing its private key |
+| `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD` | Password used when the Apple Distribution `.p12` was exported |
+| `IOS_PROVISIONING_PROFILE_BASE64` | Base64-encoded App Store Connect `.mobileprovision` for the staging bundle id |
 | `IOS_APPLE_ID` | Optional. Apple ID, only needed if fastlane falls back to it |
 | `IOS_APP_STORE_CONNECT_TEAM_ID` | Optional. App Store Connect team id, only needed for accounts on multiple teams |
-| `IOS_PROVISIONING_PROFILE_PATH` | Optional. Path to a `.mobileprovision` file if using manual signing |
-| `IOS_PROVISIONING_PROFILE_SPECIFIER` | Optional. Provisioning profile name, only needed with manual signing |
+
+Create the Base64 values on macOS without printing them to the terminal:
+
+```sh
+base64 < "LingoBites-Apple-Distribution.p12" | pbcopy
+base64 < "LingoBites-Staging-AppStore.mobileprovision" | pbcopy
+```
+
+Paste each clipboard value into the corresponding secret in the GitHub
+`staging` environment. The workflow decodes both files under `$RUNNER_TEMP`,
+imports the certificate into Fastlane's temporary keychain, installs the
+provisioning profile, and removes the materialized files during cleanup.
 
 ## Required GitHub variables
 
@@ -64,5 +77,6 @@ gh workflow run ios-staging.yml
 Re-dispatching the workflow is always safe: the build number is derived fresh
 on every run (see above), so a retry never collides with a previous attempt.
 No manual cleanup is required between attempts — the job's cleanup step runs
-`if: always()` and removes the locally materialized `.env.staging` and Xcode
-config files regardless of how the job ended.
+`if: always()` and removes the locally materialized `.env.staging`, Xcode
+config, certificate, provisioning profile, and temporary keychain regardless
+of how the job ended.
