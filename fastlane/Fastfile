@@ -140,12 +140,14 @@ platform :ios do
         "-authenticationKeyIssuerID #{Shellwords.escape(issuer_id)}"
       ].join(" ")
 
-      archive_xcargs = [
-        provisioning_xcargs,
-        profile_name ? "CODE_SIGN_STYLE=Manual" : nil,
-        profile_name ? "PROVISIONING_PROFILE_SPECIFIER=#{Shellwords.escape(profile_name)}" : nil,
-        "DEVELOPMENT_TEAM=#{development_team}"
-      ].compact.join(" ")
+      signing_xcargs = SigningConfig.archive_signing_settings(
+        profile_name: profile_name,
+        development_team: development_team
+      ).map do |name, value|
+        "#{name}=#{Shellwords.escape(value)}"
+      end
+
+      archive_xcargs = ([provisioning_xcargs] + signing_xcargs).join(" ")
 
       build_app(
         workspace: IOS_WORKSPACE,

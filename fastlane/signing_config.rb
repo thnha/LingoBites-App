@@ -33,4 +33,15 @@ module SigningConfig
 
     profile_name
   end
+
+  def self.archive_signing_settings(profile_name:, development_team:)
+    settings = {}
+    if profile_name
+      settings["CODE_SIGN_STYLE"] = "Manual"
+      settings["CODE_SIGN_IDENTITY"] = "Apple Distribution"
+      settings["PROVISIONING_PROFILE_SPECIFIER"] = profile_name
+    end
+    settings["DEVELOPMENT_TEAM"] = development_team
+    settings
+  end
 end

@@ -101,4 +101,29 @@ class SigningConfigTest < Minitest::Test
 
     assert_includes error.message, "com.lingobites.staging"
   end
+
+  def test_archive_signing_settings_use_distribution_identity_for_manual_profile
+    assert_equal(
+      {
+        "CODE_SIGN_STYLE" => "Manual",
+        "CODE_SIGN_IDENTITY" => "Apple Distribution",
+        "PROVISIONING_PROFILE_SPECIFIER" => "LingoBites Staging App Store",
+        "DEVELOPMENT_TEAM" => "TEAM123"
+      },
+      SigningConfig.archive_signing_settings(
+        profile_name: "LingoBites Staging App Store",
+        development_team: "TEAM123"
+      )
+    )
+  end
+
+  def test_archive_signing_settings_leave_identity_automatic_without_manual_profile
+    assert_equal(
+      { "DEVELOPMENT_TEAM" => "TEAM123" },
+      SigningConfig.archive_signing_settings(
+        profile_name: nil,
+        development_team: "TEAM123"
+      )
+    )
+  end
 end
