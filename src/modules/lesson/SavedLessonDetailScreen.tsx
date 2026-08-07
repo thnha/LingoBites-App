@@ -108,14 +108,12 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
   const vocabulary = aiLesson.vocabulary ?? [];
 
   function openFirstSentence() {
-    const sentence = sentences[0];
-    if (!sentence) {
+    if (sentences.length === 0) {
       return;
     }
     drilldownNav.navigate('SentenceDetail', {
-      sentence,
+      sentences,
       index: 0,
-      total: sentences.length,
       practice,
     });
   }

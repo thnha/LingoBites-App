@@ -17,9 +17,8 @@ import type {AnalyzeSourceType} from '../../modules/ai-analysis/types';
  */
 export type LearningDetailParamList = {
   SentenceDetail: {
-    sentence: Sentence;
+    sentences: Sentence[];
     index: number;
-    total: number;
     practice: PracticeQuestion[];
   };
   WordDetail: {word: VocabularyItem; practice: PracticeQuestion[]};

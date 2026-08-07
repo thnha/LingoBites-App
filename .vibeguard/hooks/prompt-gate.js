@@ -31,6 +31,17 @@ logEvent({
   preview: prompt.slice(0, 200)
 });
 
+const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+mirrorEvent(getMirrorClient(), {
+  sessionId,
+  workspaceId: projectDir(),
+  repositoryId: projectDir(),
+  agentId: "agt_claude-code",
+  taskId: sessionId,
+  eventType: "prompt.submitted",
+  payload: { chars: prompt.length, complex: result.complex, vague: result.vague }
+}).catch(() => {});
+
 if (result.complex) {
   console.log(
     [

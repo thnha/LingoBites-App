@@ -45,6 +45,17 @@ if (gitMatch) {
   }
 
   logEvent(event);
+
+  const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+  mirrorEvent(getMirrorClient(), {
+    sessionId,
+    workspaceId: projectDir(),
+    repositoryId: projectDir(),
+    agentId: "agt_claude-code",
+    taskId: sessionId,
+    eventType: "git.operation",
+    payload: { action: event.action, sha: event.sha }
+  }).catch(() => {});
 }
 
 if (depMatch) {

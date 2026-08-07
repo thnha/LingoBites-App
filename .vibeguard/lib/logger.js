@@ -43,22 +43,21 @@ function logEvent(event) {
   fs.appendFileSync(file, JSON.stringify(safeEvent) + "\n", "utf8");
 }
 
-/** Read all events, skipping invalid lines. */
+/** Read all events from the current and (if present) previously rotated log, skipping invalid lines. */
 function readEvents() {
-  const file = path.join(logsDir(), "events.jsonl");
-  if (!fs.existsSync(file)) return [];
-  return fs
-    .readFileSync(file, "utf8")
-    .split("\n")
-    .filter(Boolean)
-    .map((l) => {
+  const dir = logsDir();
+  const events = [];
+  for (const name of ["events.jsonl.1", "events.jsonl"]) {
+    const file = path.join(dir, name);
+    if (!fs.existsSync(file)) continue;
+    for (const line of fs.readFileSync(file, "utf8").split("\n")) {
+      if (!line.trim()) continue;
       try {
-        return JSON.parse(l);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+        events.push(JSON.parse(line));
+      } catch { /* Skip one malformed record without losing the file. */ }
+    }
+  }
+  return events;
 }
 
 /** Read JSON from stdin (Claude Code passes hook input through stdin). */

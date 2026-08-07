@@ -40,4 +40,15 @@ logEvent({
   size_hint: sizeHint
 });
 
+const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+mirrorEvent(getMirrorClient(), {
+  sessionId,
+  workspaceId: projectDir(),
+  repositoryId: projectDir(),
+  agentId: "agt_claude-code",
+  taskId: sessionId,
+  eventType: "file.changed",
+  payload: { path: rel, changeType: toolName }
+}).catch(() => {});
+
 process.exit(0);

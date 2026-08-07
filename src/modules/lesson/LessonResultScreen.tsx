@@ -76,14 +76,12 @@ export function LessonResultScreen({navigation, route}: Props) {
   }
 
   function openFirstSentence() {
-    const sentence = sentences[0];
-    if (!sentence) {
+    if (sentences.length === 0) {
       return;
     }
     navigation.navigate('SentenceDetail', {
-      sentence,
+      sentences,
       index: 0,
-      total: sentences.length,
       practice,
     });
   }

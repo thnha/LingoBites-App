@@ -42,7 +42,7 @@ describe('learning detail screens', () => {
     const route = {
       key: 'SentenceDetail',
       name: 'SentenceDetail',
-      params: {sentence, index: 0, total: 1, practice: validFullOutput.practice},
+      params: {sentences: validFullOutput.sentences, index: 0, practice: validFullOutput.practice},
     } as React.ComponentProps<typeof SentenceDetailScreen>['route'];
 
     const tree = render(<SentenceDetailScreen navigation={navigation} route={route} />);

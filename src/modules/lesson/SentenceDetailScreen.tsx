@@ -27,8 +27,11 @@ type Props =
 export function SentenceDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const nav = navigation as NativeStackScreenProps<HomeStackParamList, 'SentenceDetail'>['navigation'];
-  const {sentence, index, total, practice} = route.params;
+  const {sentences, index, practice} = route.params;
+  const sentence = sentences[index];
+  const total = sentences.length;
   const chunks = sentence.breakdown ?? [];
+  const isLastSentence = index + 1 >= total;
   const hasPractice = practice.length > 0;
   const progress = (index + 1) / Math.max(total, 1);
 
@@ -105,7 +108,11 @@ export function SentenceDetailScreen({navigation, route}: Props) {
       <HandoffDualActionBar
         onBack={() => navigation.goBack()}
         onContinue={
-          hasPractice ? () => nav.navigate('Practice', {questions: practice}) : undefined
+          isLastSentence
+            ? hasPractice
+              ? () => nav.navigate('Practice', {questions: practice})
+              : undefined
+            : () => nav.navigate('SentenceDetail', {sentences, index: index + 1, practice})
         }
       />
     </AppScreen>
