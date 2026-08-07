@@ -1,0 +1,143 @@
+name: iOS Staging TestFlight
+
+# Manual dispatch only. There is intentionally no push/PR/tag trigger and no
+# input that can select a production scheme/bundle id — this workflow only
+# ever builds the Staging scheme via `fastlane ios staging`.
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: ios-staging-testflight
+  cancel-in-progress: false
+
+jobs:
+  build-and-upload:
+    name: Build Staging & upload to TestFlight
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      ENVFILE: .env.staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: yarn
+
+      - name: Setup Ruby (bundler)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.4'
+          bundler-cache: true
+
+      - name: Install JS dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Ruby gems
+        run: bundle install
+
+      - name: Install CocoaPods
+        run: bundle exec pod install --project-directory=ios
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test -- --passWithNoTests
+
+      - name: Verify required secrets and vars are present
+        run: |
+          set -euo pipefail
+          missing=()
+          for var_name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_API_KEY IOS_DEVELOPMENT_TEAM STAGING_API_BASE_URL STAGING_IOS_BUNDLE_ID; do
+            if [ -z "${!var_name:-}" ]; then
+              missing+=("$var_name")
+            fi
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "Missing required secrets/vars:" >&2
+            printf '  - %s\n' "${missing[@]}" >&2
+            exit 1
+          fi
+          echo "All required secrets/vars are present."
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.IOS_APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.IOS_APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.IOS_APP_STORE_CONNECT_API_KEY }}
+          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          STAGING_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          STAGING_IOS_BUNDLE_ID: ${{ vars.STAGING_IOS_BUNDLE_ID }}
+
+      - name: Materialize .env.staging
+        # .env.staging is gitignored and never committed (see .gitignore). It is
+        # rebuilt every run from the already-committed .env.example template so its
+        # key set/format can't drift from what react-native-config expects, with
+        # only the staging-specific values overridden. None of these overrides are
+        # credentials (bundle id, app name, icon, API base URL are all visible in
+        # the shipped app / its network traffic), so they come from repository
+        # *variables* (vars.*, unmasked) rather than secrets — masking them would
+        # only make build logs harder to debug for no confidentiality benefit.
+        # Real credentials (App Store Connect key, signing team) stay in secrets.*
+        # and are never written to this file.
+        run: |
+          set -euo pipefail
+          cp .env.example .env.staging
+          sed -i '' \
+            -e "s|^APP_ENV=.*|APP_ENV=staging|" \
+            -e "s|^APP_NAME=.*|APP_NAME=LingoBites Staging|" \
+            -e "s|^API_BASE_URL=.*|API_BASE_URL=${STAGING_API_BASE_URL}|" \
+            -e "s|^USE_MOCK_AI=.*|USE_MOCK_AI=false|" \
+            -e "s|^USE_MOCK_OCR=.*|USE_MOCK_OCR=false|" \
+            -e "s|^IOS_BUNDLE_ID=.*|IOS_BUNDLE_ID=${STAGING_IOS_BUNDLE_ID}|" \
+            -e "s|^IOS_APP_ICON_NAME=.*|IOS_APP_ICON_NAME=AppIconStaging|" \
+            .env.staging
+        env:
+          STAGING_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          STAGING_IOS_BUNDLE_ID: ${{ vars.STAGING_IOS_BUNDLE_ID }}
+
+      - name: Generate Xcode build config from .env.staging
+        run: |
+          set -euo pipefail
+          ruby ./node_modules/react-native-config/ios/ReactNativeConfig/BuildXCConfig.rb . ios/tmp.xcconfig
+
+      - name: Preflight - assert staging bundle id (not production)
+        run: |
+          set -euo pipefail
+          resolved="$(xcodebuild -workspace ios/ScanLearnEnglish.xcworkspace -scheme Staging -configuration ReleaseStag -showBuildSettings 2>/dev/null | grep PRODUCT_BUNDLE_IDENTIFIER | awk '{print $3}')"
+          echo "Resolved bundle id: $resolved"
+          if [ "$resolved" != "$STAGING_IOS_BUNDLE_ID" ]; then
+            echo "Resolved bundle id '$resolved' does not match expected staging bundle id '$STAGING_IOS_BUNDLE_ID'. Aborting." >&2
+            exit 1
+          fi
+          case "$resolved" in
+            *prod*|*Production*)
+              echo "Resolved bundle id '$resolved' looks like a production identifier. Aborting." >&2
+              exit 1
+              ;;
+          esac
+        env:
+          STAGING_IOS_BUNDLE_ID: ${{ vars.STAGING_IOS_BUNDLE_ID }}
+
+      - name: Build and upload to TestFlight (fastlane ios staging)
+        run: bundle exec fastlane ios staging
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.IOS_APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.IOS_APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.IOS_APP_STORE_CONNECT_API_KEY }}
+          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          APPLE_ID: ${{ secrets.IOS_APPLE_ID }}
+          APP_STORE_CONNECT_TEAM_ID: ${{ secrets.IOS_APP_STORE_CONNECT_TEAM_ID }}
+          IOS_PROVISIONING_PROFILE_PATH: ${{ secrets.IOS_PROVISIONING_PROFILE_PATH }}
+          IOS_PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
+
+      - name: Cleanup signing material
+        if: always()
+        run: |
+          set -euo pipefail
+          rm -f .env.staging ios/tmp.xcconfig ios/.xcode.env.local
+          if security list-keychains | grep -q fastlane_tmp_keychain; then
+            security delete-keychain fastlane_tmp_keychain || true
+          fi
