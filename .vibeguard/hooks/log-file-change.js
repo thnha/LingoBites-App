@@ -5,7 +5,9 @@
  * Runs AFTER every successful AI file creation or edit.
  * Records the file, tool, time, and session to show where the AI made changes.
  */
+const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { logEvent, readStdinJSON, projectDir } = require("../lib/logger");
 
 const input = readStdinJSON();
@@ -40,6 +42,14 @@ logEvent({
   size_hint: sizeHint
 });
 
+// Hash the file's current content so the control plane can update its
+// code-state tree hash. Unreadable (e.g. concurrently deleted) files simply
+// omit the hash; the control plane skips code-state updates for that event.
+let contentHash = null;
+try {
+  contentHash = crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
+} catch { /* File unreadable at mirror time; omit the hash. */ }
+
 const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
 mirrorEvent(getMirrorClient(), {
   sessionId,
@@ -48,7 +58,7 @@ mirrorEvent(getMirrorClient(), {
   agentId: "agt_claude-code",
   taskId: sessionId,
   eventType: "file.changed",
-  payload: { path: rel, changeType: toolName }
+  payload: { path: rel, changeType: toolName, contentHash }
 }).catch(() => {});
 
 process.exit(0);

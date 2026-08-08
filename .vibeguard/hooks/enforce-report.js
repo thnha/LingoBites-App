@@ -12,7 +12,7 @@
  */
 const fs = require("fs");
 const path = require("path");
-const { readStdinJSON, readEvents, reportsDir } = require("../lib/logger");
+const { readStdinJSON, readEvents, reportsDir, projectDir } = require("../lib/logger");
 
 const input = readStdinJSON();
 const sessionId = input.session_id || "unknown";
@@ -32,7 +32,25 @@ if (changes.length === 0) process.exit(0);
 const reportPath = path.join(reportsDir(), `${sessionId}.md`);
 
 // An existing report allows completion.
-if (fs.existsSync(reportPath)) process.exit(0);
+if (fs.existsSync(reportPath)) {
+  let content = "Session report written.";
+  try {
+    content = fs.readFileSync(reportPath, "utf8").slice(0, 500);
+  } catch { /* Report unreadable at mirror time; use the fallback summary. */ }
+
+  const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+  mirrorEvent(getMirrorClient(), {
+    sessionId,
+    workspaceId: projectDir(),
+    repositoryId: projectDir(),
+    agentId: "agt_claude-code",
+    taskId: sessionId,
+    eventType: "agent.claim_made",
+    payload: { claimType: "completion", content }
+  }).catch(() => {});
+
+  process.exit(0);
+}
 
 // No report yet: block completion and require Claude to write one.
 const files = [...new Set(changes.map((c) => c.file))];
