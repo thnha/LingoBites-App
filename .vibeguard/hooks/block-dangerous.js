@@ -38,6 +38,26 @@ for (const src of dangerousPatterns || []) {
       command: command.slice(0, 300),
       pattern: src
     });
+
+    const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+    const { computeFingerprint } = require("../lib/control-plane/policy-engine");
+    const actionFingerprint = computeFingerprint({ sessionId, toolName: "Bash", normalizedTarget: command.slice(0, 300) });
+    mirrorEvent(getMirrorClient(), {
+      sessionId,
+      workspaceId: projectDir(),
+      repositoryId: projectDir(),
+      agentId: "agt_claude-code",
+      taskId: sessionId,
+      eventType: "policy.decision_recorded",
+      payload: {
+        actionFingerprint,
+        category: "destructive_command",
+        result: "block",
+        reasons: [`matched dangerous pattern: ${src}`],
+        policyProfile: "Guarded"
+      }
+    }).catch(() => {});
+
     process.stderr.write(
       [
         "[VIBEGUARD] This command is BLOCKED because it matches a configured dangerous pattern:",

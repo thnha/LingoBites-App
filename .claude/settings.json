@@ -28,6 +28,15 @@
             "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/log-git.js\""
           }
         ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/log-file-read.js\""
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -59,6 +68,15 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/block-dangerous.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/policy-gate.js\""
           }
         ]
       }
