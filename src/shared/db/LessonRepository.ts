@@ -1,8 +1,10 @@
 import {validateAIOutput} from '../schemas/ai-output-v1';
+import type {AIOutput} from '../schemas/ai-output-v1';
 import {createRequestId} from '../api/requestId';
 import {getOrCreateAnonymousUserId} from './anonymousUserId';
 import {getDatabase} from './database';
 import {computeLessonInputHash} from './lessonInputHash';
+import type {LessonSubjectKey} from '../../types/lesson';
 import type {
   LessonListItem,
   SaveLessonInput,
@@ -22,10 +24,15 @@ type LessonRow = {
   summary: string | null;
   level: string;
   ai_output_json: string;
+  category: string;
   is_saved: number;
   created_at: string;
   updated_at: string;
 };
+
+function deriveLessonCategory(lesson: AIOutput): LessonSubjectKey {
+  return lesson.grammar_points.length > lesson.vocabulary.length ? 'grammar' : 'vocabulary';
+}
 
 function mapRowToRecord(row: LessonRow): SavedLessonRecord | null {
   let parsed: unknown;
@@ -52,6 +59,7 @@ function mapRowToRecord(row: LessonRow): SavedLessonRecord | null {
     summary: row.summary,
     level: row.level,
     aiOutput: validation.data,
+    category: row.category as LessonSubjectKey,
     isSaved: row.is_saved === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -108,13 +116,14 @@ export function saveLesson(input: SaveLessonInput): SaveLessonResult {
     const now = new Date().toISOString();
     const lessonId = createRequestId();
     const anonymousUserId = getOrCreateAnonymousUserId();
+    const category = deriveLessonCategory(lesson);
 
     db.execute(
       `INSERT INTO lessons (
         id, anonymous_user_id, lesson_input_hash, title, source_type,
         ocr_raw_text, confirmed_text, vietnamese_translation, summary, level,
-        ai_output_json, is_saved, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        ai_output_json, is_saved, created_at, updated_at, category
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         lessonId,
         anonymousUserId,
@@ -130,6 +139,7 @@ export function saveLesson(input: SaveLessonInput): SaveLessonResult {
         1,
         now,
         now,
+        category,
       ],
     );
 
@@ -185,6 +195,7 @@ export function listLessons(limit?: number): LessonListItem[] {
       summary: record.summary,
       previewText: previewText(record.confirmedText),
       vocabularyCount: record.aiOutput.vocabulary?.length ?? 0,
+      category: record.category,
       createdAt: record.createdAt,
     });
   }

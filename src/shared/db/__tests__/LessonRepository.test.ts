@@ -81,4 +81,57 @@ describe('LessonRepository', () => {
     clearAllLocalData();
     expect(listLessons()).toHaveLength(0);
   });
+
+  it('derives vocabulary category when vocabulary count >= grammar count', () => {
+    const result = saveLesson({
+      confirmedText: validFullOutput.original_text,
+      sourceType: 'paste_text',
+      lesson: validFullOutput,
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+
+    const loaded = getLessonById(result.lessonId);
+    expect(loaded?.category).toBe('vocabulary');
+  });
+
+  it('derives grammar category when grammar_points outnumber vocabulary', () => {
+    const grammarHeavy = {
+      ...validFullOutput,
+      grammar_points: [
+        ...validFullOutput.grammar_points,
+        ...validFullOutput.grammar_points,
+        ...validFullOutput.grammar_points,
+      ],
+    };
+
+    const result = saveLesson({
+      confirmedText: grammarHeavy.original_text,
+      sourceType: 'paste_text',
+      lesson: grammarHeavy,
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+
+    const loaded = getLessonById(result.lessonId);
+    expect(loaded?.category).toBe('grammar');
+  });
+
+  it('exposes category on listLessons() items', () => {
+    saveLesson({
+      confirmedText: validFullOutput.original_text,
+      sourceType: 'paste_text',
+      lesson: validFullOutput,
+    });
+
+    const items = listLessons();
+    expect(items).toHaveLength(1);
+    expect(items[0].category).toBe('vocabulary');
+  });
 });

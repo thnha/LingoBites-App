@@ -38,6 +38,7 @@ function createMockDatabase() {
         is_saved: params[11],
         created_at: params[12],
         updated_at: params[13],
+        category: params[14],
       });
       return {rowsAffected: 1, insertId: lessons.length};
     }
