@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
+import {ActivityIndicator, Text} from 'react-native';
 import {FeatureFlagProvider} from '../../../release';
 import {NETWORK_LOST_MESSAGE} from '../../../shared/copy/userMessages';
 import type {AnalysisJobStage} from '../../../shared/api/types';
@@ -66,7 +67,7 @@ async function wait(ms: number) {
 
 function textContent(root: ReactTestRenderer.ReactTestInstance): string {
   return root
-    .findAllByType('Text')
+    .findAllByType(Text)
     .map(node => node.props.children)
     .flat(Infinity)
     .join(' ');
@@ -305,7 +306,7 @@ describe('AnalyzingScreen', () => {
       });
 
       const checkMarks = renderer.root
-        .findAllByType('Text')
+        .findAllByType(Text)
         .filter(node => node.props.children === '✓');
       expect(checkMarks.length).toBe(2);
     });
@@ -325,7 +326,7 @@ describe('AnalyzingScreen', () => {
         });
       });
 
-      const activeIndicators = renderer.root.findAllByType('ActivityIndicator');
+      const activeIndicators = renderer.root.findAllByType(ActivityIndicator);
       // sentence_analysis (processing) + learning_points (retrying) +
       // pronunciation (failed) => three simultaneously active rows.
       expect(activeIndicators.length).toBe(3);
@@ -344,10 +345,10 @@ describe('AnalyzingScreen', () => {
       // Only source_analysis is active; the remaining five (sentence_analysis
       // explicitly pending, and four more entirely omitted from the payload)
       // must render as pending: no check mark, no ActivityIndicator.
-      const activeIndicators = renderer.root.findAllByType('ActivityIndicator');
+      const activeIndicators = renderer.root.findAllByType(ActivityIndicator);
       expect(activeIndicators.length).toBe(1);
       const checkMarks = renderer.root
-        .findAllByType('Text')
+        .findAllByType(Text)
         .filter(node => node.props.children === '✓');
       expect(checkMarks.length).toBe(0);
     });
@@ -383,7 +384,7 @@ describe('AnalyzingScreen', () => {
 
     expect(textContent(renderer.root)).toContain('100%');
     const checkMarks = renderer.root
-      .findAllByType('Text')
+      .findAllByType(Text)
       .filter(node => node.props.children === '✓');
     expect(checkMarks.length).toBe(STAGE_LABELS.length);
     expect(mockReset).not.toHaveBeenCalled();

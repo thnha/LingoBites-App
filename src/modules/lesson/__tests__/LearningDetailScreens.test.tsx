@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {FeatureFlagProvider} from '../../../release';
 import {validFullOutput} from '../../../shared/fixtures';
-import type {HomeStackParamList} from '../../../app/navigation/types';
+import type {LessonsStackParamList} from '../../../app/navigation/types';
 import {AppThemeProvider} from '../../../theme';
 import {GrammarDetailScreen} from '../GrammarDetailScreen';
 import {SentenceDetailScreen} from '../SentenceDetailScreen';
@@ -12,7 +12,14 @@ import {WordDetailScreen} from '../WordDetailScreen';
 const navigation = {
   goBack: jest.fn(),
   navigate: jest.fn(),
-} as unknown as NativeStackNavigationProp<HomeStackParamList, never>;
+};
+
+function testNavigation<RouteName extends keyof LessonsStackParamList>() {
+  return navigation as unknown as NativeStackScreenProps<
+    LessonsStackParamList,
+    RouteName
+  >['navigation'];
+}
 
 function render(node: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
@@ -45,7 +52,12 @@ describe('learning detail screens', () => {
       params: {sentences: validFullOutput.sentences, index: 0, practice: validFullOutput.practice},
     } as React.ComponentProps<typeof SentenceDetailScreen>['route'];
 
-    const tree = render(<SentenceDetailScreen navigation={navigation} route={route} />);
+    const tree = render(
+      <SentenceDetailScreen
+        navigation={testNavigation<'SentenceDetail'>()}
+        route={route}
+      />,
+    );
     expect(hasText(tree, sentence.original)).toBe(true);
     expect(hasText(tree, 'Tách thành cụm')).toBe(true);
   });
@@ -58,7 +70,12 @@ describe('learning detail screens', () => {
       params: {word, practice: validFullOutput.practice},
     } as React.ComponentProps<typeof WordDetailScreen>['route'];
 
-    const tree = render(<WordDetailScreen navigation={navigation} route={route} />);
+    const tree = render(
+      <WordDetailScreen
+        navigation={testNavigation<'WordDetail'>()}
+        route={route}
+      />,
+    );
     expect(hasText(tree, word.word)).toBe(true);
     expect(hasText(tree, word.meaning_vi)).toBe(true);
   });
@@ -71,7 +88,12 @@ describe('learning detail screens', () => {
       params: {grammar, related: validFullOutput.grammar_points, practice: validFullOutput.practice},
     } as React.ComponentProps<typeof GrammarDetailScreen>['route'];
 
-    const tree = render(<GrammarDetailScreen navigation={navigation} route={route} />);
+    const tree = render(
+      <GrammarDetailScreen
+        navigation={testNavigation<'GrammarDetail'>()}
+        route={route}
+      />,
+    );
     expect(hasText(tree, grammar.name)).toBe(true);
     expect(hasText(tree, grammar.explanation_vi)).toBe(true);
   });

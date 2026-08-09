@@ -4,16 +4,12 @@ import type {LessonListItem} from '../shared/db/types';
 import type {ChipTone} from '../components/Chip';
 import type {LessonCardView, LessonSubjectKey, LibraryLessonCardView} from '../types/lesson';
 
-const SUBJECT_ROTATION: Array<{
-  key: LessonSubjectKey;
-  label: string;
-  tone: ChipTone;
-}> = [
-  {key: 'grammar', label: 'Ngữ pháp', tone: 'accentSoft'},
-  {key: 'vocabulary', label: 'Từ vựng', tone: 'gold'},
-  {key: 'idioms', label: 'Thành ngữ', tone: 'coralSoft'},
-  {key: 'conversation', label: 'Hội thoại', tone: 'accentSoft'},
-];
+const CATEGORY_META: Record<LessonSubjectKey, {label: string; tone: ChipTone}> = {
+  grammar: {label: 'Ngữ pháp', tone: 'accentSoft'},
+  vocabulary: {label: 'Từ vựng', tone: 'gold'},
+  idioms: {label: 'Thành ngữ', tone: 'coralSoft'},
+  conversation: {label: 'Hội thoại', tone: 'accentSoft'},
+};
 
 export type LibrarySubjectFilter = 'all' | LessonSubjectKey;
 
@@ -25,8 +21,8 @@ function estimateDurationMin(vocabularyCount: number): number {
   return Math.max(5, Math.ceil(vocabularyCount / 8));
 }
 
-function toCardView(item: LessonListItem, index: number): LibraryLessonCardView {
-  const subject = SUBJECT_ROTATION[index % SUBJECT_ROTATION.length];
+function toCardView(item: LessonListItem): LibraryLessonCardView {
+  const subject = CATEGORY_META[item.category];
   return {
     id: item.id,
     title: item.title,
@@ -36,7 +32,7 @@ function toCardView(item: LessonListItem, index: number): LibraryLessonCardView 
     durationMin: estimateDurationMin(item.vocabularyCount),
     subjectLabel: subject.label,
     subjectTone: subject.tone,
-    subjectKey: subject.key,
+    subjectKey: item.category,
   };
 }
 
@@ -62,9 +58,8 @@ type LibraryStore = {
 function listFilteredItems(query: string, subjectFilter: LibrarySubjectFilter): LessonListItem[] {
   const q = query.trim().toLowerCase();
   const items = listLessons();
-  return items.filter((item, index) => {
-    const subjectKey = SUBJECT_ROTATION[index % SUBJECT_ROTATION.length].key;
-    if (subjectFilter !== 'all' && subjectKey !== subjectFilter) {
+  return items.filter(item => {
+    if (subjectFilter !== 'all' && item.category !== subjectFilter) {
       return false;
     }
     if (!q) {
@@ -93,11 +88,7 @@ export const useLibraryStore = create<LibraryStore>((set, get) => ({
 
   getLibraryCards() {
     const {query, subjectFilter} = get();
-    const items = listLessons();
-    return listFilteredItems(query, subjectFilter).map(item => {
-      const index = items.findIndex(entry => entry.id === item.id);
-      return toCardView(item, Math.max(index, 0));
-    });
+    return listFilteredItems(query, subjectFilter).map(toCardView);
   },
 
   getHomeCards(limit?: number) {

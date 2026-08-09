@@ -1,5 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
+import type {DimensionValue} from 'react-native';
 import {AppText} from './AppText';
 import {useAppTheme} from '../theme';
 
@@ -10,7 +11,7 @@ type Props = {
 
 export function HandoffProgressTrack({progress, label}: Props) {
   const {theme} = useAppTheme();
-  const width = `${Math.round(Math.min(Math.max(progress, 0), 1) * 100)}%`;
+  const width = `${Math.round(Math.min(Math.max(progress, 0), 1) * 100)}%` as DimensionValue;
 
   return (
     <View style={{alignItems: 'center', flexDirection: 'row', gap: 12}}>

@@ -57,7 +57,7 @@ export function LessonExploreRow({
       }}>
       {badge ? (
         <View style={{position: 'absolute', right: 14, top: 10, zIndex: 1}}>
-          <Chip label={badge} tone="coral" />
+          <Chip label={badge} tone="coralSoft" />
         </View>
       ) : null}
       <View
