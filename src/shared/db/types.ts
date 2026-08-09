@@ -1,4 +1,5 @@
 import type {AIOutput} from '../schemas/ai-output-v1';
+import type {LessonSubjectKey} from '../../types/lesson';
 
 export type LessonSourceType = 'camera' | 'gallery' | 'paste_text';
 
@@ -14,6 +15,7 @@ export type SavedLessonRecord = {
   summary: string | null;
   level: string;
   aiOutput: AIOutput;
+  category: LessonSubjectKey;
   isSaved: boolean;
   createdAt: string;
   updatedAt: string;
@@ -25,6 +27,7 @@ export type LessonListItem = {
   summary: string | null;
   previewText: string;
   vocabularyCount: number;
+  category: LessonSubjectKey;
   createdAt: string;
 };
 

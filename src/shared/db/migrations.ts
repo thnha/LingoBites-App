@@ -24,6 +24,7 @@ const MIGRATIONS = [
     value TEXT NOT NULL,
     updated_at TEXT NOT NULL
   );`,
+  `ALTER TABLE lessons ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT 'vocabulary';`,
 ];
 
 export function runMigrations(db: QuickSQLiteConnection): void {
