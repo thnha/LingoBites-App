@@ -3,18 +3,45 @@
   "complexThreshold": 3,
   "shortPromptChars": 60,
   "bigKeywords": [
-    "refactor", "rewrite", "migrate", "migration", "entire", "all",
-    "database", "schema", "auth", "authentication", "authorization",
-    "architecture", "restructure", "redesign", "integrate", "deployment",
-    "deploy", "ci/cd"
+    "refactor",
+    "rewrite",
+    "migrate",
+    "migration",
+    "entire",
+    "all",
+    "database",
+    "schema",
+    "auth",
+    "authentication",
+    "authorization",
+    "architecture",
+    "restructure",
+    "redesign",
+    "integrate",
+    "deployment",
+    "deploy",
+    "ci/cd"
   ],
   "featureKeywords": [
-    "add feature", "new feature", "feature", "functionality", "implement",
-    "build", "create", "new API", "module"
+    "add feature",
+    "new feature",
+    "feature",
+    "functionality",
+    "implement",
+    "build",
+    "create",
+    "new API",
+    "module"
   ],
   "vagueKeywords": [
-    "fix it", "make it pretty", "optimize", "improve", "clean up", "redo",
-    "fix bug", "make it better"
+    "fix it",
+    "make it pretty",
+    "optimize",
+    "improve",
+    "clean up",
+    "redo",
+    "fix bug",
+    "make it better"
   ],
   "maxLogSizeMB": 5,
   "dangerousPatterns": [
@@ -29,5 +56,8 @@
     "yarn\\s+global\\s+add\\b",
     "pnpm\\s+add\\s+[^|;&]*(-g\\b|--global\\b)",
     "\\bdrop\\s+(table|database)\\b"
-  ]
+  ],
+  "policy": {
+    "profile": "Observe"
+  }
 }

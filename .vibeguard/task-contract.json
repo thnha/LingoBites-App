@@ -1,0 +1,9 @@
+{
+  "issueId": "VIB-79",
+  "inScope": [
+    "test-utils/sqliteMock.js",
+    "src/shared/db/LessonRepository.ts",
+    "src/shared/db/__tests__/LessonRepository.test.ts"
+  ],
+  "outOfScope": []
+}
