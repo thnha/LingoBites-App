@@ -24,11 +24,20 @@ const MIGRATIONS = [
     value TEXT NOT NULL,
     updated_at TEXT NOT NULL
   );`,
-  `ALTER TABLE lessons ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT 'vocabulary';`,
+  `ALTER TABLE lessons ADD COLUMN category TEXT NOT NULL DEFAULT 'vocabulary';`,
 ];
 
 export function runMigrations(db: QuickSQLiteConnection): void {
   for (const sql of MIGRATIONS) {
-    db.execute(sql);
+    try {
+      db.execute(sql);
+    } catch (error) {
+      // Ignore "duplicate column name" errors for ALTER TABLE ADD COLUMN
+      // This makes migrations idempotent since they run on every app launch
+      if (error instanceof Error && error.message.includes('duplicate column name')) {
+        continue;
+      }
+      throw error;
+    }
   }
 }
