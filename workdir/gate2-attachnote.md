@@ -1,0 +1,1 @@
+Full artifacts attached — `vib128-stage4a-wireframes.md` (wireframes + state matrix + responsive rules, VIB-128) and `vib129-stage4b-content-copy.md` (content copy deck + error matrix, VIB-129). See the issue description above for the summary, the 2 decisions needing your input, and the 2 informational items.

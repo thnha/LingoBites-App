@@ -1,0 +1,276 @@
+<!--
+  Ngày tạo: 2026-08-16 (round 1) — cập nhật round 2: 2026-08-17
+  Issue nguồn: VIB-131 (Stage 6 — P1 Flashcards / SRS / Daily Review)
+  Artifact trung gian — không maintain sau khi code xong.
+  Mọi giá trị inline style bên dưới map 1:1 vào src/theme/themes/default.ts (defaultTheme).
+  Copy tiếng Việt lấy nguyên văn từ vib129-stage4b-content-copy.md — không diễn đạt lại.
+  Round 2: fixes Stage 7 review (VIB-132) H1/H2/M1/M2 — see vib131-stage6-ui-spec.md "Round 2 revision log".
+-->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>VIB-131 — Stage 6 HTML Handoff — P1 Flashcards/SRS/Daily Review</title>
+<style>
+  body { margin: 0; padding: 24px; background: #e7e5d2; font-family: -apple-system, Roboto, sans-serif; }
+  .frame { width: 375px; background: #fcfae6; border-radius: 32px; overflow: hidden; margin: 0 0 40px 0; box-shadow: 0 8px 24px rgba(0,0,0,0.18); border: 8px solid #1c1c10; }
+  .frame-label { font: 700 13px/18px monospace; color: #1c1c10; margin: 0 0 8px 2px; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .section-title { font: 800 20px/26px sans-serif; color: #1c1c10; margin: 40px 0 12px 0; border-bottom: 2px solid #bacac5; padding-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div style="background:#ffe24c; border:2px solid #6d5e00; border-radius:12px; padding:16px 20px; margin-bottom:32px; max-width:900px; font: 600 14px/22px sans-serif; color:#6d5e00;">
+  Ngày tạo: 2026-08-16 (round 1) &nbsp;·&nbsp; Cập nhật round 2: 2026-08-17 &nbsp;·&nbsp; Issue nguồn: VIB-131 (P1 Flashcards/SRS/Daily Review, Stage 6)<br/>
+  <strong>Artifact trung gian — không maintain sau khi code xong.</strong> File này chỉ mô tả ý đồ UI cho coder; sau khi màn hình được code trong React Native, không cập nhật file HTML này nữa (L1).<br/>
+  Round 2 sửa 4 lỗi từ Stage 7 review (VIB-132): H1 (contrast "Chưa nhớ" ở theme Dark), H2 (mẫu số progress khi capped), M1 (chiều cao FlipCard không nhất quán), M2 (cỡ chữ Banner không nhất quán).
+</div>
+
+<!-- ============================================================ -->
+<div class="section-title">0. Token legend (defaultTheme)</div>
+<table style="border-collapse:collapse; font:14px/20px monospace; color:#1c1c10;">
+<tr><td style="padding:4px 12px;">colors.background</td><td style="padding:4px 12px; background:#fcfae6;">#fcfae6</td>
+<td style="padding:4px 12px;">colors.primary</td><td style="padding:4px 12px; background:#006b5f; color:#fff;">#006b5f</td>
+<td style="padding:4px 12px;">colors.accent</td><td style="padding:4px 12px; background:#2dd4bf;">#2dd4bf</td></tr>
+<tr><td style="padding:4px 12px;">colors.surface</td><td style="padding:4px 12px; background:#ffffff; border:1px solid #bacac5;">#ffffff</td>
+<td style="padding:4px 12px;">colors.surfaceHigh</td><td style="padding:4px 12px; background:#ebe9d5;">#ebe9d5</td>
+<td style="padding:4px 12px;">colors.tertiarySoft</td><td style="padding:4px 12px; background:rgba(255,226,76,0.22);">rgba(255,226,76,.22)</td></tr>
+<tr><td style="padding:4px 12px;">colors.text.primary</td><td style="padding:4px 12px; background:#1c1c10; color:#fff;">#1c1c10</td>
+<td style="padding:4px 12px;">colors.secondaryContainer</td><td style="padding:4px 12px; background:#fe7488;">#fe7488</td>
+<td style="padding:4px 12px;">colors.danger</td><td style="padding:4px 12px; background:#ba1a1a; color:#fff;">#ba1a1a</td></tr>
+<tr><td style="padding:4px 12px;">colors.text.secondary</td><td style="padding:4px 12px; background:#3c4a46; color:#fff;">#3c4a46</td>
+<td style="padding:4px 12px; colspan:2;" colspan="4">used for RatingControl's "Chưa nhớ" (round 2 / H1 fix — passes AA in all 7 themes, see UI spec §2.2)</td></tr>
+</table>
+<p style="font:13px/20px sans-serif; color:#3c4a46; max-width:700px;">spacing: xs4 sm8 md12 lg16 xl24 xxl48 &nbsp;·&nbsp; radius: sm8 md18 lg24 xl32 pill999 &nbsp;·&nbsp; card: radius24 padding16 shadow-soft &nbsp;·&nbsp; typography: h1 28/34/700, h3 18/24/600, body 16/24/500, label 14/18/600, caption 12/16/600.</p>
+
+<!-- ============================================================ -->
+<div class="section-title">1. New component: FlipCard (SCR-03, reused in SCR-05)</div>
+<div class="row">
+  <div>
+    <p class="frame-label">FlipCard — front</p>
+    <div style="width:311px; min-height:220px; background:#ffffff; border-radius:24px; box-shadow:0 2px 6px rgba(0,107,95,0.12); padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;">
+      <div style="font:700 28px/34px sans-serif; color:#1c1c10;">offer</div>
+      <div style="font:600 12px/16px sans-serif; color:#6b7a76;">Chạm để xem nghĩa</div>
+    </div>
+  </div>
+  <div>
+    <p class="frame-label">FlipCard — back</p>
+    <div style="width:311px; min-height:220px; background:#ffffff; border-radius:24px; box-shadow:0 2px 6px rgba(0,107,95,0.12); padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center;">
+      <div style="font:600 18px/24px sans-serif; color:#1c1c10;">offer</div>
+      <div style="font:500 16px/24px sans-serif; color:#1c1c10;">đề nghị; ưu đãi</div>
+      <div style="font:600 12px/16px sans-serif; color:#6b7a76;">"We are offering a discount"</div>
+      <div style="font:600 12px/16px sans-serif; color:#6b7a76; margin-top:8px;">Chạm để xem từ</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-title">2. New component: RatingControl (SCR-05, back face only)</div>
+<div class="row">
+  <div>
+    <p class="frame-label">RatingControl — normal</p>
+    <div style="width:311px; display:flex; flex-direction:column; gap:8px;">
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1; min-height:48px; border-radius:18px; background:#2dd4bf; color:#00574d; display:flex; align-items:center; justify-content:center; gap:4px; font:600 14px/18px sans-serif;">✓ &nbsp;Nhớ</div>
+        <div style="flex:1; min-height:48px; border-radius:18px; background:#ebe9d5; color:#3c4a46; display:flex; align-items:center; justify-content:center; gap:4px; font:600 14px/18px sans-serif;">↻ &nbsp;Chưa nhớ</div>
+      </div>
+      <div style="min-height:48px; display:flex; align-items:center; justify-content:center; font:600 14px/18px sans-serif; color:#6b7a76;">Bỏ qua</div>
+    </div>
+  </div>
+  <div>
+    <p class="frame-label">RatingControl — disabled (write/retry in flight)</p>
+    <div style="width:311px; display:flex; flex-direction:column; gap:8px; opacity:0.38;">
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1; min-height:48px; border-radius:18px; background:#2dd4bf; color:#00574d; display:flex; align-items:center; justify-content:center; gap:4px; font:600 14px/18px sans-serif;">✓ &nbsp;Nhớ</div>
+        <div style="flex:1; min-height:48px; border-radius:18px; background:#ebe9d5; color:#3c4a46; display:flex; align-items:center; justify-content:center; gap:4px; font:600 14px/18px sans-serif;">↻ &nbsp;Chưa nhớ</div>
+      </div>
+      <div style="min-height:48px; display:flex; align-items:center; justify-content:center; font:600 14px/18px sans-serif; color:#6b7a76;">Bỏ qua</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-title">3. New component: Banner (capped-queue, SCR-05/SCR-07)</div>
+<div style="width:311px; display:flex; align-items:center; gap:8px; padding:8px 16px; background:rgba(255,226,76,0.22); color:#594c00; font:600 14px/18px sans-serif;">
+  <span>ⓘ</span>
+  <span>Hôm nay ôn 8 thẻ. 12 thẻ còn lại sẽ được để dành cho lần ôn sau.</span>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-title">4. Screens</div>
+<div class="row">
+
+  <!-- SCR-04 Home widget -->
+  <div>
+    <p class="frame-label">SCR-04 — Home widget (due &gt; 0)</p>
+    <div class="frame">
+      <div style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <span style="font:700 20px/24px sans-serif; color:#1c1c10;">LingoBites</span>
+          <span>⚙️</span>
+        </div>
+        <div style="font:500 16px/24px sans-serif; color:#1c1c10; margin-bottom:12px;">Hôm nay bạn muốn học từ đâu?</div>
+        <div style="background:#006b5f; color:#fff; border-radius:24px; height:52px; display:flex; align-items:center; justify-content:center; font:700 16px/20px sans-serif; margin-bottom:8px;">📷 Chụp ảnh học ngay</div>
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <div style="flex:1; border:1px solid #bacac5; border-radius:24px; height:48px; display:flex; align-items:center; justify-content:center; color:#006b5f; font:700 14px/18px sans-serif;">🖼 Upload</div>
+          <div style="flex:1; border:1px solid #bacac5; border-radius:24px; height:48px; display:flex; align-items:center; justify-content:center; color:#006b5f; font:700 14px/18px sans-serif;">✍️ Dán text</div>
+        </div>
+        <div style="background:#ffffff; border-radius:24px; padding:16px; box-shadow:0 2px 6px rgba(0,107,95,0.12); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font:600 14px/18px sans-serif; color:#1c1c10;">🔁 Ôn tập hôm nay</div>
+            <div style="font:600 12px/16px sans-serif; color:#3c4a46;">8 flashcard đang chờ ôn</div>
+          </div>
+          <div style="background:#2dd4bf; color:#00574d; border-radius:999px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font:700 14px sans-serif;">8</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCR-02 Flashcard List -->
+  <div>
+    <p class="frame-label">SCR-02 — Flashcard List (normal)</p>
+    <div class="frame">
+      <div style="padding:16px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <span>←</span>
+          <span style="font:700 20px/24px sans-serif; color:#1c1c10; flex:1;">Flashcard</span>
+          <span>⚙️</span>
+        </div>
+        <div style="background:#ffffff; border-radius:18px; box-shadow:0 2px 6px rgba(0,107,95,0.12);">
+          <div style="padding:12px 16px; border-bottom:1px solid #bacac5; display:flex; justify-content:space-between; align-items:center; min-height:48px;">
+            <div><div style="font:600 16px/20px sans-serif; color:#1c1c10;">offer</div><div style="font:600 12px/16px sans-serif; color:#6b7a76;">Từ bài: Special Discount Offer</div></div>
+            <div style="display:flex; align-items:center; gap:8px;"><span style="background:#f0efdb; border-radius:999px; padding:2px 8px; font:600 12px sans-serif; color:#3c4a46;">A2</span><span>🔖</span></div>
+          </div>
+          <div style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; min-height:48px;">
+            <div><div style="font:600 16px/20px sans-serif; color:#1c1c10;">discount</div><div style="font:600 12px/16px sans-serif; color:#6b7a76;">Từ bài: Special Discount Offer</div></div>
+            <div style="display:flex; align-items:center; gap:8px;"><span style="background:#f0efdb; border-radius:999px; padding:2px 8px; font:600 12px sans-serif; color:#3c4a46;">A2</span><span>🔖</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label" style="margin-top:16px;">SCR-02 — Empty (unfiltered)</p>
+    <div class="frame">
+      <div style="padding:16px; display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:64px;">
+        <div style="width:72px; height:72px; border-radius:36px; background:#f6f4e1; border:1px solid #bacac5; display:flex; align-items:center; justify-content:center; font:600 18px sans-serif; margin-bottom:16px;">📚</div>
+        <div style="font:600 18px/24px sans-serif; color:#1c1c10; margin-bottom:8px;">Chưa có flashcard</div>
+        <div style="font:500 16px/24px sans-serif; color:#3c4a46; margin-bottom:16px;">Lưu từ vựng trong một bài học để xem lại tại đây.</div>
+        <div style="background:transparent; border:1px solid #bacac5; color:#006b5f; border-radius:24px; height:48px; padding:0 24px; display:flex; align-items:center; justify-content:center; font:700 16px sans-serif;">Xem bài học</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCR-05 Session -->
+  <div>
+    <p class="frame-label">SCR-05 — Session, back face + rating</p>
+    <div class="frame">
+      <div style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <span style="font:700 18px sans-serif; color:#1c1c10;">✕</span>
+          <span style="font:600 14px sans-serif; color:#3c4a46;">Thẻ 2/8</span>
+        </div>
+        <div style="min-height:220px; background:#ffffff; border-radius:24px; box-shadow:0 2px 6px rgba(0,107,95,0.12); padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-align:center; margin-bottom:16px;">
+          <div style="font:600 18px/24px sans-serif; color:#1c1c10;">offer</div>
+          <div style="font:500 16px/24px sans-serif; color:#1c1c10;">đề nghị; ưu đãi</div>
+          <div style="font:600 12px/16px sans-serif; color:#6b7a76;">Bạn nhớ từ này không?</div>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <div style="flex:1; min-height:48px; border-radius:18px; background:#2dd4bf; color:#00574d; display:flex; align-items:center; justify-content:center; gap:4px; font:600 14px sans-serif;">✓ Nhớ</div>
+          <div style="flex:1; min-height:48px; border-radius:18px; background:#ebe9d5; color:#3c4a46; display:flex; align-items:center; justify-content:center; gap:4px; font:600 14px sans-serif;">↻ Chưa nhớ</div>
+        </div>
+        <div style="min-height:48px; display:flex; align-items:center; justify-content:center; font:600 14px sans-serif; color:#6b7a76;">Bỏ qua</div>
+      </div>
+    </div>
+    <p class="frame-label" style="margin-top:16px;">SCR-05 — Capped-queue variant (Banner)</p>
+    <div class="frame">
+      <div style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font:700 18px sans-serif; color:#1c1c10;">✕</span>
+          <span style="font:600 14px sans-serif; color:#3c4a46;">Thẻ 2/8</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(255,226,76,0.22); color:#594c00; font:600 14px/18px sans-serif; margin-bottom:16px;">
+          <span>ⓘ</span><span>Hôm nay ôn 8 thẻ. 12 thẻ còn lại sẽ được để dành cho lần ôn sau.</span>
+        </div>
+        <div style="min-height:220px; background:#ffffff; border-radius:24px; box-shadow:0 2px 6px rgba(0,107,95,0.12); display:flex; align-items:center; justify-content:center; font:700 24px sans-serif; color:#1c1c10;">offer</div>
+      </div>
+    </div>
+    <p class="frame-label" style="margin-top:16px;">SCR-05 — Rating-write error (ErrorCard, reused as-is)</p>
+    <div class="frame">
+      <div style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <span style="font:700 18px sans-serif; color:#1c1c10;">✕</span>
+          <span style="font:600 14px sans-serif; color:#3c4a46;">Thẻ 2/8</span>
+        </div>
+        <div style="min-height:220px; background:#ffffff; border-radius:24px; box-shadow:0 2px 6px rgba(0,107,95,0.12); display:flex; align-items:center; justify-content:center; font:700 24px sans-serif; color:#1c1c10; margin-bottom:12px;">offer</div>
+        <div style="background:#fe7488; border-radius:24px; padding:16px; display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+          <span style="color:#ba1a1a; font:500 16px sans-serif;">Chưa lưu được lựa chọn. Thử lại để tiếp tục.</span>
+          <div style="border:1px solid #bacac5; border-radius:24px; height:48px; display:flex; align-items:center; justify-content:center; color:#006b5f; font:700 16px sans-serif;">Thử lại</div>
+        </div>
+        <div style="display:flex; gap:8px; opacity:0.38;">
+          <div style="flex:1; min-height:48px; border-radius:18px; background:#2dd4bf; display:flex; align-items:center; justify-content:center; font:600 14px sans-serif; color:#00574d;">✓ Nhớ</div>
+          <div style="flex:1; min-height:48px; border-radius:18px; background:#ebe9d5; display:flex; align-items:center; justify-content:center; font:600 14px sans-serif; color:#3c4a46;">↻ Chưa nhớ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCR-06a/b -->
+  <div>
+    <p class="frame-label">SCR-06a — never saved</p>
+    <div class="frame">
+      <div style="padding:16px; padding-top:64px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+        <div style="width:72px; height:72px; border-radius:36px; background:#f6f4e1; border:1px solid #bacac5; display:flex; align-items:center; justify-content:center; font:600 24px sans-serif; margin-bottom:16px;">📚</div>
+        <div style="font:600 12px/16px sans-serif; color:#6b7a76; margin-bottom:4px;">Bắt đầu với flashcard</div>
+        <div style="font:600 18px/24px sans-serif; color:#1c1c10; margin-bottom:8px;">Chưa có từ nào để ôn</div>
+        <div style="font:500 16px/24px sans-serif; color:#3c4a46; margin-bottom:16px;">Lưu từ vựng trong bài học. Flashcard đầu tiên sẽ sẵn sàng để ôn ngay.</div>
+        <div style="background:#006b5f; color:#fff; border-radius:24px; height:48px; padding:0 24px; display:flex; align-items:center; justify-content:center; font:700 16px sans-serif;">Xem bài học</div>
+      </div>
+    </div>
+    <p class="frame-label" style="margin-top:16px;">SCR-06b — done for today</p>
+    <div class="frame">
+      <div style="padding:16px; padding-top:64px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+        <div style="width:72px; height:72px; border-radius:36px; background:#f6f4e1; border:1px solid #bacac5; display:flex; align-items:center; justify-content:center; font:600 24px sans-serif; margin-bottom:16px;">✅</div>
+        <div style="font:600 12px/16px sans-serif; color:#6b7a76; margin-bottom:4px;">Hoàn thành hôm nay</div>
+        <div style="font:600 18px/24px sans-serif; color:#1c1c10; margin-bottom:8px;">Đã ôn hết rồi!</div>
+        <div style="font:500 16px/24px sans-serif; color:#3c4a46;">Hôm nay không còn flashcard nào đang chờ. Hẹn gặp lại ở lần ôn tiếp theo.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCR-07 -->
+  <div>
+    <p class="frame-label">SCR-07 — Session Summary</p>
+    <div class="frame">
+      <div style="padding:16px; padding-top:64px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+        <div style="font:600 36px sans-serif; margin-bottom:8px;">🎉</div>
+        <div style="font:600 12px/16px sans-serif; color:#6b7a76;">Hoàn thành</div>
+        <div style="font:700 22px/28px sans-serif; color:#1c1c10; margin-bottom:16px;">Ôn tập xong!</div>
+        <div style="font:500 18px/28px sans-serif; color:#1c1c10; margin-bottom:4px;">Đã ôn 8 flashcard</div>
+        <div style="font:500 16px/24px sans-serif; color:#3c4a46; margin-bottom:16px;">6 nhớ &nbsp;·&nbsp; 2 chưa nhớ</div>
+        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(255,226,76,0.22); color:#594c00; font:600 14px/18px sans-serif; margin-bottom:16px; border-radius:8px;">
+          <span>ⓘ</span><span>12 flashcard còn lại sẽ được để dành cho lần ôn sau.</span>
+        </div>
+        <div style="background:#006b5f; color:#fff; border-radius:24px; height:52px; width:100%; display:flex; align-items:center; justify-content:center; font:700 16px sans-serif;">Xong</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- First-save disclosure -->
+  <div>
+    <p class="frame-label">First-save disclosure (D6, blocking dialog)</p>
+    <div class="frame">
+      <div style="padding:16px; height:400px; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;">
+        <div style="background:#ffffff; border-radius:24px; padding:24px; width:100%; display:flex; flex-direction:column; gap:12px;">
+          <div style="font:600 18px/24px sans-serif; color:#1c1c10;">Flashcard được lưu trên thiết bị này</div>
+          <div style="font:500 16px/24px sans-serif; color:#3c4a46;">Flashcard và tiến độ ôn tập hiện chưa được đồng bộ hoặc sao lưu. Dữ liệu có thể mất nếu gỡ cài đặt ứng dụng hoặc đổi, mất thiết bị.</div>
+          <div style="background:#006b5f; color:#fff; border-radius:24px; height:48px; display:flex; align-items:center; justify-content:center; font:700 16px sans-serif;">Đã hiểu</div>
+          <div style="border:1px solid #bacac5; color:#006b5f; border-radius:24px; height:48px; display:flex; align-items:center; justify-content:center; font:700 16px sans-serif;">Huỷ lưu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

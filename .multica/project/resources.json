@@ -1,0 +1,15 @@
+{
+  "project_id": "0e7bf3f1-69d3-4782-badb-3252f9a25220",
+  "project_title": "LingoBites-App",
+  "project_description": "App mobile for english study",
+  "resources": [
+    {
+      "id": "0686f726-2542-4a46-8a36-66b3acf1b505",
+      "resource_type": "local_directory",
+      "resource_ref": {
+        "daemon_id": "019fda31-783b-705d-b91c-f71dcf70c4d0",
+        "local_path": "/Users/nha-tran/Data/projects/LingoBites-App"
+      }
+    }
+  ]
+}
