@@ -1,4 +1,4 @@
-import type {QuickSQLiteConnection} from 'react-native-quick-sqlite';
+import type { QuickSQLiteConnection } from 'react-native-quick-sqlite';
 
 const MIGRATIONS = [
   `CREATE TABLE IF NOT EXISTS lessons (
@@ -25,6 +25,49 @@ const MIGRATIONS = [
     updated_at TEXT NOT NULL
   );`,
   `ALTER TABLE lessons ADD COLUMN category TEXT NOT NULL DEFAULT 'vocabulary';`,
+  `CREATE TABLE IF NOT EXISTS flashcards (
+    id TEXT PRIMARY KEY NOT NULL,
+    lesson_id TEXT NOT NULL,
+    vocabulary_id TEXT NOT NULL,
+    word TEXT NOT NULL,
+    phrase_from_text TEXT,
+    word_type TEXT,
+    meaning_vi TEXT NOT NULL,
+    pronunciation_guide_vi TEXT,
+    ipa TEXT,
+    cefr_level TEXT,
+    source_sentence TEXT,
+    example TEXT,
+    example_translation TEXT,
+    is_saved INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE (lesson_id, vocabulary_id)
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_flashcards_lesson_id ON flashcards (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_flashcards_is_saved ON flashcards (is_saved);`,
+  `CREATE TABLE IF NOT EXISTS review_schedule (
+    card_id TEXT PRIMARY KEY NOT NULL,
+    lesson_id TEXT NOT NULL,
+    interval_days INTEGER NOT NULL,
+    next_review_at TEXT NOT NULL,
+    last_reviewed_at TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_review_schedule_due ON review_schedule (next_review_at);`,
+  `CREATE TABLE IF NOT EXISTS review_sessions (
+    id TEXT PRIMARY KEY NOT NULL,
+    card_id TEXT NOT NULL,
+    lesson_id TEXT NOT NULL,
+    rating TEXT NOT NULL,
+    reviewed_at TEXT NOT NULL,
+    interval_days INTEGER NOT NULL,
+    next_review_at TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_review_sessions_card_id ON review_sessions (card_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_review_sessions_reviewed_at ON review_sessions (reviewed_at DESC);`,
 ];
 
 export function runMigrations(db: QuickSQLiteConnection): void {
@@ -34,7 +77,10 @@ export function runMigrations(db: QuickSQLiteConnection): void {
     } catch (error) {
       // Ignore "duplicate column name" errors for ALTER TABLE ADD COLUMN
       // This makes migrations idempotent since they run on every app launch
-      if (error instanceof Error && error.message.includes('duplicate column name')) {
+      if (
+        error instanceof Error &&
+        error.message.includes('duplicate column name')
+      ) {
         continue;
       }
       throw error;

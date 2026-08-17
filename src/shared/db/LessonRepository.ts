@@ -1,10 +1,10 @@
-import {validateAIOutput} from '../schemas/ai-output-v1';
-import type {AIOutput} from '../schemas/ai-output-v1';
-import {createRequestId} from '../api/requestId';
-import {getOrCreateAnonymousUserId} from './anonymousUserId';
-import {getDatabase} from './database';
-import {computeLessonInputHash} from './lessonInputHash';
-import type {LessonSubjectKey} from '../../types/lesson';
+import { validateAIOutput } from '../schemas/ai-output-v1';
+import type { AIOutput } from '../schemas/ai-output-v1';
+import { createRequestId } from '../api/requestId';
+import { getOrCreateAnonymousUserId } from './anonymousUserId';
+import { getDatabase } from './database';
+import { computeLessonInputHash } from './lessonInputHash';
+import type { LessonSubjectKey } from '../../types/lesson';
 import type {
   LessonListItem,
   SaveLessonInput,
@@ -31,7 +31,9 @@ type LessonRow = {
 };
 
 function deriveLessonCategory(lesson: AIOutput): LessonSubjectKey {
-  return lesson.grammar_points.length > lesson.vocabulary.length ? 'grammar' : 'vocabulary';
+  return lesson.grammar_points.length > lesson.vocabulary.length
+    ? 'grammar'
+    : 'vocabulary';
 }
 
 function mapRowToRecord(row: LessonRow): SavedLessonRecord | null {
@@ -108,7 +110,7 @@ export function saveLesson(input: SaveLessonInput): SaveLessonResult {
 
   const existing = findLessonByInputHash(lessonInputHash);
   if (existing) {
-    return {ok: true, lessonId: existing.id, duplicate: true};
+    return { ok: true, lessonId: existing.id, duplicate: true };
   }
 
   try {
@@ -143,7 +145,7 @@ export function saveLesson(input: SaveLessonInput): SaveLessonResult {
       ],
     );
 
-    return {ok: true, lessonId, duplicate: false};
+    return { ok: true, lessonId, duplicate: false };
   } catch {
     return {
       ok: false,
@@ -215,6 +217,9 @@ export function deleteLesson(lessonId: string): boolean {
 
 export function clearAllLocalData(): void {
   const db = getDatabase();
+  db.execute('DELETE FROM review_sessions;');
+  db.execute('DELETE FROM review_schedule;');
+  db.execute('DELETE FROM flashcards;');
   db.execute('DELETE FROM lessons;');
   db.execute('DELETE FROM app_settings;');
 }
