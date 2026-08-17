@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
@@ -13,7 +13,15 @@ import {Chip} from '../../components/Chip';
 import {IconButton} from '../../components/IconButton';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
+import {useFeatureEnabled} from '../../release';
+import {
+  listFlashcards,
+  saveFlashcard,
+  unsaveFlashcard,
+} from '../../shared/db/FlashcardRepository';
+import type {FlashcardRecord} from '../../shared/db/types';
 import {useAppTheme} from '../../theme';
+import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 
 type Props =
   | NativeStackScreenProps<HomeStackParamList, 'WordDetail'>
@@ -21,18 +29,66 @@ type Props =
 
 export function WordDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const nav = navigation as NativeStackScreenProps<HomeStackParamList, 'WordDetail'>['navigation'];
-  const {word, practice} = route.params;
+  const {word, practice, lessonId} = route.params;
   const hasPractice = practice.length > 0;
   const metaParts = [word.word_type, word.ipa].filter(Boolean);
+  const [savedFlashcard, setSavedFlashcard] = useState<FlashcardRecord | null>(
+    null,
+  );
+
+  const refreshSavedFlashcard = useCallback(() => {
+    if (!lessonId) {
+      setSavedFlashcard(null);
+      return;
+    }
+
+    setSavedFlashcard(
+      listFlashcards({lessonId}).find(card => card.vocabularyId === word.id) ??
+        null,
+    );
+  }, [lessonId, word.id]);
+
+  useEffect(() => {
+    refreshSavedFlashcard();
+  }, [refreshSavedFlashcard]);
+
+  async function handleToggleSave() {
+    if (!lessonId) {
+      return;
+    }
+
+    if (savedFlashcard) {
+      unsaveFlashcard(savedFlashcard.id);
+      refreshSavedFlashcard();
+      return;
+    }
+
+    await confirmFirstFlashcardSave(() => {
+      const result = saveFlashcard({lessonId, vocabulary: word});
+      if (result.ok) {
+        refreshSavedFlashcard();
+      }
+    });
+  }
+
+  const saveAction =
+    reviewSystemEnabled && lessonId ? (
+      <IconButton
+        accessibilityLabel={savedFlashcard ? 'Bỏ lưu từ' : 'Lưu từ'}
+        filled={Boolean(savedFlashcard)}
+        icon="bookmark"
+        onPress={() => void handleToggleSave()}
+        tone={savedFlashcard ? 'accent' : 'surface'}
+      />
+    ) : undefined;
 
   return (
     <AppScreen>
       <ScreenHeader
         onBack={() => navigation.goBack()}
-        rightAction={
-          <IconButton accessibilityLabel="Lưu từ" icon="bookmark" tone="surface" />
-        }
+        rightAction={saveAction}
         title="Từ vựng"
       />
       <ScrollView

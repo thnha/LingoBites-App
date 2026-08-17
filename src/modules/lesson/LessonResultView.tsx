@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
+import {useFeatureEnabled} from '../../release';
 import {AppButton} from '../../components/AppButton';
 import {AppCard} from '../../components/AppCard';
 import {AppText} from '../../components/AppText';
@@ -42,6 +43,8 @@ type Props = {
   onOpenWord?: (word: VocabularyItem) => void;
   onOpenGrammar?: (grammar: GrammarPoint) => void;
   onStartPractice?: () => void;
+  savedVocabularyIds?: ReadonlySet<string>;
+  onToggleWordSave?: (word: VocabularyItem) => void;
 };
 
 export function LessonResultView({
@@ -54,8 +57,11 @@ export function LessonResultView({
   onOpenWord,
   onOpenGrammar,
   onStartPractice,
+  savedVocabularyIds,
+  onToggleWordSave,
 }: Props) {
   const {theme} = useAppTheme();
+  const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const [vocabExpanded, setVocabExpanded] = useState(false);
 
   const sentences = lesson.sentences ?? [];
@@ -161,6 +167,13 @@ export function LessonResultView({
                   word={item.word}
                   meaning={item.meaning_vi}
                   example={item.example}
+                  saved={savedVocabularyIds?.has(item.id) ?? false}
+                  onToggleSave={
+                    reviewSystemEnabled && onToggleWordSave
+                      ? () => onToggleWordSave(item)
+                      : undefined
+                  }
+                  saveTestID={`word-card-save-${item.id}`}
                 />
               </Tappable>
             ))}

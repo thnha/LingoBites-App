@@ -7,9 +7,16 @@ import {IconButton} from '../../components/IconButton';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {useFeatureEnabled} from '../../release';
 import {SAVE_LESSON_ERROR_MESSAGE} from '../../shared/copy/userMessages';
+import {
+  listFlashcards,
+  saveFlashcard,
+  unsaveFlashcard,
+} from '../../shared/db/FlashcardRepository';
 import {findLessonByInputHash, saveLesson} from '../../shared/db/LessonRepository';
 import {computeLessonInputHash} from '../../shared/db/lessonInputHash';
+import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {trackEvent} from '../analytics';
+import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 import {LessonHubView} from './LessonHubView';
 import type {LessonSaveState} from './LessonResultView';
 
@@ -24,6 +31,10 @@ export function LessonResultScreen({navigation, route}: Props) {
   const vocabulary = lesson.vocabulary ?? [];
   const [saveState, setSaveState] = useState<LessonSaveState>('unsaved');
   const [saveErrorMessage, setSaveErrorMessage] = useState<string | undefined>();
+  const [lessonId, setLessonId] = useState<string | undefined>();
+  const [savedVocabularyIds, setSavedVocabularyIds] = useState<Set<string>>(
+    () => new Set(),
+  );
   const viewedAtRef = useRef<number>(Date.now());
 
   useEffect(() => {
@@ -42,19 +53,26 @@ export function LessonResultScreen({navigation, route}: Props) {
     });
     const existing = findLessonByInputHash(hash);
     if (existing) {
+      setLessonId(existing.id);
       setSaveState('saved');
+      refreshSavedVocabulary(existing.id);
     }
   }, [confirmedText, lesson.level]);
 
-  async function handleSave() {
-    if (saveState === 'saving' || saveState === 'saved') {
-      return;
+  function refreshSavedVocabulary(nextLessonId: string) {
+    setSavedVocabularyIds(
+      new Set(
+        listFlashcards({lessonId: nextLessonId}).map(card => card.vocabularyId),
+      ),
+    );
+  }
+
+  function persistLesson(): string | null {
+    if (lessonId) {
+      return lessonId;
     }
 
-    setSaveState('saving');
-    setSaveErrorMessage(undefined);
-
-    const result = await saveLesson({
+    const result = saveLesson({
       confirmedText,
       sourceType,
       ocrRawText: route.params.ocrRawText,
@@ -64,14 +82,56 @@ export function LessonResultScreen({navigation, route}: Props) {
     if (!result.ok) {
       setSaveState('error');
       setSaveErrorMessage(result.message ?? SAVE_LESSON_ERROR_MESSAGE);
-      return;
+      return null;
     }
 
+    setLessonId(result.lessonId);
     setSaveState('saved');
     trackEvent('lesson_saved', {
       lesson_id: result.lessonId,
       source_type: sourceType,
       time_from_result_view_ms: Date.now() - viewedAtRef.current,
+    });
+    return result.lessonId;
+  }
+
+  function handleSave() {
+    if (saveState === 'saving' || saveState === 'saved') {
+      return;
+    }
+
+    setSaveState('saving');
+    setSaveErrorMessage(undefined);
+
+    const savedLessonId = persistLesson();
+    if (!savedLessonId) {
+      return;
+    }
+  }
+
+  async function handleToggleWordSave(word: VocabularyItem) {
+    if (lessonId && savedVocabularyIds.has(word.id)) {
+      const existing = listFlashcards({
+        lessonId,
+        includeUnsaved: true,
+      }).find(card => card.vocabularyId === word.id);
+      if (existing) {
+        unsaveFlashcard(existing.id);
+        refreshSavedVocabulary(lessonId);
+      }
+      return;
+    }
+
+    await confirmFirstFlashcardSave(() => {
+      const savedLessonId = persistLesson();
+      if (!savedLessonId) {
+        return;
+      }
+
+      const result = saveFlashcard({lessonId: savedLessonId, vocabulary: word});
+      if (result.ok) {
+        refreshSavedVocabulary(savedLessonId);
+      }
     });
   }
 
@@ -91,7 +151,7 @@ export function LessonResultScreen({navigation, route}: Props) {
     if (!word) {
       return;
     }
-    navigation.navigate('WordDetail', {word, practice});
+    navigation.navigate('WordDetail', {word, practice, lessonId});
   }
 
   function openFirstGrammar() {
@@ -154,6 +214,8 @@ export function LessonResultScreen({navigation, route}: Props) {
           onSave={() => void handleSave()}
           saveErrorMessage={saveErrorMessage}
           saveState={saveState}
+          savedVocabularyIds={savedVocabularyIds}
+          onToggleWordSave={word => void handleToggleWordSave(word)}
           {...drilldown}
         />
       </View>
