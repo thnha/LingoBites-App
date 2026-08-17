@@ -11,7 +11,9 @@ import {MaterialIcon} from '../../components/MaterialIcon';
 import {Medallion} from '../../components/Medallion';
 import {RecentLessonRow} from '../../components/RecentLessonRow';
 import {SectionHeader} from '../../components/SectionHeader';
+import {useFeatureEnabled} from '../../release';
 import {NO_LESSONS_MESSAGE} from '../../shared/copy/userMessages';
+import {getDueFlashcards} from '../../shared/db/FlashcardRepository';
 import {listLessons} from '../../shared/db/LessonRepository';
 import {useAppTheme} from '../../theme';
 import type {LessonCardView} from '../../types/lesson';
@@ -21,8 +23,10 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;
 
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const tabNavigation = navigation.getParent<NavigationProp<RootTabParamList>>();
   const [recentLessons, setRecentLessons] = useState<LessonCardView[]>([]);
+  const [dueReviewCount, setDueReviewCount] = useState(0);
 
   function selectInputMethod(method: 'camera' | 'gallery' | 'paste_text') {
     trackEvent('input_method_selected', {method, screen: 'Home'});
@@ -47,7 +51,8 @@ export function HomeScreen({navigation}: Props) {
           blurb: item.previewText,
         })),
       );
-    }, []),
+      setDueReviewCount(reviewSystemEnabled ? getDueFlashcards().length : 0);
+    }, [reviewSystemEnabled]),
   );
 
   const emptyRecent = useMemo(() => recentLessons.length === 0, [recentLessons]);
@@ -92,6 +97,47 @@ export function HomeScreen({navigation}: Props) {
             Chọn cách để lấy từ vựng từ bất cứ đoạn text nào bạn đọc.
           </AppText>
         </View>
+
+        {reviewSystemEnabled && dueReviewCount > 0 ? (
+          <Pressable
+            accessibilityLabel="Mở ôn tập hôm nay"
+            accessibilityRole="button"
+            onPress={() => navigation.navigate('DailyReview')}
+            style={({pressed}) => [
+              {
+                alignItems: 'center',
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.accent,
+                borderRadius: theme.radius.lg,
+                borderWidth: 1.5,
+                flexDirection: 'row',
+                gap: 12,
+                opacity: pressed ? theme.states.pressedOpacity : 1,
+                padding: 16,
+                ...theme.shadow.soft,
+              },
+            ]}
+            testID="daily-review-widget">
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: theme.colors.accentSoft,
+                borderRadius: 999,
+                height: 48,
+                justifyContent: 'center',
+                width: 48,
+              }}>
+              <MaterialIcon color={theme.colors.primary} name="refresh" size={26} />
+            </View>
+            <View style={{flex: 1, gap: 2}}>
+              <AppText variant="h3">Ôn tập hôm nay</AppText>
+              <AppText color="secondary" variant="label">
+                {`${dueReviewCount} thẻ đến hạn hôm nay`}
+              </AppText>
+            </View>
+            <MaterialIcon color={theme.colors.primary} name="chevron_right" size={24} />
+          </Pressable>
+        ) : null}
 
         <Pressable
           accessibilityLabel="Chụp ảnh học ngay"
