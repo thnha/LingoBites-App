@@ -36,7 +36,7 @@ FACT — nguồn: `02-personas-journey.md`, tổng hợp qua Stage 3 (VIB-117 §
 |---|---|---|---|
 | P1-F-01 | Flashcards | Must | Lưu 1 `VocabularyItem` thành flashcard, xem danh sách, xem chi tiết, lật thẻ front/back |
 | P1-F-02 | Unsave/Delete flashcard | Must | Gỡ 1 flashcard riêng lẻ (soft delete), re-save khôi phục đúng schedule cũ |
-| P1-F-03 | Spaced Repetition cơ bản | Must | Tính lịch ôn tiếp theo dựa trên phản hồi user; thuật toán cụ thể — xem §9.2 (open decision) |
+| P1-F-03 | Spaced Repetition cơ bản | Must | Tính lịch ôn tiếp theo dựa trên phản hồi user (fixed interval, rating 2 outcome + skip) — xem §9.2 (đã chốt, DD-04) |
 | P1-F-04 | Daily Review | Must | Hàng đợi thẻ due, snapshot cố định theo phiên, điều kiện hoàn thành phiên |
 | P1-F-05 | Due count indicator | Should | Hiển thị số thẻ due tại entry point (vị trí UI — xem §9.4 open decision) |
 
@@ -80,7 +80,7 @@ FACT — hội tụ Stage 4 (completion rule, VIB-120 CRIT-001 + VIB-121 xác nh
 | ID | Requirement | Priority |
 |---|---|---|
 | FR-SRS-001 | Khởi tạo trạng thái + due ngay lập tức cho thẻ mới | Must |
-| FR-SRS-002 | Tính `due_at`/interval/state tiếp theo dựa trên phản hồi user — **thuật toán cụ thể: open decision §9.2** | Must |
+| FR-SRS-002 | Tính `due_at`/interval/state tiếp theo dựa trên phản hồi user — **thuật toán: fixed interval, xem §9.2 (đã chốt DD-04)** | Must |
 | FR-SRS-003 | Persist state/schedule bền vững qua session, cập nhật trong transaction nguyên tử | Must |
 
 ### Daily Review
@@ -105,7 +105,7 @@ FACT — hội tụ Stage 4 (completion rule, VIB-120 CRIT-001 + VIB-121 xác nh
 | BR-SRS-002 | Card state/due date persist bền vững qua session (local-first) |
 | BR-SRS-003 | SRS không dùng `learning_level` làm input |
 | BR-REVIEW-001 | 1 thẻ "due" khi `due_at <= now` |
-| BR-REVIEW-002 | 1 phiên hoàn thành khi mọi thẻ trong **snapshot cố định lúc bắt đầu phiên** đã nhận đúng 1 phản hồi (rating hoặc skip tường minh); skip không đổi `due_at`; `Again` → relearning, không lặp lại trong session hiện tại, chỉ due lại ở phiên sau |
+| BR-REVIEW-002 | 1 phiên hoàn thành khi mọi thẻ trong **snapshot cố định lúc bắt đầu phiên** đã nhận đúng 1 phản hồi (rating `remembered`/`forgot` hoặc skip tường minh); skip không đổi `due_at`; cả `remembered` và `forgot` đều cập nhật `due_at` theo lịch fixed-interval, không lặp lại thẻ trong session hiện tại, chỉ due lại ở phiên sau |
 | BR-REVIEW-003 | Daily queue cap — **open decision §9.3** |
 
 ## 9. Open Decisions (chưa chốt tại Gate 2 — TranHoangNha approve chung nhưng không chọn cụ thể từng mục; giữ nguyên dạng option theo đúng thiết kế gate)
@@ -119,11 +119,13 @@ FACT — hội tụ Stage 4 (completion rule, VIB-120 CRIT-001 + VIB-121 xác nh
 - **C** — Snapshot nội dung tối thiểu vào flashcard (card sống độc lập) — vi phạm nguyên tắc §4.2 trừ khi Architect duyệt ngoại lệ có kiểm soát.
 - **RISK liên quan:** `deleteLesson()` đã tồn tại thật ở `LessonRepository.ts:206` (không phải rủi ro tương lai — phát hiện tại Stage 4, VIB-120).
 
-### 9.2 Q1 — Thuật toán SRS
+### 9.2 Q1 — Thuật toán SRS — **RESOLVED (DECISION)**
+
+**Chốt: Option 3 — Fixed interval, rating 2 outcome (`remembered`/`forgot`) + skip.** Quyết định tại Human Gate 1 phiên Design (DD-04, [VIB-126](mention://issue/6e4c65c6-2242-47e3-a7bb-3182a14147e9), TranHoangNha duyệt 2026-08-16). Danh sách phương án dưới đây giữ nguyên làm hồ sơ lịch sử quyết định (gồm cả thuật ngữ SM-2 gốc của Option 1, giữ lại có chủ đích để truy vết vì sao Option 1 bị loại) — không sửa nội dung option, chỉ đóng trạng thái open decision:
 
 - **Option 1** — SM-2 giản lược (4 mức Again/Hard/Good/Easy). Cá nhân hóa tốt nhất, chi phí test/migration cao nhất, có dấu hiệu vượt "cơ bản" theo wording gốc issue.
 - **Option 2** — Leitner box. Cân bằng, dễ giải thích.
-- **Option 3** — Fixed interval. Đơn giản nhất, khớp rõ nhất chữ "cơ bản".
+- **Option 3 (đã chọn)** — Fixed interval. Đơn giản nhất, khớp rõ nhất chữ "cơ bản".
 - Technical & Risk Analyst tự hạ khuyến nghị Option 1 xuống "cần Product/Learning Specialist chọn", không đề xuất mặc định.
 
 ### 9.3 MED-006 — Daily queue cap
@@ -146,7 +148,7 @@ FACT — hội tụ Stage 4 (completion rule, VIB-120 CRIT-001 + VIB-121 xác nh
 ## 10. Data & Validation Rules (kế thừa VIB-118/VIB-121 SYS-01..07, đã revise Stage 4)
 
 - `flashcards` — tham chiếu `lesson_id` + `vocabulary_item_id`, unique `(lesson_id, vocabulary_item_id)`, `archived_at` cho soft delete.
-- `review_schedule` — `state ∈ {new, learning, review, relearning, suspended}`, `repetitions`/`interval_days` không âm, `ease_factor` clamp `[1.3, 2.5]` (nếu chọn SM-2), `due_at` UTC ISO-8601.
+- `review_schedule` — `state ∈ {new, learning, review, relearning, suspended}`, `repetitions`/`interval_days` không âm, `due_at` UTC ISO-8601. Không có `ease_factor` — thuật toán đã chốt là fixed-interval, không phải SM-2 (xem §9.2, D3/DD-04).
 - `review_sessions` + `review_session_items` — persist session identity + ordered card IDs để resume đúng qua crash (A-03, **DECISION** — bắt buộc, không phải tùy chọn).
 - `review_events` — audit log, không lưu raw vocabulary/nội dung nhạy cảm.
 - Mọi mutation rating phải atomic (1 SQLite transaction: schedule + event + session-item).
