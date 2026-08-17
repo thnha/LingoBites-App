@@ -19,6 +19,8 @@ import {__resetMockDatabases} from '../../test-utils/sqliteMock';
 import {DailyReviewScreen} from '../modules/review/DailyReviewScreen';
 import {FlashcardListScreen} from '../modules/lesson/FlashcardListScreen';
 
+const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
+
 async function renderWithFlag(
   ui: React.ReactElement,
   releaseName: 'situation-learning-release' | 'close-beta-1',
@@ -32,6 +34,7 @@ async function renderWithFlag(
     );
     await Promise.resolve();
   });
+  renderedTrees.push(tree);
   return tree;
 }
 
@@ -51,6 +54,11 @@ describe('Feature Flag: reviewSystem', () => {
   });
 
   afterEach(() => {
+    renderedTrees.splice(0).forEach(tree => {
+      act(() => {
+        tree.unmount();
+      });
+    });
     jest.restoreAllMocks();
   });
 

@@ -28,6 +28,8 @@ import {__resetMockDatabases} from '../../test-utils/sqliteMock';
 import {DailyReviewScreen} from '../modules/review/DailyReviewScreen';
 import {FlashcardListScreen} from '../modules/lesson/FlashcardListScreen';
 
+const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
+
 async function renderScreen(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
@@ -38,6 +40,7 @@ async function renderScreen(ui: React.ReactElement) {
     );
     await Promise.resolve();
   });
+  renderedTrees.push(tree);
   return tree;
 }
 
@@ -58,6 +61,11 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
   });
 
   afterEach(() => {
+    renderedTrees.splice(0).forEach(tree => {
+      act(() => {
+        tree.unmount();
+      });
+    });
     jest.restoreAllMocks();
   });
 

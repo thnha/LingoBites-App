@@ -11,6 +11,8 @@ import {AppThemeProvider} from '../../../theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {DailyReviewScreen} from '../DailyReviewScreen';
 
+const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
+
 function navigation() {
   return {
     goBack: jest.fn(),
@@ -29,6 +31,7 @@ async function renderScreen(ui: React.ReactElement) {
     );
     await Promise.resolve();
   });
+  renderedTrees.push(tree);
   return tree;
 }
 
@@ -68,6 +71,11 @@ describe('DailyReviewScreen', () => {
   });
 
   afterEach(() => {
+    renderedTrees.splice(0).forEach(tree => {
+      act(() => {
+        tree.unmount();
+      });
+    });
     jest.restoreAllMocks();
   });
 
