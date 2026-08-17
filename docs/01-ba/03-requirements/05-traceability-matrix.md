@@ -233,3 +233,76 @@ FR-IN-007, FR-OCR-006, FR-AI-005, FR-REV-004, FR-REV-005, FR-TR-004, FR-SA-004/0
 - Product `Must` FRs without dedicated functional test: **0** (Phase 0: 8 supplemental TCs, 2 FRs verified via privacy/manual — see §4).
 
 Update the Status column during build. When all product `Must` FRs = ✅ and TC-001..023 P0/P1 pass → aligns with the Definition of Done in `02-technical/02-implementation-plan-m1-m5.md §12` and release gate in `07-release/01-release-production-readiness.md`. TC-024..030 are for theme iteration/M5 polish and do not block the M1–M4 core loop.
+
+---
+
+## 6. Phase 1 — Review & Retention (Flashcards, SRS, Daily Review)
+
+**Status:** Core slice implemented and merged to `main`. Feature flag `reviewSystem` remains `false` in P0 release config.
+
+**Source documents:**
+- PRD: `04-product/07-phase1-prd.md` (from BA session [VIB-115](https://github.com/thnha/LingoBites-App/issues/115))
+- Design handoff: Design session [VIB-125](https://github.com/thnha/LingoBites-App/issues/125)
+- Implementation: PRs [#5](https://github.com/thnha/LingoBites-App/pull/5), [#6](https://github.com/thnha/LingoBites-App/pull/6), [#7](https://github.com/thnha/LingoBites-App/pull/7), [#8](https://github.com/thnha/LingoBites-App/pull/8)
+
+### Flashcards
+
+| FR | Description | Pri | US | TC | Module | Status |
+|---|---|---|---|---|---|---|
+| FR-FLASH-001 | Save vocabulary item as flashcard | Must | US-016 | Implementation tests | lesson/FlashcardListScreen, db/FlashcardRepository | ✅ |
+| FR-FLASH-002 | Display saved/unsaved state on vocabulary | Must | US-016 | Implementation tests | lesson/WordCard | ✅ |
+| FR-FLASH-003 | View all saved flashcards | Must | US-017 | Implementation tests | lesson/FlashcardListScreen | ✅ |
+| FR-FLASH-004 | View detail + flip card front/back | Must | US-018 | Implementation tests | components/FlipCard | ✅ |
+| FR-FLASH-005 | Prevent duplicate flashcard for same vocabulary | Must | US-016 | Implementation tests | db/FlashcardRepository | ✅ |
+| FR-FLASH-006 | Flashcard content from local data, no AI call | Must | US-016 | Implementation tests | db/FlashcardRepository | ✅ |
+| FR-FLASH-007 | Unsave (remove) flashcard | Must | US-021 | Implementation tests | lesson/FlashcardListScreen | ✅ |
+| FR-FLASH-008 | Remove from review queue immediately on unsave | Must | US-021 | Implementation tests | db/reviewScheduler | ✅ |
+| FR-FLASH-009 | Re-save restores old schedule, not new card | Must | US-021 | Implementation tests | db/FlashcardRepository | ✅ |
+| FR-FLASH-010 | Confirm before unsaving card with history | Should | US-021 | Implementation tests | lesson/FlashcardListScreen | ✅ |
+
+### Spaced Repetition (SRS)
+
+| FR | Description | Pri | US | TC | Module | Status |
+|---|---|---|---|---|---|---|
+| FR-SRS-001 | Initialize state + due immediately for new card | Must | US-016 | Implementation tests | db/reviewScheduler | ✅ |
+| FR-SRS-002 | Calculate next due_at/interval/state from rating | Must | US-019 | Implementation tests | db/reviewScheduler | ✅ |
+| FR-SRS-003 | Persist state/schedule in atomic transaction | Must | US-019 | Implementation tests | db/reviewScheduler | ✅ |
+
+### Daily Review
+
+| FR | Description | Pri | US | TC | Module | Status |
+|---|---|---|---|---|---|---|
+| FR-REVIEW-001 | Build fixed snapshot of due cards at session start | Must | US-019 | Implementation tests | review/DailyReviewScreen | ✅ |
+| FR-REVIEW-002 | Allow rating or skip for each card | Must | US-019 | Implementation tests | components/RatingControl | ✅ |
+| FR-REVIEW-003 | Session complete when all snapshot cards processed | Must | US-019 | Implementation tests | review/DailyReviewScreen | ✅ |
+| FR-REVIEW-004 | Distinct empty states: "never saved" vs "done today" | Must | US-019 | Implementation tests | review/DailyReviewScreen | ✅ |
+| FR-REVIEW-005 | Display due count at entry point | Should | US-020 | Implementation tests | input/HomeScreen | ✅ |
+
+### Design System (P1 new components)
+
+| Component | Description | Design Source | Module | Status |
+|---|---|---|---|---|
+| FlipCard | Front/back reveal, controlled flip | VIB-131 §2.1 | components/FlipCard.tsx | ✅ |
+| RatingControl | Rate (remembered/forgot) + skip | VIB-131 §2.2 | components/RatingControl.tsx | ✅ |
+| Banner | Lightweight info banner (capped queue) | VIB-131 §2.3 | components/Banner.tsx | ✅ |
+
+### Non-Functional Requirements (P1)
+
+| ID | Requirement | Target | Status |
+|---|---|---|---|
+| NFR-REL-SESSION | Resume session after crash/force-kill | No progress loss | ✅ |
+| NFR-PRI-01 | clearAllLocalData removes 100% P1 data | Single transaction | ✅ |
+| NFR-SEC-01 | No vocabulary/content in telemetry logs | Zero sensitive logging | ✅ |
+| NFR-AVAIL-01 | All flashcard/review offline | 100% local-first | ✅ |
+| NFR-ACC-004 | Rating control WCAG AA contrast | All 7 themes pass | ✅ (VIB-146) |
+
+---
+
+## 7. Phase 1 — Coverage Summary
+
+- Total FR (Phase 1 core slice): **17** (Must: 12 · Should: 5).
+- New components: **3** (FlipCard, RatingControl, Banner) — all ✅.
+- US: 6 new (US-016..021 from VIB-120).
+- TC: Implementation tests in `src/__tests__/*flashcard*`, `src/__tests__/*review*` — formal TC numbering TBD.
+- All Phase 1 `Must` FRs = ✅ (code merged PRs #5-#8).
+- Feature flag `reviewSystem` = `false` in `src/release/configs/close-beta-1.json` — flag flip requires Mobile Tech Lead review of migrations + QA sign-off per PRD §13.
