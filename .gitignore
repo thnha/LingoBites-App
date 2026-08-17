@@ -82,3 +82,11 @@ ios/tmp.xcconfig
 !.yarn/versions
 # Added by code-review-graph
 .code-review-graph/
+
+# Multica agent workspace files
+.agents/
+.agent_context/
+.multica/
+AGENTS.md
+description.md
+reply.md

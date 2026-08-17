@@ -57,11 +57,13 @@ export type HomeStackParamList = {
     ocrRawText?: string;
   };
   SavedLessonDetail: {lessonId: string};
+  FlashcardList: {lessonId?: string} | undefined;
 } & LearningDetailParamList;
 
 export type LessonsStackParamList = {
   LessonsList: undefined;
   SavedLessonDetail: {lessonId: string};
+  FlashcardList: {lessonId?: string} | undefined;
 } & LearningDetailParamList;
 
 export type ProfileStackParamList = {

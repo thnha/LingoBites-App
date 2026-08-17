@@ -20,9 +20,8 @@ import {SentenceDetailScreen} from '../../modules/lesson/SentenceDetailScreen';
 import {WordDetailScreen} from '../../modules/lesson/WordDetailScreen';
 import {GrammarDetailScreen} from '../../modules/lesson/GrammarDetailScreen';
 import {PracticeScreen} from '../../modules/practice/PracticeScreen';
+import {FlashcardListScreen} from '../../modules/lesson/FlashcardListScreen';
 import {PrivacyNoteScreen} from '../../modules/settings/PrivacyNoteScreen';
-import {ProfileScreen} from '../../modules/settings/ProfileScreen';
-import {TabBar} from './TabBar';
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const LessonsStack = createNativeStackNavigator<LessonsStackParamList>();
@@ -68,6 +67,11 @@ function HomeStackNavigator() {
         options={{headerShown: false}}
       />
       <HomeStack.Screen
+        component={FlashcardListScreen}
+        name="FlashcardList"
+        options={{headerShown: false}}
+      />
+      <HomeStack.Screen
         component={SentenceDetailScreen}
         name="SentenceDetail"
         options={{headerShown: false}}
@@ -102,6 +106,11 @@ function LessonsStackNavigator() {
       <LessonsStack.Screen
         component={SavedLessonDetailScreen}
         name="SavedLessonDetail"
+        options={{headerShown: false}}
+      />
+      <LessonsStack.Screen
+        component={FlashcardListScreen}
+        name="FlashcardList"
         options={{headerShown: false}}
       />
       <LessonsStack.Screen
