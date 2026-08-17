@@ -105,7 +105,7 @@ FACT — hội tụ Stage 4 (completion rule, VIB-120 CRIT-001 + VIB-121 xác nh
 | BR-SRS-002 | Card state/due date persist bền vững qua session (local-first) |
 | BR-SRS-003 | SRS không dùng `learning_level` làm input |
 | BR-REVIEW-001 | 1 thẻ "due" khi `due_at <= now` |
-| BR-REVIEW-002 | 1 phiên hoàn thành khi mọi thẻ trong **snapshot cố định lúc bắt đầu phiên** đã nhận đúng 1 phản hồi (rating `remembered`/`forgot` hoặc skip tường minh); skip không đổi `due_at`; cả `remembered` và `forgot` đều cập nhật `due_at` theo lịch fixed-interval, không lặp lại thẻ trong session hiện tại, chỉ due lại ở phiên sau |
+| BR-REVIEW-002 | 1 phiên hoàn thành khi mọi thẻ trong **snapshot cố định lúc bắt đầu phiên** đã nhận đúng 1 phản hồi (rating `remembered`/`forgot` hoặc skip tường minh); snapshot dựng theo **soft cap N thẻ/phiên (oldest-due-first), phần dư carry-over sang phiên sau** (D4, chốt Gate 1 — xem §9.3); mẫu số tiến độ (progress) là **kích thước snapshot đã cap**, không phải tổng số thẻ due trước cap; skip không đổi `due_at`; cả `remembered` và `forgot` đều cập nhật `due_at` theo lịch fixed-interval, không lặp lại thẻ trong session hiện tại, chỉ due lại ở phiên sau |
 | BR-REVIEW-003 | Daily queue cap — **open decision §9.3** |
 
 ## 9. Open Decisions (chưa chốt tại Gate 2 — TranHoangNha approve chung nhưng không chọn cụ thể từng mục; giữ nguyên dạng option theo đúng thiết kế gate)
