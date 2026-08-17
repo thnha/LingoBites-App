@@ -58,6 +58,7 @@ export type HomeStackParamList = {
   };
   SavedLessonDetail: {lessonId: string};
   FlashcardList: {lessonId?: string} | undefined;
+  DailyReview: undefined;
 } & LearningDetailParamList;
 
 export type LessonsStackParamList = {

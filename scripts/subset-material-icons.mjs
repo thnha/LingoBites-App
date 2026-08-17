@@ -2,14 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import {fileURLToPath} from 'url';
 import subsetFont from 'subset-font';
-import glyphmap from '../../../node_modules/react-native-vector-icons/glyphmaps/MaterialIcons.json' with {type: 'json'};
+import glyphmap from '../node_modules/react-native-vector-icons/glyphmaps/MaterialIcons.json' with {type: 'json'};
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const REGISTRY_PATH = path.join(ROOT, 'src/components/icons/iconRegistry.ts');
 const SOURCE_FONT = path.join(
   ROOT,
-  '../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf',
+  'node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf',
 );
 const OUTPUT_FONT = path.join(ROOT, 'assets/fonts/MaterialIcons.ttf');
 

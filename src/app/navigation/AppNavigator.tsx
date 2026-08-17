@@ -21,7 +21,10 @@ import {WordDetailScreen} from '../../modules/lesson/WordDetailScreen';
 import {GrammarDetailScreen} from '../../modules/lesson/GrammarDetailScreen';
 import {PracticeScreen} from '../../modules/practice/PracticeScreen';
 import {FlashcardListScreen} from '../../modules/lesson/FlashcardListScreen';
+import {DailyReviewScreen} from '../../modules/review/DailyReviewScreen';
 import {PrivacyNoteScreen} from '../../modules/settings/PrivacyNoteScreen';
+import {ProfileScreen} from '../../modules/settings/ProfileScreen';
+import {TabBar} from './TabBar';
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const LessonsStack = createNativeStackNavigator<LessonsStackParamList>();
@@ -69,6 +72,11 @@ function HomeStackNavigator() {
       <HomeStack.Screen
         component={FlashcardListScreen}
         name="FlashcardList"
+        options={{headerShown: false}}
+      />
+      <HomeStack.Screen
+        component={DailyReviewScreen}
+        name="DailyReview"
         options={{headerShown: false}}
       />
       <HomeStack.Screen

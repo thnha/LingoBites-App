@@ -5,6 +5,7 @@ import {
   type PressableProps,
   StyleSheet,
   Text,
+  type ViewStyle,
 } from 'react-native';
 import {useAppTheme} from '../theme';
 
@@ -14,6 +15,7 @@ type Props = Omit<PressableProps, 'style' | 'children'> & {
   title: string;
   variant?: Variant;
   loading?: boolean;
+  style?: ViewStyle;
 };
 
 export function AppButton({
@@ -21,6 +23,7 @@ export function AppButton({
   variant = 'primary',
   loading = false,
   disabled,
+  style,
   ...rest
 }: Props) {
   const {theme} = useAppTheme();
@@ -44,6 +47,7 @@ export function AppButton({
         },
         pressed && {opacity: theme.states.pressedOpacity},
         (disabled || loading) && {opacity: theme.states.disabledOpacity},
+        style,
       ]}
       {...rest}>
       {loading ? (

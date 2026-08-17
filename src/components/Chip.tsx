@@ -18,6 +18,7 @@ type Props = {
   selected?: boolean;
   tone?: ChipTone;
   onPress?: () => void;
+  testID?: string;
 };
 
 type ChipStyle = {background: string; text: string; border: string};
@@ -54,7 +55,7 @@ function resolveTone(theme: AppTheme, tone: ChipTone): ChipStyle {
   }
 }
 
-export function Chip({label, selected = false, tone = 'default', onPress}: Props) {
+export function Chip({label, selected = false, tone = 'default', onPress, testID}: Props) {
   const {theme} = useAppTheme();
   // `selected` keeps the existing filter-chip behavior and wins over `tone`.
   const style = selected ? resolveTone(theme, 'primary') : resolveTone(theme, tone);
@@ -82,7 +83,11 @@ export function Chip({label, selected = false, tone = 'default', onPress}: Props
   }
 
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      testID={testID}>
       {inner}
     </Pressable>
   );

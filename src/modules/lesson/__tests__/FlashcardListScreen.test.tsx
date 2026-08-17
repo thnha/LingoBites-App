@@ -12,6 +12,8 @@ import {validFullOutput} from '../../../shared/fixtures';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {FlashcardListScreen} from '../FlashcardListScreen';
 
+const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
+
 async function renderScreen(
   ui: React.ReactElement,
   releaseName: 'situation-learning-release' | 'close-beta-1' = 'situation-learning-release',
@@ -25,6 +27,7 @@ async function renderScreen(
     );
     await Promise.resolve();
   });
+  renderedTrees.push(tree);
   return tree;
 }
 
@@ -36,6 +39,11 @@ describe('FlashcardListScreen', () => {
   });
 
   afterEach(() => {
+    renderedTrees.splice(0).forEach(tree => {
+      act(() => {
+        tree.unmount();
+      });
+    });
     jest.restoreAllMocks();
   });
 
