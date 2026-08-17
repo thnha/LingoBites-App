@@ -24,6 +24,7 @@ type Props = {
   onPress?: () => void;
   disabled?: boolean;
   style?: ViewStyle;
+  testID?: string;
 };
 
 function resolveTone(
@@ -58,6 +59,7 @@ export function IconButton({
   onPress,
   disabled = false,
   style,
+  testID,
 }: Props) {
   const {theme} = useAppTheme();
   const colors = resolveTone(theme, tone);
@@ -89,6 +91,7 @@ export function IconButton({
       accessibilityState={{disabled}}
       disabled={disabled}
       onPress={onPress}
+      testID={testID}
       style={({pressed}) => [
         buttonStyle,
         pressed && !disabled && {opacity: theme.states.pressedOpacity},

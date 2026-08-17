@@ -21,7 +21,11 @@ export type LearningDetailParamList = {
     index: number;
     practice: PracticeQuestion[];
   };
-  WordDetail: {word: VocabularyItem; practice: PracticeQuestion[]};
+  WordDetail: {
+    word: VocabularyItem;
+    practice: PracticeQuestion[];
+    lessonId?: string;
+  };
   GrammarDetail: {
     grammar: GrammarPoint;
     related: GrammarPoint[];

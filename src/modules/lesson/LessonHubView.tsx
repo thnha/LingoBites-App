@@ -8,12 +8,13 @@ import {ImagePlaceholder} from '../../components/ImagePlaceholder';
 import {LessonExploreRow} from '../../components/LessonExploreRow';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {SectionHeader} from '../../components/SectionHeader';
+import {WordCard} from '../../components/WordCard';
 import {
   SAVE_LESSON_ERROR_MESSAGE,
   SAVE_LESSON_LABEL,
   SAVE_LESSON_SAVED_LABEL,
 } from '../../shared/copy/userMessages';
-import type {AIOutput} from '../../shared/schemas/ai-output-v1';
+import type {AIOutput, VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {useAppTheme} from '../../theme';
 import type {LessonSaveState} from './LessonResultView';
 
@@ -30,6 +31,8 @@ type Props = {
   onOpenPronunciation?: () => void;
   onStartPractice?: () => void;
   onStartLearning?: () => void;
+  savedVocabularyIds?: ReadonlySet<string>;
+  onToggleWordSave?: (word: VocabularyItem) => void;
 };
 
 export function LessonHubView({
@@ -45,6 +48,8 @@ export function LessonHubView({
   onOpenPronunciation,
   onStartPractice,
   onStartLearning,
+  savedVocabularyIds,
+  onToggleWordSave,
 }: Props) {
   const {theme} = useAppTheme();
   const sentences = lesson.sentences ?? [];
@@ -174,6 +179,25 @@ export function LessonHubView({
             title="Luyện tập nhanh"
           />
         </View>
+
+        {vocabulary.length > 0 ? (
+          <View style={{gap: theme.spacing.sm}}>
+            <SectionHeader title="Từ vựng chính" />
+            {vocabulary.map(item => (
+              <WordCard
+                key={item.id}
+                word={item.word}
+                meaning={item.meaning_vi}
+                example={item.example}
+                saved={savedVocabularyIds?.has(item.id) ?? false}
+                onToggleSave={
+                  onToggleWordSave ? () => onToggleWordSave(item) : undefined
+                }
+                saveTestID={`word-card-save-${item.id}`}
+              />
+            ))}
+          </View>
+        ) : null}
       </ScrollView>
 
       <BottomActionBar

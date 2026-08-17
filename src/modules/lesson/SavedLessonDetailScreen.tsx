@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, Alert, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {HomeStackParamList, LessonsStackParamList} from '../../app/navigation/types';
@@ -13,10 +13,17 @@ import {
   OPEN_LESSON_ERROR_MESSAGE,
 } from '../../shared/copy/userMessages';
 import {useFeatureEnabled} from '../../release';
+import {
+  listFlashcards,
+  saveFlashcard,
+  unsaveFlashcard,
+} from '../../shared/db/FlashcardRepository';
 import {deleteLesson, getLessonById} from '../../shared/db/LessonRepository';
 import type {SavedLessonRecord} from '../../shared/db/types';
+import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {useAppTheme} from '../../theme';
 import {trackEvent} from '../analytics';
+import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 import {LessonHubView} from './LessonHubView';
 
 type HomeProps = NativeStackScreenProps<HomeStackParamList, 'SavedLessonDetail'>;
@@ -29,11 +36,21 @@ type Props = HomeProps | LessonsProps;
 export function SavedLessonDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const practiceEnabled = useFeatureEnabled('shortPractice');
+  const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const drilldownNav = navigation as HomeProps['navigation'];
   const [lesson, setLesson] = useState<SavedLessonRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [savedVocabularyIds, setSavedVocabularyIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+
+  const refreshSavedVocabulary = useCallback((lessonId: string) => {
+    setSavedVocabularyIds(
+      new Set(listFlashcards({lessonId}).map(card => card.vocabularyId)),
+    );
+  }, []);
 
   const loadLesson = useCallback(() => {
     setLoading(true);
@@ -44,6 +61,7 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
       setErrorMessage(OPEN_LESSON_ERROR_MESSAGE);
     } else {
       setLesson(record);
+      refreshSavedVocabulary(record.id);
       const createdAt = new Date(record.createdAt).getTime();
       const daysSinceCreated = Math.max(
         0,
@@ -55,7 +73,7 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
       });
     }
     setLoading(false);
-  }, [route.params.lessonId]);
+  }, [refreshSavedVocabulary, route.params.lessonId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -64,6 +82,26 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
   );
 
   function handleDelete() {
+    const activeFlashcards = listFlashcards({lessonId: route.params.lessonId});
+    if (activeFlashcards.length > 0) {
+      Alert.alert(
+        'Không thể xóa bài học',
+        'Bài học này đang có flashcard đang hoạt động. Hãy xem danh sách flashcard của bài học trước khi xóa.',
+        [
+          {text: 'Đóng', style: 'cancel'},
+          {
+            text: 'Xem flashcard',
+            onPress: () =>
+              drilldownNav.navigate('FlashcardList', {
+                lessonId: route.params.lessonId,
+              }),
+          },
+        ],
+        {cancelable: false},
+      );
+      return;
+    }
+
     const removed = deleteLesson(route.params.lessonId);
     if (!removed) {
       setDeleteError(DELETE_LESSON_ERROR_MESSAGE);
@@ -71,6 +109,30 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
     }
 
     navigation.goBack();
+  }
+
+  async function handleToggleWordSave(word: VocabularyItem) {
+    if (savedVocabularyIds.has(word.id)) {
+      const existing = listFlashcards({
+        lessonId: route.params.lessonId,
+        includeUnsaved: true,
+      }).find(card => card.vocabularyId === word.id);
+      if (existing) {
+        unsaveFlashcard(existing.id);
+        refreshSavedVocabulary(route.params.lessonId);
+      }
+      return;
+    }
+
+    await confirmFirstFlashcardSave(() => {
+      const result = saveFlashcard({
+        lessonId: route.params.lessonId,
+        vocabulary: word,
+      });
+      if (result.ok) {
+        refreshSavedVocabulary(route.params.lessonId);
+      }
+    });
   }
 
   if (loading) {
@@ -123,7 +185,11 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
     if (!word) {
       return;
     }
-    drilldownNav.navigate('WordDetail', {word, practice});
+    drilldownNav.navigate('WordDetail', {
+      word,
+      practice,
+      lessonId: route.params.lessonId,
+    });
   }
 
   function openFirstGrammar() {
@@ -190,6 +256,10 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
         <LessonHubView
           lesson={aiLesson}
           showSaveButton={false}
+          savedVocabularyIds={savedVocabularyIds}
+          onToggleWordSave={
+            reviewSystemEnabled ? word => void handleToggleWordSave(word) : undefined
+          }
           {...drilldown}
         />
       </View>
