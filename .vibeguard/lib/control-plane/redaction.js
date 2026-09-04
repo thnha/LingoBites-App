@@ -1,4 +1,4 @@
-// Common secrets accidentally pasted into prompts or commands—redact before logging.
+// Common secrets accidentally pasted into prompts or commands: redact before logging.
 const SECRET_PATTERNS = [
   { re: /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g, tag: "PRIVATE_KEY" },
   { re: /AKIA[0-9A-Z]{16}/g, tag: "AWS_KEY" },
@@ -13,6 +13,9 @@ const SECRET_PATTERNS = [
   }
 ];
 
+const SENSITIVE_FIELD_RE = /^(authorization|x-api-key|api[_-]?key|apikey|secret|token|password|passwd|pwd|access[_-]?key)$/i;
+const SENSITIVE_FIELD_REDACTION = "[REDACTED:SENSITIVE_FIELD]";
+
 /** Replace strings resembling secrets with [REDACTED:*]. */
 function redactSecrets(text) {
   if (typeof text !== "string" || !text) return text;
@@ -25,16 +28,27 @@ function redactSecrets(text) {
   return out;
 }
 
+function isSensitiveFieldName(key) {
+  return typeof key === "string" && SENSITIVE_FIELD_RE.test(key);
+}
+
 /** Recursively redact every string value in a value (object, array, or scalar). */
 function redactValue(value) {
   if (typeof value === "string") return redactSecrets(value);
   if (Array.isArray(value)) return value.map(redactValue);
   if (value && typeof value === "object") {
     const out = {};
-    for (const [k, v] of Object.entries(value)) out[k] = redactValue(v);
+    for (const [k, v] of Object.entries(value)) {
+      out[k] = isSensitiveFieldName(k) ? SENSITIVE_FIELD_REDACTION : redactValue(v);
+    }
     return out;
   }
   return value;
 }
 
-module.exports = { redactSecrets, redactValue };
+module.exports = {
+  redactSecrets,
+  redactValue,
+  isSensitiveFieldName,
+  SENSITIVE_FIELD_REDACTION
+};

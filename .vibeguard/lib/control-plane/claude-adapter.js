@@ -1,9 +1,22 @@
 const fs = require("node:fs");
 const { randomUUID } = require("node:crypto");
 const { createAdapterClient } = require("./adapter-client");
+const { projectDir } = require("../logger");
+
+/** Shared identity fields every mirrored event needs. `extra` merges in per-event IDs (turnId, toolCallId, ...). */
+function baseEventFields(sessionId, extra = {}) {
+  return {
+    sessionId,
+    workspaceId: projectDir(),
+    repositoryId: projectDir(),
+    agentId: "agt_claude-code",
+    taskId: sessionId,
+    ...extra
+  };
+}
 
 function buildEnvelope(fields) {
-  return {
+  const envelope = {
     schema_version: 1,
     client_event_id: randomUUID(),
     occurred_at: fields.occurredAt || new Date().toISOString(),
@@ -28,6 +41,13 @@ function buildEnvelope(fields) {
     payload: fields.payload || {},
     redaction: { applied: false, ruleset_version: 1 }
   };
+
+  // Add stable ID fields if provided (Trajectory Release 1)
+  if (fields.turnId) envelope.turn_id = fields.turnId;
+  if (fields.messageId) envelope.message_id = fields.messageId;
+  if (fields.toolCallId) envelope.tool_call_id = fields.toolCallId;
+
+  return envelope;
 }
 
 let cachedClient;
@@ -63,4 +83,4 @@ async function mirrorEvent(client, envelopeFields) {
   }
 }
 
-module.exports = { buildEnvelope, mirrorEvent, getMirrorClient };
+module.exports = { buildEnvelope, mirrorEvent, getMirrorClient, baseEventFields };

@@ -5,7 +5,6 @@ const { redactValue } = require("./redaction");
 const DEFAULT_MAX_EVENTS = 1000;
 const DEFAULT_MAX_BYTES = 10 * 1024 * 1024;
 const DEFAULT_TIMEOUT_MS = 2000;
-const MAX_FLUSH_BATCH = 100;
 
 const PERMANENT_STATUSES = new Set([400, 401, 403, 413]);
 
@@ -119,35 +118,7 @@ function createAdapterClient(options) {
     return { status: "buffered" };
   }
 
-  async function flush() {
-    const records = readSpoolRecords(spoolFile);
-    if (records.length === 0) return { sent: 0, remaining: 0 };
-
-    const batch = records.slice(0, MAX_FLUSH_BATCH);
-    let res;
-    try {
-      res = await postEvents(batch);
-    } catch {
-      return { sent: 0, remaining: records.length };
-    }
-
-    if (res.status !== 202) {
-      return { sent: 0, remaining: records.length };
-    }
-
-    const body = await res.json();
-    const acknowledged = body.results.length;
-    const remainder = records.slice(acknowledged);
-    withLock(lockFile, () => writeSpoolRecords(spoolFile, remainder));
-    if (remainder.length === 0) offline = false;
-    return { sent: acknowledged, remaining: remainder.length };
-  }
-
-  function status() {
-    return { offline, spooled: readSpoolRecords(spoolFile).length };
-  }
-
-  return { send, flush, status };
+  return { send };
 }
 
 module.exports = { createAdapterClient };

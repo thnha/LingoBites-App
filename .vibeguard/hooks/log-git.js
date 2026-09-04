@@ -47,13 +47,9 @@ if (gitMatch) {
 
   logEvent(event);
 
-  const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+  const { getMirrorClient, mirrorEvent, baseEventFields } = require("../lib/control-plane/claude-adapter");
   mirrorEvent(getMirrorClient(), {
-    sessionId,
-    workspaceId: projectDir(),
-    repositoryId: projectDir(),
-    agentId: "agt_claude-code",
-    taskId: sessionId,
+    ...baseEventFields(sessionId),
     eventType: "git.operation",
     payload: { action: event.action, sha: event.sha }
   }).catch(() => {});
@@ -71,13 +67,9 @@ const verifyMatch = command.match(VERIFY_RE);
 const toolResponse = input.tool_response || {};
 
 if (verifyMatch && typeof toolResponse.exit_code === "number") {
-  const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+  const { getMirrorClient, mirrorEvent, baseEventFields } = require("../lib/control-plane/claude-adapter");
   mirrorEvent(getMirrorClient(), {
-    sessionId,
-    workspaceId: projectDir(),
-    repositoryId: projectDir(),
-    agentId: "agt_claude-code",
-    taskId: sessionId,
+    ...baseEventFields(sessionId),
     eventType: "verification.completed",
     payload: { command: command.slice(0, 300), status: toolResponse.exit_code === 0 ? "passed" : "failed" }
   }).catch(() => {});

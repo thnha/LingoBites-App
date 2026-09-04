@@ -50,13 +50,9 @@ try {
   contentHash = crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
 } catch { /* File unreadable at mirror time; omit the hash. */ }
 
-const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+const { getMirrorClient, mirrorEvent, baseEventFields } = require("../lib/control-plane/claude-adapter");
 mirrorEvent(getMirrorClient(), {
-  sessionId,
-  workspaceId: projectDir(),
-  repositoryId: projectDir(),
-  agentId: "agt_claude-code",
-  taskId: sessionId,
+  ...baseEventFields(sessionId),
   eventType: "file.changed",
   payload: { path: rel, changeType: toolName, contentHash }
 }).catch(() => {});

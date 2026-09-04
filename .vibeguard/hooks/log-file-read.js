@@ -62,13 +62,9 @@ try {
 const sensitive = isSensitive(relativePath, config);
 
 // Mirror the file.read event to the control plane
-const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+const { getMirrorClient, mirrorEvent, baseEventFields } = require("../lib/control-plane/claude-adapter");
 mirrorEvent(getMirrorClient(), {
-  sessionId,
-  workspaceId: repoRoot,
-  repositoryId: repoRoot,
-  agentId: "agt_claude-code",
-  taskId: sessionId,
+  ...baseEventFields(sessionId),
   eventType: "file.read",
   payload: { path: relativePath, sensitive }
 }).catch(() => {});

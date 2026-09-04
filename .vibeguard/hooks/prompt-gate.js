@@ -12,9 +12,11 @@
  * Note: UserPromptSubmit stdout is added to the model context.
  * Exit 0 = pass through. (Exit 2 = block the prompt; this hook does not do so by default.)
  */
-const { logEvent, readStdinJSON, projectDir } = require("../lib/logger");
+const fs = require("node:fs");
+const path = require("node:path");
+const { logEvent, readStdinJSON, projectDir, logsDir } = require("../lib/logger");
 const { analyze } = require("../lib/complexity");
-const { getMirrorClient, mirrorEvent } = require("../lib/control-plane/claude-adapter");
+const { getMirrorClient, mirrorEvent, baseEventFields } = require("../lib/control-plane/claude-adapter");
 
 async function main() {
   const input = readStdinJSON();
@@ -34,13 +36,19 @@ async function main() {
   });
 
   const client = getMirrorClient();
-  const baseFields = {
-    sessionId,
-    workspaceId: projectDir(),
-    repositoryId: projectDir(),
-    agentId: "agt_claude-code",
-    taskId: sessionId,
-  };
+  const baseFields = baseEventFields(sessionId);
+
+  const turnId = sessionId + "-" + Date.now();
+  const turnStatePath = path.join(logsDir(), `turn-${sessionId}.json`);
+  fs.writeFileSync(turnStatePath, JSON.stringify({ turnId }), "utf8");
+
+  await mirrorEvent(client, {
+    ...baseFields,
+    turnId,
+    eventType: "turn.started",
+    occurredAt: new Date().toISOString(),
+    payload: {}
+  });
 
   await mirrorEvent(client, {
     ...baseFields,

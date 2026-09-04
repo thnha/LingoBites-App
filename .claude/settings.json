@@ -37,6 +37,15 @@
             "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/log-file-read.js\""
           }
         ]
+      },
+      {
+        "matcher": "Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/log-tool-use.js\""
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -77,6 +86,15 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/policy-gate.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.vibeguard/hooks/log-tool-use.js\""
           }
         ]
       }
