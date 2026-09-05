@@ -82,7 +82,7 @@ describe('Feature Flag: reviewSystem', () => {
       const flipCards = tree.root.findAll(node => node.props.testID === 'daily-review-flip-card');
       expect(flipCards.length).toBe(0);
 
-      const ratingButtons = tree.root.findAll(node => node.props.testID === 'rating-remembered');
+      const ratingButtons = tree.root.findAll(node => node.props.testID === 'rating-good');
       expect(ratingButtons.length).toBe(0);
     });
 
@@ -113,7 +113,7 @@ describe('Feature Flag: reviewSystem', () => {
       const flipCards = tree.root.findAll(node => node.props.testID === 'daily-review-flip-card');
       expect(flipCards.length).toBeGreaterThan(0);
 
-      const ratingButtons = tree.root.findAll(node => node.props.testID === 'rating-remembered');
+      const ratingButtons = tree.root.findAll(node => node.props.testID === 'rating-good');
       expect(ratingButtons.length).toBeGreaterThan(0);
 
       // Should NOT show disabled message

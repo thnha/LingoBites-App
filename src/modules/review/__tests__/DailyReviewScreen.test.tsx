@@ -101,7 +101,7 @@ describe('DailyReviewScreen', () => {
     );
 
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
     });
     await act(async () => {
       tree.root.findByProps({testID: 'rating-skip'}).props.onPress();
@@ -109,7 +109,7 @@ describe('DailyReviewScreen', () => {
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children).toBe(2);
-    expect(tree.root.findByProps({testID: 'summary-remembered-count'}).props.children).toBe(1);
+    expect(tree.root.findByProps({testID: 'summary-good-count'}).props.children).toBe(1);
     expect(tree.root.findByProps({testID: 'summary-forgot-count'}).props.children).toBe(0);
   });
 
@@ -130,7 +130,7 @@ describe('DailyReviewScreen', () => {
     );
 
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
     });
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();

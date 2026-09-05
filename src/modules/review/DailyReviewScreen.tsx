@@ -32,8 +32,10 @@ type Props = {
 
 type Summary = {
   reviewed: number;
-  remembered: number;
   forgot: number;
+  hard: number;
+  good: number;
+  easy: number;
 };
 
 function carryOverMessage(count: number): string {
@@ -94,8 +96,10 @@ export function DailyReviewScreen({
   const [ratingError, setRatingError] = useState<string | null>(null);
   const [summary, setSummary] = useState<Summary>({
     reviewed: 0,
-    remembered: 0,
     forgot: 0,
+    hard: 0,
+    good: 0,
+    easy: 0,
   });
   const [complete, setComplete] = useState(false);
 
@@ -124,8 +128,10 @@ export function DailyReviewScreen({
     const result = recordFlashcardRating({flashcardId: card.id, rating});
     const nextSummary = {
       reviewed: summary.reviewed + 1,
-      remembered: summary.remembered + (rating === 'remembered' ? 1 : 0),
       forgot: summary.forgot + (rating === 'forgot' ? 1 : 0),
+      hard: summary.hard + (rating === 'hard' ? 1 : 0),
+      good: summary.good + (rating === 'good' ? 1 : 0),
+      easy: summary.easy + (rating === 'easy' ? 1 : 0),
     };
 
     if (!result.ok) {
@@ -205,15 +211,27 @@ export function DailyReviewScreen({
             </View>
             <View style={styles.breakdown}>
               <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">Đã nhớ</AppText>
-                <AppText testID="summary-remembered-count" variant="h3">
-                  {summary.remembered}
+                <AppText color="secondary" variant="label">Quên</AppText>
+                <AppText testID="summary-forgot-count" variant="h3">
+                  {summary.forgot}
                 </AppText>
               </View>
               <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">Chưa nhớ</AppText>
-                <AppText testID="summary-forgot-count" variant="h3">
-                  {summary.forgot}
+                <AppText color="secondary" variant="label">Khó</AppText>
+                <AppText testID="summary-hard-count" variant="h3">
+                  {summary.hard}
+                </AppText>
+              </View>
+              <View style={styles.breakdownItem}>
+                <AppText color="secondary" variant="label">Tốt</AppText>
+                <AppText testID="summary-good-count" variant="h3">
+                  {summary.good}
+                </AppText>
+              </View>
+              <View style={styles.breakdownItem}>
+                <AppText color="secondary" variant="label">Dễ</AppText>
+                <AppText testID="summary-easy-count" variant="h3">
+                  {summary.easy}
                 </AppText>
               </View>
             </View>
@@ -274,10 +292,12 @@ export function DailyReviewScreen({
 const styles = StyleSheet.create({
   breakdown: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
   },
   breakdownItem: {
-    flex: 1,
+    flexBasis: '46%',
+    flexGrow: 1,
     gap: 4,
   },
   cardFace: {

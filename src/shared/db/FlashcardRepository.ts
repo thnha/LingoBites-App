@@ -1,8 +1,12 @@
 import { createRequestId } from '../api/requestId';
 import { getDatabase } from './database';
 import {
+  DEFAULT_EASE_FACTOR,
   DEFAULT_REVIEW_INTERVAL_DAYS,
-  calculateNextReviewState,
+  RATING_SCALE_V1,
+  RATING_SCALE_V2,
+  calculateNextReviewStateV2,
+  legacyRepetitionsFromInterval,
 } from './reviewScheduler';
 import type {
   FlashcardRecord,
@@ -39,6 +43,9 @@ type ReviewScheduleRow = {
   interval_days: number;
   next_review_at: string;
   last_reviewed_at: string | null;
+  ease_factor: number;
+  repetitions: number;
+  rating_scale: string;
   created_at: string;
   updated_at: string;
 };
@@ -118,8 +125,8 @@ export function saveFlashcard(input: SaveFlashcardInput): SaveFlashcardResult {
     db.execute(
       `INSERT INTO review_schedule (
         card_id, lesson_id, interval_days, next_review_at, last_reviewed_at,
-        created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+        created_at, updated_at, ease_factor, repetitions, rating_scale
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         flashcardId,
         input.lessonId,
@@ -128,6 +135,9 @@ export function saveFlashcard(input: SaveFlashcardInput): SaveFlashcardResult {
         null,
         now,
         now,
+        DEFAULT_EASE_FACTOR,
+        0,
+        RATING_SCALE_V2,
       ],
     );
 
@@ -223,6 +233,43 @@ export function getDueFlashcards({
   return due;
 }
 
+/**
+ * Returns SM-2 state for a schedule row, upgrading it from the legacy `v1`
+ * scheme first if needed. `v1` rows reached their current interval bucket via
+ * the old fixed-step scheduler, so `repetitions` is derived from that bucket
+ * (same rule as the migration backfill) rather than reinterpreted.
+ */
+function upgradeReviewScheduleToV2(
+  db: ReturnType<typeof getDatabase>,
+  schedule: ReviewScheduleRow,
+): { easeFactor: number; repetitions: number } {
+  if (schedule.rating_scale === RATING_SCALE_V2) {
+    return {
+      easeFactor: schedule.ease_factor,
+      repetitions: schedule.repetitions,
+    };
+  }
+
+  const easeFactor = DEFAULT_EASE_FACTOR;
+  const repetitions = legacyRepetitionsFromInterval(schedule.interval_days);
+  const updatedAt = new Date().toISOString();
+  db.execute(
+    `UPDATE review_schedule
+      SET ease_factor = ?, repetitions = ?, rating_scale = ?, updated_at = ?
+      WHERE card_id = ? AND rating_scale = ?;`,
+    [
+      easeFactor,
+      repetitions,
+      RATING_SCALE_V2,
+      updatedAt,
+      schedule.card_id,
+      RATING_SCALE_V1,
+    ],
+  );
+
+  return { easeFactor, repetitions };
+}
+
 export function recordFlashcardRating(
   input: RecordFlashcardRatingInput,
 ): RecordFlashcardRatingResult {
@@ -243,9 +290,15 @@ export function recordFlashcardRating(
     }
 
     const reviewedAt = input.reviewedAt ?? new Date().toISOString();
-    const next = calculateNextReviewState({
+
+    // Rows flagged `v1` (not yet backfilled by the migration) are upgraded to
+    // the SM-2 scheme on first rating so they keep working during rollout.
+    const sm2State = upgradeReviewScheduleToV2(db, schedule);
+    const next = calculateNextReviewStateV2({
       rating: input.rating,
-      currentIntervalDays: schedule.interval_days,
+      easeFactor: sm2State.easeFactor,
+      repetitions: sm2State.repetitions,
+      intervalDays: schedule.interval_days,
       reviewedAt,
     });
     const sessionId = createRequestId();
@@ -268,18 +321,27 @@ export function recordFlashcardRating(
     );
     db.execute(
       `UPDATE review_schedule
-        SET interval_days = ?, next_review_at = ?, last_reviewed_at = ?, updated_at = ?
+        SET interval_days = ?, next_review_at = ?, last_reviewed_at = ?, updated_at = ?,
+            ease_factor = ?, repetitions = ?
         WHERE card_id = ?;`,
       [
         next.intervalDays,
         next.nextReviewAt,
         reviewedAt,
         reviewedAt,
+        next.easeFactor,
+        next.repetitions,
         input.flashcardId,
       ],
     );
 
-    return { ok: true, ...next };
+    return {
+      ok: true,
+      intervalDays: next.intervalDays,
+      nextReviewAt: next.nextReviewAt,
+      easeFactor: next.easeFactor,
+      repetitions: next.repetitions,
+    };
   } catch {
     return {
       ok: false,

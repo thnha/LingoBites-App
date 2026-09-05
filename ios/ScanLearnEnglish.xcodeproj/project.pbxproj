@@ -10,9 +10,9 @@
 		0A169C7D8271152CAA812B84 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		0C80B921A6F3F58F76C31292 /* libPods-ScanLearnEnglish.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-ScanLearnEnglish.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		6BC3D0E43DA84DACAF13E090 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39FCA3C0B6B7422A82341984 /* MaterialIcons.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		6BC3D0E43DA84DACAF13E090 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39FCA3C0B6B7422A82341984 /* MaterialIcons.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +22,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ScanLearnEnglish/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ScanLearnEnglish/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		21485A0736B793FCDCF02F2F /* Pods-ScanLearnEnglish.releaseprod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScanLearnEnglish.releaseprod.xcconfig"; path = "Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish.releaseprod.xcconfig"; sourceTree = "<group>"; };
+		39FCA3C0B6B7422A82341984 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = ../assets/fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
 		3AC3B945E752F72EFCC32E58 /* Pods-ScanLearnEnglish.debugdev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScanLearnEnglish.debugdev.xcconfig"; path = "Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish.debugdev.xcconfig"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-ScanLearnEnglish.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScanLearnEnglish.debug.xcconfig"; path = "Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-ScanLearnEnglish.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScanLearnEnglish.release.xcconfig"; path = "Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish.release.xcconfig"; sourceTree = "<group>"; };
@@ -39,7 +40,6 @@
 		C632D1550A38F627AD1E5E7F /* Pods-ScanLearnEnglish.releasestag.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScanLearnEnglish.releasestag.xcconfig"; path = "Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish.releasestag.xcconfig"; sourceTree = "<group>"; };
 		E78A26A59001C3A164894694 /* Pods-ScanLearnEnglish.debugstag.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScanLearnEnglish.debugstag.xcconfig"; path = "Target Support Files/Pods-ScanLearnEnglish/Pods-ScanLearnEnglish.debugstag.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		39FCA3C0B6B7422A82341984 /* MaterialIcons.ttf */ = {isa = PBXFileReference; name = "MaterialIcons.ttf"; path = "../assets/fonts/MaterialIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

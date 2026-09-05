@@ -89,6 +89,9 @@ function createMockDatabase() {
         last_reviewed_at: params[4],
         created_at: params[5],
         updated_at: params[6],
+        ease_factor: params[7],
+        repetitions: params[8],
+        rating_scale: params[9],
       });
       return { rowsAffected: 1, insertId: reviewSchedule.length };
     }
@@ -140,12 +143,55 @@ function createMockDatabase() {
       return { rowsAffected: 1 };
     }
 
+    if (normalized.startsWith('update review_schedule set ease_factor')) {
+      // SM-2 backfill: SET ease_factor, repetitions, rating_scale, updated_at
+      const easeFactor = params[0];
+      const repetitions = params[1];
+      const ratingScale = params[2];
+      const updatedAt = params[3];
+      const cardId = params[4];
+      const ratingScaleFilter = params[5];
+      const row = reviewSchedule.find(schedule => schedule.card_id === cardId);
+      if (!row || row.rating_scale !== ratingScaleFilter) {
+        return { rowsAffected: 0 };
+      }
+      row.ease_factor = easeFactor;
+      row.repetitions = repetitions;
+      row.rating_scale = ratingScale;
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.startsWith('update review_schedule') &&
+      normalized.includes("rating_scale = 'v2'")
+    ) {
+      // Test/backfill helper: set interval, ease, repetitions and flip scale.
+      const intervalDays = params[0];
+      const easeFactor = params[1];
+      const repetitions = params[2];
+      const updatedAt = params[3];
+      const cardId = params[4];
+      const row = reviewSchedule.find(schedule => schedule.card_id === cardId);
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.interval_days = intervalDays;
+      row.ease_factor = easeFactor;
+      row.repetitions = repetitions;
+      row.rating_scale = 'v2';
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
+    }
+
     if (normalized.startsWith('update review_schedule')) {
       const intervalDays = params[0];
       const nextReviewAt = params[1];
       const lastReviewedAt = params[2];
       const updatedAt = params[3];
-      const cardId = params[4];
+      const easeFactor = params[4];
+      const repetitions = params[5];
+      const cardId = params[6];
       const row = reviewSchedule.find(schedule => schedule.card_id === cardId);
       if (!row) {
         return { rowsAffected: 0 };
@@ -154,6 +200,8 @@ function createMockDatabase() {
       row.next_review_at = nextReviewAt;
       row.last_reviewed_at = lastReviewedAt;
       row.updated_at = updatedAt;
+      row.ease_factor = easeFactor;
+      row.repetitions = repetitions;
       return { rowsAffected: 1 };
     }
 
@@ -178,6 +226,13 @@ function createMockDatabase() {
           row =>
             row.lesson_id === lessonId && row.vocabulary_id === vocabularyId,
         ),
+      );
+    }
+
+    if (normalized.includes('from review_schedule where rating_scale')) {
+      const ratingScale = params[0];
+      return toRows(
+        reviewSchedule.filter(row => row.rating_scale === ratingScale),
       );
     }
 

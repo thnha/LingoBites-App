@@ -314,7 +314,7 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
       const tree = await renderScreen(<DailyReviewScreen navigation={nav as never} />);
 
       await act(async () => {
-        tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
+        tree.root.findByProps({testID: 'rating-good'}).props.onPress();
       });
 
       // Now render again - should show "all done" state

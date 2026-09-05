@@ -9,6 +9,13 @@ import {
   hasIconAndTextLabel,
 } from '../../../test-utils/a11yTestUtils';
 
+const RATING_BUTTONS = [
+  {testID: 'rating-forgot', label: 'Không nhớ - ôn lại sau 1 ngày'},
+  {testID: 'rating-hard', label: 'Nhớ nhưng khó - ôn sớm hơn'},
+  {testID: 'rating-good', label: 'Nhớ - lên lịch ôn sau'},
+  {testID: 'rating-easy', label: 'Rất dễ - lên lịch ôn lâu hơn'},
+];
+
 async function render(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
@@ -32,17 +39,15 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
       <RatingControl onRate={mockHandlers.onRate} onSkip={mockHandlers.onSkip} />,
     );
 
-    const rememberedButton = tree.root.findByProps({testID: 'rating-remembered'});
-    const forgotButton = tree.root.findByProps({testID: 'rating-forgot'});
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});
-
-    expect(hasAccessibilityLabel(rememberedButton)).toBe(true);
-    expect(hasAccessibilityLabel(forgotButton)).toBe(true);
     expect(hasAccessibilityLabel(skipButton)).toBe(true);
-
-    expect(rememberedButton.props.accessibilityLabel).toBe('Đánh dấu đã nhớ');
-    expect(forgotButton.props.accessibilityLabel).toBe('Đánh dấu chưa nhớ');
     expect(skipButton.props.accessibilityLabel).toBe('Bỏ qua thẻ này');
+
+    for (const button of RATING_BUTTONS) {
+      const node = tree.root.findByProps({testID: button.testID});
+      expect(hasAccessibilityLabel(node)).toBe(true);
+      expect(node.props.accessibilityLabel).toBe(button.label);
+    }
   });
 
   it('has accessibility roles for all buttons', async () => {
@@ -50,17 +55,15 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
       <RatingControl onRate={mockHandlers.onRate} onSkip={mockHandlers.onSkip} />,
     );
 
-    const rememberedButton = tree.root.findByProps({testID: 'rating-remembered'});
-    const forgotButton = tree.root.findByProps({testID: 'rating-forgot'});
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});
-
-    expect(hasAccessibilityRole(rememberedButton)).toBe(true);
-    expect(hasAccessibilityRole(forgotButton)).toBe(true);
     expect(hasAccessibilityRole(skipButton)).toBe(true);
-
-    expect(rememberedButton.props.accessibilityRole).toBe('button');
-    expect(forgotButton.props.accessibilityRole).toBe('button');
     expect(skipButton.props.accessibilityRole).toBe('button');
+
+    for (const button of RATING_BUTTONS) {
+      const node = tree.root.findByProps({testID: button.testID});
+      expect(hasAccessibilityRole(node)).toBe(true);
+      expect(node.props.accessibilityRole).toBe('button');
+    }
   });
 
   it('has icon+text label pairing for all buttons (NFR-ACC-004)', async () => {
@@ -68,25 +71,19 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
       <RatingControl onRate={mockHandlers.onRate} onSkip={mockHandlers.onSkip} />,
     );
 
-    const rememberedButton = tree.root.findByProps({testID: 'rating-remembered'});
-    const forgotButton = tree.root.findByProps({testID: 'rating-forgot'});
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});
-
-    const rememberedCheck = hasIconAndTextLabel(rememberedButton);
-    const forgotCheck = hasIconAndTextLabel(forgotButton);
     const skipCheck = hasIconAndTextLabel(skipButton);
-
-    expect(rememberedCheck.passes).toBe(true);
-    expect(rememberedCheck.hasIcon).toBe(true);
-    expect(rememberedCheck.hasText).toBe(true);
-
-    expect(forgotCheck.passes).toBe(true);
-    expect(forgotCheck.hasIcon).toBe(true);
-    expect(forgotCheck.hasText).toBe(true);
-
     expect(skipCheck.passes).toBe(true);
     expect(skipCheck.hasIcon).toBe(true);
     expect(skipCheck.hasText).toBe(true);
+
+    for (const button of RATING_BUTTONS) {
+      const node = tree.root.findByProps({testID: button.testID});
+      const check = hasIconAndTextLabel(node);
+      expect(check.passes).toBe(true);
+      expect(check.hasIcon).toBe(true);
+      expect(check.hasText).toBe(true);
+    }
   });
 
   it('respects disabled state for accessibility', async () => {
@@ -98,12 +95,12 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
       />,
     );
 
-    const rememberedButton = tree.root.findByProps({testID: 'rating-remembered'});
-    const forgotButton = tree.root.findByProps({testID: 'rating-forgot'});
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});
-
-    expect(rememberedButton.props.disabled).toBe(true);
-    expect(forgotButton.props.disabled).toBe(true);
     expect(skipButton.props.disabled).toBe(true);
+
+    for (const button of RATING_BUTTONS) {
+      const node = tree.root.findByProps({testID: button.testID});
+      expect(node.props.disabled).toBe(true);
+    }
   });
 });
