@@ -109,4 +109,23 @@ describe('ProfileScreen', () => {
       expect.stringContaining('mailto:support@lingobites.app'),
     );
   });
+
+  it('explains there is no cached audio when tapping the chapter audio row (VC-4)', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = renderProfileScreen();
+    });
+
+    const audioRow = findPressableByLabel(tree!.root, 'Âm thanh chương học');
+
+    await ReactTestRenderer.act(async () => {
+      await audioRow?.props.onPress();
+    });
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Âm thanh chương học',
+      expect.stringContaining('Chưa có âm thanh'),
+    );
+  });
 });

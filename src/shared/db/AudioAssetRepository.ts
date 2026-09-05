@@ -60,6 +60,17 @@ export function listChapterAudioAssets(chapterId: string): AudioAssetRecord[] {
   return rowsToRecords(result);
 }
 
+/** One ready asset by id — used by the offline player before playback. */
+export function getReadyAudioAsset(id: string): AudioAssetRecord | null {
+  const db = getDatabase();
+  const result = db.execute(
+    `SELECT * FROM audio_assets WHERE id = ? AND download_status = 'ready' LIMIT 1;`,
+    [id],
+  );
+  const row = result.rows?.item(0) as AudioAssetRow | undefined;
+  return row ? mapAudioAssetRow(row) : null;
+}
+
 /** All fully-downloaded rows; used for cache accounting and eviction. */
 export function listReadyAudioAssets(): AudioAssetRecord[] {
   const db = getDatabase();

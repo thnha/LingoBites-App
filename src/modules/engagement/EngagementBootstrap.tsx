@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useFeatureEnabled } from '../../release';
-import { reconcileReminders } from './reminderService';
+import { bootstrapGoldenHourReminders } from './nativeReminderScheduler';
 
 /**
  * App-start engagement bootstrap: recomputes reminder state from the local
@@ -8,9 +8,9 @@ import { reconcileReminders } from './reminderService';
  * system feature is enabled. Delivers no UI — gamification state is always
  * recomputed from the persisted event log on read (see `getGamificationSnapshot`).
  *
- * Real local notifications need a native scheduler adapter installed via
- * `configureReminderScheduler`; until that is wired in, the no-op scheduler
- * keeps this path safe and testable.
+ * Notifications are installed by `bootstrapGoldenHourReminders`: when the OS
+ * already granted permission it swaps the no-op scheduler for the real native
+ * adapter and reconciles; otherwise the no-op scheduler keeps this path safe.
  */
 export function EngagementBootstrap() {
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
@@ -19,7 +19,7 @@ export function EngagementBootstrap() {
     if (!reviewSystemEnabled) {
       return;
     }
-    reconcileReminders();
+    void bootstrapGoldenHourReminders();
   }, [reviewSystemEnabled]);
 
   return null;
