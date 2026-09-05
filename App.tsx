@@ -3,6 +3,7 @@ import {StatusBar, useColorScheme} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {AppNavigator} from './src/app/navigation/AppNavigator';
 import {trackAppOpened} from './src/modules/analytics';
+import {EngagementBootstrap} from './src/modules/engagement/EngagementBootstrap';
 import {installGlobalErrorHandler} from './src/shared/errors';
 import {FeatureFlagProvider} from './src/release';
 import {AppThemeProvider} from './src/theme';
@@ -21,6 +22,7 @@ function App() {
         <AppThemeProvider>
           <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
           <AppNavigator />
+          <EngagementBootstrap />
         </AppThemeProvider>
       </SafeAreaProvider>
     </FeatureFlagProvider>

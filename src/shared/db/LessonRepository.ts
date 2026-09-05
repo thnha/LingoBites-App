@@ -222,4 +222,5 @@ export function clearAllLocalData(): void {
   db.execute('DELETE FROM flashcards;');
   db.execute('DELETE FROM lessons;');
   db.execute('DELETE FROM app_settings;');
+  db.execute('DELETE FROM gamification_events;');
 }

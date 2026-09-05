@@ -1,5 +1,6 @@
 import { createRequestId } from '../api/requestId';
 import { getDatabase } from './database';
+import type { UpcomingReviewReminder } from './reminderPolicy';
 import {
   DEFAULT_EASE_FACTOR,
   DEFAULT_REVIEW_INTERVAL_DAYS,
@@ -349,4 +350,60 @@ export function recordFlashcardRating(
       message: 'Không thể lưu kết quả ôn tập. Vui lòng thử lại.',
     };
   }
+}
+
+/**
+ * Current due instant (`next_review_at`) of a card, or null when the card has
+ * no schedule row. Engagement code reads this *before* rating the card so it
+ * can tell whether the review happened on time (see `isOnTimeReview`).
+ */
+export function getCardDueAt(cardId: string): string | null {
+  const db = getDatabase();
+  const result = db.execute(
+    'SELECT next_review_at FROM review_schedule WHERE card_id = ? LIMIT 1;',
+    [cardId],
+  );
+  const row = result.rows?.item(0) as
+    | { next_review_at: string }
+    | undefined;
+  return row?.next_review_at ?? null;
+}
+
+type UpcomingReminderRow = {
+  card_id: string;
+  word: string;
+  next_review_at: string;
+};
+
+/**
+ * Cards whose next review is strictly in the future, with the word to show in
+ * the reminder. This is the "desired" reminder set the OS notification state is
+ * reconciled against (REQ-10). Cards no longer saved are excluded.
+ */
+export function listUpcomingReviewReminders(
+  now = new Date().toISOString(),
+): UpcomingReviewReminder[] {
+  const db = getDatabase();
+  const result = db.execute(
+    `SELECT review_schedule.card_id, flashcards.word, review_schedule.next_review_at
+      FROM review_schedule
+      INNER JOIN flashcards ON flashcards.id = review_schedule.card_id
+      WHERE review_schedule.next_review_at > ? AND flashcards.is_saved = 1
+      ORDER BY datetime(review_schedule.next_review_at) ASC;`,
+    [now],
+  );
+  const rows = result.rows;
+  const items: UpcomingReviewReminder[] = [];
+  if (!rows) {
+    return items;
+  }
+  for (let index = 0; index < rows.length; index += 1) {
+    const row = rows.item(index) as UpcomingReminderRow;
+    items.push({
+      cardId: row.card_id,
+      word: row.word,
+      dueAt: row.next_review_at,
+    });
+  }
+  return items;
 }

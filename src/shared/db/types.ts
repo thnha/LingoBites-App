@@ -181,3 +181,30 @@ export type ChapterAudioSummary = {
   assetCount: number;
   lastOpenedAt: string | null;
 };
+
+/**
+ * Types of events stored in the local `gamification_events` log (ADR-4, REQ-11).
+ *
+ * `review_session_completed` - one per finished review session that rated at
+ *   least one card. Its `points` are the XP the session earned. A day only
+ *   counts toward the streak when it contains one of these events.
+ * `review_on_time` - one per card reviewed on or before the day it was due
+ *   (see `isOnTimeReview`). Its `points` accrue as pet water; this is what
+ *   makes pet resources depend on timely review behaviour, not wall-clock time.
+ */
+export type GamificationEventType =
+  | 'review_session_completed'
+  | 'review_on_time';
+
+/** Input for appending a single row to the gamification event log. */
+export type GamificationEventInput = {
+  eventType: GamificationEventType;
+  sourceEventId: string;
+  points: number;
+  createdAt: string;
+};
+
+/** A stored gamification event row (ADR-4 single source of truth). */
+export type GamificationEventRecord = GamificationEventInput & {
+  id: string;
+};

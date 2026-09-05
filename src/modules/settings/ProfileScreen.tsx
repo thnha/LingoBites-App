@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Alert, Linking, Pressable, ScrollView, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {ProfileStackParamList} from '../../app/navigation/types';
 import {AppCard} from '../../components/AppCard';
@@ -13,6 +14,8 @@ import {ThemePicker} from '../../components/ThemePicker';
 import {getSupportEmail} from '../../shared/api/appConfig';
 import {getAudioCacheStats} from '../../shared/db/AudioAssetRepository';
 import {formatCacheBytes} from '../../shared/db/audioCachePolicy';
+import {getGamificationSnapshot} from '../engagement/gamification';
+import type {GamificationSnapshot} from '../../shared/db/gamificationPolicy';
 import {
   CLEAR_DATA_CONFIRM_MESSAGE,
   CLEAR_DATA_DONE_MESSAGE,
@@ -27,7 +30,6 @@ const PROFILE_PLACEHOLDER = {
   initials: 'HV',
   name: 'Học viên',
   subtitle: 'Học tiếng Anh · Trình độ Beginner',
-  streakDays: 5,
   wordsKnown: '4.2k',
   accuracy: '85%',
 } as const;
@@ -40,6 +42,23 @@ export function ProfileScreen({navigation}: Props) {
   const audioCacheTrailingLabel = `${formatCacheBytes(
     audioCacheStats.readyBytes,
   )} · ${audioCacheStats.chapterCount} chương`;
+
+  // Streak / XP / badge / pet state is recomputed from the local gamification
+  // event log on every focus so the screen never shows stale engagement data.
+  const [gamification, setGamification] = useState<GamificationSnapshot>(() =>
+    getGamificationSnapshot(),
+  );
+  useFocusEffect(
+    useCallback(() => {
+      setGamification(getGamificationSnapshot());
+    }, []),
+  );
+  const streak = gamification.currentStreak;
+  const streakTitle = streak > 0 ? `Chuỗi ${streak} ngày` : 'Chưa có chuỗi ngày';
+  const streakSubtitle =
+    streak > 0
+      ? 'Tiếp tục duy trì — học gì đó hôm nay nhé!'
+      : 'Hoàn thành một phiên ôn tập để bắt đầu chuỗi.';
 
   function handleClearData() {
     Alert.alert('Xóa dữ liệu local', CLEAR_DATA_CONFIRM_MESSAGE, [
@@ -130,10 +149,61 @@ export function ProfileScreen({navigation}: Props) {
           />
           <View style={{flex: 1, gap: 4}}>
             <AppText style={{color: theme.colors.accentInk, fontSize: 22, fontWeight: '600'}}>
-              {`Chuỗi ${PROFILE_PLACEHOLDER.streakDays} ngày`}
+              {streakTitle}
             </AppText>
             <AppText style={{color: theme.colors.accentInk, fontSize: 12, opacity: 0.85}}>
-              Tiếp tục duy trì — học gì đó hôm nay nhé!
+              {streakSubtitle}
+            </AppText>
+          </View>
+        </View>
+
+        <View style={{flexDirection: 'row', gap: 12}}>
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: theme.colors.tertiarySoft,
+              borderRadius: 18,
+              flex: 1,
+              paddingHorizontal: 12,
+              paddingVertical: 16,
+            }}>
+            <AppText style={{color: theme.colors.tertiary, fontSize: 26, fontWeight: '700'}}>
+              {gamification.totalXp}
+            </AppText>
+            <AppText style={{color: theme.colors.tertiary, fontSize: 12, fontWeight: '600'}}>
+              XP đã đạt
+            </AppText>
+          </View>
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: theme.colors.secondarySoft,
+              borderRadius: 18,
+              flex: 1,
+              paddingHorizontal: 12,
+              paddingVertical: 16,
+            }}>
+            <AppText style={{color: theme.colors.secondary, fontSize: 26, fontWeight: '700'}}>
+              {gamification.badges.length}
+            </AppText>
+            <AppText style={{color: theme.colors.secondary, fontSize: 12, fontWeight: '600'}}>
+              Huy hiệu
+            </AppText>
+          </View>
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: theme.colors.accentSoft,
+              borderRadius: 18,
+              flex: 1,
+              paddingHorizontal: 12,
+              paddingVertical: 16,
+            }}>
+            <AppText style={{color: theme.colors.primary, fontSize: 18, fontWeight: '700'}}>
+              {gamification.pet.stageLabel}
+            </AppText>
+            <AppText style={{color: theme.colors.primary, fontSize: 12, fontWeight: '600'}}>
+              Cây ảo
             </AppText>
           </View>
         </View>
