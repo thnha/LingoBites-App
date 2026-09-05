@@ -12,8 +12,9 @@ import {ProfileSettingsRow} from '../../components/ProfileSettingsRow';
 import {SectionHeader} from '../../components/SectionHeader';
 import {ThemePicker} from '../../components/ThemePicker';
 import {getSupportEmail} from '../../shared/api/appConfig';
-import {getAudioCacheStats} from '../../shared/db/AudioAssetRepository';
+import {getAudioCacheStats, listReadyAudioAssets} from '../../shared/db/AudioAssetRepository';
 import {formatCacheBytes} from '../../shared/db/audioCachePolicy';
+import {playReadyChapterAudio} from '../audio/deviceChapterAudio';
 import {getGamificationSnapshot} from '../engagement/gamification';
 import type {GamificationSnapshot} from '../../shared/db/gamificationPolicy';
 import {
@@ -77,6 +78,22 @@ export function ProfileScreen({navigation}: Props) {
   function handleSupport() {
     const subject = encodeURIComponent('LingoBites — Góp ý / báo lỗi');
     void Linking.openURL(`mailto:${supportEmail}?subject=${subject}`);
+  }
+
+  /** Plays the first downloaded pronunciation clip — offline playback QA (VC-4). */
+  async function handlePlayCachedAudio() {
+    const ready = listReadyAudioAssets();
+    if (ready.length === 0) {
+      Alert.alert(
+        'Âm thanh chương học',
+        'Chưa có âm thanh được tải về máy. Tải chương học khi có mạng rồi thử lại.',
+      );
+      return;
+    }
+    const result = await playReadyChapterAudio(ready[0].id);
+    if (!result.ok) {
+      Alert.alert('Âm thanh chương học', result.message);
+    }
   }
 
   return (
@@ -270,10 +287,11 @@ export function ProfileScreen({navigation}: Props) {
             trailing="chevron"
           />
           <ProfileSettingsRow
-            accessibilityLabel="Dung lượng âm thanh chương học đã tải về máy"
+            accessibilityLabel="Dung lượng âm thanh chương học đã tải về máy — bấm để nghe thử clip đã tải"
             icon="volume_up"
             label="Âm thanh chương học"
             medallionTone="teal"
+            onPress={handlePlayCachedAudio}
             trailing={{text: audioCacheTrailingLabel}}
           />
           <ProfileSettingsRow

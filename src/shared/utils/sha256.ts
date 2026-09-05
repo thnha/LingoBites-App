@@ -5,7 +5,11 @@ function rightRotate(value: number, amount: number): number {
 }
 
 export function sha256Hex(message: string): string {
-  const bytes = new TextEncoder().encode(message);
+  return sha256HexBytes(new TextEncoder().encode(message));
+}
+
+/** Minimal SHA-256 over raw bytes → lowercase hex. Sync, no native deps. */
+export function sha256HexBytes(bytes: Uint8Array): string {
   const bitLength = bytes.length * 8;
 
   const withOne = new Uint8Array(((bytes.length + 9 + 63) >> 6) << 6);
