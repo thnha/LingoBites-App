@@ -182,7 +182,7 @@ export type ChapterAudioSummary = {
   lastOpenedAt: string | null;
 };
 
- * Wire payload of a single review event sent to the server outbox endpoint.
+/** Wire payload of a single review event sent to the server outbox endpoint.
  * Versioned so the server can reject unknown shapes instead of guessing.
  */
 export type ReviewEventPayload = {
