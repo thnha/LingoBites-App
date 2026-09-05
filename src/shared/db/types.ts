@@ -134,6 +134,54 @@ export type RecordFlashcardRatingResult =
     };
 
 /**
+ * Local lifecycle of one downloaded chapter-audio file (ADR-3, REQ-9).
+ *
+ * `pending`  - listed in the chapter manifest, not downloaded yet.
+ * `downloading` - a download is in flight; on app restart this is reset to
+ *                 `pending` so a crashed download is retried, never stuck.
+ * `ready`    - file exists at `local_path`, bytes recorded, checksum verified.
+ * `failed`   - last attempt failed (network / checksum / storage). Keeps the
+ *              manifest `url` + `checksum` so the UI can offer a retry.
+ */
+export type AudioDownloadStatus =
+  | 'pending'
+  | 'downloading'
+  | 'ready'
+  | 'failed';
+
+/** One entry from the server-delivered per-chapter audio manifest (ADR-3). */
+export type ChapterAudioAsset = {
+  id: string;
+  url: string;
+  bytes: number;
+  checksum: string;
+};
+
+export type AudioAssetRecord = {
+  id: string;
+  chapterId: string;
+  url: string;
+  localPath: string | null;
+  bytes: number;
+  checksum: string;
+  downloadStatus: AudioDownloadStatus;
+  updatedAt: string;
+};
+
+export type AudioCacheStats = {
+  chapterCount: number;
+  assetCount: number;
+  readyBytes: number;
+};
+
+/** Per-chapter rollup of downloaded (ready) audio used for eviction decisions. */
+export type ChapterAudioSummary = {
+  chapterId: string;
+  readyBytes: number;
+  assetCount: number;
+  lastOpenedAt: string | null;
+};
+
  * Wire payload of a single review event sent to the server outbox endpoint.
  * Versioned so the server can reject unknown shapes instead of guessing.
  */
