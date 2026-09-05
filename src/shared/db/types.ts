@@ -207,6 +207,9 @@ export type GamificationEventInput = {
 /** A stored gamification event row (ADR-4 single source of truth). */
 export type GamificationEventRecord = GamificationEventInput & {
   id: string;
+};
+
+/**
  * Wire payload of a single review event sent to the server outbox endpoint.
  * Versioned so the server can reject unknown shapes instead of guessing.
  */

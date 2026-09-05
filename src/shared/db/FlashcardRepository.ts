@@ -1,5 +1,4 @@
 import { createRequestId } from '../api/requestId';
-import { getDatabase } from './database';
 import type { UpcomingReviewReminder } from './reminderPolicy';
 import { getOrCreateAnonymousUserId } from './anonymousUserId';
 import { getDatabase, withTransaction } from './database';
