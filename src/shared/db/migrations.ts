@@ -110,6 +110,18 @@ const MIGRATIONS = [
   );`,
   `CREATE INDEX IF NOT EXISTS idx_audio_assets_chapter_id ON audio_assets (chapter_id);`,
   `CREATE INDEX IF NOT EXISTS idx_audio_assets_download_status ON audio_assets (download_status);`,
+  // Local gamification event log (SETE-89, ADR-4). This table is the ONLY input
+  // to streak / XP / badge / pet state: the state is recomputed from it on app
+  // start, never held only in transient UI state. Keeping the schema minimal
+  // (as decided in ADR-4) makes the state auditable and testable.
+  `CREATE TABLE IF NOT EXISTS gamification_events (
+    id TEXT PRIMARY KEY NOT NULL,
+    event_type TEXT NOT NULL,
+    source_event_id TEXT,
+    points INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_gamification_events_type_created ON gamification_events (event_type, created_at);`,
 ];
 
 /**

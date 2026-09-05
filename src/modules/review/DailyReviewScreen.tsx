@@ -13,11 +13,15 @@ import {RatingControl} from '../../components/RatingControl';
 import {useFeatureEnabled} from '../../release';
 import {requestSync} from '../sync/appSync';
 import {
+  getCardDueAt,
   getDueFlashcards,
   listFlashcards,
   recordFlashcardRating,
 } from '../../shared/db/FlashcardRepository';
 import type {FlashcardRecord, ReviewRating} from '../../shared/db/types';
+import {startReviewSession} from '../engagement/reviewSession';
+import type {ReviewSession} from '../engagement/reviewSession';
+import {reconcileReminders} from '../engagement/reminderService';
 import {useAppTheme} from '../../theme';
 
 const DEFAULT_SOFT_CAP = 10;
@@ -103,6 +107,10 @@ export function DailyReviewScreen({
     easy: 0,
   });
   const [complete, setComplete] = useState(false);
+  // Engagement session (SETE-89): records the rated cards and, when the session
+  // ends, writes the gamification events that drive streak/XP/badges/pet state.
+  const [session] = useState<ReviewSession>(() => startReviewSession());
+  const [sessionXpEarned, setSessionXpEarned] = useState<number | null>(null);
 
   const savedCardCount = useMemo(() => listFlashcards().length, []);
   const carryOverCount = Math.max(0, allDueCount - sessionCards.length);
@@ -114,10 +122,22 @@ export function DailyReviewScreen({
     if (currentIndex + 1 >= sessionCards.length) {
       setSummary(nextSummary);
       setComplete(true);
+      finalizeSession();
       return;
     }
     setSummary(nextSummary);
     setCurrentIndex(index => index + 1);
+  }
+
+  /** Persists the session's gamification events (idempotent, no-op if empty). */
+  function finalizeSession() {
+    const outcome = session.finish();
+    if (outcome?.ok) {
+      setSessionXpEarned(outcome.xpEarned);
+      // Ratings just moved several due times: reconcile reminders so stale ones
+      // are cancelled and the new due times are scheduled (REQ-10 / VC-5).
+      reconcileReminders();
+    }
   }
 
   function handleRate(rating: ReviewRating) {
@@ -126,6 +146,9 @@ export function DailyReviewScreen({
       return;
     }
 
+    const reviewedAt = new Date().toISOString();
+    // Due instant before rating — needed to tell whether this was on time.
+    const dueAt = getCardDueAt(card.id);
     const result = recordFlashcardRating({flashcardId: card.id, rating});
     const nextSummary = {
       reviewed: summary.reviewed + 1,
@@ -138,6 +161,12 @@ export function DailyReviewScreen({
     if (!result.ok) {
       setRatingError(result.message);
     } else {
+      session.record({
+        flashcardId: card.id,
+        rating,
+        dueAt,
+        reviewedAt,
+      });
       requestSync();
     }
     finishNext(nextSummary);
@@ -148,6 +177,12 @@ export function DailyReviewScreen({
       ...summary,
       reviewed: summary.reviewed + 1,
     });
+  }
+
+  function handleClose() {
+    // Leave after rating at least one card still closes the session.
+    finalizeSession();
+    navigation?.goBack?.();
   }
 
   if (!reviewSystemEnabled) {
@@ -168,7 +203,7 @@ export function DailyReviewScreen({
           <Pressable
             accessibilityLabel="Đóng phiên ôn tập"
             accessibilityRole="button"
-            onPress={() => navigation?.goBack?.()}
+            onPress={handleClose}
             style={styles.closeButton}
             testID="review-close">
             <MaterialIcon name="close" size={22} />
@@ -238,6 +273,19 @@ export function DailyReviewScreen({
                 </AppText>
               </View>
             </View>
+            {sessionXpEarned != null && sessionXpEarned > 0 ? (
+              <View
+                style={[
+                  styles.xpRow,
+                  {backgroundColor: theme.colors.accentSoft},
+                ]}>
+                <AppText
+                  style={[styles.xpText, {color: theme.colors.primary}]}
+                  testID="summary-xp-earned">
+                  {`+${sessionXpEarned} XP hôm nay`}
+                </AppText>
+              </View>
+            ) : null}
           </AppCard>
           <AppButton
             accessibilityLabel="Quay về Home"
@@ -366,5 +414,14 @@ const styles = StyleSheet.create({
   },
   word: {
     textAlign: 'center',
+  },
+  xpRow: {
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  xpText: {
+    fontWeight: '700',
   },
 });
