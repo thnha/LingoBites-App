@@ -155,6 +155,10 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     expect(goodCount.props.children).toBe(1);
     expect(forgotCount.props.children).toBe(0);
 
+    // Session completion wrote gamification events: XP is shown on the summary.
+    const xpEarned = reviewTree.root.findByProps({testID: 'summary-xp-earned'});
+    expect(xpEarned).toBeTruthy();
+
     // Verify return button is present
     const returnButtons = reviewTree.root.findAll(
       node =>

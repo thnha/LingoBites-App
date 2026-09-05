@@ -73,7 +73,7 @@ describe('ProfileScreen', () => {
 
     const text = JSON.stringify(tree!.toJSON());
     expect(text).toContain('Beginner');
-    expect(text).toContain('Chuỗi 5 ngày');
+    expect(text).toContain('Chưa có chuỗi ngày');
   });
 
   it('opens privacy detail screen (FR-SET-004)', async () => {

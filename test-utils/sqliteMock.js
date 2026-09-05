@@ -18,6 +18,7 @@ function createMockDatabase() {
   const reviewSchedule = [];
   const reviewSessions = [];
   const audioAssets = [];
+  const gamificationEvents = [];
   const syncOutbox = [];
 
   const execute = (sql, params = []) => {
@@ -110,6 +111,17 @@ function createMockDatabase() {
         created_at: params[7],
       });
       return { rowsAffected: 1, insertId: reviewSessions.length };
+    }
+
+    if (normalized.startsWith('insert into gamification_events')) {
+      gamificationEvents.push({
+        id: params[0],
+        event_type: params[1],
+        source_event_id: params[2],
+        points: params[3],
+        created_at: params[4],
+      });
+      return { rowsAffected: 1, insertId: gamificationEvents.length };
     }
 
     if (normalized.includes('delete from lessons where id')) {
@@ -568,6 +580,42 @@ function createMockDatabase() {
       normalized.includes('from audio_assets')
     ) {
       return toRows(audioAssets);
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from review_schedule') &&
+      normalized.includes('inner join flashcards')
+    ) {
+      // Upcoming-review reminders: schedule joined with flashcard word.
+      const now = params[0];
+      const rows = reviewSchedule
+        .filter(row => row.next_review_at > now)
+        .map(row => {
+          const matched = flashcards.find(
+            item => item.id === row.card_id,
+          );
+          return {
+            card_id: row.card_id,
+            word: matched && matched.is_saved === 1 ? matched.word : '',
+            next_review_at: row.next_review_at,
+          };
+        })
+        .filter(item => item.word !== '');
+      return toRows(rows);
+    }
+
+    if (
+      normalized.includes('from gamification_events') &&
+      normalized.startsWith('select')
+    ) {
+      return toRows([...gamificationEvents]);
+    }
+
+    if (normalized === 'delete from gamification_events;') {
+      const count = gamificationEvents.length;
+      gamificationEvents.length = 0;
+      return { rowsAffected: count };
     }
 
     if (normalized.includes('from app_settings where key')) {
