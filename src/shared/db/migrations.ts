@@ -79,6 +79,21 @@ const MIGRATIONS = [
   `ALTER TABLE review_schedule ADD COLUMN ease_factor REAL NOT NULL DEFAULT 2.5;`,
   `ALTER TABLE review_schedule ADD COLUMN repetitions INTEGER NOT NULL DEFAULT 0;`,
   `ALTER TABLE review_schedule ADD COLUMN rating_scale TEXT NOT NULL DEFAULT 'v1';`,
+  // Offline chapter-audio cache (SETE-88, ADR-3). The server only serves a
+  // manifest; audio files are downloaded straight to device storage and this
+  // table tracks each file so the cache can stay bounded (cap + eviction).
+  `CREATE TABLE IF NOT EXISTS audio_assets (
+    id TEXT PRIMARY KEY NOT NULL,
+    chapter_id TEXT NOT NULL,
+    url TEXT NOT NULL,
+    local_path TEXT,
+    bytes INTEGER NOT NULL DEFAULT 0,
+    checksum TEXT NOT NULL,
+    download_status TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_audio_assets_chapter_id ON audio_assets (chapter_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_audio_assets_download_status ON audio_assets (download_status);`,
 ];
 
 /**

@@ -11,6 +11,8 @@ import {ProfileSettingsRow} from '../../components/ProfileSettingsRow';
 import {SectionHeader} from '../../components/SectionHeader';
 import {ThemePicker} from '../../components/ThemePicker';
 import {getSupportEmail} from '../../shared/api/appConfig';
+import {getAudioCacheStats} from '../../shared/db/AudioAssetRepository';
+import {formatCacheBytes} from '../../shared/db/audioCachePolicy';
 import {
   CLEAR_DATA_CONFIRM_MESSAGE,
   CLEAR_DATA_DONE_MESSAGE,
@@ -34,6 +36,10 @@ export function ProfileScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const supportEmail = getSupportEmail();
+  const audioCacheStats = getAudioCacheStats();
+  const audioCacheTrailingLabel = `${formatCacheBytes(
+    audioCacheStats.readyBytes,
+  )} · ${audioCacheStats.chapterCount} chương`;
 
   function handleClearData() {
     Alert.alert('Xóa dữ liệu local', CLEAR_DATA_CONFIRM_MESSAGE, [
@@ -192,6 +198,13 @@ export function ProfileScreen({navigation}: Props) {
             label="Nhắc nhở"
             medallionTone="teal"
             trailing="chevron"
+          />
+          <ProfileSettingsRow
+            accessibilityLabel="Dung lượng âm thanh chương học đã tải về máy"
+            icon="volume_up"
+            label="Âm thanh chương học"
+            medallionTone="teal"
+            trailing={{text: audioCacheTrailingLabel}}
           />
           <ProfileSettingsRow
             accessibilityLabel="Quyền riêng tư"

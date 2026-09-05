@@ -17,6 +17,7 @@ function createMockDatabase() {
   const flashcards = [];
   const reviewSchedule = [];
   const reviewSessions = [];
+  const audioAssets = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -322,6 +323,169 @@ function createMockDatabase() {
       const count = reviewSessions.length;
       reviewSessions.length = 0;
       return { rowsAffected: count };
+    }
+
+    if (normalized === 'delete from audio_assets;') {
+      const count = audioAssets.length;
+      audioAssets.length = 0;
+      return { rowsAffected: count };
+    }
+
+    if (normalized.startsWith('insert into audio_assets')) {
+      audioAssets.push({
+        id: params[0],
+        chapter_id: params[1],
+        url: params[2],
+        local_path: params[3],
+        bytes: params[4],
+        checksum: params[5],
+        download_status: params[6],
+        updated_at: params[7],
+      });
+      return { rowsAffected: 1, insertId: audioAssets.length };
+    }
+
+    if (
+      normalized.includes('update audio_assets') &&
+      normalized.includes("download_status = 'ready'")
+    ) {
+      const localPath = params[0];
+      const bytes = params[1];
+      const updatedAt = params[2];
+      const id = params[3];
+      const row = audioAssets.find(asset => asset.id === id);
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.download_status = 'ready';
+      row.local_path = localPath;
+      row.bytes = bytes;
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.includes('update audio_assets') &&
+      normalized.includes("download_status = 'failed'")
+    ) {
+      const updatedAt = params[0];
+      const id = params[1];
+      const row = audioAssets.find(asset => asset.id === id);
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.download_status = 'failed';
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.includes('update audio_assets') &&
+      normalized.includes("download_status = 'downloading'")
+    ) {
+      const updatedAt = params[0];
+      const id = params[1];
+      const row = audioAssets.find(asset => asset.id === id);
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.download_status = 'downloading';
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.includes('update audio_assets') &&
+      normalized.includes("download_status = 'pending'")
+    ) {
+      const updatedAt = params[0];
+      const id = params[1];
+      const row = audioAssets.find(asset => asset.id === id);
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.download_status = 'pending';
+      row.local_path = null;
+      row.bytes = 0;
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.includes('update audio_assets') &&
+      normalized.includes('set url = ?')
+    ) {
+      const url = params[0];
+      const checksum = params[1];
+      const updatedAt = params[2];
+      const id = params[3];
+      const row = audioAssets.find(asset => asset.id === id);
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.url = url;
+      row.checksum = checksum;
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.includes('update audio_assets') &&
+      normalized.includes('where chapter_id')
+    ) {
+      const updatedAt = params[0];
+      const chapterId = params[1];
+      let affected = 0;
+      for (const row of audioAssets) {
+        if (row.chapter_id === chapterId) {
+          row.updated_at = updatedAt;
+          affected += 1;
+        }
+      }
+      return { rowsAffected: affected };
+    }
+
+    if (normalized.includes('delete from audio_assets where id')) {
+      const id = params[0];
+      const before = audioAssets.length;
+      const remaining = audioAssets.filter(row => row.id !== id);
+      audioAssets.length = 0;
+      audioAssets.push(...remaining);
+      return { rowsAffected: before - audioAssets.length };
+    }
+
+    if (normalized.includes('delete from audio_assets where chapter_id')) {
+      const chapterId = params[0];
+      const before = audioAssets.length;
+      const remaining = audioAssets.filter(row => row.chapter_id !== chapterId);
+      audioAssets.length = 0;
+      audioAssets.push(...remaining);
+      return { rowsAffected: before - audioAssets.length };
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from audio_assets') &&
+      normalized.includes('where download_status')
+    ) {
+      const status = params[0] || 'ready';
+      return toRows(audioAssets.filter(row => row.download_status === status));
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from audio_assets') &&
+      normalized.includes('where chapter_id')
+    ) {
+      const chapterId = params[0];
+      return toRows(audioAssets.filter(row => row.chapter_id === chapterId));
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from audio_assets')
+    ) {
+      return toRows(audioAssets);
     }
 
     if (normalized.includes('from app_settings where key')) {
