@@ -3,6 +3,7 @@ import {StatusBar, useColorScheme} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {AppNavigator} from './src/app/navigation/AppNavigator';
 import {trackAppOpened} from './src/modules/analytics';
+import {startAppSync, stopAppSync} from './src/modules/sync/appSync';
 import {installGlobalErrorHandler} from './src/shared/errors';
 import {FeatureFlagProvider} from './src/release';
 import {AppThemeProvider} from './src/theme';
@@ -13,6 +14,10 @@ function App() {
   useEffect(() => {
     installGlobalErrorHandler();
     trackAppOpened();
+    startAppSync();
+    return () => {
+      stopAppSync();
+    };
   }, []);
 
   return (

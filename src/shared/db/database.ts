@@ -22,3 +22,31 @@ export function resetDatabaseForTests(connection: QuickSQLiteConnection | null):
   dbInstance = connection;
   migrationsApplied = false;
 }
+
+/**
+ * Runs `run` between `BEGIN`/`COMMIT`, rolling back when it throws.
+ *
+ * `react-native-quick-sqlite` exposes a callback-style `transaction()`, but it
+ * returns a promise; keeping the raw-BEGIN form lets repository functions stay
+ * synchronous (the current codebase contract) while still giving the atomicity
+ * the outbox design (ADR-2) relies on for the review write + outbox insert.
+ */
+export function withTransaction<T>(
+  db: QuickSQLiteConnection,
+  run: () => T,
+): T {
+  db.execute('BEGIN');
+  try {
+    const result = run();
+    db.execute('COMMIT');
+    return result;
+  } catch (error) {
+    try {
+      db.execute('ROLLBACK');
+    } catch {
+      // Rollback failure leaves the connection unusable; the original error is
+      // what matters and will surface to the caller.
+    }
+    throw error;
+  }
+}

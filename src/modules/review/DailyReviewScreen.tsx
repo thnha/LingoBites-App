@@ -11,6 +11,7 @@ import {MaterialIcon} from '../../components/MaterialIcon';
 import {Medallion} from '../../components/Medallion';
 import {RatingControl} from '../../components/RatingControl';
 import {useFeatureEnabled} from '../../release';
+import {requestSync} from '../sync/appSync';
 import {
   getDueFlashcards,
   listFlashcards,
@@ -136,6 +137,8 @@ export function DailyReviewScreen({
 
     if (!result.ok) {
       setRatingError(result.message);
+    } else {
+      requestSync();
     }
     finishNext(nextSummary);
   }

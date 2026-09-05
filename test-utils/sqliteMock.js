@@ -17,6 +17,7 @@ function createMockDatabase() {
   const flashcards = [];
   const reviewSchedule = [];
   const reviewSessions = [];
+  const syncOutbox = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -141,6 +142,87 @@ function createMockDatabase() {
       row.is_saved = 0;
       row.updated_at = updatedAt;
       return { rowsAffected: 1 };
+    }
+
+    if (normalized.startsWith('insert into sync_outbox')) {
+      syncOutbox.push({
+        id: params[0],
+        event_type: params[1],
+        entity_id: params[2],
+        payload_json: params[3],
+        created_at: params[4],
+        attempt_count: 0,
+        last_error: null,
+        synced_at: null,
+      });
+      return { rowsAffected: 1, insertId: syncOutbox.length };
+    }
+
+    if (normalized.startsWith('update sync_outbox set synced_at')) {
+      const syncedAt = params[0];
+      const id = params[1];
+      const row = syncOutbox.find(
+        item => item.id === id && item.synced_at === null,
+      );
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.synced_at = syncedAt;
+      row.last_error = null;
+      return { rowsAffected: 1 };
+    }
+
+    if (normalized.startsWith('update sync_outbox set attempt_count')) {
+      const errorMessage = params[0];
+      const id = params[1];
+      const row = syncOutbox.find(
+        item => item.id === id && item.synced_at === null,
+      );
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.attempt_count += 1;
+      row.last_error = errorMessage;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('count(*)') &&
+      normalized.includes('from sync_outbox')
+    ) {
+      const pending = syncOutbox.filter(row => row.synced_at === null);
+      return toRows([{ count: pending.length }]);
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from sync_outbox')
+    ) {
+      let rows = [...syncOutbox];
+      if (normalized.includes('synced_at is null')) {
+        rows = rows.filter(row => row.synced_at === null);
+      }
+      rows.sort((a, b) =>
+        String(a.created_at).localeCompare(String(b.created_at)),
+      );
+      if (normalized.includes('limit') && params.length > 0) {
+        rows = rows.slice(0, Number(params[0]));
+      }
+      return toRows(rows);
+    }
+
+    if (normalized.includes('delete from sync_outbox')) {
+      const before = syncOutbox.length;
+      if (normalized.includes('where id')) {
+        const id = params[0];
+        const remaining = syncOutbox.filter(row => row.id !== id);
+        syncOutbox.length = 0;
+        syncOutbox.push(...remaining);
+        return { rowsAffected: before - remaining.length };
+      }
+      syncOutbox.length = 0;
+      return { rowsAffected: before };
     }
 
     if (normalized.startsWith('update review_schedule set ease_factor')) {

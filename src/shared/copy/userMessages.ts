@@ -19,6 +19,9 @@ export const AI_ANALYSIS_FAILED_MESSAGE =
 export const NETWORK_LOST_MESSAGE =
   'Mất kết nối mạng. Vui lòng thử lại sau khi có mạng.';
 
+export const SYNC_FAILED_MESSAGE =
+  'Chưa thể đồng bộ lịch sử ôn tập. App sẽ tự thử lại khi có mạng.';
+
 export const OCR_FAILED_MESSAGE =
   'App chưa nhận diện được chữ trong ảnh. Hãy thử ảnh rõ hơn hoặc nhập text thủ công.';
 

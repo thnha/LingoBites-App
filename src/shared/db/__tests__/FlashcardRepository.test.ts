@@ -11,6 +11,10 @@ import {
   saveFlashcard,
   unsaveFlashcard,
 } from '../FlashcardRepository';
+import {
+  listPendingSyncEvents,
+  markSyncEventsSynced,
+} from '../SyncOutboxRepository';
 
 function saveFixtureLesson(): string {
   const result = saveLesson({
@@ -365,5 +369,84 @@ describe('FlashcardRepository', () => {
     expect(row?.interval_days).toBe(18);
     expect(row?.repetitions).toBe(3);
     expect(row?.next_review_at).toBe('2026-09-04T12:00:00.000Z');
+  });
+
+  it('enqueues a pending outbox event atomically with each recorded rating', () => {
+    const lessonId = saveFixtureLesson();
+    const saved = saveFlashcard({
+      lessonId,
+      vocabulary: validFullOutput.vocabulary[0],
+      now: '2026-08-17T00:00:00.000Z',
+    });
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) {
+      return;
+    }
+
+    const result = recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'easy',
+      reviewedAt: '2026-08-17T12:00:00.000Z',
+    });
+    expect(result.ok).toBe(true);
+
+    const pending = listPendingSyncEvents();
+    expect(pending).toHaveLength(1);
+    expect(pending[0]).toMatchObject({
+      eventType: 'review',
+      entityId: saved.flashcardId,
+      attemptCount: 0,
+      syncedAt: null,
+      createdAt: '2026-08-17T12:00:00.000Z',
+    });
+    expect(pending[0].payload).toMatchObject({
+      schema_version: 1,
+      card_id: saved.flashcardId,
+      lesson_id: lessonId,
+      rating: 'easy',
+      reviewed_at: '2026-08-17T12:00:00.000Z',
+      interval_days: 1,
+      ease_factor: 2.5,
+      repetitions: 1,
+    });
+    expect(pending[0].payload.next_review_at).toBe(
+      result.ok ? result.nextReviewAt : '',
+    );
+  });
+
+  it('does not enqueue an outbox event when the rating fails', () => {
+    const result = recordFlashcardRating({
+      flashcardId: 'missing-card',
+      rating: 'good',
+      reviewedAt: '2026-08-17T12:00:00.000Z',
+    });
+    expect(result.ok).toBe(false);
+    expect(listPendingSyncEvents()).toHaveLength(0);
+  });
+
+  it('marks an outbox event synced and removes it from the pending queue', () => {
+    const lessonId = saveFixtureLesson();
+    const saved = saveFlashcard({
+      lessonId,
+      vocabulary: validFullOutput.vocabulary[0],
+      now: '2026-08-17T00:00:00.000Z',
+    });
+    if (!saved.ok) {
+      return;
+    }
+    recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'good',
+      reviewedAt: '2026-08-17T12:00:00.000Z',
+    });
+
+    const pending = listPendingSyncEvents();
+    expect(pending).toHaveLength(1);
+
+    markSyncEventsSynced(
+      pending.map(event => event.id),
+      '2026-08-17T13:00:00.000Z',
+    );
+    expect(listPendingSyncEvents()).toHaveLength(0);
   });
 });

@@ -1,5 +1,8 @@
 import { createRequestId } from '../api/requestId';
-import { getDatabase } from './database';
+import { getOrCreateAnonymousUserId } from './anonymousUserId';
+import { getDatabase, withTransaction } from './database';
+import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
+import { REVIEW_EVENT_SCHEMA_VERSION } from './types';
 import {
   DEFAULT_EASE_FACTOR,
   DEFAULT_REVIEW_INTERVAL_DAYS,
@@ -291,56 +294,82 @@ export function recordFlashcardRating(
 
     const reviewedAt = input.reviewedAt ?? new Date().toISOString();
 
-    // Rows flagged `v1` (not yet backfilled by the migration) are upgraded to
-    // the SM-2 scheme on first rating so they keep working during rollout.
-    const sm2State = upgradeReviewScheduleToV2(db, schedule);
-    const next = calculateNextReviewStateV2({
-      rating: input.rating,
-      easeFactor: sm2State.easeFactor,
-      repetitions: sm2State.repetitions,
-      intervalDays: schedule.interval_days,
-      reviewedAt,
-    });
-    const sessionId = createRequestId();
+    // The review write and its outbox row are committed atomically (ADR-2): a
+    // crash mid-rating can leave a recorded session but never a session without
+    // a matching outbox event waiting to sync.
+    const outcome = withTransaction(db, () => {
+      // Rows flagged `v1` (not yet backfilled by the migration) are upgraded to
+      // the SM-2 scheme on first rating so they keep working during rollout.
+      const sm2State = upgradeReviewScheduleToV2(db, schedule);
+      const next = calculateNextReviewStateV2({
+        rating: input.rating,
+        easeFactor: sm2State.easeFactor,
+        repetitions: sm2State.repetitions,
+        intervalDays: schedule.interval_days,
+        reviewedAt,
+      });
+      const sessionId = createRequestId();
 
-    db.execute(
-      `INSERT INTO review_sessions (
-        id, card_id, lesson_id, rating, reviewed_at, interval_days,
-        next_review_at, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
-      [
-        sessionId,
-        input.flashcardId,
-        schedule.lesson_id,
-        input.rating,
-        reviewedAt,
-        next.intervalDays,
-        next.nextReviewAt,
-        reviewedAt,
-      ],
-    );
-    db.execute(
-      `UPDATE review_schedule
-        SET interval_days = ?, next_review_at = ?, last_reviewed_at = ?, updated_at = ?,
-            ease_factor = ?, repetitions = ?
-        WHERE card_id = ?;`,
-      [
-        next.intervalDays,
-        next.nextReviewAt,
-        reviewedAt,
-        reviewedAt,
-        next.easeFactor,
-        next.repetitions,
-        input.flashcardId,
-      ],
-    );
+      db.execute(
+        `INSERT INTO review_sessions (
+          id, card_id, lesson_id, rating, reviewed_at, interval_days,
+          next_review_at, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+        [
+          sessionId,
+          input.flashcardId,
+          schedule.lesson_id,
+          input.rating,
+          reviewedAt,
+          next.intervalDays,
+          next.nextReviewAt,
+          reviewedAt,
+        ],
+      );
+      db.execute(
+        `UPDATE review_schedule
+          SET interval_days = ?, next_review_at = ?, last_reviewed_at = ?, updated_at = ?,
+              ease_factor = ?, repetitions = ?
+          WHERE card_id = ?;`,
+        [
+          next.intervalDays,
+          next.nextReviewAt,
+          reviewedAt,
+          reviewedAt,
+          next.easeFactor,
+          next.repetitions,
+          input.flashcardId,
+        ],
+      );
+
+      const anonymousUserId = getOrCreateAnonymousUserId();
+      enqueueSyncOutboxEvent({
+        id: sessionId,
+        entityId: input.flashcardId,
+        createdAt: reviewedAt,
+        payload: {
+          schema_version: REVIEW_EVENT_SCHEMA_VERSION,
+          anonymous_user_id: anonymousUserId,
+          card_id: input.flashcardId,
+          lesson_id: schedule.lesson_id,
+          rating: input.rating,
+          reviewed_at: reviewedAt,
+          interval_days: next.intervalDays,
+          next_review_at: next.nextReviewAt,
+          ease_factor: next.easeFactor,
+          repetitions: next.repetitions,
+        },
+      });
+
+      return next;
+    });
 
     return {
       ok: true,
-      intervalDays: next.intervalDays,
-      nextReviewAt: next.nextReviewAt,
-      easeFactor: next.easeFactor,
-      repetitions: next.repetitions,
+      intervalDays: outcome.intervalDays,
+      nextReviewAt: outcome.nextReviewAt,
+      easeFactor: outcome.easeFactor,
+      repetitions: outcome.repetitions,
     };
   } catch {
     return {

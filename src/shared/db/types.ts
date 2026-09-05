@@ -132,3 +132,49 @@ export type RecordFlashcardRatingResult =
       errorCode: 'FLASHCARD_NOT_FOUND' | 'LOCAL_DB_ERROR';
       message: string;
     };
+
+/**
+ * Wire payload of a single review event sent to the server outbox endpoint.
+ * Versioned so the server can reject unknown shapes instead of guessing.
+ */
+export type ReviewEventPayload = {
+  schema_version: 1;
+  anonymous_user_id: string;
+  card_id: string;
+  lesson_id: string;
+  rating: ReviewRating;
+  reviewed_at: string;
+  interval_days: number;
+  next_review_at: string;
+  ease_factor: number;
+  repetitions: number;
+};
+
+export const REVIEW_EVENT_SCHEMA_VERSION = 1 as const;
+export const REVIEW_EVENT_TYPE = 'review' as const;
+
+export type SyncOutboxEventType = typeof REVIEW_EVENT_TYPE;
+
+/** Row of the local `sync_outbox` table (see migrations.ts). */
+export type SyncOutboxRow = {
+  id: string;
+  event_type: SyncOutboxEventType;
+  entity_id: string;
+  payload_json: string;
+  created_at: string;
+  attempt_count: number;
+  last_error: string | null;
+  synced_at: string | null;
+};
+
+/** Parsed representation of an outbox row as used by the drain worker. */
+export type SyncOutboxRecord = {
+  id: string;
+  eventType: SyncOutboxEventType;
+  entityId: string;
+  payload: ReviewEventPayload;
+  createdAt: string;
+  attemptCount: number;
+  lastError: string | null;
+  syncedAt: string | null;
+};
