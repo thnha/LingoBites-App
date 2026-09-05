@@ -11,6 +11,7 @@ import {MaterialIcon} from '../../components/MaterialIcon';
 import {Medallion} from '../../components/Medallion';
 import {RatingControl} from '../../components/RatingControl';
 import {useFeatureEnabled} from '../../release';
+import {requestSync} from '../sync/appSync';
 import {
   getCardDueAt,
   getDueFlashcards,
@@ -166,6 +167,7 @@ export function DailyReviewScreen({
         dueAt,
         reviewedAt,
       });
+      requestSync();
     }
     finishNext(nextSummary);
   }

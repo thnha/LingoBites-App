@@ -74,6 +74,22 @@ const MIGRATIONS = [
   );`,
   `CREATE INDEX IF NOT EXISTS idx_review_sessions_card_id ON review_sessions (card_id);`,
   `CREATE INDEX IF NOT EXISTS idx_review_sessions_reviewed_at ON review_sessions (reviewed_at DESC);`,
+  // Append-only local outbox for offline review events (SETE-87 / ADR-2). Each
+  // completed review write also inserts a row here in the same transaction; a
+  // background drain worker sends pending rows to the server and sets
+  // `synced_at` on success. `id` is the client-generated review session id and
+  // doubles as the server-side idempotency key.
+  `CREATE TABLE IF NOT EXISTS sync_outbox (
+    id TEXT PRIMARY KEY NOT NULL,
+    event_type TEXT NOT NULL,
+    entity_id TEXT NOT NULL,
+    payload_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    attempt_count INTEGER NOT NULL DEFAULT 0,
+    last_error TEXT,
+    synced_at TEXT
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_sync_outbox_pending ON sync_outbox (synced_at, created_at);`,
   // SM-2 four-rating migration (SETE-86). Existing columns are kept; SM-2 state
   // is added next to them so legacy rows are upgraded, never reinterpreted.
   `ALTER TABLE review_schedule ADD COLUMN ease_factor REAL NOT NULL DEFAULT 2.5;`,
