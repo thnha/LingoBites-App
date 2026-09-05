@@ -4,11 +4,11 @@
 
 **Goal:** Ship the smallest local-first LingoBites review loop: learners review saved vocabulary cards offline with a two-rating fixed-interval scheduler.
 
-**Architecture:** Keep the existing bare React Native app and preserve the current `src/modules`, `src/shared/db`, `src/release`, `src/components`, and `src/theme` boundaries. Add only the approved MVP dependencies, make `lingobites-mvp` the default release config for the MVP build, gate legacy OCR/AI ingestion behind release config, and verify the already-existing flashcard/review path before polishing UI and QA.
+**Architecture:** Keep the existing bare React Native app and preserve the current `src/modules`, `src/shared/db`, `src/release`, `src/components`, and `src/theme` boundaries. Add only the approved MVP dependencies, select the `lingobites-mvp` release config for the MVP build via build-time env (leaving the compile-time `DEFAULT_RELEASE_NAME` unchanged so other builds/QA are not silently affected), gate legacy OCR/AI ingestion behind release config, and verify the already-existing flashcard/review path before polishing UI and QA.
 
 **Tech Stack:** React Native 0.85.3, React 19.2.3, TypeScript 5.8.3, React Navigation 7, `react-native-quick-sqlite`, Jest/RN Testing Library, Fastlane, plus approved additions `react-native-reanimated`, `react-native-gesture-handler`, `i18next`, and `react-i18next`.
 
-**Spec:** Multica SETE-81 description revision 7; architecture source: Multica SETE-82 description revision 13.
+**Spec:** Multica SETE-81 description revision 7; architecture source: Multica SETE-82 description revision 15 (changelog v3).
 
 ## Global Constraints
 
@@ -16,7 +16,7 @@
 - MVP scheduler is the fixed interval sequence `[1, 3, 7, 14, 30, 60, 120]`; do not implement SM-2 or FSRS.
 - Review flow must work offline after lesson and flashcard data already exist locally.
 - User-facing strings added or touched during MVP implementation must use `i18next` keys with Vietnamese default copy.
-- MVP build must boot with `DEFAULT_RELEASE_NAME = 'lingobites-mvp'` unless a later approved task introduces env-driven release selection.
+- MVP build must boot with the `lingobites-mvp` release config, activated via a build-specific mechanism (env-driven release selection), not by replacing the compile-time global `DEFAULT_RELEASE_NAME`. Other release configs such as `close-beta-1` keep their default behavior unless the build explicitly selects `lingobites-mvp`.
 - Keep `package.json.name`, iOS bundle id, Android application id, and signing metadata unchanged for MVP.
 - Do not add Sentry, notifications, audio playback, auth, sync, backend APIs, gamification, marketplace, or new content ingestion UI.
 - Do not drop or rewrite existing SQLite tables; schema changes require explicit approval and migration tests.
@@ -31,9 +31,11 @@
 mobile-app/
   package.json                                      # Modified, approved deps only
   babel.config.js                                   # Modified, reanimated plugin
-  App.tsx                                           # Modified, i18n provider
+  tsconfig.json                                     # Verified/adjusted, strict + noUncheckedIndexedAccess + @/* alias
+  App.tsx                                           # Modified, i18n provider + env-selected release name
   ios/Podfile.lock                                  # Modified by pod install
   yarn.lock | package-lock.json                     # Modified by package manager
+  .env.development                                  # Modified, RELEASE_NAME=lingobites-mvp for MVP build
   docs/
     legacy/                                         # New, archived legacy BA/tech docs
     superpowers/plans/2026-09-04-lingobites-offline-review-mvp.md
@@ -43,8 +45,10 @@ mobile-app/
       vi.json                                       # New, Vietnamese default copy
       en.json                                       # New, empty/fallback English keys where needed
     release/
-      feature-registry.ts                           # Modified, legacy required flags become optional
-      release-manifest.ts                           # Modified, exposes and activates lingobites-mvp as MVP default
+      feature-registry.ts                           # Modified, legacy required flags become optional (lessonResultView stays required)
+      feature-dependencies.ts                       # Modified, decouple lesson/review flags from OCR/AI ingestion chain
+      types.ts                                      # Modified only if FeatureReleaseGroup lacks 'lingobites'
+      release-manifest.ts                           # Modified, registers lingobites-mvp; DEFAULT_RELEASE_NAME unchanged
       configs/lingobites-mvp.json                   # New, MVP release flag matrix
       __tests__/validate-release-config.test.ts     # Modified, validates MVP config
     app/navigation/
@@ -60,7 +64,10 @@ mobile-app/
     modules/lesson/
       LessonResultScreen.tsx                        # Modified only if save entry point is incomplete
       SavedLessonDetailScreen.tsx                   # Modified only if saved lesson save state is incomplete
+      WordDetailScreen.tsx                          # Modified only if save state is incomplete
       __tests__/LessonResultScreen.flashcards.test.tsx
+      __tests__/SavedLessonDetailScreen.test.tsx
+      __tests__/WordDetailScreen.test.tsx           # New, save-from-word-detail coverage
     shared/db/
       reviewScheduler.ts                            # Modified only for verified scheduler bug
       FlashcardRepository.ts                        # Modified only for verified persistence bug
@@ -77,6 +84,7 @@ mobile-app/
 - Modify: `mobile-app/babel.config.js`
 - Modify: `mobile-app/ios/Podfile.lock`
 - Modify: lockfile used by the repo package manager
+- Verify/adjust: `mobile-app/tsconfig.json`
 
 **Interfaces:**
 - Consumes: existing RN 0.85.3 app.
@@ -86,7 +94,11 @@ mobile-app/
   - `i18next`
   - `react-i18next`
 
-- [ ] **Step 1: Add dependency install test**
+- [ ] **Step 1: Verify TypeScript strictness and path alias**
+
+SETE-82 Stage 0 requires the compiler to run in strict mode. From `mobile-app`, confirm `tsconfig.json` enables `strict` and `noUncheckedIndexedAccess` (inherited from the RN base config counts). If `noUncheckedIndexedAccess` is not enabled, add it explicitly. If no path alias exists yet, add `@/* → ./src/*` to `compilerOptions.paths`; keep it aligned with the Metro/`babel.config.js` resolver so runtime and type resolution agree. Record the final state in the commit message.
+
+- [ ] **Step 2: Add dependency install test**
 
 Run from `mobile-app`:
 
@@ -96,7 +108,7 @@ node -e "const pkg=require('./package.json'); for (const name of ['react-native-
 
 Expected before install: FAIL with the first missing package name.
 
-- [ ] **Step 2: Install approved dependencies**
+- [ ] **Step 3: Install approved dependencies**
 
 Use the repo's current package manager. If both lockfiles exist, inspect recent commit/worktree convention before choosing.
 
@@ -104,7 +116,7 @@ Use the repo's current package manager. If both lockfiles exist, inspect recent 
 npm install react-native-reanimated react-native-gesture-handler i18next react-i18next
 ```
 
-- [ ] **Step 3: Configure Reanimated Babel plugin**
+- [ ] **Step 4: Configure Reanimated Babel plugin**
 
 Update `babel.config.js` to:
 
@@ -115,7 +127,7 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 4: Install iOS pods**
+- [ ] **Step 5: Install iOS pods**
 
 Run:
 
@@ -123,21 +135,22 @@ Run:
 npm run pod
 ```
 
-- [ ] **Step 5: Verify dependency imports and package metadata**
+- [ ] **Step 6: Verify dependency imports and package metadata**
 
 Run:
 
 ```bash
 node -e "for (const name of ['react-native-reanimated','react-native-gesture-handler','i18next','react-i18next']) require.resolve(name); console.log('ok')"
+npx tsc --noEmit
 npm test -- --runInBand src/release/__tests__/validate-release-config.test.ts
 ```
 
-Expected: dependency resolution passes; existing tests may still fail only where old required-flag assumptions are changed in Task 3.
+Expected: dependency resolution passes, TypeScript type-checks under strict mode, and existing tests may still fail only where old required-flag assumptions are changed in Task 3.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add package.json package-lock.json yarn.lock babel.config.js ios/Podfile.lock
+git add package.json package-lock.json yarn.lock babel.config.js ios/Podfile.lock tsconfig.json
 git commit -m "chore: add LingoBites MVP runtime dependencies"
 ```
 
@@ -283,13 +296,17 @@ git commit -m "feat: initialize Vietnamese i18n"
 
 **Files:**
 - Modify: `mobile-app/src/release/feature-registry.ts`
+- Modify: `mobile-app/src/release/feature-dependencies.ts` (only if a dependency edge blocks `lingobites-mvp` validation; see Step 2 note)
 - Modify: `mobile-app/src/release/release-manifest.ts`
+- Modify: `mobile-app/src/release/types.ts` (add `'lingobites'` to `FeatureReleaseGroup` if not present)
 - Create: `mobile-app/src/release/configs/lingobites-mvp.json`
 - Modify: `mobile-app/src/release/__tests__/validate-release-config.test.ts`
+- Modify: `mobile-app/App.tsx` (pass env-selected release name to `FeatureFlagProvider`)
+- Modify: `mobile-app/.env.development` (and any other env file used by the MVP build) with `RELEASE_NAME=lingobites-mvp`
 
 **Interfaces:**
 - Consumes: existing `FeatureFlagProvider`, `useFeatureEnabled()`, and release config validation.
-- Produces: release config named `lingobites-mvp` with review enabled, legacy ingestion disabled, and `DEFAULT_RELEASE_NAME` set to `lingobites-mvp` for the MVP build.
+- Produces: release config named `lingobites-mvp` with review enabled and legacy ingestion disabled, activated for the MVP build through build-time env selection. The compile-time `DEFAULT_RELEASE_NAME` is left unchanged; only the MVP build's env opts in to `lingobites-mvp`.
 
 - [ ] **Step 1: Write failing release validation test**
 
@@ -326,17 +343,19 @@ Expected before implementation: FAIL because `lingobites-mvp` is unknown and leg
 Also add:
 
 ```ts
-it('uses lingobites-mvp as the MVP default release config', () => {
-  expect(DEFAULT_RELEASE_NAME).toBe('lingobites-mvp');
-  expect(getReleaseConfig().releaseName).toBe('lingobites-mvp');
+it('keeps the compile-time default release unchanged and activates lingobites-mvp only via env selection', () => {
+  expect(DEFAULT_RELEASE_NAME).not.toBe('lingobites-mvp');
+  expect(getReleaseConfig().releaseName).toBe(DEFAULT_RELEASE_NAME);
+  const envSelected = getReleaseConfig('lingobites-mvp');
+  expect(envSelected.releaseName).toBe('lingobites-mvp');
 });
 ```
 
-Import `DEFAULT_RELEASE_NAME` from `release-manifest.ts`. Expected before implementation: FAIL because the current default is `close-beta-1`.
+Import `DEFAULT_RELEASE_NAME` from `release-manifest.ts`. Expected before implementation: FAIL because `lingobites-mvp` is not yet registered in the manifest.
 
 - [ ] **Step 2: Make release-controlled foundation flags optional**
 
-In `feature-registry.ts`, set these entries to `required: false`:
+In `feature-registry.ts`, set these entries to `required: false` (the seven flags listed in SETE-82; do not include `lessonResultView`):
 
 ```ts
 pasteTextInput
@@ -344,24 +363,27 @@ imageInput
 ocrScanner
 ocrReviewEdit
 aiLessonAnalysis
-lessonResultView
 lessonSave
 lessonHistory
 ```
 
-`lessonResultView` is not disabled in the MVP config; it is made optional so release configs can control it explicitly. In `lingobites-mvp.json`, keep `lessonResultView: true` because saved lesson detail and vocabulary save are part of the MVP path.
+`lessonResultView` stays `required: true` per SETE-82; the MVP config keeps `lessonResultView: true` because saved lesson detail and vocabulary save are part of the MVP path. Do not relax its `required` flag without separate requester approval.
 
-Add one new feature key:
+Add one new feature key, with `releaseGroup: 'lingobites'` matching SETE-82 (not `'practice'`):
 
 ```ts
 {
   key: 'lingobitesMvpReviewFlow',
   module: 'release/lingobites-mvp',
   required: false,
-  releaseGroup: 'practice',
+  releaseGroup: 'lingobites',
   description: 'Local-first LingoBites MVP review flow.',
 }
 ```
+
+If `FeatureReleaseGroup` in `types.ts` does not yet include `'lingobites'`, add it to the union so the registry entry type-checks.
+
+> **Dependency decoupling note:** `feature-dependencies.ts` currently chains `pasteTextInput → aiLessonAnalysis → lessonResultView → lessonSave → lessonHistory` and `reviewSystem → lessonSave`. The MVP config disables `pasteTextInput`/`aiLessonAnalysis`/`imageInput`/`ocrScanner` while enabling `lessonResultView`/`lessonSave`/`lessonHistory`/`reviewSystem`, so the config will FAIL `validateReleaseConfig` unless these dependency edges are redefined for the saved-lesson path. Adjust `feature-dependencies.ts` so the lesson/review flags do not require the OCR/AI/paste ingestion flags (e.g., `lessonResultView` and downstream flags no longer depend on `aiLessonAnalysis`). Verify with the Step 1 validation test before moving on.
 
 - [ ] **Step 3: Create release config**
 
@@ -406,16 +428,14 @@ Create `src/release/configs/lingobites-mvp.json` with every registry key present
 }
 ```
 
-- [ ] **Step 4: Register and activate config in manifest**
+- [ ] **Step 4: Register config in manifest and activate via env selection**
 
-Modify `release-manifest.ts` using the existing JSON import pattern so `getReleaseConfig('lingobites-mvp')` returns the new config.
-
-Change the default release for MVP:
+Modify `release-manifest.ts` using the existing JSON import pattern so `getReleaseConfig('lingobites-mvp')` returns the new config. Do NOT change the value of `DEFAULT_RELEASE_NAME`:
 
 ```ts
 import lingobitesMvp from './configs/lingobites-mvp.json';
 
-export const DEFAULT_RELEASE_NAME = 'lingobites-mvp';
+// DEFAULT_RELEASE_NAME stays unchanged (e.g. 'close-beta-1').
 
 export type ReleaseConfigName =
   | 'close-beta-1'
@@ -433,11 +453,29 @@ const releaseConfigs: Record<ReleaseConfigName, ReleaseConfig> = {
 };
 ```
 
-Do not add env-driven release selection in this MVP task. If future builds need multiple defaults, create a separate approved task because it affects build/release policy.
+Activate `lingobites-mvp` only for the MVP build through build-time env selection:
+
+- Add `RELEASE_NAME=lingobites-mvp` to the env file used by the MVP build (`.env.development` by default), not to env files used by other builds/QA.
+- In `App.tsx`, read the env value and pass it to `FeatureFlagProvider`:
+
+```tsx
+import Config from 'react-native-config';
+import {
+  DEFAULT_RELEASE_NAME,
+  type ReleaseConfigName,
+} from './src/release/release-manifest';
+
+const envReleaseName = Config.RELEASE_NAME as ReleaseConfigName | undefined;
+const releaseName = envReleaseName ?? DEFAULT_RELEASE_NAME;
+
+<FeatureFlagProvider releaseName={releaseName}>
+```
+
+This scopes the activation to the MVP build and keeps `close-beta-1` (and every other config) as the default for any build that does not set `RELEASE_NAME`. Do not hardcode a new global default in this task; that would change behavior for unrelated builds/QA beyond the approved SETE-82 scope.
 
 - [ ] **Step 5: Update old required-feature test**
 
-The existing "rejects when a required feature is disabled" test must target a feature that remains required. If no feature remains required after this pivot, replace it with a test proving disabled optional legacy flags are accepted by `lingobites-mvp`.
+The existing "rejects when a required feature is disabled" test currently disables `lessonSave`, which this task makes optional. Retarget it to `lessonResultView` (which stays `required: true`) so the test keeps proving that a required feature cannot be disabled. If a different feature remains required after this pivot, use that one instead.
 
 - [ ] **Step 6: Verify**
 
@@ -445,13 +483,16 @@ Run:
 
 ```bash
 npm test -- src/release/__tests__/validate-release-config.test.ts --runInBand
+npm test -- src/__tests__/feature-flag.test.tsx --runInBand
 npm run lint
 ```
+
+Confirm the MVP build (env `RELEASE_NAME=lingobites-mvp`) boots with the `lingobites-mvp` config and that a build without that env var still uses `DEFAULT_RELEASE_NAME`.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/release
+git add src/release App.tsx .env.development
 git commit -m "feat: add LingoBites MVP release config"
 ```
 
@@ -840,12 +881,14 @@ git commit -m "feat: polish offline daily review flow"
 **Files:**
 - Modify: `mobile-app/src/modules/lesson/LessonResultScreen.tsx` only if save entry is incomplete
 - Modify: `mobile-app/src/modules/lesson/SavedLessonDetailScreen.tsx` only if save state is incomplete
+- Modify: `mobile-app/src/modules/lesson/WordDetailScreen.tsx` only if save state is incomplete
 - Modify: `mobile-app/src/modules/lesson/__tests__/LessonResultScreen.flashcards.test.tsx`
 - Modify: `mobile-app/src/modules/lesson/__tests__/SavedLessonDetailScreen.test.tsx`
+- Add/modify: `mobile-app/src/modules/lesson/__tests__/WordDetailScreen.test.tsx`
 
 **Interfaces:**
 - Consumes: `saveFlashcard({lessonId, vocabulary})`.
-- Produces: idempotent vocabulary save path from existing local lessons.
+- Produces: idempotent vocabulary save path from existing local lessons across all three save entry points (lesson result, saved lesson detail, and word detail).
 
 - [ ] **Step 1: Add save idempotency UI test**
 
@@ -868,7 +911,24 @@ expect(mockFetch).not.toHaveBeenCalled();
 expect(screen.getByText(validFullOutput.vocabulary[0].word)).toBeTruthy();
 ```
 
-- [ ] **Step 3: Fix save state only if needed**
+- [ ] **Step 3: Extend save verification to WordDetailScreen**
+
+`WordDetailScreen.tsx` is a first-class save entry point in SETE-82 (same group as `LessonResultScreen`/`SavedLessonDetailScreen`). Add a `WordDetailScreen.test.tsx` case that renders a vocabulary word from a saved lesson, presses the save control (`Lưu từ` label / the flashcard save affordance in `WordDetailScreen`), presses it again, and asserts:
+- a single flashcard row exists for `(lessonId, vocabularyId)` (no duplicate);
+- saved state is reflected in the UI after the second press;
+- `mockFetch` was not called.
+
+```tsx
+fireEvent.press(screen.getByLabelText('Lưu từ'));
+fireEvent.press(screen.getByLabelText('Đã lưu'));
+
+expect(listFlashcards({lessonId})).toHaveLength(1);
+expect(mockFetch).not.toHaveBeenCalled();
+```
+
+Match the exact accessibility label used in `WordDetailScreen.tsx`; if the label differs, update the assertion to the actual label.
+
+- [ ] **Step 4: Fix save state only if needed**
 
 If the test exposes a bug, ensure the UI calls:
 
@@ -878,17 +938,18 @@ saveFlashcard({lessonId, vocabulary})
 
 Then render saved state from `listFlashcards({lessonId})` or an equivalent existing selector.
 
-- [ ] **Step 4: Verify**
+- [ ] **Step 5: Verify**
 
 Run:
 
 ```bash
 npm test -- src/modules/lesson/__tests__/LessonResultScreen.flashcards.test.tsx --runInBand
 npm test -- src/modules/lesson/__tests__/SavedLessonDetailScreen.test.tsx --runInBand
+npm test -- src/modules/lesson/__tests__/WordDetailScreen.test.tsx --runInBand
 npm run lint
 ```
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add src/modules/lesson src/shared/db
@@ -901,10 +962,11 @@ git commit -m "test: verify lesson vocabulary save flow"
 - Create: `mobile-app/docs/legacy/`
 - Move: legacy ScanLearnEnglish BA/technical docs currently under `mobile-app/docs/01-ba/`
 - Modify: `mobile-app/docs/README.md`
+- Mark deprecated (comment header only): `.cursorrules`, `.opencode.json`, `GEMINI.md`, `QODER.md`
 
 **Interfaces:**
 - Consumes: existing docs tree.
-- Produces: clear separation between legacy ScanLearnEnglish docs and current LingoBites MVP plan.
+- Produces: clear separation between legacy ScanLearnEnglish docs and current LingoBites MVP plan, and one canonical agent-config convention.
 
 - [ ] **Step 1: Identify docs to archive**
 
@@ -925,7 +987,13 @@ mkdir -p docs/legacy
 git mv docs/01-ba docs/legacy/01-ba
 ```
 
-- [ ] **Step 3: Update docs index**
+- [ ] **Step 3: Mark deprecated multi-agent config files**
+
+SETE-82 chooses `CLAUDE.md` + `AGENTS.md` as the canonical agent instruction files. Mark the others deprecated without deleting content:
+- `GEMINI.md`, `QODER.md`, `.cursorrules`: add an HTML comment header `<!-- DEPRECATED: superseded by CLAUDE.md and AGENTS.md. Kept for reference only. -->` at the top.
+- `.opencode.json`: add a top-level metadata key instead of a comment (JSON has no comments), e.g. `"_deprecated": "Superseded by CLAUDE.md and AGENTS.md. Kept for reference only."`, and confirm the file still parses as valid JSON for the tooling that reads it.
+
+- [ ] **Step 4: Update docs index**
 
 Update `docs/README.md` with:
 
@@ -939,7 +1007,7 @@ Update `docs/README.md` with:
 - `docs/legacy/01-ba/` contains historical ScanLearnEnglish planning material retained for reference. It is not the source of scope for the LingoBites MVP.
 ```
 
-- [ ] **Step 4: Verify links and git move**
+- [ ] **Step 5: Verify links and git move**
 
 Run:
 
@@ -948,10 +1016,10 @@ git status --short docs
 npm run lint
 ```
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add docs
+git add docs .cursorrules .opencode.json GEMINI.md QODER.md
 git commit -m "docs: archive legacy ScanLearnEnglish planning"
 ```
 
@@ -974,7 +1042,7 @@ Create `docs/qa/lingobites-offline-review-mvp.md`:
 
 ## Setup
 
-- Build: development
+- Build: development (boots `lingobites-mvp` via `RELEASE_NAME=lingobites-mvp`)
 - Release config: lingobites-mvp
 - Device: iOS simulator and Android emulator
 - Local data: at least one saved lesson with two saved flashcards
@@ -992,6 +1060,7 @@ Create `docs/qa/lingobites-offline-review-mvp.md`:
 - Summary shows reviewed, remembered, and forgot counts.
 - Restarting the app preserves flashcards and review schedule.
 - No raw vocabulary or lesson text appears in app logs from review actions.
+- NFR-003: with ~1,000 saved/due cards seeded, the Home due-count query/UI renders without visible UI blocking (manual timing check; record observed behavior).
 ```
 
 - [ ] **Step 2: Run automated verification**
@@ -1043,7 +1112,7 @@ git commit -m "docs: add offline review MVP QA checklist"
 
 The implementation is done when:
 
-- App boot uses `DEFAULT_RELEASE_NAME = 'lingobites-mvp'` for the MVP build.
+- The MVP build boots with the `lingobites-mvp` release config via build-time env selection (`RELEASE_NAME=lingobites-mvp`); the compile-time `DEFAULT_RELEASE_NAME` is unchanged for other builds/QA.
 - `lingobites-mvp` release config validates.
 - Legacy OCR/image/paste entry points are hidden in MVP mode without deleting code.
 - Hidden legacy routes have no unguarded navigation callers that can trigger a `route not found` crash.
@@ -1051,10 +1120,13 @@ The implementation is done when:
 - Home shows due review count only when `reviewSystem` is enabled and due cards exist.
 - Daily Review supports front-first active recall, reveal, two ratings, skip, summary, carry-over, no-card, and no-due states.
 - Rating write failure does not silently advance the session.
-- Save-from-lesson is idempotent and does not reset existing schedules.
+- Save-from-lesson is idempotent and does not reset existing schedules, and is verified on all three entry points (`LessonResultScreen`, `SavedLessonDetailScreen`, `WordDetailScreen`).
 - Scheduler and persistence tests cover the fixed interval sequence and error paths.
 - i18n is initialized and touched user-facing MVP copy uses Vietnamese keys.
+- `tsconfig.json` runs under `strict` + `noUncheckedIndexedAccess`, with `@/*` path alias aligned to the runtime resolver (REV-04).
+- Deprecated multi-agent config files (`.cursorrules`, `.opencode.json`, `GEMINI.md`, `QODER.md`) carry a deprecation header (REV-05).
 - Legacy docs are archived, not deleted.
+- NFR-003 due-count responsiveness at ~1,000 cards is checked in manual QA (Task 9 checklist).
 - Local automated checks pass.
 - Manual offline QA result is recorded, including any native environment blockers.
 
@@ -1070,6 +1142,8 @@ The implementation is done when:
 
 1. Which package manager should be the source of truth if both `package-lock.json` and `yarn.lock` remain present in `mobile-app/`?
 2. Should QA seed local lessons through an existing dev fixture path, or should a small dev-only seed command be created in a separate approved issue?
+3. **Daily Review soft cap (SETE-81 Open Question #3):** the spec has not fixed the session cap at 10 cards/session. Task 6 should not be considered done until this value is confirmed at spec level; until then keep the existing soft cap and record the assumption in the Task 6 test.
+4. **SETE-82 dependency count inconsistency (reference only):** SETE-82 says "chỉ cần thêm 3 dep" but lists 4 packages (`react-native-reanimated`, `react-native-gesture-handler`, `i18next`, `react-i18next`). This plan treats all 4 as the approved set; no change needed unless the requester clarifies 3 vs 4.
 
 ## Risks
 
