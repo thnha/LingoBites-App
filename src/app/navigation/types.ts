@@ -69,6 +69,10 @@ export type LessonsStackParamList = {
   LessonsList: undefined;
   SavedLessonDetail: {lessonId: string};
   FlashcardList: {lessonId?: string} | undefined;
+  /** Imported content-package lessons (M1-M3), separate from the OCR flow above. */
+  ContentLessonList: undefined;
+  ContentLessonDetail: {lessonId: string};
+  ContentLessonRuntime: {lessonId: string};
 } & LearningDetailParamList;
 
 export type ProfileStackParamList = {

@@ -219,6 +219,33 @@ const MIGRATIONS = [
     ON content_audio_assets (lesson_id);`,
   `CREATE INDEX IF NOT EXISTS idx_content_audio_assets_package_id
     ON content_audio_assets (package_id);`,
+  // ---- SETE-108 / M3: lesson runtime SRS item creation on exit ----
+  // One row per M1-declared SRS item (`content_units.unit_type = 'srs'`) that
+  // has actually been "completed" by the learner in the lesson runtime.
+  // `srs_item_id` is the stable M1 content id (see schema/index.ts) and is
+  // the upsert key: replaying the same lesson never duplicates a review item,
+  // it only creates rows for chunks/qa/dialogue-turns not yet completed.
+  // `next_review_at` is a placeholder (`now + 1 day`) — M4 owns real SM-2
+  // scheduling and will overwrite this column, not this table's shape.
+  `CREATE TABLE IF NOT EXISTS content_review_items (
+    id TEXT PRIMARY KEY NOT NULL,
+    srs_item_id TEXT NOT NULL UNIQUE,
+    lesson_id TEXT NOT NULL,
+    package_id TEXT NOT NULL,
+    item_type TEXT NOT NULL,
+    source_ref_id TEXT NOT NULL,
+    front TEXT NOT NULL,
+    back TEXT NOT NULL,
+    hint_vi TEXT,
+    mastery_state TEXT NOT NULL DEFAULT 'new',
+    next_review_at TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_content_review_items_lesson_id
+    ON content_review_items (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_review_items_next_review_at
+    ON content_review_items (next_review_at);`,
 ];
 
 /**
@@ -231,6 +258,17 @@ const MIGRATIONS = [
  * for the M2 down path because they pre-date the package feature and are not
  * touched by the importer. If a down path for them is needed, add it there.
  */
+/**
+ * Reverse-order DROP statements for the M3 lesson-runtime table (SETE-108).
+ * Kept separate from `DOWN_MIGRATIONS_M2` so each milestone's rollback stays
+ * independently addressable, matching the CHANGE-3 convention.
+ */
+const DOWN_MIGRATIONS_M3: string[] = [
+  `DROP INDEX IF EXISTS idx_content_review_items_next_review_at;`,
+  `DROP INDEX IF EXISTS idx_content_review_items_lesson_id;`,
+  `DROP TABLE IF EXISTS content_review_items;`,
+];
+
 const DOWN_MIGRATIONS_M2: string[] = [
   `DROP INDEX IF EXISTS idx_content_audio_assets_package_id;`,
   `DROP INDEX IF EXISTS idx_content_audio_assets_lesson_id;`,
@@ -281,6 +319,18 @@ export function downgradeContentPackageMigrations(
   db: QuickSQLiteConnection,
 ): void {
   for (const sql of DOWN_MIGRATIONS_M2) {
+    db.execute(sql);
+  }
+}
+
+/**
+ * Reverse the M3 lesson-runtime schema migration (SETE-108). Used in tests;
+ * production code should call this only via an explicit operator action.
+ */
+export function downgradeLessonRuntimeMigrations(
+  db: QuickSQLiteConnection,
+): void {
+  for (const sql of DOWN_MIGRATIONS_M3) {
     db.execute(sql);
   }
 }

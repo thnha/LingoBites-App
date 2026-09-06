@@ -22,6 +22,9 @@ import {GrammarDetailScreen} from '../../modules/lesson/GrammarDetailScreen';
 import {PracticeScreen} from '../../modules/practice/PracticeScreen';
 import {FlashcardListScreen} from '../../modules/lesson/FlashcardListScreen';
 import {DailyReviewScreen} from '../../modules/review/DailyReviewScreen';
+import {ContentLessonListScreen} from '../../modules/content/runtime/ContentLessonListScreen';
+import {ContentLessonDetailScreen} from '../../modules/content/runtime/ContentLessonDetailScreen';
+import {ContentLessonRuntimeScreen} from '../../modules/content/runtime/ContentLessonRuntimeScreen';
 import {PrivacyNoteScreen} from '../../modules/settings/PrivacyNoteScreen';
 import {ProfileScreen} from '../../modules/settings/ProfileScreen';
 import {useFeatureEnabled} from '../../release';
@@ -132,6 +135,21 @@ function LessonsStackNavigator() {
         component={FlashcardListScreen}
         name="FlashcardList"
         options={{headerShown: false}}
+      />
+      <LessonsStack.Screen
+        component={ContentLessonListScreen}
+        name="ContentLessonList"
+        options={{headerShown: false}}
+      />
+      <LessonsStack.Screen
+        component={ContentLessonDetailScreen}
+        name="ContentLessonDetail"
+        options={{headerShown: false}}
+      />
+      <LessonsStack.Screen
+        component={ContentLessonRuntimeScreen}
+        name="ContentLessonRuntime"
+        options={{headerShown: false, gestureEnabled: false}}
       />
       <LessonsStack.Screen
         component={SentenceDetailScreen}

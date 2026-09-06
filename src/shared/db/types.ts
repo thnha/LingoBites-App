@@ -232,3 +232,27 @@ export type SyncOutboxRecord = {
   lastError: string | null;
   syncedAt: string | null;
 };
+
+/**
+ * A row of the `content_review_items` table (SETE-108 / M3). Created when the
+ * lesson runtime exits and a declared SRS item (M1 `content_units` where
+ * `unit_type = 'srs'`) was backed by content the learner actually completed.
+ * `next_review_at` is a placeholder until M4 ships the real SM-2 scheduler.
+ */
+export type ContentReviewItemMasteryState = 'new';
+
+export type ContentReviewItemRecord = {
+  id: string;
+  srsItemId: string;
+  lessonId: string;
+  packageId: string;
+  itemType: string;
+  sourceRefId: string;
+  front: string;
+  back: string;
+  hintVi: string | null;
+  masteryState: ContentReviewItemMasteryState;
+  nextReviewAt: string;
+  createdAt: string;
+  updatedAt: string;
+};

@@ -86,12 +86,20 @@ export function LessonsHistoryScreen({navigation}: Props) {
             Bài học
           </AppText>
         </View>
-        <IconButton
-          accessibilityLabel="Cài đặt"
-          icon="settings"
-          onPress={() => tabNavigation?.navigate('Profile')}
-          tone="surface"
-        />
+        <View style={{flexDirection: 'row', gap: 8}}>
+          <IconButton
+            accessibilityLabel="Bài học đóng gói"
+            icon="school"
+            onPress={() => navigation.navigate('ContentLessonList')}
+            tone="surface"
+          />
+          <IconButton
+            accessibilityLabel="Cài đặt"
+            icon="settings"
+            onPress={() => tabNavigation?.navigate('Profile')}
+            tone="surface"
+          />
+        </View>
       </View>
 
       <FlatList

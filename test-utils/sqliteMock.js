@@ -27,6 +27,8 @@ function createMockDatabase() {
   const contentUnits = [];
   const contentActivities = [];
   const contentAudioAssets = [];
+  // SETE-108 / M3: lesson runtime review items
+  const contentReviewItems = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -823,6 +825,69 @@ function createMockDatabase() {
       contentPackages.length = 0;
       contentPackages.push(...remaining);
       return { rowsAffected: before - remaining.length };
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from content_activities')
+    ) {
+      const lessonId = params[0];
+      return toRows(contentActivities.filter(a => a.lesson_id === lessonId));
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from content_audio_assets')
+    ) {
+      const lessonId = params[0];
+      return toRows(contentAudioAssets.filter(a => a.lesson_id === lessonId));
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from content_units')
+    ) {
+      const lessonId = params[0];
+      let rows = contentUnits.filter(u => u.lesson_id === lessonId);
+      if (normalized.includes("unit_type = 'srs'")) {
+        rows = rows.filter(u => u.unit_type === 'srs');
+      }
+      return toRows(rows);
+    }
+
+    // ---- SETE-108 / M3 lesson runtime review items ----
+    if (normalized.startsWith('insert or ignore into content_review_items')) {
+      const srsItemId = params[1];
+      if (contentReviewItems.some(r => r.srs_item_id === srsItemId)) {
+        return { rowsAffected: 0 };
+      }
+      contentReviewItems.push({
+        id: params[0],
+        srs_item_id: params[1],
+        lesson_id: params[2],
+        package_id: params[3],
+        item_type: params[4],
+        source_ref_id: params[5],
+        front: params[6],
+        back: params[7],
+        hint_vi: params[8],
+        mastery_state: 'new',
+        next_review_at: params[9],
+        created_at: params[10],
+        updated_at: params[11],
+      });
+      return { rowsAffected: 1, insertId: contentReviewItems.length };
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from content_review_items')
+    ) {
+      if (normalized.includes('where lesson_id = ?')) {
+        const lessonId = params[0];
+        return toRows(contentReviewItems.filter(r => r.lesson_id === lessonId));
+      }
+      return toRows([...contentReviewItems]);
     }
 
     return { rowsAffected: 0 };
