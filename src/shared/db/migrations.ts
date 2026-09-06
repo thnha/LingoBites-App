@@ -225,8 +225,10 @@ const MIGRATIONS = [
   // `srs_item_id` is the stable M1 content id (see schema/index.ts) and is
   // the upsert key: replaying the same lesson never duplicates a review item,
   // it only creates rows for chunks/qa/dialogue-turns not yet completed.
-  // `next_review_at` is a placeholder (`now + 1 day`) — M4 owns real SM-2
-  // scheduling and will overwrite this column, not this table's shape.
+  // `next_review_at` is a placeholder (`now + 1 day`) until M4's real
+  // fixed-interval scheduler (`modules/content/srs/contentScheduler`, SETE-109)
+  // reschedules it on the item's first real review; MVP scheduling is fixed
+  // transparent intervals per REQ-26, not SM-2/FSRS.
   `CREATE TABLE IF NOT EXISTS content_review_items (
     id TEXT PRIMARY KEY NOT NULL,
     srs_item_id TEXT NOT NULL UNIQUE,

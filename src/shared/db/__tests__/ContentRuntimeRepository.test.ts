@@ -13,6 +13,7 @@ import {runMigrations} from '../migrations';
 import {insertPackageRecord} from '../ContentPackageRepository';
 import {
   getContentLessonById,
+  getDueContentReviewItems,
   getLessonActivities,
   getLessonAudioAssets,
   getLessonChunks,
@@ -20,6 +21,7 @@ import {
   insertContentReviewItems,
   listActivePackageLessons,
   listContentReviewItems,
+  recordContentReviewEvent,
 } from '../ContentRuntimeRepository';
 
 const NOW = '2026-09-06T12:00:00.000Z';
@@ -40,6 +42,25 @@ function insertLesson(db: ReturnType<typeof open>, id: string, packageId: string
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
     [id, packageId, id, '0.1.0', `Title ${id}`, `Tiêu đề ${id}`, 'blurb', 'A2', JSON.stringify(['speaking']), 15],
   );
+}
+
+function insertReviewItem(itemType: string) {
+  insertContentReviewItems(
+    'lesson-1',
+    'pkg-1',
+    [
+      {
+        id: `srs-${itemType}`,
+        slug: `srs-${itemType}`,
+        item_type: itemType as never,
+        source_ref_id: 'chunk-1',
+        front: 'Front',
+        back: 'Back',
+      },
+    ],
+    NOW,
+  );
+  return `review-srs-${itemType}`;
 }
 
 describe('ContentRuntimeRepository', () => {
@@ -106,6 +127,92 @@ describe('ContentRuntimeRepository', () => {
       srsItemId: 'srs-1',
       sourceRefId: 'chunk-1',
       masteryState: 'new',
+    });
+  });
+
+  describe('recordContentReviewEvent (SETE-109 / M4)', () => {
+    it('reschedules an M3 placeholder row on its first real review with no backfill', () => {
+      const reviewItemId = insertReviewItem('vocabulary');
+
+      const result = recordContentReviewEvent({
+        reviewItemId,
+        correct: true,
+        reviewedAt: NOW,
+      });
+
+      expect(result).toMatchObject({
+        ok: true,
+        masteryState: 'learning',
+        nextReviewAt: '2026-09-06T12:10:00.000Z',
+      });
+      expect(listContentReviewItems('lesson-1')[0]).toMatchObject({
+        masteryState: 'learning',
+        nextReviewAt: '2026-09-06T12:10:00.000Z',
+      });
+    });
+
+    it('schedules vocabulary and dialogue_turn items identically (no per-type branching)', () => {
+      const vocabId = insertReviewItem('vocabulary');
+      const dialogueId = insertReviewItem('dialogue_turn');
+
+      const vocabResult = recordContentReviewEvent({reviewItemId: vocabId, correct: true, reviewedAt: NOW});
+      const dialogueResult = recordContentReviewEvent({
+        reviewItemId: dialogueId,
+        correct: true,
+        reviewedAt: NOW,
+      });
+
+      expect(dialogueResult).toEqual(vocabResult);
+    });
+
+    it('advances a fast, hint-free correct review further than a hinted/slow one', () => {
+      const fastId = insertReviewItem('qa');
+      recordContentReviewEvent({reviewItemId: fastId, correct: true, reviewedAt: NOW});
+      const fastSecond = recordContentReviewEvent({
+        reviewItemId: fastId,
+        correct: true,
+        hintsUsed: 0,
+        responseTimeMs: 1000,
+        reviewedAt: '2026-09-06T12:10:00.000Z',
+      });
+
+      const hintedId = insertReviewItem('grammar');
+      recordContentReviewEvent({reviewItemId: hintedId, correct: true, reviewedAt: NOW});
+      const hintedSecond = recordContentReviewEvent({
+        reviewItemId: hintedId,
+        correct: true,
+        hintsUsed: 2,
+        responseTimeMs: 15000,
+        reviewedAt: '2026-09-06T12:10:00.000Z',
+      });
+
+      if (!fastSecond.ok || !hintedSecond.ok) {
+        throw new Error('expected both review events to succeed');
+      }
+      expect(new Date(hintedSecond.nextReviewAt).getTime()).toBeLessThan(
+        new Date(fastSecond.nextReviewAt).getTime(),
+      );
+    });
+
+    it('returns an error for an unknown review item id', () => {
+      const result = recordContentReviewEvent({reviewItemId: 'missing', correct: true});
+      expect(result).toMatchObject({ok: false, errorCode: 'REVIEW_ITEM_NOT_FOUND'});
+    });
+  });
+
+  describe('getDueContentReviewItems', () => {
+    it('selects only rows due at or before now, earliest first', () => {
+      const dueId = insertReviewItem('vocabulary');
+      const futureId = insertReviewItem('grammar');
+      recordContentReviewEvent({reviewItemId: dueId, correct: true, reviewedAt: NOW});
+      recordContentReviewEvent({
+        reviewItemId: futureId,
+        correct: true,
+        reviewedAt: '2026-09-06T12:05:00.000Z',
+      });
+
+      const due = getDueContentReviewItems({now: '2026-09-06T12:11:00.000Z'});
+      expect(due.map(item => item.id)).toEqual([dueId]);
     });
   });
 });

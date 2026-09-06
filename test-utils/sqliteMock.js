@@ -887,7 +887,27 @@ function createMockDatabase() {
         const lessonId = params[0];
         return toRows(contentReviewItems.filter(r => r.lesson_id === lessonId));
       }
+      if (normalized.includes('where id = ?')) {
+        const id = params[0];
+        return toRows(contentReviewItems.filter(r => r.id === id));
+      }
       return toRows([...contentReviewItems]);
+    }
+
+    // ---- SETE-109 / M4 content review scheduling ----
+    if (normalized.startsWith('update content_review_items')) {
+      const masteryState = params[0];
+      const nextReviewAt = params[1];
+      const updatedAt = params[2];
+      const id = params[3];
+      const row = contentReviewItems.find(r => r.id === id);
+      if (!row) {
+        return { rowsAffected: 0 };
+      }
+      row.mastery_state = masteryState;
+      row.next_review_at = nextReviewAt;
+      row.updated_at = updatedAt;
+      return { rowsAffected: 1 };
     }
 
     return { rowsAffected: 0 };

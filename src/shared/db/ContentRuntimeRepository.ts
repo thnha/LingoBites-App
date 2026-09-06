@@ -20,6 +20,11 @@ import type {
   QAItem,
   SrsItem,
 } from '../../modules/content/schema';
+import {
+  calculateNextContentReviewState,
+  selectDueContentReviewItems,
+} from '../../modules/content/srs/contentScheduler';
+import type {ContentMasteryState} from '../../modules/content/srs/contentScheduler';
 
 export type ContentChunkRow = {
   id: string;
@@ -410,4 +415,82 @@ export function listContentReviewItems(lessonId?: string): ContentReviewItemReco
     items.push(mapReviewItemRow(rows.item(i) as ContentReviewItemDbRow));
   }
   return items;
+}
+
+/** `content_review_items` rows due for review now (M4 / SETE-109). */
+export function getDueContentReviewItems(
+  options: {now?: string; limit?: number} = {},
+): ContentReviewItemRecord[] {
+  return selectDueContentReviewItems(listContentReviewItems(), options);
+}
+
+export type RecordContentReviewEventInput = {
+  reviewItemId: string;
+  correct: boolean;
+  hintsUsed?: number;
+  responseTimeMs?: number;
+  reviewedAt?: string;
+};
+
+export type RecordContentReviewEventResult =
+  | {ok: true; masteryState: ContentMasteryState; nextReviewAt: string}
+  | {ok: false; errorCode: 'REVIEW_ITEM_NOT_FOUND'; message: string};
+
+function minutesBetween(fromIso: string, toIso: string): number {
+  const diffMs = new Date(toIso).getTime() - new Date(fromIso).getTime();
+  return Math.max(0, Math.round(diffMs / 60000));
+}
+
+/**
+ * Records one review event against a `content_review_items` row and
+ * reschedules it via the fixed-interval scheduler (SETE-109 / M4), replacing
+ * the M3 hardcoded `addDaysIso(now, 1)` placeholder path. The item's previous
+ * interval is derived from `next_review_at - updated_at` on the existing row
+ * rather than stored separately, so M3 placeholder rows (`mastery_state =
+ * 'new'`) are rescheduled correctly on their first real review with no
+ * backfill: a `'new'` row is always treated as never having had a real review.
+ */
+export function recordContentReviewEvent(
+  input: RecordContentReviewEventInput,
+): RecordContentReviewEventResult {
+  const db = getDatabase();
+  const result = db.execute('SELECT * FROM content_review_items WHERE id = ?;', [
+    input.reviewItemId,
+  ]);
+  const row = result.rows?.item(0) as ContentReviewItemDbRow | undefined;
+  if (!row) {
+    return {
+      ok: false,
+      errorCode: 'REVIEW_ITEM_NOT_FOUND',
+      message: `No content_review_items row with id "${input.reviewItemId}".`,
+    };
+  }
+
+  const reviewedAt = input.reviewedAt ?? new Date().toISOString();
+  const currentState = row.mastery_state as ContentMasteryState;
+  const currentIntervalMinutes =
+    currentState === 'new'
+      ? undefined
+      : minutesBetween(row.updated_at, row.next_review_at);
+
+  const next = calculateNextContentReviewState({
+    itemType: row.item_type,
+    currentState,
+    currentIntervalMinutes,
+    outcome: {
+      correct: input.correct,
+      hintsUsed: input.hintsUsed,
+      responseTimeMs: input.responseTimeMs,
+    },
+    reviewedAt,
+  });
+
+  db.execute(
+    `UPDATE content_review_items
+      SET mastery_state = ?, next_review_at = ?, updated_at = ?
+      WHERE id = ?;`,
+    [next.state, next.nextReviewAt, reviewedAt, input.reviewItemId],
+  );
+
+  return {ok: true, masteryState: next.state, nextReviewAt: next.nextReviewAt};
 }

@@ -1,6 +1,9 @@
 import type { AIOutput } from '../schemas/ai-output-v1';
 import type { VocabularyItem } from '../schemas/ai-output-v1';
 import type { LessonSubjectKey } from '../../types/lesson';
+import type { ContentMasteryState } from '../../modules/content/srs/contentScheduler';
+
+export type { ContentMasteryState };
 
 export type LessonSourceType = 'camera' | 'gallery' | 'paste_text';
 
@@ -234,12 +237,13 @@ export type SyncOutboxRecord = {
 };
 
 /**
- * A row of the `content_review_items` table (SETE-108 / M3). Created when the
- * lesson runtime exits and a declared SRS item (M1 `content_units` where
- * `unit_type = 'srs'`) was backed by content the learner actually completed.
- * `next_review_at` is a placeholder until M4 ships the real SM-2 scheduler.
+ * A row of the `content_review_items` table (SETE-108 / M3, scheduled by
+ * SETE-109 / M4). Created when the lesson runtime exits and a declared SRS
+ * item (M1 `content_units` where `unit_type = 'srs'`) was backed by content
+ * the learner actually completed. `mastery_state` and `next_review_at` are
+ * owned by the fixed-interval scheduler in `modules/content/srs/contentScheduler`.
  */
-export type ContentReviewItemMasteryState = 'new';
+export type ContentReviewItemMasteryState = ContentMasteryState;
 
 export type ContentReviewItemRecord = {
   id: string;
