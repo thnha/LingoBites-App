@@ -75,7 +75,7 @@ export function HomeScreen({navigation}: Props) {
           <AppText
             numberOfLines={1}
             style={{color: theme.colors.primary, fontSize: 20, fontWeight: '600'}}>
-            LingoBites
+            {t('app.name')}
           </AppText>
         </View>
         <IconButton

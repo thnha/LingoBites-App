@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "LingoBites"
+  },
   "home": {
     "title": "Hôm nay bạn muốn học từ đâu?",
     "subtitle": "Chọn cách để lấy từ vựng từ bất cứ đoạn text nào bạn đọc.",

@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "LingoBites"
+  },
   "home": {
     "title": "What do you want to learn from today?",
     "subtitle": "Choose how to extract vocabulary from any text you read.",
