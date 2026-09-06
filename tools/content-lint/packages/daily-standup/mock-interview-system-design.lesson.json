@@ -1,0 +1,745 @@
+{
+  "id": "91400301d0da9b8d",
+  "slug": "mock-interview-system-design",
+  "schema_version": "0.1.0",
+  "title_en": "Mock Technical Interview: System Design",
+  "title_vi": "Phỏng vấn kỹ thuật thử nghiệm: Thiết kế hệ thống",
+  "blurb_vi": "Luyện tập câu hỏi phỏng vấn thiết kế hệ thống (System Design Interview) quy mô lớn.",
+  "level": "B2",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Trả lời câu hỏi phỏng vấn thiết kế ứng dụng chat hoặc ứng dụng đặt xe.",
+  "situation_vi": "Vòng phỏng vấn kỹ thuật trực tiếp với Senior Technical Interviewer.",
+  "learner_role_vi": "Ứng viên trả lời bài toán thiết kế hệ thống.",
+  "prerequisite_lesson_slugs": [
+    "project-impact-summary"
+  ],
+  "pronunciation_focus_vi": "Phát âm chuẩn từ load balancer, message queue, caching, redundancy, bottleneck.",
+  "final_speaking_task_vi": "Trình bày giải pháp thiết kế hệ thống thông báo đẩy cho 1 triệu người dùng.",
+  "pass_conditions_vi": "Phân tích trôi chảy các thành phần và rủi ro nghẽn cổ chai.",
+  "unit_slug": "interview-practice",
+  "unit_title_vi": "Luyện tập Phỏng vấn & Dự án (Interview Practice)",
+  "stage": 4,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "326e0c643737ff9e",
+      "tip_vi": "Ôn tập lại cụm từ \"Let us start by clarifying functional requirements\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "3a51c958917d0449",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"I will estimate daily active users and storage needs\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "f38eb5e9e96d3c31",
+      "slug": "start-with-requirements",
+      "order": 0,
+      "phrase_en": "Let us start by clarifying functional requirements",
+      "phrase_vi": "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng",
+      "explanation_vi": "Bước 1 chuẩn trong phỏng vấn System Design.",
+      "context_sentence_en": "In our daily work: \"Let us start by clarifying functional requirements\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "9675a0dffd03868d"
+      ],
+      "srs_ref_ids": [
+        "326e0c643737ff9e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "f2c727cf11172ca3",
+          "slug": "turn1-start-with-requirements",
+          "speaker": "A",
+          "text_en": "Let us start by clarifying functional requirements?",
+          "text_vi": "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng?"
+        },
+        {
+          "id": "6011d480443da67a",
+          "slug": "turn2-start-with-requirements",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "c7b0e8ad0e357496",
+          "slug": "qa-start-with-requirements",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Let us start by clarifying functional requirements\":",
+          "options": [
+            "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng",
+          "explanation_vi": "Dịch đúng là: Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "326e0c643737ff9e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Let us start by clarifying functional requirements\" nghĩa là \"Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng\"."
+      }
+    },
+    {
+      "id": "1026ebb0fcdd022a",
+      "slug": "estimate-traffic-storage",
+      "order": 1,
+      "phrase_en": "I will estimate daily active users and storage needs",
+      "phrase_vi": "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ",
+      "explanation_vi": "Tính toán quy mô dữ liệu.",
+      "context_sentence_en": "In our daily work: \"I will estimate daily active users and storage needs\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "c18aaf4752f57564"
+      ],
+      "srs_ref_ids": [
+        "3a51c958917d0449"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "f66039cae7e79ad7",
+          "slug": "turn1-estimate-traffic-storage",
+          "speaker": "A",
+          "text_en": "I will estimate daily active users and storage needs?",
+          "text_vi": "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ?"
+        },
+        {
+          "id": "b23f8b048d5ed72b",
+          "slug": "turn2-estimate-traffic-storage",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "0c984ab0a784e54f",
+          "slug": "qa-estimate-traffic-storage",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I will estimate daily active users and storage needs\":",
+          "options": [
+            "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ",
+          "explanation_vi": "Dịch đúng là: Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "3a51c958917d0449"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I will estimate daily active users and storage needs\" nghĩa là \"Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ\"."
+      }
+    },
+    {
+      "id": "a3247eb76e169829",
+      "slug": "use-load-balancer",
+      "order": 2,
+      "phrase_en": "We should place a load balancer in front of API",
+      "phrase_vi": "Chúng ta nên đặt bộ cân bằng tải phía trước API",
+      "explanation_vi": "Cân bằng tải để chia đều request.",
+      "context_sentence_en": "In our daily work: \"We should place a load balancer in front of API\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta nên đặt bộ cân bằng tải phía trước API\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "869d3300d5aafbac"
+      ],
+      "srs_ref_ids": [
+        "fbaaa8f67d70107b"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "186859af6c0a6e01",
+          "slug": "turn1-use-load-balancer",
+          "speaker": "A",
+          "text_en": "We should place a load balancer in front of API?",
+          "text_vi": "Chúng ta nên đặt bộ cân bằng tải phía trước API?"
+        },
+        {
+          "id": "52061001dd937f5c",
+          "slug": "turn2-use-load-balancer",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "89a9f18ced909da4",
+          "slug": "qa-use-load-balancer",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We should place a load balancer in front of API\":",
+          "options": [
+            "Chúng ta nên đặt bộ cân bằng tải phía trước API",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng ta nên đặt bộ cân bằng tải phía trước API",
+          "explanation_vi": "Dịch đúng là: Chúng ta nên đặt bộ cân bằng tải phía trước API"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "fbaaa8f67d70107b"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We should place a load balancer in front of API\" nghĩa là \"Chúng ta nên đặt bộ cân bằng tải phía trước API\"."
+      }
+    },
+    {
+      "id": "74b0e26f54e302c7",
+      "slug": "message-queue-decoupling",
+      "order": 3,
+      "phrase_en": "Use a message queue like Kafka for decoupling",
+      "phrase_vi": "Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ",
+      "explanation_vi": "Decoupling giúp các dịch vụ độc lập.",
+      "context_sentence_en": "In our daily work: \"Use a message queue like Kafka for decoupling\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "6633964a332b9a5a"
+      ],
+      "srs_ref_ids": [
+        "8abb634a33c5ea94"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e6f137f30015ba2e",
+          "slug": "turn1-message-queue-decoupling",
+          "speaker": "A",
+          "text_en": "Use a message queue like Kafka for decoupling?",
+          "text_vi": "Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ?"
+        },
+        {
+          "id": "70564548eacbf3b2",
+          "slug": "turn2-message-queue-decoupling",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "cdf72b3285903fac",
+          "slug": "qa-message-queue-decoupling",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Use a message queue like Kafka for decoupling\":",
+          "options": [
+            "Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ",
+          "explanation_vi": "Dịch đúng là: Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "8abb634a33c5ea94"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Use a message queue like Kafka for decoupling\" nghĩa là \"Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ\"."
+      }
+    },
+    {
+      "id": "8ec0acfa2c394d6d",
+      "slug": "database-sharding",
+      "order": 4,
+      "phrase_en": "We can apply database sharding to handle scale",
+      "phrase_vi": "Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn",
+      "explanation_vi": "Database sharding là kỹ thuật chia nhỏ CSDL.",
+      "context_sentence_en": "In our daily work: \"We can apply database sharding to handle scale\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "69ff510d76157ab9"
+      ],
+      "srs_ref_ids": [
+        "4257bb1b27538977"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "b82a5dcf0e1a0a3d",
+          "slug": "turn1-database-sharding",
+          "speaker": "A",
+          "text_en": "We can apply database sharding to handle scale?",
+          "text_vi": "Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn?"
+        },
+        {
+          "id": "0cf63f4acd72dd65",
+          "slug": "turn2-database-sharding",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "434877614198cf89",
+          "slug": "qa-database-sharding",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We can apply database sharding to handle scale\":",
+          "options": [
+            "Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn",
+          "explanation_vi": "Dịch đúng là: Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "4257bb1b27538977"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We can apply database sharding to handle scale\" nghĩa là \"Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn\"."
+      }
+    },
+    {
+      "id": "e5dd1e3a698c6f9f",
+      "slug": "single-point-of-failure",
+      "order": 5,
+      "phrase_en": "We must eliminate any single point of failure",
+      "phrase_vi": "Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào",
+      "explanation_vi": "Single point of failure khiến cả hệ thống sập khi 1 nút chết.",
+      "context_sentence_en": "In our daily work: \"We must eliminate any single point of failure\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "3f5601a98945a859"
+      ],
+      "srs_ref_ids": [
+        "10134dee3cbed06d"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e4a9fe92139c1d58",
+          "slug": "turn1-single-point-of-failure",
+          "speaker": "A",
+          "text_en": "We must eliminate any single point of failure?",
+          "text_vi": "Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào?"
+        },
+        {
+          "id": "dbce71d75991c7ca",
+          "slug": "turn2-single-point-of-failure",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "f738d449eb2ceca3",
+          "slug": "qa-single-point-of-failure",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We must eliminate any single point of failure\":",
+          "options": [
+            "Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào",
+          "explanation_vi": "Dịch đúng là: Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "10134dee3cbed06d"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We must eliminate any single point of failure\" nghĩa là \"Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào\"."
+      }
+    },
+    {
+      "id": "a631dc3633deaadf",
+      "slug": "trade-offs-between-dbs",
+      "order": 6,
+      "phrase_en": "There is a trade-off between SQL and NoSQL here",
+      "phrase_vi": "Có sự đánh đổi giữa SQL và NoSQL ở đây",
+      "explanation_vi": "Phân tích sự đánh đổi kỹ thuật (trade-offs).",
+      "context_sentence_en": "In our daily work: \"There is a trade-off between SQL and NoSQL here\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Có sự đánh đổi giữa SQL và NoSQL ở đây\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "1d3de205218328a1"
+      ],
+      "srs_ref_ids": [
+        "dcb1e2dcb0e40985"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "793110b604b28d89",
+          "slug": "turn1-trade-offs-between-dbs",
+          "speaker": "A",
+          "text_en": "There is a trade-off between SQL and NoSQL here?",
+          "text_vi": "Có sự đánh đổi giữa SQL và NoSQL ở đây?"
+        },
+        {
+          "id": "986bf19be3a1743f",
+          "slug": "turn2-trade-offs-between-dbs",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "96addfd7212d935d",
+          "slug": "qa-trade-offs-between-dbs",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"There is a trade-off between SQL and NoSQL here\":",
+          "options": [
+            "Có sự đánh đổi giữa SQL và NoSQL ở đây",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Có sự đánh đổi giữa SQL và NoSQL ở đây",
+          "explanation_vi": "Dịch đúng là: Có sự đánh đổi giữa SQL và NoSQL ở đây"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "dcb1e2dcb0e40985"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"There is a trade-off between SQL and NoSQL here\" nghĩa là \"Có sự đánh đổi giữa SQL và NoSQL ở đây\"."
+      }
+    },
+    {
+      "id": "78ce174fbf214e03",
+      "slug": "summary-of-architecture",
+      "order": 7,
+      "phrase_en": "That concludes my high-level architecture design",
+      "phrase_vi": "Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi",
+      "explanation_vi": "Chốt lại câu trả lời phỏng vấn.",
+      "context_sentence_en": "In our daily work: \"That concludes my high-level architecture design\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "2c5a060768a532f5"
+      ],
+      "srs_ref_ids": [
+        "1482df8a18f7a6f9"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "2aa80adb36a46b6c",
+          "slug": "turn1-summary-of-architecture",
+          "speaker": "A",
+          "text_en": "That concludes my high-level architecture design?",
+          "text_vi": "Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi?"
+        },
+        {
+          "id": "70676b8f9df02c04",
+          "slug": "turn2-summary-of-architecture",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "f6a4e1506b8ac5b4",
+          "slug": "qa-summary-of-architecture",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"That concludes my high-level architecture design\":",
+          "options": [
+            "Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi",
+          "explanation_vi": "Dịch đúng là: Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "1482df8a18f7a6f9"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"That concludes my high-level architecture design\" nghĩa là \"Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "823cb19f56b731ac",
+      "slug": "gp-1",
+      "name_en": "Pattern for Mock Technical Interview: System Design",
+      "name_vi": "Mẫu câu chính bài Phỏng vấn kỹ thuật thử nghiệm: Thiết kế hệ thống",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "Let us start by clarifying functional requirements",
+          "vi": "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng"
+        },
+        {
+          "en": "I will estimate daily active users and storage needs",
+          "vi": "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "585dd10a9de48b95",
+      "slug": "v-start-with-requirements",
+      "word": "Let",
+      "word_type": "noun",
+      "meaning_vi": "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "Let us start by clarifying functional requirements",
+      "example_vi": "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng"
+    },
+    {
+      "id": "f854236d91261ddf",
+      "slug": "v-estimate-traffic-storage",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "I will estimate daily active users and storage needs",
+      "example_vi": "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ"
+    },
+    {
+      "id": "80af00198e03f9c0",
+      "slug": "v-use-load-balancer",
+      "word": "We",
+      "word_type": "noun",
+      "meaning_vi": "Chúng ta nên đặt bộ cân bằng tải phía trước API",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "We should place a load balancer in front of API",
+      "example_vi": "Chúng ta nên đặt bộ cân bằng tải phía trước API"
+    }
+  ],
+  "activities": [
+    {
+      "id": "9905ebdfa0eac13c",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "f38eb5e9e96d3c31",
+        "1026ebb0fcdd022a",
+        "a3247eb76e169829",
+        "74b0e26f54e302c7",
+        "8ec0acfa2c394d6d",
+        "e5dd1e3a698c6f9f",
+        "a631dc3633deaadf",
+        "78ce174fbf214e03"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "5cca1b716044932c",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "f38eb5e9e96d3c31",
+        "1026ebb0fcdd022a",
+        "a3247eb76e169829",
+        "74b0e26f54e302c7"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "306907b51f035419",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "f38eb5e9e96d3c31",
+        "1026ebb0fcdd022a",
+        "a3247eb76e169829",
+        "74b0e26f54e302c7",
+        "8ec0acfa2c394d6d",
+        "e5dd1e3a698c6f9f",
+        "a631dc3633deaadf",
+        "78ce174fbf214e03"
+      ],
+      "qa_ref_ids": [
+        "c7b0e8ad0e357496",
+        "0c984ab0a784e54f",
+        "89a9f18ced909da4",
+        "cdf72b3285903fac",
+        "434877614198cf89",
+        "f738d449eb2ceca3",
+        "96addfd7212d935d",
+        "f6a4e1506b8ac5b4"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "9675a0dffd03868d",
+      "slug": "aud-start-with-requirements",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/start-with-requirements.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Let us start by clarifying functional requirements"
+    },
+    {
+      "id": "c18aaf4752f57564",
+      "slug": "aud-estimate-traffic-storage",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/estimate-traffic-storage.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I will estimate daily active users and storage needs"
+    },
+    {
+      "id": "869d3300d5aafbac",
+      "slug": "aud-use-load-balancer",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/use-load-balancer.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We should place a load balancer in front of API"
+    },
+    {
+      "id": "6633964a332b9a5a",
+      "slug": "aud-message-queue-decoupling",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/message-queue-decoupling.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Use a message queue like Kafka for decoupling"
+    },
+    {
+      "id": "69ff510d76157ab9",
+      "slug": "aud-database-sharding",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/database-sharding.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We can apply database sharding to handle scale"
+    },
+    {
+      "id": "3f5601a98945a859",
+      "slug": "aud-single-point-of-failure",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/single-point-of-failure.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We must eliminate any single point of failure"
+    },
+    {
+      "id": "1d3de205218328a1",
+      "slug": "aud-trade-offs-between-dbs",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/trade-offs-between-dbs.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "There is a trade-off between SQL and NoSQL here"
+    },
+    {
+      "id": "2c5a060768a532f5",
+      "slug": "aud-summary-of-architecture",
+      "url": "https://assets.lingobites.app/audio/mock-interview-system-design/summary-of-architecture.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "That concludes my high-level architecture design"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "326e0c643737ff9e",
+      "slug": "srs-start-with-requirements",
+      "item_type": "vocabulary",
+      "source_ref_id": "f38eb5e9e96d3c31",
+      "front": "Let us start by clarifying functional requirements",
+      "back": "Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng",
+      "hint_vi": "Gợi ý: Bước 1 chuẩn trong phỏng vấn System Design."
+    },
+    {
+      "id": "3a51c958917d0449",
+      "slug": "srs-estimate-traffic-storage",
+      "item_type": "vocabulary",
+      "source_ref_id": "1026ebb0fcdd022a",
+      "front": "I will estimate daily active users and storage needs",
+      "back": "Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ",
+      "hint_vi": "Gợi ý: Tính toán quy mô dữ liệu."
+    },
+    {
+      "id": "fbaaa8f67d70107b",
+      "slug": "srs-use-load-balancer",
+      "item_type": "vocabulary",
+      "source_ref_id": "a3247eb76e169829",
+      "front": "We should place a load balancer in front of API",
+      "back": "Chúng ta nên đặt bộ cân bằng tải phía trước API",
+      "hint_vi": "Gợi ý: Cân bằng tải để chia đều request."
+    },
+    {
+      "id": "8abb634a33c5ea94",
+      "slug": "srs-message-queue-decoupling",
+      "item_type": "vocabulary",
+      "source_ref_id": "74b0e26f54e302c7",
+      "front": "Use a message queue like Kafka for decoupling",
+      "back": "Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ",
+      "hint_vi": "Gợi ý: Decoupling giúp các dịch vụ độc lập."
+    },
+    {
+      "id": "4257bb1b27538977",
+      "slug": "srs-database-sharding",
+      "item_type": "vocabulary",
+      "source_ref_id": "8ec0acfa2c394d6d",
+      "front": "We can apply database sharding to handle scale",
+      "back": "Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn",
+      "hint_vi": "Gợi ý: Database sharding là kỹ thuật chia nhỏ CSDL."
+    },
+    {
+      "id": "10134dee3cbed06d",
+      "slug": "srs-single-point-of-failure",
+      "item_type": "vocabulary",
+      "source_ref_id": "e5dd1e3a698c6f9f",
+      "front": "We must eliminate any single point of failure",
+      "back": "Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào",
+      "hint_vi": "Gợi ý: Single point of failure khiến cả hệ thống sập khi 1 nút chết."
+    },
+    {
+      "id": "dcb1e2dcb0e40985",
+      "slug": "srs-trade-offs-between-dbs",
+      "item_type": "vocabulary",
+      "source_ref_id": "a631dc3633deaadf",
+      "front": "There is a trade-off between SQL and NoSQL here",
+      "back": "Có sự đánh đổi giữa SQL và NoSQL ở đây",
+      "hint_vi": "Gợi ý: Phân tích sự đánh đổi kỹ thuật (trade-offs)."
+    },
+    {
+      "id": "1482df8a18f7a6f9",
+      "slug": "srs-summary-of-architecture",
+      "item_type": "vocabulary",
+      "source_ref_id": "78ce174fbf214e03",
+      "front": "That concludes my high-level architecture design",
+      "back": "Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi",
+      "hint_vi": "Gợi ý: Chốt lại câu trả lời phỏng vấn."
+    }
+  ]
+}

@@ -331,6 +331,76 @@ const rules: LintRule[] = [
       return errors;
     },
   },
+  {
+    id: 'LNT-014',
+    description: 'Progression graph prerequisites resolve and graph is acyclic',
+    run: (_manifest, lessons) => {
+      const errors: string[] = [];
+      const lessonSlugs = new Set(lessons.map(l => l.slug));
+      const graph = new Map<string, string[]>();
+      for (const lesson of lessons) {
+        const prereqs = lesson.prerequisite_lesson_slugs ?? [];
+        graph.set(lesson.slug, prereqs);
+        for (const p of prereqs) {
+          if (!lessonSlugs.has(p)) {
+            errors.push(
+              `[LNT-014] lesson "${lesson.id}": prerequisite_lesson_slug "${p}" does not exist in package`,
+            );
+          }
+        }
+      }
+      const visited = new Set<string>();
+      const recStack = new Set<string>();
+      function hasCycle(node: string): boolean {
+        if (recStack.has(node)) return true;
+        if (visited.has(node)) return false;
+        visited.add(node);
+        recStack.add(node);
+        for (const neighbor of graph.get(node) ?? []) {
+          if (hasCycle(neighbor)) return true;
+        }
+        recStack.delete(node);
+        return false;
+      }
+      for (const slug of graph.keys()) {
+        if (hasCycle(slug)) {
+          errors.push(
+            `[LNT-014] Progression graph contains a cycle involving lesson "${slug}"`,
+          );
+          break;
+        }
+      }
+      return errors;
+    },
+  },
+  {
+    id: 'LNT-015',
+    description:
+      'Weekly and stage checks are valid and stage checks use unseen prompts',
+    run: (manifest, lessons) => {
+      const errors: string[] = [];
+      const lessonSlugs = new Set(lessons.map(l => l.slug));
+      for (const check of manifest.checks ?? []) {
+        for (const slug of check.covered_lesson_slugs ?? []) {
+          if (!lessonSlugs.has(slug)) {
+            errors.push(
+              `[LNT-015] manifest.json check "${check.slug}": covered_lesson_slug "${slug}" does not exist`,
+            );
+          }
+        }
+        if (check.type === 'stage_check') {
+          for (const item of check.items ?? []) {
+            if (!item.unseen_prompt_en && !item.unseen_prompt_vi) {
+              errors.push(
+                `[LNT-015] manifest.json stage check "${check.slug}" item "${item.slug}" missing unseen prompt`,
+              );
+            }
+          }
+        }
+      }
+      return errors;
+    },
+  },
 ];
 
 export function lintContentPackage(

@@ -1,0 +1,745 @@
+{
+  "id": "f640ab0dcc9522cb",
+  "slug": "app-architecture-overview",
+  "schema_version": "0.1.0",
+  "title_en": "Explaining System Architecture",
+  "title_vi": "Giải thích kiến trúc hệ thống",
+  "blurb_vi": "Học cách thuyết trình và giải thích kiến trúc ứng dụng (Monolith, Microservices, Cloud, DB).",
+  "level": "B1",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Thuyết trình tổng quan về kiến trúc phần mềm đang phát triển.",
+  "situation_vi": "Giải thích hệ thống cho nhân sự mới hoặc khách hàng.",
+  "learner_role_vi": "Full-stack Developer trình bày sơ đồ hệ thống.",
+  "prerequisite_lesson_slugs": [
+    "standup-blockers"
+  ],
+  "pronunciation_focus_vi": "Nhấn âm chính xác: architecture, microservices, database, frontend, backend.",
+  "final_speaking_task_vi": "Mô tả bức tranh tổng thể kiến trúc ứng dụng của bạn trong 2 phút.",
+  "pass_conditions_vi": "Trình bày trôi chảy các thành phần hệ thống chính và luồng kết nối.",
+  "unit_slug": "app-description",
+  "unit_title_vi": "Mô tả Ứng dụng & Hệ thống",
+  "stage": 3,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "8970a3f21c451f1e",
+      "tip_vi": "Ôn tập lại cụm từ \"Our application is built with a React frontend\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "7bf85f0389d6b13a",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"The backend service is powered by Node.js\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "e89f0663db707382",
+      "slug": "app-built-with",
+      "order": 0,
+      "phrase_en": "Our application is built with a React frontend",
+      "phrase_vi": "Ứng dụng của chúng tôi được xây dựng với frontend React",
+      "explanation_vi": "Cấu trúc Is built with dùng để mô tả công nghệ nền tảng.",
+      "context_sentence_en": "In our daily work: \"Our application is built with a React frontend\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Ứng dụng của chúng tôi được xây dựng với frontend React\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "2fb7dc820e36b4eb"
+      ],
+      "srs_ref_ids": [
+        "8970a3f21c451f1e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "659e51b3e5cfa531",
+          "slug": "turn1-app-built-with",
+          "speaker": "A",
+          "text_en": "Our application is built with a React frontend?",
+          "text_vi": "Ứng dụng của chúng tôi được xây dựng với frontend React?"
+        },
+        {
+          "id": "c38fce13ff99e8ba",
+          "slug": "turn2-app-built-with",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "b4a86c21134462f1",
+          "slug": "qa-app-built-with",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Our application is built with a React frontend\":",
+          "options": [
+            "Ứng dụng của chúng tôi được xây dựng với frontend React",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Ứng dụng của chúng tôi được xây dựng với frontend React",
+          "explanation_vi": "Dịch đúng là: Ứng dụng của chúng tôi được xây dựng với frontend React"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "8970a3f21c451f1e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Our application is built with a React frontend\" nghĩa là \"Ứng dụng của chúng tôi được xây dựng với frontend React\"."
+      }
+    },
+    {
+      "id": "237ff09217022ba0",
+      "slug": "backend-powered-by",
+      "order": 1,
+      "phrase_en": "The backend service is powered by Node.js",
+      "phrase_vi": "Dịch vụ backend được vận hành bởi Node.js",
+      "explanation_vi": "Is powered by nghĩa là chạy trên nền tảng công nghệ đó.",
+      "context_sentence_en": "In our daily work: \"The backend service is powered by Node.js\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Dịch vụ backend được vận hành bởi Node.js\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "7db56ef0aab65970"
+      ],
+      "srs_ref_ids": [
+        "7bf85f0389d6b13a"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "03897442fe7a7fb5",
+          "slug": "turn1-backend-powered-by",
+          "speaker": "A",
+          "text_en": "The backend service is powered by Node.js?",
+          "text_vi": "Dịch vụ backend được vận hành bởi Node.js?"
+        },
+        {
+          "id": "68e8c05988f23b79",
+          "slug": "turn2-backend-powered-by",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "4749fa93122b7920",
+          "slug": "qa-backend-powered-by",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The backend service is powered by Node.js\":",
+          "options": [
+            "Dịch vụ backend được vận hành bởi Node.js",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Dịch vụ backend được vận hành bởi Node.js",
+          "explanation_vi": "Dịch đúng là: Dịch vụ backend được vận hành bởi Node.js"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "7bf85f0389d6b13a"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The backend service is powered by Node.js\" nghĩa là \"Dịch vụ backend được vận hành bởi Node.js\"."
+      }
+    },
+    {
+      "id": "73f3576c5aea8a67",
+      "slug": "uses-postgresql",
+      "order": 2,
+      "phrase_en": "We use PostgreSQL for relational data storage",
+      "phrase_vi": "Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ",
+      "explanation_vi": "Relational data storage chỉ cơ sở dữ liệu quan hệ.",
+      "context_sentence_en": "In our daily work: \"We use PostgreSQL for relational data storage\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "8a2fe8f176e472d3"
+      ],
+      "srs_ref_ids": [
+        "9d39322b440736b9"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "2d7516dbb840a237",
+          "slug": "turn1-uses-postgresql",
+          "speaker": "A",
+          "text_en": "We use PostgreSQL for relational data storage?",
+          "text_vi": "Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ?"
+        },
+        {
+          "id": "a5794579a6985e33",
+          "slug": "turn2-uses-postgresql",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "0a7dbd85121928a1",
+          "slug": "qa-uses-postgresql",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We use PostgreSQL for relational data storage\":",
+          "options": [
+            "Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ",
+          "explanation_vi": "Dịch đúng là: Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "9d39322b440736b9"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We use PostgreSQL for relational data storage\" nghĩa là \"Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ\"."
+      }
+    },
+    {
+      "id": "45a1effb047b642c",
+      "slug": "hosted-on-aws",
+      "order": 3,
+      "phrase_en": "The entire infrastructure is hosted on AWS",
+      "phrase_vi": "Toàn bộ hạ tầng được lưu trữ trên AWS",
+      "explanation_vi": "Hosted on chỉ nơi đặt máy chủ hoặc dịch vụ đám mây.",
+      "context_sentence_en": "In our daily work: \"The entire infrastructure is hosted on AWS\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Toàn bộ hạ tầng được lưu trữ trên AWS\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "e771daf956454a7c"
+      ],
+      "srs_ref_ids": [
+        "66d3be0c0e04ac57"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "d168c9abb8cd05fe",
+          "slug": "turn1-hosted-on-aws",
+          "speaker": "A",
+          "text_en": "The entire infrastructure is hosted on AWS?",
+          "text_vi": "Toàn bộ hạ tầng được lưu trữ trên AWS?"
+        },
+        {
+          "id": "d54d150d5e6ebdda",
+          "slug": "turn2-hosted-on-aws",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "18a9abce37d54efd",
+          "slug": "qa-hosted-on-aws",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The entire infrastructure is hosted on AWS\":",
+          "options": [
+            "Toàn bộ hạ tầng được lưu trữ trên AWS",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Toàn bộ hạ tầng được lưu trữ trên AWS",
+          "explanation_vi": "Dịch đúng là: Toàn bộ hạ tầng được lưu trữ trên AWS"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "66d3be0c0e04ac57"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The entire infrastructure is hosted on AWS\" nghĩa là \"Toàn bộ hạ tầng được lưu trữ trên AWS\"."
+      }
+    },
+    {
+      "id": "2934c0510aa1a248",
+      "slug": "scalable-architecture",
+      "order": 4,
+      "phrase_en": "Designed as a microservice scalable architecture",
+      "phrase_vi": "Được thiết kế theo kiến trúc microservice có thể mở rộng",
+      "explanation_vi": "Scalable architecture nghĩa là kiến trúc dễ nâng cấp dung lượng.",
+      "context_sentence_en": "In our daily work: \"Designed as a microservice scalable architecture\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Được thiết kế theo kiến trúc microservice có thể mở rộng\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "c669c89eb11c861e"
+      ],
+      "srs_ref_ids": [
+        "30de386338fb01f2"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "72667e47e9abff1d",
+          "slug": "turn1-scalable-architecture",
+          "speaker": "A",
+          "text_en": "Designed as a microservice scalable architecture?",
+          "text_vi": "Được thiết kế theo kiến trúc microservice có thể mở rộng?"
+        },
+        {
+          "id": "5aa550f412083cfa",
+          "slug": "turn2-scalable-architecture",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "7f983bf1a1b9c074",
+          "slug": "qa-scalable-architecture",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Designed as a microservice scalable architecture\":",
+          "options": [
+            "Được thiết kế theo kiến trúc microservice có thể mở rộng",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Được thiết kế theo kiến trúc microservice có thể mở rộng",
+          "explanation_vi": "Dịch đúng là: Được thiết kế theo kiến trúc microservice có thể mở rộng"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "30de386338fb01f2"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Designed as a microservice scalable architecture\" nghĩa là \"Được thiết kế theo kiến trúc microservice có thể mở rộng\"."
+      }
+    },
+    {
+      "id": "b6dfdacb900033b0",
+      "slug": "communicates-via-grpc",
+      "order": 5,
+      "phrase_en": "Services communicate via gRPC and REST",
+      "phrase_vi": "Các dịch vụ giao tiếp qua gRPC và REST",
+      "explanation_vi": "Giao thức giao tiếp giữa các thành phần phần mềm.",
+      "context_sentence_en": "In our daily work: \"Services communicate via gRPC and REST\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Các dịch vụ giao tiếp qua gRPC và REST\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "1f69cc05d4d35adb"
+      ],
+      "srs_ref_ids": [
+        "0b6e85101e519570"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "8a709d12e2525c5b",
+          "slug": "turn1-communicates-via-grpc",
+          "speaker": "A",
+          "text_en": "Services communicate via gRPC and REST?",
+          "text_vi": "Các dịch vụ giao tiếp qua gRPC và REST?"
+        },
+        {
+          "id": "ac40c7925f6e5eee",
+          "slug": "turn2-communicates-via-grpc",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "bddf23f3bf9fff52",
+          "slug": "qa-communicates-via-grpc",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Services communicate via gRPC and REST\":",
+          "options": [
+            "Các dịch vụ giao tiếp qua gRPC và REST",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Các dịch vụ giao tiếp qua gRPC và REST",
+          "explanation_vi": "Dịch đúng là: Các dịch vụ giao tiếp qua gRPC và REST"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "0b6e85101e519570"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Services communicate via gRPC and REST\" nghĩa là \"Các dịch vụ giao tiếp qua gRPC và REST\"."
+      }
+    },
+    {
+      "id": "a64096330318f58b",
+      "slug": "handles-high-traffic",
+      "order": 6,
+      "phrase_en": "It is optimized to handle high concurrent traffic",
+      "phrase_vi": "Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao",
+      "explanation_vi": "High concurrent traffic chỉ lượng người dùng đông cùng lúc.",
+      "context_sentence_en": "In our daily work: \"It is optimized to handle high concurrent traffic\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "ef9501072ad7d701"
+      ],
+      "srs_ref_ids": [
+        "dc1ce42ecdb3b0a5"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "41c38109e9b84b49",
+          "slug": "turn1-handles-high-traffic",
+          "speaker": "A",
+          "text_en": "It is optimized to handle high concurrent traffic?",
+          "text_vi": "Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao?"
+        },
+        {
+          "id": "f213f8c572b9234f",
+          "slug": "turn2-handles-high-traffic",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "026113e965b97219",
+          "slug": "qa-handles-high-traffic",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"It is optimized to handle high concurrent traffic\":",
+          "options": [
+            "Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao",
+          "explanation_vi": "Dịch đúng là: Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "dc1ce42ecdb3b0a5"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"It is optimized to handle high concurrent traffic\" nghĩa là \"Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao\"."
+      }
+    },
+    {
+      "id": "89723f4abc2b440f",
+      "slug": "modular-codebase",
+      "order": 7,
+      "phrase_en": "We maintain a clean and modular codebase",
+      "phrase_vi": "Chúng tôi duy trì mã nguồn sạch và theo mô-đun",
+      "explanation_vi": "Modular codebase giúp dễ bảo trì và mở rộng.",
+      "context_sentence_en": "In our daily work: \"We maintain a clean and modular codebase\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi duy trì mã nguồn sạch và theo mô-đun\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "a92b9ab20db60f4b"
+      ],
+      "srs_ref_ids": [
+        "328f757695c30d8a"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "692420eb75d1e116",
+          "slug": "turn1-modular-codebase",
+          "speaker": "A",
+          "text_en": "We maintain a clean and modular codebase?",
+          "text_vi": "Chúng tôi duy trì mã nguồn sạch và theo mô-đun?"
+        },
+        {
+          "id": "bf3aee3310a9976f",
+          "slug": "turn2-modular-codebase",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6c2591a4ac6392d2",
+          "slug": "qa-modular-codebase",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We maintain a clean and modular codebase\":",
+          "options": [
+            "Chúng tôi duy trì mã nguồn sạch và theo mô-đun",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng tôi duy trì mã nguồn sạch và theo mô-đun",
+          "explanation_vi": "Dịch đúng là: Chúng tôi duy trì mã nguồn sạch và theo mô-đun"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "328f757695c30d8a"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We maintain a clean and modular codebase\" nghĩa là \"Chúng tôi duy trì mã nguồn sạch và theo mô-đun\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "ca3f9278f561d2c0",
+      "slug": "gp-1",
+      "name_en": "Pattern for Explaining System Architecture",
+      "name_vi": "Mẫu câu chính bài Giải thích kiến trúc hệ thống",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "Our application is built with a React frontend",
+          "vi": "Ứng dụng của chúng tôi được xây dựng với frontend React"
+        },
+        {
+          "en": "The backend service is powered by Node.js",
+          "vi": "Dịch vụ backend được vận hành bởi Node.js"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "2086fa313d4547de",
+      "slug": "v-app-built-with",
+      "word": "Our",
+      "word_type": "noun",
+      "meaning_vi": "Ứng dụng của chúng tôi được xây dựng với frontend React",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "Our application is built with a React frontend",
+      "example_vi": "Ứng dụng của chúng tôi được xây dựng với frontend React"
+    },
+    {
+      "id": "cbdf2d414d681178",
+      "slug": "v-backend-powered-by",
+      "word": "The",
+      "word_type": "noun",
+      "meaning_vi": "Dịch vụ backend được vận hành bởi Node.js",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "The backend service is powered by Node.js",
+      "example_vi": "Dịch vụ backend được vận hành bởi Node.js"
+    },
+    {
+      "id": "892553f07a781d7c",
+      "slug": "v-uses-postgresql",
+      "word": "We",
+      "word_type": "noun",
+      "meaning_vi": "Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "We use PostgreSQL for relational data storage",
+      "example_vi": "Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ"
+    }
+  ],
+  "activities": [
+    {
+      "id": "d696c9ac1292c696",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "e89f0663db707382",
+        "237ff09217022ba0",
+        "73f3576c5aea8a67",
+        "45a1effb047b642c",
+        "2934c0510aa1a248",
+        "b6dfdacb900033b0",
+        "a64096330318f58b",
+        "89723f4abc2b440f"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "3d3714468d7ba6b2",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "e89f0663db707382",
+        "237ff09217022ba0",
+        "73f3576c5aea8a67",
+        "45a1effb047b642c"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "1f48193832dc09d6",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "e89f0663db707382",
+        "237ff09217022ba0",
+        "73f3576c5aea8a67",
+        "45a1effb047b642c",
+        "2934c0510aa1a248",
+        "b6dfdacb900033b0",
+        "a64096330318f58b",
+        "89723f4abc2b440f"
+      ],
+      "qa_ref_ids": [
+        "b4a86c21134462f1",
+        "4749fa93122b7920",
+        "0a7dbd85121928a1",
+        "18a9abce37d54efd",
+        "7f983bf1a1b9c074",
+        "bddf23f3bf9fff52",
+        "026113e965b97219",
+        "6c2591a4ac6392d2"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "2fb7dc820e36b4eb",
+      "slug": "aud-app-built-with",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/app-built-with.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Our application is built with a React frontend"
+    },
+    {
+      "id": "7db56ef0aab65970",
+      "slug": "aud-backend-powered-by",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/backend-powered-by.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The backend service is powered by Node.js"
+    },
+    {
+      "id": "8a2fe8f176e472d3",
+      "slug": "aud-uses-postgresql",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/uses-postgresql.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We use PostgreSQL for relational data storage"
+    },
+    {
+      "id": "e771daf956454a7c",
+      "slug": "aud-hosted-on-aws",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/hosted-on-aws.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The entire infrastructure is hosted on AWS"
+    },
+    {
+      "id": "c669c89eb11c861e",
+      "slug": "aud-scalable-architecture",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/scalable-architecture.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Designed as a microservice scalable architecture"
+    },
+    {
+      "id": "1f69cc05d4d35adb",
+      "slug": "aud-communicates-via-grpc",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/communicates-via-grpc.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Services communicate via gRPC and REST"
+    },
+    {
+      "id": "ef9501072ad7d701",
+      "slug": "aud-handles-high-traffic",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/handles-high-traffic.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "It is optimized to handle high concurrent traffic"
+    },
+    {
+      "id": "a92b9ab20db60f4b",
+      "slug": "aud-modular-codebase",
+      "url": "https://assets.lingobites.app/audio/app-architecture-overview/modular-codebase.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We maintain a clean and modular codebase"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "8970a3f21c451f1e",
+      "slug": "srs-app-built-with",
+      "item_type": "vocabulary",
+      "source_ref_id": "e89f0663db707382",
+      "front": "Our application is built with a React frontend",
+      "back": "Ứng dụng của chúng tôi được xây dựng với frontend React",
+      "hint_vi": "Gợi ý: Cấu trúc Is built with dùng để mô tả công nghệ nền tảng."
+    },
+    {
+      "id": "7bf85f0389d6b13a",
+      "slug": "srs-backend-powered-by",
+      "item_type": "vocabulary",
+      "source_ref_id": "237ff09217022ba0",
+      "front": "The backend service is powered by Node.js",
+      "back": "Dịch vụ backend được vận hành bởi Node.js",
+      "hint_vi": "Gợi ý: Is powered by nghĩa là chạy trên nền tảng công nghệ đó."
+    },
+    {
+      "id": "9d39322b440736b9",
+      "slug": "srs-uses-postgresql",
+      "item_type": "vocabulary",
+      "source_ref_id": "73f3576c5aea8a67",
+      "front": "We use PostgreSQL for relational data storage",
+      "back": "Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ",
+      "hint_vi": "Gợi ý: Relational data storage chỉ cơ sở dữ liệu quan hệ."
+    },
+    {
+      "id": "66d3be0c0e04ac57",
+      "slug": "srs-hosted-on-aws",
+      "item_type": "vocabulary",
+      "source_ref_id": "45a1effb047b642c",
+      "front": "The entire infrastructure is hosted on AWS",
+      "back": "Toàn bộ hạ tầng được lưu trữ trên AWS",
+      "hint_vi": "Gợi ý: Hosted on chỉ nơi đặt máy chủ hoặc dịch vụ đám mây."
+    },
+    {
+      "id": "30de386338fb01f2",
+      "slug": "srs-scalable-architecture",
+      "item_type": "vocabulary",
+      "source_ref_id": "2934c0510aa1a248",
+      "front": "Designed as a microservice scalable architecture",
+      "back": "Được thiết kế theo kiến trúc microservice có thể mở rộng",
+      "hint_vi": "Gợi ý: Scalable architecture nghĩa là kiến trúc dễ nâng cấp dung lượng."
+    },
+    {
+      "id": "0b6e85101e519570",
+      "slug": "srs-communicates-via-grpc",
+      "item_type": "vocabulary",
+      "source_ref_id": "b6dfdacb900033b0",
+      "front": "Services communicate via gRPC and REST",
+      "back": "Các dịch vụ giao tiếp qua gRPC và REST",
+      "hint_vi": "Gợi ý: Giao thức giao tiếp giữa các thành phần phần mềm."
+    },
+    {
+      "id": "dc1ce42ecdb3b0a5",
+      "slug": "srs-handles-high-traffic",
+      "item_type": "vocabulary",
+      "source_ref_id": "a64096330318f58b",
+      "front": "It is optimized to handle high concurrent traffic",
+      "back": "Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao",
+      "hint_vi": "Gợi ý: High concurrent traffic chỉ lượng người dùng đông cùng lúc."
+    },
+    {
+      "id": "328f757695c30d8a",
+      "slug": "srs-modular-codebase",
+      "item_type": "vocabulary",
+      "source_ref_id": "89723f4abc2b440f",
+      "front": "We maintain a clean and modular codebase",
+      "back": "Chúng tôi duy trì mã nguồn sạch và theo mô-đun",
+      "hint_vi": "Gợi ý: Modular codebase giúp dễ bảo trì và mở rộng."
+    }
+  ]
+}

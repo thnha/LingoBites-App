@@ -1,18 +1,13 @@
 /**
- * Speaking Room mode listing + content availability (SETE-110 / M5, REQ-23).
+ * Speaking Room mode listing + content availability (SETE-110 / M5, M7 MVP expansion, REQ-23).
  *
- * The six required modes are a fixed, always-shown list; a mode is only
- * "available" when the active content package actually declares content for
- * it. Today only `shadowing` maps onto existing M1/M2 content (the same
- * `listen_and_repeat` / `speaking_drill` activities the lesson runtime turns
- * into a shadowing step — see `buildLessonSteps.ts`); the other five modes
- * have no content-schema representation yet, so they always render the
- * "not available yet" state (REQ-23, VC-17) rather than a broken/empty
- * screen. Adding real content for them is future content-authoring work, not
- * part of this milestone.
+ * All six required modes are a fixed list. When content for a mode is installed
+ * in the active package, `available` is true and usable content lines/prompts
+ * are returned.
  */
 
 import {
+  getContentLessonById,
   getLessonActivities,
   getLessonChunks,
   listActivePackageLessons,
@@ -28,22 +23,22 @@ export type SpeakingModeInfo = {
 
 const SHADOWING_ACTIVITY_TYPES = new Set(['listen_and_repeat', 'speaking_drill']);
 
-export type ShadowingLine = {
+export type SpeakingContentLine = {
   textEn: string;
   textVi: string;
   audioAssetId: string | null;
 };
 
-export type ShadowingContent = {
+export type SpeakingModeContent = {
   lessonId: string;
   lessonTitleVi: string;
-  lines: ShadowingLine[];
+  lines: SpeakingContentLine[];
 };
 
-/** All shadowing-eligible lines across the active package's lessons. */
-export function getShadowingContent(): ShadowingContent[] {
+/** Shadowing content: lines built from listen_and_repeat / speaking_drill activities. */
+export function getShadowingContent(): SpeakingModeContent[] {
   const lessons = listActivePackageLessons();
-  const content: ShadowingContent[] = [];
+  const content: SpeakingModeContent[] = [];
   for (const lesson of lessons) {
     const activities = getLessonActivities(lesson.id).filter(activity =>
       SHADOWING_ACTIVITY_TYPES.has(activity.type),
@@ -53,7 +48,7 @@ export function getShadowingContent(): ShadowingContent[] {
     }
     const chunks = getLessonChunks(lesson.id);
     const chunksById = new Map(chunks.map(chunk => [chunk.id, chunk]));
-    const lines: ShadowingLine[] = [];
+    const lines: SpeakingContentLine[] = [];
     for (const activity of activities) {
       for (const chunkId of activity.chunkRefIds) {
         const chunk = chunksById.get(chunkId);
@@ -76,6 +71,58 @@ export function getShadowingContent(): ShadowingContent[] {
     }
   }
   return content;
+}
+
+/** Helper to collect content for a given mode by matching lesson slugs/keywords/activities. */
+export function getModeContentByKeywords(keywords: string[]): SpeakingModeContent[] {
+  const lessons = listActivePackageLessons();
+  const content: SpeakingModeContent[] = [];
+  for (const lessonSummary of lessons) {
+    const lesson = getContentLessonById(lessonSummary.id);
+    if (!lesson) continue;
+    const matchesKeyword = keywords.some(
+      kw =>
+        lesson.slug.toLowerCase().includes(kw) ||
+        lesson.titleEn.toLowerCase().includes(kw) ||
+        lesson.titleVi.toLowerCase().includes(kw),
+    );
+    if (matchesKeyword) {
+      const chunks = getLessonChunks(lesson.id);
+      const lines: SpeakingContentLine[] = chunks.map(chunk => ({
+        textEn: chunk.phraseEn,
+        textVi: chunk.phraseVi,
+        audioAssetId: chunk.audioRefIds[0] ?? null,
+      }));
+      if (lines.length > 0) {
+        content.push({
+          lessonId: lesson.id,
+          lessonTitleVi: lesson.titleVi,
+          lines,
+        });
+      }
+    }
+  }
+  return content;
+}
+
+export function getQuickAnswerContent(): SpeakingModeContent[] {
+  return getModeContentByKeywords(['clarification', 'repetition', 'quick', 'role', 'asking']);
+}
+
+export function getStandupContent(): SpeakingModeContent[] {
+  return getModeContentByKeywords(['standup', 'stand-up', 'daily']);
+}
+
+export function getAppDescriptionContent(): SpeakingModeContent[] {
+  return getModeContentByKeywords(['app', 'architecture', 'system', 'api', 'data-flow']);
+}
+
+export function getBugReportContent(): SpeakingModeContent[] {
+  return getModeContentByKeywords(['bug', 'triage', 'reporting', 'root-cause']);
+}
+
+export function getMockInterviewContent(): SpeakingModeContent[] {
+  return getModeContentByKeywords(['interview', 'career', 'profile', 'behavioral', 'system-design']);
 }
 
 const MODE_COPY: Record<SpeakingMode, {titleVi: string; descriptionVi: string}> = {
@@ -108,13 +155,19 @@ const MODE_COPY: Record<SpeakingMode, {titleVi: string; descriptionVi: string}> 
 /** REQ-23: the six required modes, each flagged with whether content exists. */
 export function listSpeakingRoomModes(): SpeakingModeInfo[] {
   const shadowingAvailable = getShadowingContent().length > 0;
+  const quickAnswerAvailable = getQuickAnswerContent().length > 0;
+  const standupAvailable = getStandupContent().length > 0;
+  const appDescriptionAvailable = getAppDescriptionContent().length > 0;
+  const bugReportAvailable = getBugReportContent().length > 0;
+  const mockInterviewAvailable = getMockInterviewContent().length > 0;
+
   const availability: Record<SpeakingMode, boolean> = {
     shadowing: shadowingAvailable,
-    quick_answer: false,
-    standup: false,
-    app_description: false,
-    bug_report: false,
-    mock_interview: false,
+    quick_answer: quickAnswerAvailable,
+    standup: standupAvailable,
+    app_description: appDescriptionAvailable,
+    bug_report: bugReportAvailable,
+    mock_interview: mockInterviewAvailable,
   };
   return (Object.keys(MODE_COPY) as SpeakingMode[]).map(mode => ({
     mode,

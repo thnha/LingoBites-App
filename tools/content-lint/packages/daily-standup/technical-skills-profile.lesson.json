@@ -1,0 +1,745 @@
+{
+  "id": "eaf824dc45109723",
+  "slug": "technical-skills-profile",
+  "schema_version": "0.1.0",
+  "title_en": "Highlighting Technical Skills & Experience",
+  "title_vi": "Nổi bật kỹ năng kỹ thuật và kinh nghiệm",
+  "blurb_vi": "Tự tin trình bày hồ sơ năng lực cá nhân, điểm mạnh công nghệ và số năm kinh nghiệm.",
+  "level": "B1",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Trình bày hồ sơ kỹ năng lập trình trong bài phỏng vấn hoặc giới thiệu chuyên môn.",
+  "situation_vi": "Giới thiệu hồ sơ với nhà tuyển dụng hoặc đối tác nước ngoài.",
+  "learner_role_vi": "Ứng viên lập trình viên giới thiệu bản thân.",
+  "prerequisite_lesson_slugs": [
+    "bug-triage-root-cause"
+  ],
+  "pronunciation_focus_vi": "Phát âm tự nhiên các từ chỉ kỹ năng: specialized in, proficient in, experience, stack.",
+  "final_speaking_task_vi": "Trình bày tóm tắt 2 phút về kinh nghiệm và điểm mạnh công nghệ của bạn.",
+  "pass_conditions_vi": "Trình bày tự tin, mạch lạc với đầy đủ từ vựng chuyên môn.",
+  "unit_slug": "career-profile",
+  "unit_title_vi": "Hồ sơ Nghề nghiệp & Kỹ năng (Career Profile)",
+  "stage": 4,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "1985d0e22f9099a7",
+      "tip_vi": "Ôn tập lại cụm từ \"I specialize in full-stack web development\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "3a478deeae4548ab",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"I have over three years of commercial experience\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "739ff81cb6633bd4",
+      "slug": "specialize-in-fullstack",
+      "order": 0,
+      "phrase_en": "I specialize in full-stack web development",
+      "phrase_vi": "Tôi chuyên về phát triển web full-stack",
+      "explanation_vi": "Specialize in sth nghĩa là có chuyên môn sâu về lĩnh vực đó.",
+      "context_sentence_en": "In our daily work: \"I specialize in full-stack web development\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi chuyên về phát triển web full-stack\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "31c04c3ea0d76995"
+      ],
+      "srs_ref_ids": [
+        "1985d0e22f9099a7"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "8b42140ea1bdecd9",
+          "slug": "turn1-specialize-in-fullstack",
+          "speaker": "A",
+          "text_en": "I specialize in full-stack web development?",
+          "text_vi": "Tôi chuyên về phát triển web full-stack?"
+        },
+        {
+          "id": "0b31ee83a464e556",
+          "slug": "turn2-specialize-in-fullstack",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "354765645d2c7fe7",
+          "slug": "qa-specialize-in-fullstack",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I specialize in full-stack web development\":",
+          "options": [
+            "Tôi chuyên về phát triển web full-stack",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi chuyên về phát triển web full-stack",
+          "explanation_vi": "Dịch đúng là: Tôi chuyên về phát triển web full-stack"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "1985d0e22f9099a7"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I specialize in full-stack web development\" nghĩa là \"Tôi chuyên về phát triển web full-stack\"."
+      }
+    },
+    {
+      "id": "fc6521e4f39c11a6",
+      "slug": "over-three-years",
+      "order": 1,
+      "phrase_en": "I have over three years of commercial experience",
+      "phrase_vi": "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại",
+      "explanation_vi": "Commercial experience chỉ kinh nghiệm làm sản phẩm thật.",
+      "context_sentence_en": "In our daily work: \"I have over three years of commercial experience\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi có hơn ba năm kinh nghiệm làm dự án thương mại\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "153aaf7481763295"
+      ],
+      "srs_ref_ids": [
+        "3a478deeae4548ab"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5a420e374fd98dde",
+          "slug": "turn1-over-three-years",
+          "speaker": "A",
+          "text_en": "I have over three years of commercial experience?",
+          "text_vi": "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại?"
+        },
+        {
+          "id": "dfcf822bab4dd93a",
+          "slug": "turn2-over-three-years",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "454d9341249843e0",
+          "slug": "qa-over-three-years",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I have over three years of commercial experience\":",
+          "options": [
+            "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại",
+          "explanation_vi": "Dịch đúng là: Tôi có hơn ba năm kinh nghiệm làm dự án thương mại"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "3a478deeae4548ab"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I have over three years of commercial experience\" nghĩa là \"Tôi có hơn ba năm kinh nghiệm làm dự án thương mại\"."
+      }
+    },
+    {
+      "id": "4983f881a8d7ce82",
+      "slug": "proficient-in-ts",
+      "order": 2,
+      "phrase_en": "I am proficient in TypeScript and React Native",
+      "phrase_vi": "Tôi thành thạo TypeScript và React Native",
+      "explanation_vi": "Proficient in sth chỉ mức độ thành thạo cao.",
+      "context_sentence_en": "In our daily work: \"I am proficient in TypeScript and React Native\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi thành thạo TypeScript và React Native\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "7b153a7c589121a1"
+      ],
+      "srs_ref_ids": [
+        "7cb61c91cee04a56"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "9cbe7108217aec22",
+          "slug": "turn1-proficient-in-ts",
+          "speaker": "A",
+          "text_en": "I am proficient in TypeScript and React Native?",
+          "text_vi": "Tôi thành thạo TypeScript và React Native?"
+        },
+        {
+          "id": "d1a755588438673d",
+          "slug": "turn2-proficient-in-ts",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "e7c2ffd22a1f8714",
+          "slug": "qa-proficient-in-ts",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I am proficient in TypeScript and React Native\":",
+          "options": [
+            "Tôi thành thạo TypeScript và React Native",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi thành thạo TypeScript và React Native",
+          "explanation_vi": "Dịch đúng là: Tôi thành thạo TypeScript và React Native"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "7cb61c91cee04a56"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I am proficient in TypeScript and React Native\" nghĩa là \"Tôi thành thạo TypeScript và React Native\"."
+      }
+    },
+    {
+      "id": "4b81fdc70afddf00",
+      "slug": "hands-on-experience",
+      "order": 3,
+      "phrase_en": "I have hands-on experience with Docker and CI",
+      "phrase_vi": "Tôi có kinh nghiệm thực chiến với Docker và CI",
+      "explanation_vi": "Hands-on experience nghĩa là kinh nghiệm làm thực tế.",
+      "context_sentence_en": "In our daily work: \"I have hands-on experience with Docker and CI\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi có kinh nghiệm thực chiến với Docker và CI\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "42fbc9f96090fd3a"
+      ],
+      "srs_ref_ids": [
+        "3e4b026ac6f6c9fd"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "0442b75e538ead64",
+          "slug": "turn1-hands-on-experience",
+          "speaker": "A",
+          "text_en": "I have hands-on experience with Docker and CI?",
+          "text_vi": "Tôi có kinh nghiệm thực chiến với Docker và CI?"
+        },
+        {
+          "id": "ab9adb8c54ad66a1",
+          "slug": "turn2-hands-on-experience",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "a5e74aef970c345c",
+          "slug": "qa-hands-on-experience",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I have hands-on experience with Docker and CI\":",
+          "options": [
+            "Tôi có kinh nghiệm thực chiến với Docker và CI",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi có kinh nghiệm thực chiến với Docker và CI",
+          "explanation_vi": "Dịch đúng là: Tôi có kinh nghiệm thực chiến với Docker và CI"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "3e4b026ac6f6c9fd"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I have hands-on experience with Docker and CI\" nghĩa là \"Tôi có kinh nghiệm thực chiến với Docker và CI\"."
+      }
+    },
+    {
+      "id": "3a44480c480d8ee9",
+      "slug": "building-scalable-apps",
+      "order": 4,
+      "phrase_en": "My core strength is building scalable applications",
+      "phrase_vi": "Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng",
+      "explanation_vi": "Cụm từ nhấn mạnh thế mạnh bản thân.",
+      "context_sentence_en": "In our daily work: \"My core strength is building scalable applications\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "64771af8a93391b5"
+      ],
+      "srs_ref_ids": [
+        "725c137613ffbb83"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "7e00001d98e51d7f",
+          "slug": "turn1-building-scalable-apps",
+          "speaker": "A",
+          "text_en": "My core strength is building scalable applications?",
+          "text_vi": "Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng?"
+        },
+        {
+          "id": "f8326cd6b8f4532b",
+          "slug": "turn2-building-scalable-apps",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "24ac3f77af799457",
+          "slug": "qa-building-scalable-apps",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"My core strength is building scalable applications\":",
+          "options": [
+            "Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng",
+          "explanation_vi": "Dịch đúng là: Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "725c137613ffbb83"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"My core strength is building scalable applications\" nghĩa là \"Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng\"."
+      }
+    },
+    {
+      "id": "25cbd1274adc7a06",
+      "slug": "agile-scrum-background",
+      "order": 5,
+      "phrase_en": "I have worked extensively in Agile Scrum environments",
+      "phrase_vi": "Tôi đã làm việc nhiều trong môi trường Agile Scrum",
+      "explanation_vi": "Kinh nghiệm làm việc theo phương pháp Agile.",
+      "context_sentence_en": "In our daily work: \"I have worked extensively in Agile Scrum environments\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã làm việc nhiều trong môi trường Agile Scrum\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "674b48c45896ea8e"
+      ],
+      "srs_ref_ids": [
+        "f04d130f29631ec5"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "a57ee1d6c9e3b09b",
+          "slug": "turn1-agile-scrum-background",
+          "speaker": "A",
+          "text_en": "I have worked extensively in Agile Scrum environments?",
+          "text_vi": "Tôi đã làm việc nhiều trong môi trường Agile Scrum?"
+        },
+        {
+          "id": "e8970484b8e6e297",
+          "slug": "turn2-agile-scrum-background",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "1d811dc399fea109",
+          "slug": "qa-agile-scrum-background",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I have worked extensively in Agile Scrum environments\":",
+          "options": [
+            "Tôi đã làm việc nhiều trong môi trường Agile Scrum",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã làm việc nhiều trong môi trường Agile Scrum",
+          "explanation_vi": "Dịch đúng là: Tôi đã làm việc nhiều trong môi trường Agile Scrum"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "f04d130f29631ec5"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I have worked extensively in Agile Scrum environments\" nghĩa là \"Tôi đã làm việc nhiều trong môi trường Agile Scrum\"."
+      }
+    },
+    {
+      "id": "a8118787df3f0d36",
+      "slug": "continuous-learning",
+      "order": 6,
+      "phrase_en": "I am passionate about continuous technical learning",
+      "phrase_vi": "Tôi đam mê học hỏi kỹ thuật liên tục",
+      "explanation_vi": "Thể hiện tinh thần học hỏi phấn đấu.",
+      "context_sentence_en": "In our daily work: \"I am passionate about continuous technical learning\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đam mê học hỏi kỹ thuật liên tục\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "bdeb630fd77c7cac"
+      ],
+      "srs_ref_ids": [
+        "0295f043dadc8adc"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "3779b23a5cf43025",
+          "slug": "turn1-continuous-learning",
+          "speaker": "A",
+          "text_en": "I am passionate about continuous technical learning?",
+          "text_vi": "Tôi đam mê học hỏi kỹ thuật liên tục?"
+        },
+        {
+          "id": "04170c545e4ebc45",
+          "slug": "turn2-continuous-learning",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "292c26d673af59d1",
+          "slug": "qa-continuous-learning",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I am passionate about continuous technical learning\":",
+          "options": [
+            "Tôi đam mê học hỏi kỹ thuật liên tục",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đam mê học hỏi kỹ thuật liên tục",
+          "explanation_vi": "Dịch đúng là: Tôi đam mê học hỏi kỹ thuật liên tục"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "0295f043dadc8adc"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I am passionate about continuous technical learning\" nghĩa là \"Tôi đam mê học hỏi kỹ thuật liên tục\"."
+      }
+    },
+    {
+      "id": "200b25b787e9499e",
+      "slug": "strong-problem-solving",
+      "order": 7,
+      "phrase_en": "I possess strong problem-solving capabilities",
+      "phrase_vi": "Tôi sở hữu khả năng giải quyết vấn đề tốt",
+      "explanation_vi": "Problem-solving skill là kỹ năng mềm quan trọng.",
+      "context_sentence_en": "In our daily work: \"I possess strong problem-solving capabilities\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sở hữu khả năng giải quyết vấn đề tốt\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "39cb91a6ce62852b"
+      ],
+      "srs_ref_ids": [
+        "6c219039ece61251"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5d6a35d778fd48e7",
+          "slug": "turn1-strong-problem-solving",
+          "speaker": "A",
+          "text_en": "I possess strong problem-solving capabilities?",
+          "text_vi": "Tôi sở hữu khả năng giải quyết vấn đề tốt?"
+        },
+        {
+          "id": "c9fae79dfe7aee38",
+          "slug": "turn2-strong-problem-solving",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "4f0eadcf4e7acca5",
+          "slug": "qa-strong-problem-solving",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I possess strong problem-solving capabilities\":",
+          "options": [
+            "Tôi sở hữu khả năng giải quyết vấn đề tốt",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi sở hữu khả năng giải quyết vấn đề tốt",
+          "explanation_vi": "Dịch đúng là: Tôi sở hữu khả năng giải quyết vấn đề tốt"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "6c219039ece61251"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I possess strong problem-solving capabilities\" nghĩa là \"Tôi sở hữu khả năng giải quyết vấn đề tốt\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "61c0e8829ac88add",
+      "slug": "gp-1",
+      "name_en": "Pattern for Highlighting Technical Skills & Experience",
+      "name_vi": "Mẫu câu chính bài Nổi bật kỹ năng kỹ thuật và kinh nghiệm",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "I specialize in full-stack web development",
+          "vi": "Tôi chuyên về phát triển web full-stack"
+        },
+        {
+          "en": "I have over three years of commercial experience",
+          "vi": "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "332bfa81ff0a7d29",
+      "slug": "v-specialize-in-fullstack",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi chuyên về phát triển web full-stack",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "I specialize in full-stack web development",
+      "example_vi": "Tôi chuyên về phát triển web full-stack"
+    },
+    {
+      "id": "42086f140f4d7b04",
+      "slug": "v-over-three-years",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "I have over three years of commercial experience",
+      "example_vi": "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại"
+    },
+    {
+      "id": "01df75f20e889c9f",
+      "slug": "v-proficient-in-ts",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi thành thạo TypeScript và React Native",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "I am proficient in TypeScript and React Native",
+      "example_vi": "Tôi thành thạo TypeScript và React Native"
+    }
+  ],
+  "activities": [
+    {
+      "id": "76a6ce22f7492a22",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "739ff81cb6633bd4",
+        "fc6521e4f39c11a6",
+        "4983f881a8d7ce82",
+        "4b81fdc70afddf00",
+        "3a44480c480d8ee9",
+        "25cbd1274adc7a06",
+        "a8118787df3f0d36",
+        "200b25b787e9499e"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "687a7fbaaa75409e",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "739ff81cb6633bd4",
+        "fc6521e4f39c11a6",
+        "4983f881a8d7ce82",
+        "4b81fdc70afddf00"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "e40b50241524b4b1",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "739ff81cb6633bd4",
+        "fc6521e4f39c11a6",
+        "4983f881a8d7ce82",
+        "4b81fdc70afddf00",
+        "3a44480c480d8ee9",
+        "25cbd1274adc7a06",
+        "a8118787df3f0d36",
+        "200b25b787e9499e"
+      ],
+      "qa_ref_ids": [
+        "354765645d2c7fe7",
+        "454d9341249843e0",
+        "e7c2ffd22a1f8714",
+        "a5e74aef970c345c",
+        "24ac3f77af799457",
+        "1d811dc399fea109",
+        "292c26d673af59d1",
+        "4f0eadcf4e7acca5"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "31c04c3ea0d76995",
+      "slug": "aud-specialize-in-fullstack",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/specialize-in-fullstack.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I specialize in full-stack web development"
+    },
+    {
+      "id": "153aaf7481763295",
+      "slug": "aud-over-three-years",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/over-three-years.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I have over three years of commercial experience"
+    },
+    {
+      "id": "7b153a7c589121a1",
+      "slug": "aud-proficient-in-ts",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/proficient-in-ts.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I am proficient in TypeScript and React Native"
+    },
+    {
+      "id": "42fbc9f96090fd3a",
+      "slug": "aud-hands-on-experience",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/hands-on-experience.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I have hands-on experience with Docker and CI"
+    },
+    {
+      "id": "64771af8a93391b5",
+      "slug": "aud-building-scalable-apps",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/building-scalable-apps.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "My core strength is building scalable applications"
+    },
+    {
+      "id": "674b48c45896ea8e",
+      "slug": "aud-agile-scrum-background",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/agile-scrum-background.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I have worked extensively in Agile Scrum environments"
+    },
+    {
+      "id": "bdeb630fd77c7cac",
+      "slug": "aud-continuous-learning",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/continuous-learning.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I am passionate about continuous technical learning"
+    },
+    {
+      "id": "39cb91a6ce62852b",
+      "slug": "aud-strong-problem-solving",
+      "url": "https://assets.lingobites.app/audio/technical-skills-profile/strong-problem-solving.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I possess strong problem-solving capabilities"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "1985d0e22f9099a7",
+      "slug": "srs-specialize-in-fullstack",
+      "item_type": "vocabulary",
+      "source_ref_id": "739ff81cb6633bd4",
+      "front": "I specialize in full-stack web development",
+      "back": "Tôi chuyên về phát triển web full-stack",
+      "hint_vi": "Gợi ý: Specialize in sth nghĩa là có chuyên môn sâu về lĩnh vực đó."
+    },
+    {
+      "id": "3a478deeae4548ab",
+      "slug": "srs-over-three-years",
+      "item_type": "vocabulary",
+      "source_ref_id": "fc6521e4f39c11a6",
+      "front": "I have over three years of commercial experience",
+      "back": "Tôi có hơn ba năm kinh nghiệm làm dự án thương mại",
+      "hint_vi": "Gợi ý: Commercial experience chỉ kinh nghiệm làm sản phẩm thật."
+    },
+    {
+      "id": "7cb61c91cee04a56",
+      "slug": "srs-proficient-in-ts",
+      "item_type": "vocabulary",
+      "source_ref_id": "4983f881a8d7ce82",
+      "front": "I am proficient in TypeScript and React Native",
+      "back": "Tôi thành thạo TypeScript và React Native",
+      "hint_vi": "Gợi ý: Proficient in sth chỉ mức độ thành thạo cao."
+    },
+    {
+      "id": "3e4b026ac6f6c9fd",
+      "slug": "srs-hands-on-experience",
+      "item_type": "vocabulary",
+      "source_ref_id": "4b81fdc70afddf00",
+      "front": "I have hands-on experience with Docker and CI",
+      "back": "Tôi có kinh nghiệm thực chiến với Docker và CI",
+      "hint_vi": "Gợi ý: Hands-on experience nghĩa là kinh nghiệm làm thực tế."
+    },
+    {
+      "id": "725c137613ffbb83",
+      "slug": "srs-building-scalable-apps",
+      "item_type": "vocabulary",
+      "source_ref_id": "3a44480c480d8ee9",
+      "front": "My core strength is building scalable applications",
+      "back": "Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng",
+      "hint_vi": "Gợi ý: Cụm từ nhấn mạnh thế mạnh bản thân."
+    },
+    {
+      "id": "f04d130f29631ec5",
+      "slug": "srs-agile-scrum-background",
+      "item_type": "vocabulary",
+      "source_ref_id": "25cbd1274adc7a06",
+      "front": "I have worked extensively in Agile Scrum environments",
+      "back": "Tôi đã làm việc nhiều trong môi trường Agile Scrum",
+      "hint_vi": "Gợi ý: Kinh nghiệm làm việc theo phương pháp Agile."
+    },
+    {
+      "id": "0295f043dadc8adc",
+      "slug": "srs-continuous-learning",
+      "item_type": "vocabulary",
+      "source_ref_id": "a8118787df3f0d36",
+      "front": "I am passionate about continuous technical learning",
+      "back": "Tôi đam mê học hỏi kỹ thuật liên tục",
+      "hint_vi": "Gợi ý: Thể hiện tinh thần học hỏi phấn đấu."
+    },
+    {
+      "id": "6c219039ece61251",
+      "slug": "srs-strong-problem-solving",
+      "item_type": "vocabulary",
+      "source_ref_id": "200b25b787e9499e",
+      "front": "I possess strong problem-solving capabilities",
+      "back": "Tôi sở hữu khả năng giải quyết vấn đề tốt",
+      "hint_vi": "Gợi ý: Problem-solving skill là kỹ năng mềm quan trọng."
+    }
+  ]
+}

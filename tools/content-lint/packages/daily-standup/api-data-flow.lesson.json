@@ -1,0 +1,745 @@
+{
+  "id": "ede02491b9d71ec2",
+  "slug": "api-data-flow",
+  "schema_version": "0.1.0",
+  "title_en": "Describing API & Database Data Flow",
+  "title_vi": "Mô tả luồng dữ liệu API & Cơ sở dữ liệu",
+  "blurb_vi": "Giải thích chi tiết luồng xử lý từ Client request -> API -> Database -> Response.",
+  "level": "B1",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Diễn tả từng bước luồng dữ liệu khi một tính năng được kích hoạt.",
+  "situation_vi": "Thảo luận với đồng nghiệp về cách tối ưu hoá luồng xử lý dữ liệu.",
+  "learner_role_vi": "Backend Developer giải thích luồng xử lý request.",
+  "prerequisite_lesson_slugs": [
+    "app-architecture-overview"
+  ],
+  "pronunciation_focus_vi": "Nhấn âm rõ ràng các hành động: sends, receives, fetches, transforms, returns.",
+  "final_speaking_task_vi": "Giải thích luồng dữ liệu tính năng đăng nhập từ giao diện xuống CSDL.",
+  "pass_conditions_vi": "Sử dụng đúng các từ nối thứ tự (first, then, after that, finally).",
+  "unit_slug": "app-description",
+  "unit_title_vi": "Mô tả Ứng dụng & Hệ thống",
+  "stage": 3,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "de7d43194f2bb58d",
+      "tip_vi": "Ôn tập lại cụm từ \"When the user clicks, the client sends an HTTP request\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "84d00bd3b506d94c",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"The API middleware validates the JWT token\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "fc48be12dfccbee1",
+      "slug": "client-sends-request",
+      "order": 0,
+      "phrase_en": "When the user clicks, the client sends an HTTP request",
+      "phrase_vi": "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request",
+      "explanation_vi": "Bước đầu tiên trong luồng xử lý trang web.",
+      "context_sentence_en": "In our daily work: \"When the user clicks, the client sends an HTTP request\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Khi người dùng nhấp chuột, client sẽ gửi một HTTP request\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "85fbfb07d6ccc311"
+      ],
+      "srs_ref_ids": [
+        "de7d43194f2bb58d"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "a33666aa43e5f734",
+          "slug": "turn1-client-sends-request",
+          "speaker": "A",
+          "text_en": "When the user clicks, the client sends an HTTP request?",
+          "text_vi": "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request?"
+        },
+        {
+          "id": "fb9f6119dbe87cf3",
+          "slug": "turn2-client-sends-request",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6ca1028e7d9d09ff",
+          "slug": "qa-client-sends-request",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"When the user clicks, the client sends an HTTP request\":",
+          "options": [
+            "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request",
+          "explanation_vi": "Dịch đúng là: Khi người dùng nhấp chuột, client sẽ gửi một HTTP request"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "de7d43194f2bb58d"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"When the user clicks, the client sends an HTTP request\" nghĩa là \"Khi người dùng nhấp chuột, client sẽ gửi một HTTP request\"."
+      }
+    },
+    {
+      "id": "cd709c7d46a91dcd",
+      "slug": "api-validates-token",
+      "order": 1,
+      "phrase_en": "The API middleware validates the JWT token",
+      "phrase_vi": "Middleware của API sẽ xác thực mã token JWT",
+      "explanation_vi": "Xác thực người dùng trước khi cho phép vào hệ thống.",
+      "context_sentence_en": "In our daily work: \"The API middleware validates the JWT token\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Middleware của API sẽ xác thực mã token JWT\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "669181f90fec501e"
+      ],
+      "srs_ref_ids": [
+        "84d00bd3b506d94c"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "c1d599511343aaee",
+          "slug": "turn1-api-validates-token",
+          "speaker": "A",
+          "text_en": "The API middleware validates the JWT token?",
+          "text_vi": "Middleware của API sẽ xác thực mã token JWT?"
+        },
+        {
+          "id": "5cac9849c4f81d38",
+          "slug": "turn2-api-validates-token",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "25fd2d5bf3cd462f",
+          "slug": "qa-api-validates-token",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The API middleware validates the JWT token\":",
+          "options": [
+            "Middleware của API sẽ xác thực mã token JWT",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Middleware của API sẽ xác thực mã token JWT",
+          "explanation_vi": "Dịch đúng là: Middleware của API sẽ xác thực mã token JWT"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "84d00bd3b506d94c"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The API middleware validates the JWT token\" nghĩa là \"Middleware của API sẽ xác thực mã token JWT\"."
+      }
+    },
+    {
+      "id": "e675721a86d94af4",
+      "slug": "fetches-from-database",
+      "order": 2,
+      "phrase_en": "Then it fetches the user profile from database",
+      "phrase_vi": "Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu",
+      "explanation_vi": "Fetch data nghĩa là lấy dữ liệu từ DB.",
+      "context_sentence_en": "In our daily work: \"Then it fetches the user profile from database\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "58a4c9be062a6ecf"
+      ],
+      "srs_ref_ids": [
+        "ebee79f8906da68b"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "8baffa4d06926889",
+          "slug": "turn1-fetches-from-database",
+          "speaker": "A",
+          "text_en": "Then it fetches the user profile from database?",
+          "text_vi": "Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu?"
+        },
+        {
+          "id": "b495a017ca7b1c0f",
+          "slug": "turn2-fetches-from-database",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "385e4368c377d1c7",
+          "slug": "qa-fetches-from-database",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Then it fetches the user profile from database\":",
+          "options": [
+            "Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu",
+          "explanation_vi": "Dịch đúng là: Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "ebee79f8906da68b"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Then it fetches the user profile from database\" nghĩa là \"Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu\"."
+      }
+    },
+    {
+      "id": "3bd89b68fd26199a",
+      "slug": "caches-in-redis",
+      "order": 3,
+      "phrase_en": "Frequent query results are cached in Redis",
+      "phrase_vi": "Kết quả truy vấn thường xuyên được lưu đệm trong Redis",
+      "explanation_vi": "Lưu đệm để tăng tốc độ truy xuất.",
+      "context_sentence_en": "In our daily work: \"Frequent query results are cached in Redis\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Kết quả truy vấn thường xuyên được lưu đệm trong Redis\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "f226034be800a602"
+      ],
+      "srs_ref_ids": [
+        "af9bcf95423d7e07"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "9faf9fa9dba17397",
+          "slug": "turn1-caches-in-redis",
+          "speaker": "A",
+          "text_en": "Frequent query results are cached in Redis?",
+          "text_vi": "Kết quả truy vấn thường xuyên được lưu đệm trong Redis?"
+        },
+        {
+          "id": "5638ddef896b36e8",
+          "slug": "turn2-caches-in-redis",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "f863593743055fc9",
+          "slug": "qa-caches-in-redis",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Frequent query results are cached in Redis\":",
+          "options": [
+            "Kết quả truy vấn thường xuyên được lưu đệm trong Redis",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Kết quả truy vấn thường xuyên được lưu đệm trong Redis",
+          "explanation_vi": "Dịch đúng là: Kết quả truy vấn thường xuyên được lưu đệm trong Redis"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "af9bcf95423d7e07"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Frequent query results are cached in Redis\" nghĩa là \"Kết quả truy vấn thường xuyên được lưu đệm trong Redis\"."
+      }
+    },
+    {
+      "id": "dc6bff9fcf1ef784",
+      "slug": "transforms-payload",
+      "order": 4,
+      "phrase_en": "The server transforms the data payload into JSON",
+      "phrase_vi": "Máy chủ chuyển đổi dữ liệu thành định dạng JSON",
+      "explanation_vi": "Transform payload nghĩa là định dạng lại dữ liệu.",
+      "context_sentence_en": "In our daily work: \"The server transforms the data payload into JSON\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Máy chủ chuyển đổi dữ liệu thành định dạng JSON\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "e063629b3fdf5ff2"
+      ],
+      "srs_ref_ids": [
+        "0e15435bb03a4322"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "7d38a270d0bd9765",
+          "slug": "turn1-transforms-payload",
+          "speaker": "A",
+          "text_en": "The server transforms the data payload into JSON?",
+          "text_vi": "Máy chủ chuyển đổi dữ liệu thành định dạng JSON?"
+        },
+        {
+          "id": "b525ff60955a29f4",
+          "slug": "turn2-transforms-payload",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "cad335eff7a370fe",
+          "slug": "qa-transforms-payload",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The server transforms the data payload into JSON\":",
+          "options": [
+            "Máy chủ chuyển đổi dữ liệu thành định dạng JSON",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Máy chủ chuyển đổi dữ liệu thành định dạng JSON",
+          "explanation_vi": "Dịch đúng là: Máy chủ chuyển đổi dữ liệu thành định dạng JSON"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "0e15435bb03a4322"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The server transforms the data payload into JSON\" nghĩa là \"Máy chủ chuyển đổi dữ liệu thành định dạng JSON\"."
+      }
+    },
+    {
+      "id": "a68b15a962d88b31",
+      "slug": "returns-status-200",
+      "order": 5,
+      "phrase_en": "It returns a 200 OK status code with response",
+      "phrase_vi": "Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi",
+      "explanation_vi": "Mã thành công tiêu chuẩn của HTTP.",
+      "context_sentence_en": "In our daily work: \"It returns a 200 OK status code with response\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "6f08104cf5f3ba65"
+      ],
+      "srs_ref_ids": [
+        "79ff4e9b6ea2ed1e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "6df47aa0e3fb31b3",
+          "slug": "turn1-returns-status-200",
+          "speaker": "A",
+          "text_en": "It returns a 200 OK status code with response?",
+          "text_vi": "Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi?"
+        },
+        {
+          "id": "3582c24403752468",
+          "slug": "turn2-returns-status-200",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "7e334028be8eb654",
+          "slug": "qa-returns-status-200",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"It returns a 200 OK status code with response\":",
+          "options": [
+            "Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi",
+          "explanation_vi": "Dịch đúng là: Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "79ff4e9b6ea2ed1e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"It returns a 200 OK status code with response\" nghĩa là \"Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi\"."
+      }
+    },
+    {
+      "id": "6cdab51777fce309",
+      "slug": "handles-error-gracefully",
+      "order": 6,
+      "phrase_en": "If validation fails, it handles the error gracefully",
+      "phrase_vi": "Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp",
+      "explanation_vi": "Handle gracefully nghĩa là báo lỗi rõ ràng không làm sập ứng dụng.",
+      "context_sentence_en": "In our daily work: \"If validation fails, it handles the error gracefully\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "ade9df8a724d0c52"
+      ],
+      "srs_ref_ids": [
+        "c27413ef4e7b5d3a"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "1fd90ec0545f004b",
+          "slug": "turn1-handles-error-gracefully",
+          "speaker": "A",
+          "text_en": "If validation fails, it handles the error gracefully?",
+          "text_vi": "Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp?"
+        },
+        {
+          "id": "9f2056e7c08ec2d4",
+          "slug": "turn2-handles-error-gracefully",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "9f9e9886035c83ca",
+          "slug": "qa-handles-error-gracefully",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"If validation fails, it handles the error gracefully\":",
+          "options": [
+            "Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp",
+          "explanation_vi": "Dịch đúng là: Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "c27413ef4e7b5d3a"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"If validation fails, it handles the error gracefully\" nghĩa là \"Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp\"."
+      }
+    },
+    {
+      "id": "a551e5130cd1dbc0",
+      "slug": "asynchronous-processing",
+      "order": 7,
+      "phrase_en": "Heavy tasks use background asynchronous processing",
+      "phrase_vi": "Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền",
+      "explanation_vi": "Xử lý bất đồng bộ tránh làm đơ giao diện.",
+      "context_sentence_en": "In our daily work: \"Heavy tasks use background asynchronous processing\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "2f7325eaf4a92c51"
+      ],
+      "srs_ref_ids": [
+        "d9df0a80117d6f96"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "f0eb98f439681eef",
+          "slug": "turn1-asynchronous-processing",
+          "speaker": "A",
+          "text_en": "Heavy tasks use background asynchronous processing?",
+          "text_vi": "Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền?"
+        },
+        {
+          "id": "001fe6e73aea262a",
+          "slug": "turn2-asynchronous-processing",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6274ea34637c7474",
+          "slug": "qa-asynchronous-processing",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Heavy tasks use background asynchronous processing\":",
+          "options": [
+            "Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền",
+          "explanation_vi": "Dịch đúng là: Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "d9df0a80117d6f96"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Heavy tasks use background asynchronous processing\" nghĩa là \"Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "45b467e520c083e0",
+      "slug": "gp-1",
+      "name_en": "Pattern for Describing API & Database Data Flow",
+      "name_vi": "Mẫu câu chính bài Mô tả luồng dữ liệu API & Cơ sở dữ liệu",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "When the user clicks, the client sends an HTTP request",
+          "vi": "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request"
+        },
+        {
+          "en": "The API middleware validates the JWT token",
+          "vi": "Middleware của API sẽ xác thực mã token JWT"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "35c561dba29ed252",
+      "slug": "v-client-sends-request",
+      "word": "When",
+      "word_type": "noun",
+      "meaning_vi": "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "When the user clicks, the client sends an HTTP request",
+      "example_vi": "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request"
+    },
+    {
+      "id": "f9a9f06f85f0f37b",
+      "slug": "v-api-validates-token",
+      "word": "The",
+      "word_type": "noun",
+      "meaning_vi": "Middleware của API sẽ xác thực mã token JWT",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "The API middleware validates the JWT token",
+      "example_vi": "Middleware của API sẽ xác thực mã token JWT"
+    },
+    {
+      "id": "47c493055983a9bb",
+      "slug": "v-fetches-from-database",
+      "word": "Then",
+      "word_type": "noun",
+      "meaning_vi": "Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "Then it fetches the user profile from database",
+      "example_vi": "Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu"
+    }
+  ],
+  "activities": [
+    {
+      "id": "b22a201faad05d79",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "fc48be12dfccbee1",
+        "cd709c7d46a91dcd",
+        "e675721a86d94af4",
+        "3bd89b68fd26199a",
+        "dc6bff9fcf1ef784",
+        "a68b15a962d88b31",
+        "6cdab51777fce309",
+        "a551e5130cd1dbc0"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "2938d254875d7ce9",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "fc48be12dfccbee1",
+        "cd709c7d46a91dcd",
+        "e675721a86d94af4",
+        "3bd89b68fd26199a"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "5339c67849e394e2",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "fc48be12dfccbee1",
+        "cd709c7d46a91dcd",
+        "e675721a86d94af4",
+        "3bd89b68fd26199a",
+        "dc6bff9fcf1ef784",
+        "a68b15a962d88b31",
+        "6cdab51777fce309",
+        "a551e5130cd1dbc0"
+      ],
+      "qa_ref_ids": [
+        "6ca1028e7d9d09ff",
+        "25fd2d5bf3cd462f",
+        "385e4368c377d1c7",
+        "f863593743055fc9",
+        "cad335eff7a370fe",
+        "7e334028be8eb654",
+        "9f9e9886035c83ca",
+        "6274ea34637c7474"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "85fbfb07d6ccc311",
+      "slug": "aud-client-sends-request",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/client-sends-request.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "When the user clicks, the client sends an HTTP request"
+    },
+    {
+      "id": "669181f90fec501e",
+      "slug": "aud-api-validates-token",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/api-validates-token.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The API middleware validates the JWT token"
+    },
+    {
+      "id": "58a4c9be062a6ecf",
+      "slug": "aud-fetches-from-database",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/fetches-from-database.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Then it fetches the user profile from database"
+    },
+    {
+      "id": "f226034be800a602",
+      "slug": "aud-caches-in-redis",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/caches-in-redis.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Frequent query results are cached in Redis"
+    },
+    {
+      "id": "e063629b3fdf5ff2",
+      "slug": "aud-transforms-payload",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/transforms-payload.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The server transforms the data payload into JSON"
+    },
+    {
+      "id": "6f08104cf5f3ba65",
+      "slug": "aud-returns-status-200",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/returns-status-200.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "It returns a 200 OK status code with response"
+    },
+    {
+      "id": "ade9df8a724d0c52",
+      "slug": "aud-handles-error-gracefully",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/handles-error-gracefully.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "If validation fails, it handles the error gracefully"
+    },
+    {
+      "id": "2f7325eaf4a92c51",
+      "slug": "aud-asynchronous-processing",
+      "url": "https://assets.lingobites.app/audio/api-data-flow/asynchronous-processing.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Heavy tasks use background asynchronous processing"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "de7d43194f2bb58d",
+      "slug": "srs-client-sends-request",
+      "item_type": "vocabulary",
+      "source_ref_id": "fc48be12dfccbee1",
+      "front": "When the user clicks, the client sends an HTTP request",
+      "back": "Khi người dùng nhấp chuột, client sẽ gửi một HTTP request",
+      "hint_vi": "Gợi ý: Bước đầu tiên trong luồng xử lý trang web."
+    },
+    {
+      "id": "84d00bd3b506d94c",
+      "slug": "srs-api-validates-token",
+      "item_type": "vocabulary",
+      "source_ref_id": "cd709c7d46a91dcd",
+      "front": "The API middleware validates the JWT token",
+      "back": "Middleware của API sẽ xác thực mã token JWT",
+      "hint_vi": "Gợi ý: Xác thực người dùng trước khi cho phép vào hệ thống."
+    },
+    {
+      "id": "ebee79f8906da68b",
+      "slug": "srs-fetches-from-database",
+      "item_type": "vocabulary",
+      "source_ref_id": "e675721a86d94af4",
+      "front": "Then it fetches the user profile from database",
+      "back": "Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu",
+      "hint_vi": "Gợi ý: Fetch data nghĩa là lấy dữ liệu từ DB."
+    },
+    {
+      "id": "af9bcf95423d7e07",
+      "slug": "srs-caches-in-redis",
+      "item_type": "vocabulary",
+      "source_ref_id": "3bd89b68fd26199a",
+      "front": "Frequent query results are cached in Redis",
+      "back": "Kết quả truy vấn thường xuyên được lưu đệm trong Redis",
+      "hint_vi": "Gợi ý: Lưu đệm để tăng tốc độ truy xuất."
+    },
+    {
+      "id": "0e15435bb03a4322",
+      "slug": "srs-transforms-payload",
+      "item_type": "vocabulary",
+      "source_ref_id": "dc6bff9fcf1ef784",
+      "front": "The server transforms the data payload into JSON",
+      "back": "Máy chủ chuyển đổi dữ liệu thành định dạng JSON",
+      "hint_vi": "Gợi ý: Transform payload nghĩa là định dạng lại dữ liệu."
+    },
+    {
+      "id": "79ff4e9b6ea2ed1e",
+      "slug": "srs-returns-status-200",
+      "item_type": "vocabulary",
+      "source_ref_id": "a68b15a962d88b31",
+      "front": "It returns a 200 OK status code with response",
+      "back": "Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi",
+      "hint_vi": "Gợi ý: Mã thành công tiêu chuẩn của HTTP."
+    },
+    {
+      "id": "c27413ef4e7b5d3a",
+      "slug": "srs-handles-error-gracefully",
+      "item_type": "vocabulary",
+      "source_ref_id": "6cdab51777fce309",
+      "front": "If validation fails, it handles the error gracefully",
+      "back": "Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp",
+      "hint_vi": "Gợi ý: Handle gracefully nghĩa là báo lỗi rõ ràng không làm sập ứng dụng."
+    },
+    {
+      "id": "d9df0a80117d6f96",
+      "slug": "srs-asynchronous-processing",
+      "item_type": "vocabulary",
+      "source_ref_id": "a551e5130cd1dbc0",
+      "front": "Heavy tasks use background asynchronous processing",
+      "back": "Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền",
+      "hint_vi": "Gợi ý: Xử lý bất đồng bộ tránh làm đơ giao diện."
+    }
+  ]
+}

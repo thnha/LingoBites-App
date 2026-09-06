@@ -1,0 +1,745 @@
+{
+  "id": "9edc0f18dde5b468",
+  "slug": "asking-clarification",
+  "schema_version": "0.1.0",
+  "title_en": "Asking for Clarification & Details",
+  "title_vi": "Làm rõ yêu cầu & Hỏi lại chi tiết",
+  "blurb_vi": "Nắm vững các mẫu câu lịch sự để yêu cầu đồng nghiệp hoặc khách hàng giải thích lại yêu cầu kỹ thuật.",
+  "level": "A2",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Sử dụng thành thạo 8 mẫu câu yêu cầu giải thích lại khi chưa nghe rõ.",
+  "situation_vi": "Buổi họp trao đổi yêu cầu tính năng nhưng kết nối bị chập chờn hoặc nói quá nhanh.",
+  "learner_role_vi": "Lập trình viên đang lắng nghe yêu cầu từ Product Owner.",
+  "prerequisite_lesson_slugs": [
+    "team-onboarding"
+  ],
+  "pronunciation_focus_vi": "Nâng cao ngữ điệu câu hỏi lịch sự (Could you, Would you mind).",
+  "final_speaking_task_vi": "Yêu cầu người nói giải thích lại tiêu chí chấp nhận của tính năng.",
+  "pass_conditions_vi": "Phát âm tự nhiên các câu hỏi làm rõ với tốc độ vừa phải.",
+  "unit_slug": "clarification",
+  "unit_title_vi": "Yêu cầu lặp lại & Làm rõ ý",
+  "stage": 1,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "7fb91110fd7238ed",
+      "tip_vi": "Ôn tập lại cụm từ \"Could you please repeat that point?\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "900446e092e8810b",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"What do you mean by edge cases here?\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "6941415dbd7e58ec",
+      "slug": "could-you-repeat",
+      "order": 0,
+      "phrase_en": "Could you please repeat that point?",
+      "phrase_vi": "Bạn có thể lặp lại điểm đó được không?",
+      "explanation_vi": "Câu hỏi lịch sự dùng khi nghe không kịp.",
+      "context_sentence_en": "In our daily work: \"Could you please repeat that point?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể lặp lại điểm đó được không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "687ad979521cc616"
+      ],
+      "srs_ref_ids": [
+        "7fb91110fd7238ed"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "344508d35bfc8249",
+          "slug": "turn1-could-you-repeat",
+          "speaker": "A",
+          "text_en": "Could you please repeat that point??",
+          "text_vi": "Bạn có thể lặp lại điểm đó được không??"
+        },
+        {
+          "id": "db673370c9d009f1",
+          "slug": "turn2-could-you-repeat",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6caebc4a226df4b9",
+          "slug": "qa-could-you-repeat",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Could you please repeat that point?\":",
+          "options": [
+            "Bạn có thể lặp lại điểm đó được không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Bạn có thể lặp lại điểm đó được không?",
+          "explanation_vi": "Dịch đúng là: Bạn có thể lặp lại điểm đó được không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "7fb91110fd7238ed"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Could you please repeat that point?\" nghĩa là \"Bạn có thể lặp lại điểm đó được không?\"."
+      }
+    },
+    {
+      "id": "d6d3c23be0c0d04d",
+      "slug": "what-do-you-mean",
+      "order": 1,
+      "phrase_en": "What do you mean by edge cases here?",
+      "phrase_vi": "Ý bạn là gì khi nói các trường hợp biên ở đây?",
+      "explanation_vi": "Dùng để hỏi rõ định nghĩa hoặc ý nghĩa của từ vừa nói.",
+      "context_sentence_en": "In our daily work: \"What do you mean by edge cases here?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Ý bạn là gì khi nói các trường hợp biên ở đây?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "4ca52048b8f6f184"
+      ],
+      "srs_ref_ids": [
+        "900446e092e8810b"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5a88d72acdd166da",
+          "slug": "turn1-what-do-you-mean",
+          "speaker": "A",
+          "text_en": "What do you mean by edge cases here??",
+          "text_vi": "Ý bạn là gì khi nói các trường hợp biên ở đây??"
+        },
+        {
+          "id": "a9e5621f67eeb6b8",
+          "slug": "turn2-what-do-you-mean",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "fe348920b3f9e268",
+          "slug": "qa-what-do-you-mean",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"What do you mean by edge cases here?\":",
+          "options": [
+            "Ý bạn là gì khi nói các trường hợp biên ở đây?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Ý bạn là gì khi nói các trường hợp biên ở đây?",
+          "explanation_vi": "Dịch đúng là: Ý bạn là gì khi nói các trường hợp biên ở đây?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "900446e092e8810b"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"What do you mean by edge cases here?\" nghĩa là \"Ý bạn là gì khi nói các trường hợp biên ở đây?\"."
+      }
+    },
+    {
+      "id": "b3d73208fdf20c87",
+      "slug": "can-you-elaborate",
+      "order": 2,
+      "phrase_en": "Can you elaborate on the business logic?",
+      "phrase_vi": "Bạn có thể nói rõ hơn về nghiệp vụ này được không?",
+      "explanation_vi": "Elaborate on sth nghĩa là giải thích chi tiết hơn.",
+      "context_sentence_en": "In our daily work: \"Can you elaborate on the business logic?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể nói rõ hơn về nghiệp vụ này được không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "33edf1c2efb101a6"
+      ],
+      "srs_ref_ids": [
+        "4e7aaa8525e95c74"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "344b3b1ec76147bf",
+          "slug": "turn1-can-you-elaborate",
+          "speaker": "A",
+          "text_en": "Can you elaborate on the business logic??",
+          "text_vi": "Bạn có thể nói rõ hơn về nghiệp vụ này được không??"
+        },
+        {
+          "id": "ec027fbf70d35c1c",
+          "slug": "turn2-can-you-elaborate",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "0a87e66050ac0b23",
+          "slug": "qa-can-you-elaborate",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Can you elaborate on the business logic?\":",
+          "options": [
+            "Bạn có thể nói rõ hơn về nghiệp vụ này được không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Bạn có thể nói rõ hơn về nghiệp vụ này được không?",
+          "explanation_vi": "Dịch đúng là: Bạn có thể nói rõ hơn về nghiệp vụ này được không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "4e7aaa8525e95c74"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Can you elaborate on the business logic?\" nghĩa là \"Bạn có thể nói rõ hơn về nghiệp vụ này được không?\"."
+      }
+    },
+    {
+      "id": "b533868646a67774",
+      "slug": "did-i-understand",
+      "order": 3,
+      "phrase_en": "So if I understand correctly, we need to cache this?",
+      "phrase_vi": "Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?",
+      "explanation_vi": "Cụm từ dùng để xác nhận lại hiểu biết của mình.",
+      "context_sentence_en": "In our daily work: \"So if I understand correctly, we need to cache this?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "d4e37a9719d56ea8"
+      ],
+      "srs_ref_ids": [
+        "d6359d75e4ce813f"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "0eaaf4d5b57d6bf5",
+          "slug": "turn1-did-i-understand",
+          "speaker": "A",
+          "text_en": "So if I understand correctly, we need to cache this??",
+          "text_vi": "Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này??"
+        },
+        {
+          "id": "f5a390270c9aa9e7",
+          "slug": "turn2-did-i-understand",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "aedb736e5153de07",
+          "slug": "qa-did-i-understand",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"So if I understand correctly, we need to cache this?\":",
+          "options": [
+            "Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?",
+          "explanation_vi": "Dịch đúng là: Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "d6359d75e4ce813f"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"So if I understand correctly, we need to cache this?\" nghĩa là \"Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?\"."
+      }
+    },
+    {
+      "id": "6941274c4b957541",
+      "slug": "lost-you-there",
+      "order": 4,
+      "phrase_en": "I lost you on the database schema part",
+      "phrase_vi": "Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu",
+      "explanation_vi": "Cách nói tự nhiên khi bị ngắt quãng tư duy.",
+      "context_sentence_en": "In our daily work: \"I lost you on the database schema part\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "4da648fefc4be6a1"
+      ],
+      "srs_ref_ids": [
+        "0dbab292c6243d39"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "4c9f234e8eb4161c",
+          "slug": "turn1-lost-you-there",
+          "speaker": "A",
+          "text_en": "I lost you on the database schema part?",
+          "text_vi": "Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu?"
+        },
+        {
+          "id": "a212caf5e7fc5e7f",
+          "slug": "turn2-lost-you-there",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "97b7049c58ecc716",
+          "slug": "qa-lost-you-there",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I lost you on the database schema part\":",
+          "options": [
+            "Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu",
+          "explanation_vi": "Dịch đúng là: Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "0dbab292c6243d39"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I lost you on the database schema part\" nghĩa là \"Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu\"."
+      }
+    },
+    {
+      "id": "827ba4e02972fc9c",
+      "slug": "could-you-speak-slower",
+      "order": 5,
+      "phrase_en": "Could you speak a bit slower, please?",
+      "phrase_vi": "Bạn có thể nói chậm lại một chút được không?",
+      "explanation_vi": "Yêu cầu người đối thoại giảm tốc độ nói.",
+      "context_sentence_en": "In our daily work: \"Could you speak a bit slower, please?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể nói chậm lại một chút được không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "43d1ad5afa0d2741"
+      ],
+      "srs_ref_ids": [
+        "b4f2acafbc71a30c"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "ff2b07a1f583da1f",
+          "slug": "turn1-could-you-speak-slower",
+          "speaker": "A",
+          "text_en": "Could you speak a bit slower, please??",
+          "text_vi": "Bạn có thể nói chậm lại một chút được không??"
+        },
+        {
+          "id": "4e432587af7724b7",
+          "slug": "turn2-could-you-speak-slower",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "ffbc4517bc499613",
+          "slug": "qa-could-you-speak-slower",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Could you speak a bit slower, please?\":",
+          "options": [
+            "Bạn có thể nói chậm lại một chút được không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Bạn có thể nói chậm lại một chút được không?",
+          "explanation_vi": "Dịch đúng là: Bạn có thể nói chậm lại một chút được không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "b4f2acafbc71a30c"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Could you speak a bit slower, please?\" nghĩa là \"Bạn có thể nói chậm lại một chút được không?\"."
+      }
+    },
+    {
+      "id": "5043a522fab6a507",
+      "slug": "write-it-down",
+      "order": 6,
+      "phrase_en": "Could you post that requirement in Slack?",
+      "phrase_vi": "Bạn có thể nhắn yêu cầu đó lên Slack được không?",
+      "explanation_vi": "Nhờ đối phương ghi lại bằng văn bản để tránh hiểu nhầm.",
+      "context_sentence_en": "In our daily work: \"Could you post that requirement in Slack?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể nhắn yêu cầu đó lên Slack được không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "14fda172421e0bbd"
+      ],
+      "srs_ref_ids": [
+        "f47c0cef84802dcf"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e32bc78e7d37a22e",
+          "slug": "turn1-write-it-down",
+          "speaker": "A",
+          "text_en": "Could you post that requirement in Slack??",
+          "text_vi": "Bạn có thể nhắn yêu cầu đó lên Slack được không??"
+        },
+        {
+          "id": "078a2a7958def577",
+          "slug": "turn2-write-it-down",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "9d1b3c8aeaeeaa91",
+          "slug": "qa-write-it-down",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Could you post that requirement in Slack?\":",
+          "options": [
+            "Bạn có thể nhắn yêu cầu đó lên Slack được không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Bạn có thể nhắn yêu cầu đó lên Slack được không?",
+          "explanation_vi": "Dịch đúng là: Bạn có thể nhắn yêu cầu đó lên Slack được không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "f47c0cef84802dcf"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Could you post that requirement in Slack?\" nghĩa là \"Bạn có thể nhắn yêu cầu đó lên Slack được không?\"."
+      }
+    },
+    {
+      "id": "7e0d98919d6bd6b7",
+      "slug": "makes-sense-now",
+      "order": 7,
+      "phrase_en": "That makes total sense now, thank you",
+      "phrase_vi": "Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn",
+      "explanation_vi": "Xác nhận đã hiểu sau khi được giải thích.",
+      "context_sentence_en": "In our daily work: \"That makes total sense now, thank you\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "7ff1e641bba9bd74"
+      ],
+      "srs_ref_ids": [
+        "15d7a869522a12e9"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "72696e561d59014c",
+          "slug": "turn1-makes-sense-now",
+          "speaker": "A",
+          "text_en": "That makes total sense now, thank you?",
+          "text_vi": "Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn?"
+        },
+        {
+          "id": "d304f577f241ab90",
+          "slug": "turn2-makes-sense-now",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "3a46742eeadc1612",
+          "slug": "qa-makes-sense-now",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"That makes total sense now, thank you\":",
+          "options": [
+            "Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn",
+          "explanation_vi": "Dịch đúng là: Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "15d7a869522a12e9"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"That makes total sense now, thank you\" nghĩa là \"Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "375fe0a9566df307",
+      "slug": "gp-1",
+      "name_en": "Pattern for Asking for Clarification & Details",
+      "name_vi": "Mẫu câu chính bài Làm rõ yêu cầu & Hỏi lại chi tiết",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "Could you please repeat that point?",
+          "vi": "Bạn có thể lặp lại điểm đó được không?"
+        },
+        {
+          "en": "What do you mean by edge cases here?",
+          "vi": "Ý bạn là gì khi nói các trường hợp biên ở đây?"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "c5605dd9396c9d9d",
+      "slug": "v-could-you-repeat",
+      "word": "Could",
+      "word_type": "noun",
+      "meaning_vi": "Bạn có thể lặp lại điểm đó được không?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "Could you please repeat that point?",
+      "example_vi": "Bạn có thể lặp lại điểm đó được không?"
+    },
+    {
+      "id": "c4a80e53011742fe",
+      "slug": "v-what-do-you-mean",
+      "word": "What",
+      "word_type": "noun",
+      "meaning_vi": "Ý bạn là gì khi nói các trường hợp biên ở đây?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "What do you mean by edge cases here?",
+      "example_vi": "Ý bạn là gì khi nói các trường hợp biên ở đây?"
+    },
+    {
+      "id": "4446da1a22731ac0",
+      "slug": "v-can-you-elaborate",
+      "word": "Can",
+      "word_type": "noun",
+      "meaning_vi": "Bạn có thể nói rõ hơn về nghiệp vụ này được không?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "Can you elaborate on the business logic?",
+      "example_vi": "Bạn có thể nói rõ hơn về nghiệp vụ này được không?"
+    }
+  ],
+  "activities": [
+    {
+      "id": "1faa97c3abec9f66",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "6941415dbd7e58ec",
+        "d6d3c23be0c0d04d",
+        "b3d73208fdf20c87",
+        "b533868646a67774",
+        "6941274c4b957541",
+        "827ba4e02972fc9c",
+        "5043a522fab6a507",
+        "7e0d98919d6bd6b7"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "38aef529d99a2fab",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "6941415dbd7e58ec",
+        "d6d3c23be0c0d04d",
+        "b3d73208fdf20c87",
+        "b533868646a67774"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "d019386a2e8f3b4b",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "6941415dbd7e58ec",
+        "d6d3c23be0c0d04d",
+        "b3d73208fdf20c87",
+        "b533868646a67774",
+        "6941274c4b957541",
+        "827ba4e02972fc9c",
+        "5043a522fab6a507",
+        "7e0d98919d6bd6b7"
+      ],
+      "qa_ref_ids": [
+        "6caebc4a226df4b9",
+        "fe348920b3f9e268",
+        "0a87e66050ac0b23",
+        "aedb736e5153de07",
+        "97b7049c58ecc716",
+        "ffbc4517bc499613",
+        "9d1b3c8aeaeeaa91",
+        "3a46742eeadc1612"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "687ad979521cc616",
+      "slug": "aud-could-you-repeat",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/could-you-repeat.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Could you please repeat that point?"
+    },
+    {
+      "id": "4ca52048b8f6f184",
+      "slug": "aud-what-do-you-mean",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/what-do-you-mean.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "What do you mean by edge cases here?"
+    },
+    {
+      "id": "33edf1c2efb101a6",
+      "slug": "aud-can-you-elaborate",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/can-you-elaborate.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Can you elaborate on the business logic?"
+    },
+    {
+      "id": "d4e37a9719d56ea8",
+      "slug": "aud-did-i-understand",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/did-i-understand.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "So if I understand correctly, we need to cache this?"
+    },
+    {
+      "id": "4da648fefc4be6a1",
+      "slug": "aud-lost-you-there",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/lost-you-there.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I lost you on the database schema part"
+    },
+    {
+      "id": "43d1ad5afa0d2741",
+      "slug": "aud-could-you-speak-slower",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/could-you-speak-slower.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Could you speak a bit slower, please?"
+    },
+    {
+      "id": "14fda172421e0bbd",
+      "slug": "aud-write-it-down",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/write-it-down.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Could you post that requirement in Slack?"
+    },
+    {
+      "id": "7ff1e641bba9bd74",
+      "slug": "aud-makes-sense-now",
+      "url": "https://assets.lingobites.app/audio/asking-clarification/makes-sense-now.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "That makes total sense now, thank you"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "7fb91110fd7238ed",
+      "slug": "srs-could-you-repeat",
+      "item_type": "vocabulary",
+      "source_ref_id": "6941415dbd7e58ec",
+      "front": "Could you please repeat that point?",
+      "back": "Bạn có thể lặp lại điểm đó được không?",
+      "hint_vi": "Gợi ý: Câu hỏi lịch sự dùng khi nghe không kịp."
+    },
+    {
+      "id": "900446e092e8810b",
+      "slug": "srs-what-do-you-mean",
+      "item_type": "vocabulary",
+      "source_ref_id": "d6d3c23be0c0d04d",
+      "front": "What do you mean by edge cases here?",
+      "back": "Ý bạn là gì khi nói các trường hợp biên ở đây?",
+      "hint_vi": "Gợi ý: Dùng để hỏi rõ định nghĩa hoặc ý nghĩa của từ vừa nói."
+    },
+    {
+      "id": "4e7aaa8525e95c74",
+      "slug": "srs-can-you-elaborate",
+      "item_type": "vocabulary",
+      "source_ref_id": "b3d73208fdf20c87",
+      "front": "Can you elaborate on the business logic?",
+      "back": "Bạn có thể nói rõ hơn về nghiệp vụ này được không?",
+      "hint_vi": "Gợi ý: Elaborate on sth nghĩa là giải thích chi tiết hơn."
+    },
+    {
+      "id": "d6359d75e4ce813f",
+      "slug": "srs-did-i-understand",
+      "item_type": "vocabulary",
+      "source_ref_id": "b533868646a67774",
+      "front": "So if I understand correctly, we need to cache this?",
+      "back": "Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?",
+      "hint_vi": "Gợi ý: Cụm từ dùng để xác nhận lại hiểu biết của mình."
+    },
+    {
+      "id": "0dbab292c6243d39",
+      "slug": "srs-lost-you-there",
+      "item_type": "vocabulary",
+      "source_ref_id": "6941274c4b957541",
+      "front": "I lost you on the database schema part",
+      "back": "Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu",
+      "hint_vi": "Gợi ý: Cách nói tự nhiên khi bị ngắt quãng tư duy."
+    },
+    {
+      "id": "b4f2acafbc71a30c",
+      "slug": "srs-could-you-speak-slower",
+      "item_type": "vocabulary",
+      "source_ref_id": "827ba4e02972fc9c",
+      "front": "Could you speak a bit slower, please?",
+      "back": "Bạn có thể nói chậm lại một chút được không?",
+      "hint_vi": "Gợi ý: Yêu cầu người đối thoại giảm tốc độ nói."
+    },
+    {
+      "id": "f47c0cef84802dcf",
+      "slug": "srs-write-it-down",
+      "item_type": "vocabulary",
+      "source_ref_id": "5043a522fab6a507",
+      "front": "Could you post that requirement in Slack?",
+      "back": "Bạn có thể nhắn yêu cầu đó lên Slack được không?",
+      "hint_vi": "Gợi ý: Nhờ đối phương ghi lại bằng văn bản để tránh hiểu nhầm."
+    },
+    {
+      "id": "15d7a869522a12e9",
+      "slug": "srs-makes-sense-now",
+      "item_type": "vocabulary",
+      "source_ref_id": "7e0d98919d6bd6b7",
+      "front": "That makes total sense now, thank you",
+      "back": "Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn",
+      "hint_vi": "Gợi ý: Xác nhận đã hiểu sau khi được giải thích."
+    }
+  ]
+}

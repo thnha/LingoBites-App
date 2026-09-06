@@ -1,0 +1,745 @@
+{
+  "id": "b28263cb8617329d",
+  "slug": "mock-interview-behavioral",
+  "schema_version": "0.1.0",
+  "title_en": "Mock Technical Interview: Behavioral Q&A",
+  "title_vi": "Phỏng vấn kỹ thuật thử nghiệm: Trả lời tình huống (Behavioral)",
+  "blurb_vi": "Luyện trả lời các câu hỏi tình huống khi bất đồng ý kiến với Tech Lead hoặc giải quyết mâu thuẫn.",
+  "level": "B2",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Trả lời trôi chảy các câu hỏi phỏng vấn ứng xử tình huống kỹ thuật.",
+  "situation_vi": "Vòng phỏng vấn văn hóa và cách làm việc với Engineering Manager.",
+  "learner_role_vi": "Ứng viên thể hiện kỹ năng giao tiếp và làm việc nhóm.",
+  "prerequisite_lesson_slugs": [
+    "mock-interview-system-design"
+  ],
+  "pronunciation_focus_vi": "Nhấn âm tự nhiên, thể hiện sự chuyên nghiệp và thiện chí hợp tác.",
+  "final_speaking_task_vi": "Kể lại tình huống bạn bất đồng quan điểm kỹ thuật với đồng nghiệp và cách xử lý.",
+  "pass_conditions_vi": "Cấu trúc câu trả lời mạch lạc, mang tính xây dựng cao.",
+  "unit_slug": "interview-practice",
+  "unit_title_vi": "Luyện tập Phỏng vấn & Dự án (Interview Practice)",
+  "stage": 4,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "6b05f31f279cca84",
+      "tip_vi": "Ôn tập lại cụm từ \"When we disagreed on technical approach\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "fa26c7218826fee6",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"I first listened to their perspective carefully\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "ff7a4a0ce9ee692d",
+      "slug": "disagreed-on-approach",
+      "order": 0,
+      "phrase_en": "When we disagreed on technical approach",
+      "phrase_vi": "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật",
+      "explanation_vi": "Mở đầu mô tả mâu thuẫn quan điểm.",
+      "context_sentence_en": "In our daily work: \"When we disagreed on technical approach\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "dd16cce7c2e25b26"
+      ],
+      "srs_ref_ids": [
+        "6b05f31f279cca84"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "63b88c900a8cb1ce",
+          "slug": "turn1-disagreed-on-approach",
+          "speaker": "A",
+          "text_en": "When we disagreed on technical approach?",
+          "text_vi": "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật?"
+        },
+        {
+          "id": "cc72093d0a00d718",
+          "slug": "turn2-disagreed-on-approach",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "42b688883e0fbf54",
+          "slug": "qa-disagreed-on-approach",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"When we disagreed on technical approach\":",
+          "options": [
+            "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật",
+          "explanation_vi": "Dịch đúng là: Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "6b05f31f279cca84"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"When we disagreed on technical approach\" nghĩa là \"Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật\"."
+      }
+    },
+    {
+      "id": "6861fab4f3517017",
+      "slug": "listened-to-perspective",
+      "order": 1,
+      "phrase_en": "I first listened to their perspective carefully",
+      "phrase_vi": "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận",
+      "explanation_vi": "Thể hiện thái độ tôn trọng đồng nghiệp.",
+      "context_sentence_en": "In our daily work: \"I first listened to their perspective carefully\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "227a6c51ef65b914"
+      ],
+      "srs_ref_ids": [
+        "fa26c7218826fee6"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "acab1a576b7439f6",
+          "slug": "turn1-listened-to-perspective",
+          "speaker": "A",
+          "text_en": "I first listened to their perspective carefully?",
+          "text_vi": "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận?"
+        },
+        {
+          "id": "87145356f21563a2",
+          "slug": "turn2-listened-to-perspective",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "cab5302ed413d23f",
+          "slug": "qa-listened-to-perspective",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I first listened to their perspective carefully\":",
+          "options": [
+            "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận",
+          "explanation_vi": "Dịch đúng là: Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "fa26c7218826fee6"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I first listened to their perspective carefully\" nghĩa là \"Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận\"."
+      }
+    },
+    {
+      "id": "d991a518fbe18c2e",
+      "slug": "proposed-a-poc",
+      "order": 2,
+      "phrase_en": "I proposed building a quick Proof of Concept",
+      "phrase_vi": "Tôi đề xuất làm một bản thử nghiệm PoC nhanh",
+      "explanation_vi": "PoC giúp dùng thực tế chứng minh lý thuyết.",
+      "context_sentence_en": "In our daily work: \"I proposed building a quick Proof of Concept\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đề xuất làm một bản thử nghiệm PoC nhanh\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "27886191041f2c83"
+      ],
+      "srs_ref_ids": [
+        "8216b65bbd264a68"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "9bcd2164e729c925",
+          "slug": "turn1-proposed-a-poc",
+          "speaker": "A",
+          "text_en": "I proposed building a quick Proof of Concept?",
+          "text_vi": "Tôi đề xuất làm một bản thử nghiệm PoC nhanh?"
+        },
+        {
+          "id": "e00b42bd105f4778",
+          "slug": "turn2-proposed-a-poc",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "193c52d715df6ea0",
+          "slug": "qa-proposed-a-poc",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I proposed building a quick Proof of Concept\":",
+          "options": [
+            "Tôi đề xuất làm một bản thử nghiệm PoC nhanh",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đề xuất làm một bản thử nghiệm PoC nhanh",
+          "explanation_vi": "Dịch đúng là: Tôi đề xuất làm một bản thử nghiệm PoC nhanh"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "8216b65bbd264a68"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I proposed building a quick Proof of Concept\" nghĩa là \"Tôi đề xuất làm một bản thử nghiệm PoC nhanh\"."
+      }
+    },
+    {
+      "id": "abf82a1915f39c19",
+      "slug": "data-driven-decision",
+      "order": 3,
+      "phrase_en": "We made a data-driven decision based on benchmarks",
+      "phrase_vi": "Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm",
+      "explanation_vi": "Quyết định dựa trên số liệu khách quan.",
+      "context_sentence_en": "In our daily work: \"We made a data-driven decision based on benchmarks\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "835a8a71d5ed0fbd"
+      ],
+      "srs_ref_ids": [
+        "2bc0d6bc0b8525cc"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "ceed2981f4eecb3e",
+          "slug": "turn1-data-driven-decision",
+          "speaker": "A",
+          "text_en": "We made a data-driven decision based on benchmarks?",
+          "text_vi": "Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm?"
+        },
+        {
+          "id": "d79e7f2308b74ffd",
+          "slug": "turn2-data-driven-decision",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "0043b67775cfb2ad",
+          "slug": "qa-data-driven-decision",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We made a data-driven decision based on benchmarks\":",
+          "options": [
+            "Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm",
+          "explanation_vi": "Dịch đúng là: Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "2bc0d6bc0b8525cc"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We made a data-driven decision based on benchmarks\" nghĩa là \"Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm\"."
+      }
+    },
+    {
+      "id": "917069c195a9b6ca",
+      "slug": "handled-tight-deadline",
+      "order": 4,
+      "phrase_en": "How I handled a tight deadline under pressure",
+      "phrase_vi": "Cách tôi xử lý áp lực thời hạn gấp",
+      "explanation_vi": "Kỹ năng quản lý áp lực.",
+      "context_sentence_en": "In our daily work: \"How I handled a tight deadline under pressure\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Cách tôi xử lý áp lực thời hạn gấp\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "468ca6ff5274b4c4"
+      ],
+      "srs_ref_ids": [
+        "ae1886badc957888"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5f73f5871a946212",
+          "slug": "turn1-handled-tight-deadline",
+          "speaker": "A",
+          "text_en": "How I handled a tight deadline under pressure?",
+          "text_vi": "Cách tôi xử lý áp lực thời hạn gấp?"
+        },
+        {
+          "id": "a169a67bbc031f55",
+          "slug": "turn2-handled-tight-deadline",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "cfba1fc586bce673",
+          "slug": "qa-handled-tight-deadline",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"How I handled a tight deadline under pressure\":",
+          "options": [
+            "Cách tôi xử lý áp lực thời hạn gấp",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Cách tôi xử lý áp lực thời hạn gấp",
+          "explanation_vi": "Dịch đúng là: Cách tôi xử lý áp lực thời hạn gấp"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "ae1886badc957888"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"How I handled a tight deadline under pressure\" nghĩa là \"Cách tôi xử lý áp lực thời hạn gấp\"."
+      }
+    },
+    {
+      "id": "f800451e38b64957",
+      "slug": "communicated-proactively",
+      "order": 5,
+      "phrase_en": "I communicated proactively with stakeholders",
+      "phrase_vi": "Tôi đã chủ động giao tiếp với các bên liên quan",
+      "explanation_vi": "Giao tiếp chủ động tránh hiểu lầm.",
+      "context_sentence_en": "In our daily work: \"I communicated proactively with stakeholders\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã chủ động giao tiếp với các bên liên quan\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "1e17512753c246f3"
+      ],
+      "srs_ref_ids": [
+        "d9c5dd429dfb8abe"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e6414bfaea93b2e7",
+          "slug": "turn1-communicated-proactively",
+          "speaker": "A",
+          "text_en": "I communicated proactively with stakeholders?",
+          "text_vi": "Tôi đã chủ động giao tiếp với các bên liên quan?"
+        },
+        {
+          "id": "e84f6fdaa4cfa404",
+          "slug": "turn2-communicated-proactively",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6c16f0c33bc42bf5",
+          "slug": "qa-communicated-proactively",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I communicated proactively with stakeholders\":",
+          "options": [
+            "Tôi đã chủ động giao tiếp với các bên liên quan",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã chủ động giao tiếp với các bên liên quan",
+          "explanation_vi": "Dịch đúng là: Tôi đã chủ động giao tiếp với các bên liên quan"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "d9c5dd429dfb8abe"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I communicated proactively with stakeholders\" nghĩa là \"Tôi đã chủ động giao tiếp với các bên liên quan\"."
+      }
+    },
+    {
+      "id": "20b421bb2988bb54",
+      "slug": "learned-from-failure",
+      "order": 6,
+      "phrase_en": "What I learned from that project mistake",
+      "phrase_vi": "Những gì tôi đã rút ra được từ sai lầm dự án đó",
+      "explanation_vi": "Thể hiện tinh thần học hỏi từ thất bại.",
+      "context_sentence_en": "In our daily work: \"What I learned from that project mistake\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Những gì tôi đã rút ra được từ sai lầm dự án đó\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "0e4c183dfdbcd937"
+      ],
+      "srs_ref_ids": [
+        "672b1ba44a3c96bf"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "41c5990983e4be77",
+          "slug": "turn1-learned-from-failure",
+          "speaker": "A",
+          "text_en": "What I learned from that project mistake?",
+          "text_vi": "Những gì tôi đã rút ra được từ sai lầm dự án đó?"
+        },
+        {
+          "id": "f69e009e3a017af0",
+          "slug": "turn2-learned-from-failure",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "2b6922db3d9d54c3",
+          "slug": "qa-learned-from-failure",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"What I learned from that project mistake\":",
+          "options": [
+            "Những gì tôi đã rút ra được từ sai lầm dự án đó",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Những gì tôi đã rút ra được từ sai lầm dự án đó",
+          "explanation_vi": "Dịch đúng là: Những gì tôi đã rút ra được từ sai lầm dự án đó"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "672b1ba44a3c96bf"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"What I learned from that project mistake\" nghĩa là \"Những gì tôi đã rút ra được từ sai lầm dự án đó\"."
+      }
+    },
+    {
+      "id": "662905ada2d46713",
+      "slug": "positive-outcome-achieved",
+      "order": 7,
+      "phrase_en": "In the end, we achieved a very positive outcome",
+      "phrase_vi": "Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực",
+      "explanation_vi": "Kết thúc bằng kết quả tốt đẹp.",
+      "context_sentence_en": "In our daily work: \"In the end, we achieved a very positive outcome\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "cfd83777ea0e76c0"
+      ],
+      "srs_ref_ids": [
+        "08f949c20fc6b2f2"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "aeb5446582857d66",
+          "slug": "turn1-positive-outcome-achieved",
+          "speaker": "A",
+          "text_en": "In the end, we achieved a very positive outcome?",
+          "text_vi": "Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực?"
+        },
+        {
+          "id": "7b7107bd7f46e67e",
+          "slug": "turn2-positive-outcome-achieved",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "e1e0402f8779cb7c",
+          "slug": "qa-positive-outcome-achieved",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"In the end, we achieved a very positive outcome\":",
+          "options": [
+            "Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực",
+          "explanation_vi": "Dịch đúng là: Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "08f949c20fc6b2f2"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"In the end, we achieved a very positive outcome\" nghĩa là \"Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "82af7c0a9d8deb82",
+      "slug": "gp-1",
+      "name_en": "Pattern for Mock Technical Interview: Behavioral Q&A",
+      "name_vi": "Mẫu câu chính bài Phỏng vấn kỹ thuật thử nghiệm: Trả lời tình huống (Behavioral)",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "When we disagreed on technical approach",
+          "vi": "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật"
+        },
+        {
+          "en": "I first listened to their perspective carefully",
+          "vi": "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "52e707bfc0f495f7",
+      "slug": "v-disagreed-on-approach",
+      "word": "When",
+      "word_type": "noun",
+      "meaning_vi": "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "When we disagreed on technical approach",
+      "example_vi": "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật"
+    },
+    {
+      "id": "485603a456984d4e",
+      "slug": "v-listened-to-perspective",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "I first listened to their perspective carefully",
+      "example_vi": "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận"
+    },
+    {
+      "id": "ffa7c3ceb94ee6c6",
+      "slug": "v-proposed-a-poc",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi đề xuất làm một bản thử nghiệm PoC nhanh",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "I proposed building a quick Proof of Concept",
+      "example_vi": "Tôi đề xuất làm một bản thử nghiệm PoC nhanh"
+    }
+  ],
+  "activities": [
+    {
+      "id": "f2cc32b4d70532a3",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "ff7a4a0ce9ee692d",
+        "6861fab4f3517017",
+        "d991a518fbe18c2e",
+        "abf82a1915f39c19",
+        "917069c195a9b6ca",
+        "f800451e38b64957",
+        "20b421bb2988bb54",
+        "662905ada2d46713"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "3700124b09134751",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "ff7a4a0ce9ee692d",
+        "6861fab4f3517017",
+        "d991a518fbe18c2e",
+        "abf82a1915f39c19"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "c91a124b03b5fd30",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "ff7a4a0ce9ee692d",
+        "6861fab4f3517017",
+        "d991a518fbe18c2e",
+        "abf82a1915f39c19",
+        "917069c195a9b6ca",
+        "f800451e38b64957",
+        "20b421bb2988bb54",
+        "662905ada2d46713"
+      ],
+      "qa_ref_ids": [
+        "42b688883e0fbf54",
+        "cab5302ed413d23f",
+        "193c52d715df6ea0",
+        "0043b67775cfb2ad",
+        "cfba1fc586bce673",
+        "6c16f0c33bc42bf5",
+        "2b6922db3d9d54c3",
+        "e1e0402f8779cb7c"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "dd16cce7c2e25b26",
+      "slug": "aud-disagreed-on-approach",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/disagreed-on-approach.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "When we disagreed on technical approach"
+    },
+    {
+      "id": "227a6c51ef65b914",
+      "slug": "aud-listened-to-perspective",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/listened-to-perspective.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I first listened to their perspective carefully"
+    },
+    {
+      "id": "27886191041f2c83",
+      "slug": "aud-proposed-a-poc",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/proposed-a-poc.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I proposed building a quick Proof of Concept"
+    },
+    {
+      "id": "835a8a71d5ed0fbd",
+      "slug": "aud-data-driven-decision",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/data-driven-decision.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We made a data-driven decision based on benchmarks"
+    },
+    {
+      "id": "468ca6ff5274b4c4",
+      "slug": "aud-handled-tight-deadline",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/handled-tight-deadline.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "How I handled a tight deadline under pressure"
+    },
+    {
+      "id": "1e17512753c246f3",
+      "slug": "aud-communicated-proactively",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/communicated-proactively.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I communicated proactively with stakeholders"
+    },
+    {
+      "id": "0e4c183dfdbcd937",
+      "slug": "aud-learned-from-failure",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/learned-from-failure.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "What I learned from that project mistake"
+    },
+    {
+      "id": "cfd83777ea0e76c0",
+      "slug": "aud-positive-outcome-achieved",
+      "url": "https://assets.lingobites.app/audio/mock-interview-behavioral/positive-outcome-achieved.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "In the end, we achieved a very positive outcome"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "6b05f31f279cca84",
+      "slug": "srs-disagreed-on-approach",
+      "item_type": "vocabulary",
+      "source_ref_id": "ff7a4a0ce9ee692d",
+      "front": "When we disagreed on technical approach",
+      "back": "Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật",
+      "hint_vi": "Gợi ý: Mở đầu mô tả mâu thuẫn quan điểm."
+    },
+    {
+      "id": "fa26c7218826fee6",
+      "slug": "srs-listened-to-perspective",
+      "item_type": "vocabulary",
+      "source_ref_id": "6861fab4f3517017",
+      "front": "I first listened to their perspective carefully",
+      "back": "Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận",
+      "hint_vi": "Gợi ý: Thể hiện thái độ tôn trọng đồng nghiệp."
+    },
+    {
+      "id": "8216b65bbd264a68",
+      "slug": "srs-proposed-a-poc",
+      "item_type": "vocabulary",
+      "source_ref_id": "d991a518fbe18c2e",
+      "front": "I proposed building a quick Proof of Concept",
+      "back": "Tôi đề xuất làm một bản thử nghiệm PoC nhanh",
+      "hint_vi": "Gợi ý: PoC giúp dùng thực tế chứng minh lý thuyết."
+    },
+    {
+      "id": "2bc0d6bc0b8525cc",
+      "slug": "srs-data-driven-decision",
+      "item_type": "vocabulary",
+      "source_ref_id": "abf82a1915f39c19",
+      "front": "We made a data-driven decision based on benchmarks",
+      "back": "Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm",
+      "hint_vi": "Gợi ý: Quyết định dựa trên số liệu khách quan."
+    },
+    {
+      "id": "ae1886badc957888",
+      "slug": "srs-handled-tight-deadline",
+      "item_type": "vocabulary",
+      "source_ref_id": "917069c195a9b6ca",
+      "front": "How I handled a tight deadline under pressure",
+      "back": "Cách tôi xử lý áp lực thời hạn gấp",
+      "hint_vi": "Gợi ý: Kỹ năng quản lý áp lực."
+    },
+    {
+      "id": "d9c5dd429dfb8abe",
+      "slug": "srs-communicated-proactively",
+      "item_type": "vocabulary",
+      "source_ref_id": "f800451e38b64957",
+      "front": "I communicated proactively with stakeholders",
+      "back": "Tôi đã chủ động giao tiếp với các bên liên quan",
+      "hint_vi": "Gợi ý: Giao tiếp chủ động tránh hiểu lầm."
+    },
+    {
+      "id": "672b1ba44a3c96bf",
+      "slug": "srs-learned-from-failure",
+      "item_type": "vocabulary",
+      "source_ref_id": "20b421bb2988bb54",
+      "front": "What I learned from that project mistake",
+      "back": "Những gì tôi đã rút ra được từ sai lầm dự án đó",
+      "hint_vi": "Gợi ý: Thể hiện tinh thần học hỏi từ thất bại."
+    },
+    {
+      "id": "08f949c20fc6b2f2",
+      "slug": "srs-positive-outcome-achieved",
+      "item_type": "vocabulary",
+      "source_ref_id": "662905ada2d46713",
+      "front": "In the end, we achieved a very positive outcome",
+      "back": "Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực",
+      "hint_vi": "Gợi ý: Kết thúc bằng kết quả tốt đẹp."
+    }
+  ]
+}

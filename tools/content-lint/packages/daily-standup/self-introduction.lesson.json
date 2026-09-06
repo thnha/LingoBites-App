@@ -1,0 +1,743 @@
+{
+  "id": "0efcefd25a7a14a6",
+  "slug": "self-introduction",
+  "schema_version": "0.1.0",
+  "title_en": "Self Introduction & Tech Stack",
+  "title_vi": "Giới thiệu bản thân và Công nghệ sử dụng",
+  "blurb_vi": "Học cách giới thiệu tên, vai trò và các công nghệ lập trình bạn đang làm việc trong môi trường quốc tế.",
+  "level": "A1",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Trình bày thành thạo 8 cụm từ giới thiệu bản thân và công nghệ trong 2 phút.",
+  "situation_vi": "Buổi gặp mặt thành viên mới trong dự án phần mềm.",
+  "learner_role_vi": "Lập trình viên mới gia nhập đội ngũ.",
+  "prerequisite_lesson_slugs": [],
+  "pronunciation_focus_vi": "Phát âm rõ ràng các tên công nghệ (React, Node, Python, SQL).",
+  "final_speaking_task_vi": "Giới thiệu bản thân, vai trò và công nghệ chính bạn đang sử dụng.",
+  "pass_conditions_vi": "Hoàn thành bài tập nói với ít nhất 80% câu đúng và phát âm tên công nghệ chuẩn.",
+  "unit_slug": "introduction",
+  "unit_title_vi": "Giới thiệu bản thân & Công nghệ",
+  "stage": 1,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "543d992de182663d",
+      "tip_vi": "Ôn tập lại cụm từ \"Hi, I'm a full-stack developer\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "2b754d745c227e19",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"I've been working with React and Node.js\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "7e2a92551f811dce",
+      "slug": "hi-im-dev",
+      "order": 0,
+      "phrase_en": "Hi, I'm a full-stack developer",
+      "phrase_vi": "Xin chào, tôi là lập trình viên full-stack",
+      "explanation_vi": "Cụm từ tiêu chuẩn để giới thiệu vai trò lập trình viên của bạn.",
+      "context_sentence_en": "In our daily work: \"Hi, I'm a full-stack developer\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Xin chào, tôi là lập trình viên full-stack\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "e0e0db48a80ba1be"
+      ],
+      "srs_ref_ids": [
+        "543d992de182663d"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "754046a3cdc4f4be",
+          "slug": "turn1-hi-im-dev",
+          "speaker": "A",
+          "text_en": "Hi, I'm a full-stack developer?",
+          "text_vi": "Xin chào, tôi là lập trình viên full-stack?"
+        },
+        {
+          "id": "d201619833275486",
+          "slug": "turn2-hi-im-dev",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "576698b80d75a633",
+          "slug": "qa-hi-im-dev",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Hi, I'm a full-stack developer\":",
+          "options": [
+            "Xin chào, tôi là lập trình viên full-stack",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Xin chào, tôi là lập trình viên full-stack",
+          "explanation_vi": "Dịch đúng là: Xin chào, tôi là lập trình viên full-stack"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "543d992de182663d"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Hi, I'm a full-stack developer\" nghĩa là \"Xin chào, tôi là lập trình viên full-stack\"."
+      }
+    },
+    {
+      "id": "9d5b022824475454",
+      "slug": "working-with-react",
+      "order": 1,
+      "phrase_en": "I've been working with React and Node.js",
+      "phrase_vi": "Tôi đã làm việc với React và Node.js",
+      "explanation_vi": "Thì hiện tại hoàn thành tiếp diễn thể hiện kinh nghiệm làm việc liên tục.",
+      "context_sentence_en": "In our daily work: \"I've been working with React and Node.js\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã làm việc với React và Node.js\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "59307ab9056c749f"
+      ],
+      "srs_ref_ids": [
+        "2b754d745c227e19"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "9215f22816876824",
+          "slug": "turn1-working-with-react",
+          "speaker": "A",
+          "text_en": "I've been working with React and Node.js?",
+          "text_vi": "Tôi đã làm việc với React và Node.js?"
+        },
+        {
+          "id": "78a0bbdb12ba6ec2",
+          "slug": "turn2-working-with-react",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "c3b868f583b1f8a7",
+          "slug": "qa-working-with-react",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I've been working with React and Node.js\":",
+          "options": [
+            "Tôi đã làm việc với React và Node.js",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã làm việc với React và Node.js",
+          "explanation_vi": "Dịch đúng là: Tôi đã làm việc với React và Node.js"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "2b754d745c227e19"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I've been working with React and Node.js\" nghĩa là \"Tôi đã làm việc với React và Node.js\"."
+      }
+    },
+    {
+      "id": "b91f204cb3063af4",
+      "slug": "my-main-focus",
+      "order": 2,
+      "phrase_en": "My main focus is frontend development",
+      "phrase_vi": "Trọng tâm chính của tôi là phát triển giao diện (frontend)",
+      "explanation_vi": "Cụm từ dùng để nêu chuyên môn chính của bạn.",
+      "context_sentence_en": "In our daily work: \"My main focus is frontend development\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Trọng tâm chính của tôi là phát triển giao diện (frontend)\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "cc9b48457cf95aa8"
+      ],
+      "srs_ref_ids": [
+        "ac36ea6704c8af57"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "fe30ee93926b93c6",
+          "slug": "turn1-my-main-focus",
+          "speaker": "A",
+          "text_en": "My main focus is frontend development?",
+          "text_vi": "Trọng tâm chính của tôi là phát triển giao diện (frontend)?"
+        },
+        {
+          "id": "d5e718ccbba854dd",
+          "slug": "turn2-my-main-focus",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "8258c9ed36fc52d5",
+          "slug": "qa-my-main-focus",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"My main focus is frontend development\":",
+          "options": [
+            "Trọng tâm chính của tôi là phát triển giao diện (frontend)",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Trọng tâm chính của tôi là phát triển giao diện (frontend)",
+          "explanation_vi": "Dịch đúng là: Trọng tâm chính của tôi là phát triển giao diện (frontend)"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "ac36ea6704c8af57"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"My main focus is frontend development\" nghĩa là \"Trọng tâm chính của tôi là phát triển giao diện (frontend)\"."
+      }
+    },
+    {
+      "id": "d5ff80611e6ef190",
+      "slug": "glad-to-join",
+      "order": 3,
+      "phrase_en": "I'm glad to join the team",
+      "phrase_vi": "Tôi rất vui được gia nhập nhóm",
+      "explanation_vi": "Lời chào xã giao lịch sự khi mới tham gia dự án.",
+      "context_sentence_en": "In our daily work: \"I'm glad to join the team\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi rất vui được gia nhập nhóm\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "8398845e37d0c8d6"
+      ],
+      "srs_ref_ids": [
+        "4a7b65659b97ae87"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "9060c5411508945c",
+          "slug": "turn1-glad-to-join",
+          "speaker": "A",
+          "text_en": "I'm glad to join the team?",
+          "text_vi": "Tôi rất vui được gia nhập nhóm?"
+        },
+        {
+          "id": "7dabe7fccd75ce32",
+          "slug": "turn2-glad-to-join",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "da1d98a505c1e5ea",
+          "slug": "qa-glad-to-join",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm glad to join the team\":",
+          "options": [
+            "Tôi rất vui được gia nhập nhóm",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi rất vui được gia nhập nhóm",
+          "explanation_vi": "Dịch đúng là: Tôi rất vui được gia nhập nhóm"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "4a7b65659b97ae87"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm glad to join the team\" nghĩa là \"Tôi rất vui được gia nhập nhóm\"."
+      }
+    },
+    {
+      "id": "0635819f936033fc",
+      "slug": "responsible-for-api",
+      "order": 4,
+      "phrase_en": "I'm responsible for building REST APIs",
+      "phrase_vi": "Tôi chịu trách nhiệm xây dựng các REST API",
+      "explanation_vi": "Cụm be responsible for + V-ing dùng để giải thích trách nhiệm công việc.",
+      "context_sentence_en": "In our daily work: \"I'm responsible for building REST APIs\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi chịu trách nhiệm xây dựng các REST API\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "7736ccace97af8e7"
+      ],
+      "srs_ref_ids": [
+        "05afb37195be2070"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e962afccc23d6127",
+          "slug": "turn1-responsible-for-api",
+          "speaker": "A",
+          "text_en": "I'm responsible for building REST APIs?",
+          "text_vi": "Tôi chịu trách nhiệm xây dựng các REST API?"
+        },
+        {
+          "id": "e94a066c6e044a77",
+          "slug": "turn2-responsible-for-api",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "0815fb64e158acf8",
+          "slug": "qa-responsible-for-api",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm responsible for building REST APIs\":",
+          "options": [
+            "Tôi chịu trách nhiệm xây dựng các REST API",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi chịu trách nhiệm xây dựng các REST API",
+          "explanation_vi": "Dịch đúng là: Tôi chịu trách nhiệm xây dựng các REST API"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "05afb37195be2070"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm responsible for building REST APIs\" nghĩa là \"Tôi chịu trách nhiệm xây dựng các REST API\"."
+      }
+    },
+    {
+      "id": "ff168454f2b1b756",
+      "slug": "comfortable-with-ts",
+      "order": 5,
+      "phrase_en": "I'm comfortable working with TypeScript",
+      "phrase_vi": "Tôi sử dụng thành thạo TypeScript",
+      "explanation_vi": "Be comfortable with sth dùng để diễn tả sự thành thạo với một kỹ năng.",
+      "context_sentence_en": "In our daily work: \"I'm comfortable working with TypeScript\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sử dụng thành thạo TypeScript\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "7c1afec2b1d1f4d4"
+      ],
+      "srs_ref_ids": [
+        "392ed2d4a5c42ad7"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5d1e69fd7695e35d",
+          "slug": "turn1-comfortable-with-ts",
+          "speaker": "A",
+          "text_en": "I'm comfortable working with TypeScript?",
+          "text_vi": "Tôi sử dụng thành thạo TypeScript?"
+        },
+        {
+          "id": "8b1254f025586ccc",
+          "slug": "turn2-comfortable-with-ts",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "26cc0005161c5dd4",
+          "slug": "qa-comfortable-with-ts",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm comfortable working with TypeScript\":",
+          "options": [
+            "Tôi sử dụng thành thạo TypeScript",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi sử dụng thành thạo TypeScript",
+          "explanation_vi": "Dịch đúng là: Tôi sử dụng thành thạo TypeScript"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "392ed2d4a5c42ad7"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm comfortable working with TypeScript\" nghĩa là \"Tôi sử dụng thành thạo TypeScript\"."
+      }
+    },
+    {
+      "id": "0e1b5295822b43c9",
+      "slug": "excited-about-project",
+      "order": 6,
+      "phrase_en": "I'm excited about this project",
+      "phrase_vi": "Tôi rất hào hứng với dự án này",
+      "explanation_vi": "Thể hiện thái độ tích cực khi khởi đầu công việc mới.",
+      "context_sentence_en": "In our daily work: \"I'm excited about this project\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi rất hào hứng với dự án này\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "a26a8e14ac9802cf"
+      ],
+      "srs_ref_ids": [
+        "1a07bd4d4880bafd"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5637607ea5971a3f",
+          "slug": "turn1-excited-about-project",
+          "speaker": "A",
+          "text_en": "I'm excited about this project?",
+          "text_vi": "Tôi rất hào hứng với dự án này?"
+        },
+        {
+          "id": "0d4af66ba4541fda",
+          "slug": "turn2-excited-about-project",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "691f3d6f75686f17",
+          "slug": "qa-excited-about-project",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm excited about this project\":",
+          "options": [
+            "Tôi rất hào hứng với dự án này",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi rất hào hứng với dự án này",
+          "explanation_vi": "Dịch đúng là: Tôi rất hào hứng với dự án này"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "1a07bd4d4880bafd"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm excited about this project\" nghĩa là \"Tôi rất hào hứng với dự án này\"."
+      }
+    },
+    {
+      "id": "ea0c90a250491a68",
+      "slug": "look-forward-working",
+      "order": 7,
+      "phrase_en": "I look forward to working with everyone",
+      "phrase_vi": "Tôi rất mong được làm việc cùng mọi người",
+      "explanation_vi": "Cụm từ khép lại phần giới thiệu rất chuyên nghiệp.",
+      "context_sentence_en": "In our daily work: \"I look forward to working with everyone\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi rất mong được làm việc cùng mọi người\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "3d9d0134c4fcee67"
+      ],
+      "srs_ref_ids": [
+        "ffbf52f25e56eada"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "6ca5807c8129e226",
+          "slug": "turn1-look-forward-working",
+          "speaker": "A",
+          "text_en": "I look forward to working with everyone?",
+          "text_vi": "Tôi rất mong được làm việc cùng mọi người?"
+        },
+        {
+          "id": "a772d5a2a7697b17",
+          "slug": "turn2-look-forward-working",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "463f480579b21b29",
+          "slug": "qa-look-forward-working",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I look forward to working with everyone\":",
+          "options": [
+            "Tôi rất mong được làm việc cùng mọi người",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi rất mong được làm việc cùng mọi người",
+          "explanation_vi": "Dịch đúng là: Tôi rất mong được làm việc cùng mọi người"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "ffbf52f25e56eada"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I look forward to working with everyone\" nghĩa là \"Tôi rất mong được làm việc cùng mọi người\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "92da1183a5726beb",
+      "slug": "gp-1",
+      "name_en": "Pattern for Self Introduction & Tech Stack",
+      "name_vi": "Mẫu câu chính bài Giới thiệu bản thân và Công nghệ sử dụng",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "Hi, I'm a full-stack developer",
+          "vi": "Xin chào, tôi là lập trình viên full-stack"
+        },
+        {
+          "en": "I've been working with React and Node.js",
+          "vi": "Tôi đã làm việc với React và Node.js"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "72edce96b6c9d85d",
+      "slug": "v-hi-im-dev",
+      "word": "Hi,",
+      "word_type": "noun",
+      "meaning_vi": "Xin chào, tôi là lập trình viên full-stack",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A1",
+      "example_en": "Hi, I'm a full-stack developer",
+      "example_vi": "Xin chào, tôi là lập trình viên full-stack"
+    },
+    {
+      "id": "3ded33b2ef336ec3",
+      "slug": "v-working-with-react",
+      "word": "I've",
+      "word_type": "noun",
+      "meaning_vi": "Tôi đã làm việc với React và Node.js",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A1",
+      "example_en": "I've been working with React and Node.js",
+      "example_vi": "Tôi đã làm việc với React và Node.js"
+    },
+    {
+      "id": "385a474e3304f325",
+      "slug": "v-my-main-focus",
+      "word": "My",
+      "word_type": "noun",
+      "meaning_vi": "Trọng tâm chính của tôi là phát triển giao diện (frontend)",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A1",
+      "example_en": "My main focus is frontend development",
+      "example_vi": "Trọng tâm chính của tôi là phát triển giao diện (frontend)"
+    }
+  ],
+  "activities": [
+    {
+      "id": "74c1b548238186bd",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "7e2a92551f811dce",
+        "9d5b022824475454",
+        "b91f204cb3063af4",
+        "d5ff80611e6ef190",
+        "0635819f936033fc",
+        "ff168454f2b1b756",
+        "0e1b5295822b43c9",
+        "ea0c90a250491a68"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "536378f6a836a338",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "7e2a92551f811dce",
+        "9d5b022824475454",
+        "b91f204cb3063af4",
+        "d5ff80611e6ef190"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "16e780af69bb9adb",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "7e2a92551f811dce",
+        "9d5b022824475454",
+        "b91f204cb3063af4",
+        "d5ff80611e6ef190",
+        "0635819f936033fc",
+        "ff168454f2b1b756",
+        "0e1b5295822b43c9",
+        "ea0c90a250491a68"
+      ],
+      "qa_ref_ids": [
+        "576698b80d75a633",
+        "c3b868f583b1f8a7",
+        "8258c9ed36fc52d5",
+        "da1d98a505c1e5ea",
+        "0815fb64e158acf8",
+        "26cc0005161c5dd4",
+        "691f3d6f75686f17",
+        "463f480579b21b29"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "e0e0db48a80ba1be",
+      "slug": "aud-hi-im-dev",
+      "url": "https://assets.lingobites.app/audio/self-introduction/hi-im-dev.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Hi, I'm a full-stack developer"
+    },
+    {
+      "id": "59307ab9056c749f",
+      "slug": "aud-working-with-react",
+      "url": "https://assets.lingobites.app/audio/self-introduction/working-with-react.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I've been working with React and Node.js"
+    },
+    {
+      "id": "cc9b48457cf95aa8",
+      "slug": "aud-my-main-focus",
+      "url": "https://assets.lingobites.app/audio/self-introduction/my-main-focus.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "My main focus is frontend development"
+    },
+    {
+      "id": "8398845e37d0c8d6",
+      "slug": "aud-glad-to-join",
+      "url": "https://assets.lingobites.app/audio/self-introduction/glad-to-join.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm glad to join the team"
+    },
+    {
+      "id": "7736ccace97af8e7",
+      "slug": "aud-responsible-for-api",
+      "url": "https://assets.lingobites.app/audio/self-introduction/responsible-for-api.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm responsible for building REST APIs"
+    },
+    {
+      "id": "7c1afec2b1d1f4d4",
+      "slug": "aud-comfortable-with-ts",
+      "url": "https://assets.lingobites.app/audio/self-introduction/comfortable-with-ts.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm comfortable working with TypeScript"
+    },
+    {
+      "id": "a26a8e14ac9802cf",
+      "slug": "aud-excited-about-project",
+      "url": "https://assets.lingobites.app/audio/self-introduction/excited-about-project.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm excited about this project"
+    },
+    {
+      "id": "3d9d0134c4fcee67",
+      "slug": "aud-look-forward-working",
+      "url": "https://assets.lingobites.app/audio/self-introduction/look-forward-working.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I look forward to working with everyone"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "543d992de182663d",
+      "slug": "srs-hi-im-dev",
+      "item_type": "vocabulary",
+      "source_ref_id": "7e2a92551f811dce",
+      "front": "Hi, I'm a full-stack developer",
+      "back": "Xin chào, tôi là lập trình viên full-stack",
+      "hint_vi": "Gợi ý: Cụm từ tiêu chuẩn để giới thiệu vai trò lập trình viên của bạn."
+    },
+    {
+      "id": "2b754d745c227e19",
+      "slug": "srs-working-with-react",
+      "item_type": "vocabulary",
+      "source_ref_id": "9d5b022824475454",
+      "front": "I've been working with React and Node.js",
+      "back": "Tôi đã làm việc với React và Node.js",
+      "hint_vi": "Gợi ý: Thì hiện tại hoàn thành tiếp diễn thể hiện kinh nghiệm làm việc liên tục."
+    },
+    {
+      "id": "ac36ea6704c8af57",
+      "slug": "srs-my-main-focus",
+      "item_type": "vocabulary",
+      "source_ref_id": "b91f204cb3063af4",
+      "front": "My main focus is frontend development",
+      "back": "Trọng tâm chính của tôi là phát triển giao diện (frontend)",
+      "hint_vi": "Gợi ý: Cụm từ dùng để nêu chuyên môn chính của bạn."
+    },
+    {
+      "id": "4a7b65659b97ae87",
+      "slug": "srs-glad-to-join",
+      "item_type": "vocabulary",
+      "source_ref_id": "d5ff80611e6ef190",
+      "front": "I'm glad to join the team",
+      "back": "Tôi rất vui được gia nhập nhóm",
+      "hint_vi": "Gợi ý: Lời chào xã giao lịch sự khi mới tham gia dự án."
+    },
+    {
+      "id": "05afb37195be2070",
+      "slug": "srs-responsible-for-api",
+      "item_type": "vocabulary",
+      "source_ref_id": "0635819f936033fc",
+      "front": "I'm responsible for building REST APIs",
+      "back": "Tôi chịu trách nhiệm xây dựng các REST API",
+      "hint_vi": "Gợi ý: Cụm be responsible for + V-ing dùng để giải thích trách nhiệm công việc."
+    },
+    {
+      "id": "392ed2d4a5c42ad7",
+      "slug": "srs-comfortable-with-ts",
+      "item_type": "vocabulary",
+      "source_ref_id": "ff168454f2b1b756",
+      "front": "I'm comfortable working with TypeScript",
+      "back": "Tôi sử dụng thành thạo TypeScript",
+      "hint_vi": "Gợi ý: Be comfortable with sth dùng để diễn tả sự thành thạo với một kỹ năng."
+    },
+    {
+      "id": "1a07bd4d4880bafd",
+      "slug": "srs-excited-about-project",
+      "item_type": "vocabulary",
+      "source_ref_id": "0e1b5295822b43c9",
+      "front": "I'm excited about this project",
+      "back": "Tôi rất hào hứng với dự án này",
+      "hint_vi": "Gợi ý: Thể hiện thái độ tích cực khi khởi đầu công việc mới."
+    },
+    {
+      "id": "ffbf52f25e56eada",
+      "slug": "srs-look-forward-working",
+      "item_type": "vocabulary",
+      "source_ref_id": "ea0c90a250491a68",
+      "front": "I look forward to working with everyone",
+      "back": "Tôi rất mong được làm việc cùng mọi người",
+      "hint_vi": "Gợi ý: Cụm từ khép lại phần giới thiệu rất chuyên nghiệp."
+    }
+  ]
+}

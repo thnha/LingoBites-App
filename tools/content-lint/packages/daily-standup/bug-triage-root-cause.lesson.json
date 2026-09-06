@@ -1,0 +1,745 @@
+{
+  "id": "6a36704de654d5c9",
+  "slug": "bug-triage-root-cause",
+  "schema_version": "0.1.0",
+  "title_en": "Bug Triage & Root Cause Analysis",
+  "title_vi": "Phân loại lỗi & Phân tích nguyên nhân gốc rễ",
+  "blurb_vi": "Giải thích nguyên nhân sâu xa (root cause) gây ra sự cố và phương án khắc phục triệt để.",
+  "level": "B2",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Trình bày kết quả phân tích nguyên nhân gốc rễ của sự cố hệ thống.",
+  "situation_vi": "Buổi họp post-mortem sau khi đã xử lý xong sự cố kỹ thuật.",
+  "learner_role_vi": "Senior Developer báo cáo nguyên nhân sự cố cho nhóm.",
+  "prerequisite_lesson_slugs": [
+    "reporting-production-bug"
+  ],
+  "pronunciation_focus_vi": "Phát âm chuẩn từ root cause, investigation, memory leak, patch, preventive measure.",
+  "final_speaking_task_vi": "Giải thích nguyên nhân rò rỉ bộ nhớ và biện pháp ngăn ngừa.",
+  "pass_conditions_vi": "Nêu chính xác nguyên nhân gốc rễ và kế hoạch phòng ngừa.",
+  "unit_slug": "bug-report",
+  "unit_title_vi": "Báo lỗi & Sự cố Kỹ thuật (Bug Report)",
+  "stage": 3,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "519a81481aa387dd",
+      "tip_vi": "Ôn tập lại cụm từ \"The root cause was an unindexed database query\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "334b4d4b4cada9ca",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"We investigated server logs and trace metrics\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "30770a4c8127418a",
+      "slug": "root-cause-was",
+      "order": 0,
+      "phrase_en": "The root cause was an unindexed database query",
+      "phrase_vi": "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục",
+      "explanation_vi": "Root cause chỉ nguyên nhân bản chất gây ra sự cố.",
+      "context_sentence_en": "In our daily work: \"The root cause was an unindexed database query\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "b47f4febd5c6e979"
+      ],
+      "srs_ref_ids": [
+        "519a81481aa387dd"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e7eabe28d42f4838",
+          "slug": "turn1-root-cause-was",
+          "speaker": "A",
+          "text_en": "The root cause was an unindexed database query?",
+          "text_vi": "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục?"
+        },
+        {
+          "id": "bf09e57fffb1f5d1",
+          "slug": "turn2-root-cause-was",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "bd5c81c7881d25bf",
+          "slug": "qa-root-cause-was",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The root cause was an unindexed database query\":",
+          "options": [
+            "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục",
+          "explanation_vi": "Dịch đúng là: Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "519a81481aa387dd"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The root cause was an unindexed database query\" nghĩa là \"Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục\"."
+      }
+    },
+    {
+      "id": "0a1861f159f22b50",
+      "slug": "investigated-the-logs",
+      "order": 1,
+      "phrase_en": "We investigated server logs and trace metrics",
+      "phrase_vi": "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết",
+      "explanation_vi": "Quá trình rà soát dữ liệu tìm lỗi.",
+      "context_sentence_en": "In our daily work: \"We investigated server logs and trace metrics\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "d15153d0c28dd565"
+      ],
+      "srs_ref_ids": [
+        "334b4d4b4cada9ca"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "1ff4a432a760b42b",
+          "slug": "turn1-investigated-the-logs",
+          "speaker": "A",
+          "text_en": "We investigated server logs and trace metrics?",
+          "text_vi": "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết?"
+        },
+        {
+          "id": "b3ece7fa330037cc",
+          "slug": "turn2-investigated-the-logs",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "45157687e472b5d3",
+          "slug": "qa-investigated-the-logs",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We investigated server logs and trace metrics\":",
+          "options": [
+            "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết",
+          "explanation_vi": "Dịch đúng là: Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "334b4d4b4cada9ca"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We investigated server logs and trace metrics\" nghĩa là \"Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết\"."
+      }
+    },
+    {
+      "id": "0c2d5e7fab50f163",
+      "slug": "race-condition",
+      "order": 2,
+      "phrase_en": "The issue was triggered by a race condition",
+      "phrase_vi": "Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)",
+      "explanation_vi": "Lỗi xảy ra do xung đột thời gian thực thi.",
+      "context_sentence_en": "In our daily work: \"The issue was triggered by a race condition\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "fe88c5a5f1625ac0"
+      ],
+      "srs_ref_ids": [
+        "c7d0fba5e5ef066e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "0460ca8ddbe1c8ee",
+          "slug": "turn1-race-condition",
+          "speaker": "A",
+          "text_en": "The issue was triggered by a race condition?",
+          "text_vi": "Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)?"
+        },
+        {
+          "id": "09732ea81aee4abc",
+          "slug": "turn2-race-condition",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "fc1c451589ea4048",
+          "slug": "qa-race-condition",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The issue was triggered by a race condition\":",
+          "options": [
+            "Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)",
+          "explanation_vi": "Dịch đúng là: Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "c7d0fba5e5ef066e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The issue was triggered by a race condition\" nghĩa là \"Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)\"."
+      }
+    },
+    {
+      "id": "5a4f913db938bc34",
+      "slug": "memory-leak-identified",
+      "order": 3,
+      "phrase_en": "A memory leak was identified in event listener",
+      "phrase_vi": "Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện",
+      "explanation_vi": "Rò rỉ bộ nhớ làm tràn RAM máy chủ.",
+      "context_sentence_en": "In our daily work: \"A memory leak was identified in event listener\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "460547f8dae7c576"
+      ],
+      "srs_ref_ids": [
+        "bc4b105462911fff"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "abfcda659c14ff53",
+          "slug": "turn1-memory-leak-identified",
+          "speaker": "A",
+          "text_en": "A memory leak was identified in event listener?",
+          "text_vi": "Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện?"
+        },
+        {
+          "id": "c83e5298b3e33eca",
+          "slug": "turn2-memory-leak-identified",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "65b9377e8a5a2872",
+          "slug": "qa-memory-leak-identified",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"A memory leak was identified in event listener\":",
+          "options": [
+            "Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện",
+          "explanation_vi": "Dịch đúng là: Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "bc4b105462911fff"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"A memory leak was identified in event listener\" nghĩa là \"Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện\"."
+      }
+    },
+    {
+      "id": "7c15f0b137c73716",
+      "slug": "applied-a-patch",
+      "order": 4,
+      "phrase_en": "We applied a temporary patch to stabilize system",
+      "phrase_vi": "Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống",
+      "explanation_vi": "Patch là bản sửa lỗi nhanh.",
+      "context_sentence_en": "In our daily work: \"We applied a temporary patch to stabilize system\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "69809c95c64995d9"
+      ],
+      "srs_ref_ids": [
+        "18efe4dbb2421460"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "83d72220913166e0",
+          "slug": "turn1-applied-a-patch",
+          "speaker": "A",
+          "text_en": "We applied a temporary patch to stabilize system?",
+          "text_vi": "Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống?"
+        },
+        {
+          "id": "c320c87a9e5fc05a",
+          "slug": "turn2-applied-a-patch",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "86c58f1cfd84081b",
+          "slug": "qa-applied-a-patch",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We applied a temporary patch to stabilize system\":",
+          "options": [
+            "Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống",
+          "explanation_vi": "Dịch đúng là: Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "18efe4dbb2421460"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We applied a temporary patch to stabilize system\" nghĩa là \"Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống\"."
+      }
+    },
+    {
+      "id": "109fc139d7c37acc",
+      "slug": "preventive-measures",
+      "order": 5,
+      "phrase_en": "We added preventive measures including automated tests",
+      "phrase_vi": "Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động",
+      "explanation_vi": "Preventive measures nghĩa là biện pháp ngăn tái diễn.",
+      "context_sentence_en": "In our daily work: \"We added preventive measures including automated tests\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "a045328b414c62a7"
+      ],
+      "srs_ref_ids": [
+        "40cc36141415670f"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "64312c2eac5aaeab",
+          "slug": "turn1-preventive-measures",
+          "speaker": "A",
+          "text_en": "We added preventive measures including automated tests?",
+          "text_vi": "Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động?"
+        },
+        {
+          "id": "2d369a2a49533f04",
+          "slug": "turn2-preventive-measures",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "2c6ab3aff1a6d23b",
+          "slug": "qa-preventive-measures",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We added preventive measures including automated tests\":",
+          "options": [
+            "Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động",
+          "explanation_vi": "Dịch đúng là: Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "40cc36141415670f"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We added preventive measures including automated tests\" nghĩa là \"Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động\"."
+      }
+    },
+    {
+      "id": "c9f4f49a11657ace",
+      "slug": "post-mortem-report",
+      "order": 6,
+      "phrase_en": "I will publish the post-mortem report today",
+      "phrase_vi": "Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay",
+      "explanation_vi": "Post-mortem report là báo cáo tổng kết sự cố.",
+      "context_sentence_en": "In our daily work: \"I will publish the post-mortem report today\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "c46cb839e03b6c3b"
+      ],
+      "srs_ref_ids": [
+        "244818ce0751678e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5c9af7bbe30cb22e",
+          "slug": "turn1-post-mortem-report",
+          "speaker": "A",
+          "text_en": "I will publish the post-mortem report today?",
+          "text_vi": "Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay?"
+        },
+        {
+          "id": "82592a0db4acf06e",
+          "slug": "turn2-post-mortem-report",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "2860b3dd603d85bb",
+          "slug": "qa-post-mortem-report",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I will publish the post-mortem report today\":",
+          "options": [
+            "Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay",
+          "explanation_vi": "Dịch đúng là: Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "244818ce0751678e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I will publish the post-mortem report today\" nghĩa là \"Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay\"."
+      }
+    },
+    {
+      "id": "8ad4d8ae279a5457",
+      "slug": "system-fully-recovered",
+      "order": 7,
+      "phrase_en": "The system is now fully recovered and stable",
+      "phrase_vi": "Hệ thống hiện đã phục hồi hoàn toàn và ổn định",
+      "explanation_vi": "Thông báo hoàn tất xử lý sự cố.",
+      "context_sentence_en": "In our daily work: \"The system is now fully recovered and stable\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Hệ thống hiện đã phục hồi hoàn toàn và ổn định\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "e65ccb3500835ef5"
+      ],
+      "srs_ref_ids": [
+        "c7301e31a40ef8a8"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "c86343af5681029e",
+          "slug": "turn1-system-fully-recovered",
+          "speaker": "A",
+          "text_en": "The system is now fully recovered and stable?",
+          "text_vi": "Hệ thống hiện đã phục hồi hoàn toàn và ổn định?"
+        },
+        {
+          "id": "99a9d8fbc2196fd6",
+          "slug": "turn2-system-fully-recovered",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "ac9f74eb660f3012",
+          "slug": "qa-system-fully-recovered",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The system is now fully recovered and stable\":",
+          "options": [
+            "Hệ thống hiện đã phục hồi hoàn toàn và ổn định",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Hệ thống hiện đã phục hồi hoàn toàn và ổn định",
+          "explanation_vi": "Dịch đúng là: Hệ thống hiện đã phục hồi hoàn toàn và ổn định"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "c7301e31a40ef8a8"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The system is now fully recovered and stable\" nghĩa là \"Hệ thống hiện đã phục hồi hoàn toàn và ổn định\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "4be65a8cf5233525",
+      "slug": "gp-1",
+      "name_en": "Pattern for Bug Triage & Root Cause Analysis",
+      "name_vi": "Mẫu câu chính bài Phân loại lỗi & Phân tích nguyên nhân gốc rễ",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "The root cause was an unindexed database query",
+          "vi": "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục"
+        },
+        {
+          "en": "We investigated server logs and trace metrics",
+          "vi": "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "c2dec6faf056c6ae",
+      "slug": "v-root-cause-was",
+      "word": "The",
+      "word_type": "noun",
+      "meaning_vi": "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "The root cause was an unindexed database query",
+      "example_vi": "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục"
+    },
+    {
+      "id": "39c687eea0883f4b",
+      "slug": "v-investigated-the-logs",
+      "word": "We",
+      "word_type": "noun",
+      "meaning_vi": "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "We investigated server logs and trace metrics",
+      "example_vi": "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết"
+    },
+    {
+      "id": "5383521deed39514",
+      "slug": "v-race-condition",
+      "word": "The",
+      "word_type": "noun",
+      "meaning_vi": "Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B2",
+      "example_en": "The issue was triggered by a race condition",
+      "example_vi": "Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)"
+    }
+  ],
+  "activities": [
+    {
+      "id": "86061cb54963fd8f",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "30770a4c8127418a",
+        "0a1861f159f22b50",
+        "0c2d5e7fab50f163",
+        "5a4f913db938bc34",
+        "7c15f0b137c73716",
+        "109fc139d7c37acc",
+        "c9f4f49a11657ace",
+        "8ad4d8ae279a5457"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "7c25e0df53b05991",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "30770a4c8127418a",
+        "0a1861f159f22b50",
+        "0c2d5e7fab50f163",
+        "5a4f913db938bc34"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "5aae009938ab9bfd",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "30770a4c8127418a",
+        "0a1861f159f22b50",
+        "0c2d5e7fab50f163",
+        "5a4f913db938bc34",
+        "7c15f0b137c73716",
+        "109fc139d7c37acc",
+        "c9f4f49a11657ace",
+        "8ad4d8ae279a5457"
+      ],
+      "qa_ref_ids": [
+        "bd5c81c7881d25bf",
+        "45157687e472b5d3",
+        "fc1c451589ea4048",
+        "65b9377e8a5a2872",
+        "86c58f1cfd84081b",
+        "2c6ab3aff1a6d23b",
+        "2860b3dd603d85bb",
+        "ac9f74eb660f3012"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "b47f4febd5c6e979",
+      "slug": "aud-root-cause-was",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/root-cause-was.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The root cause was an unindexed database query"
+    },
+    {
+      "id": "d15153d0c28dd565",
+      "slug": "aud-investigated-the-logs",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/investigated-the-logs.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We investigated server logs and trace metrics"
+    },
+    {
+      "id": "fe88c5a5f1625ac0",
+      "slug": "aud-race-condition",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/race-condition.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The issue was triggered by a race condition"
+    },
+    {
+      "id": "460547f8dae7c576",
+      "slug": "aud-memory-leak-identified",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/memory-leak-identified.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "A memory leak was identified in event listener"
+    },
+    {
+      "id": "69809c95c64995d9",
+      "slug": "aud-applied-a-patch",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/applied-a-patch.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We applied a temporary patch to stabilize system"
+    },
+    {
+      "id": "a045328b414c62a7",
+      "slug": "aud-preventive-measures",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/preventive-measures.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We added preventive measures including automated tests"
+    },
+    {
+      "id": "c46cb839e03b6c3b",
+      "slug": "aud-post-mortem-report",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/post-mortem-report.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I will publish the post-mortem report today"
+    },
+    {
+      "id": "e65ccb3500835ef5",
+      "slug": "aud-system-fully-recovered",
+      "url": "https://assets.lingobites.app/audio/bug-triage-root-cause/system-fully-recovered.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The system is now fully recovered and stable"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "519a81481aa387dd",
+      "slug": "srs-root-cause-was",
+      "item_type": "vocabulary",
+      "source_ref_id": "30770a4c8127418a",
+      "front": "The root cause was an unindexed database query",
+      "back": "Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục",
+      "hint_vi": "Gợi ý: Root cause chỉ nguyên nhân bản chất gây ra sự cố."
+    },
+    {
+      "id": "334b4d4b4cada9ca",
+      "slug": "srs-investigated-the-logs",
+      "item_type": "vocabulary",
+      "source_ref_id": "0a1861f159f22b50",
+      "front": "We investigated server logs and trace metrics",
+      "back": "Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết",
+      "hint_vi": "Gợi ý: Quá trình rà soát dữ liệu tìm lỗi."
+    },
+    {
+      "id": "c7d0fba5e5ef066e",
+      "slug": "srs-race-condition",
+      "item_type": "vocabulary",
+      "source_ref_id": "0c2d5e7fab50f163",
+      "front": "The issue was triggered by a race condition",
+      "back": "Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)",
+      "hint_vi": "Gợi ý: Lỗi xảy ra do xung đột thời gian thực thi."
+    },
+    {
+      "id": "bc4b105462911fff",
+      "slug": "srs-memory-leak-identified",
+      "item_type": "vocabulary",
+      "source_ref_id": "5a4f913db938bc34",
+      "front": "A memory leak was identified in event listener",
+      "back": "Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện",
+      "hint_vi": "Gợi ý: Rò rỉ bộ nhớ làm tràn RAM máy chủ."
+    },
+    {
+      "id": "18efe4dbb2421460",
+      "slug": "srs-applied-a-patch",
+      "item_type": "vocabulary",
+      "source_ref_id": "7c15f0b137c73716",
+      "front": "We applied a temporary patch to stabilize system",
+      "back": "Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống",
+      "hint_vi": "Gợi ý: Patch là bản sửa lỗi nhanh."
+    },
+    {
+      "id": "40cc36141415670f",
+      "slug": "srs-preventive-measures",
+      "item_type": "vocabulary",
+      "source_ref_id": "109fc139d7c37acc",
+      "front": "We added preventive measures including automated tests",
+      "back": "Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động",
+      "hint_vi": "Gợi ý: Preventive measures nghĩa là biện pháp ngăn tái diễn."
+    },
+    {
+      "id": "244818ce0751678e",
+      "slug": "srs-post-mortem-report",
+      "item_type": "vocabulary",
+      "source_ref_id": "c9f4f49a11657ace",
+      "front": "I will publish the post-mortem report today",
+      "back": "Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay",
+      "hint_vi": "Gợi ý: Post-mortem report là báo cáo tổng kết sự cố."
+    },
+    {
+      "id": "c7301e31a40ef8a8",
+      "slug": "srs-system-fully-recovered",
+      "item_type": "vocabulary",
+      "source_ref_id": "8ad4d8ae279a5457",
+      "front": "The system is now fully recovered and stable",
+      "back": "Hệ thống hiện đã phục hồi hoàn toàn và ổn định",
+      "hint_vi": "Gợi ý: Thông báo hoàn tất xử lý sự cố."
+    }
+  ]
+}

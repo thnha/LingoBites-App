@@ -1,0 +1,745 @@
+{
+  "id": "909848a9613b1d4d",
+  "slug": "team-roles",
+  "schema_version": "0.1.0",
+  "title_en": "Discussing Engineering Roles & Responsibilities",
+  "title_vi": "Thảo luận vai trò và trách nhiệm kỹ thuật",
+  "blurb_vi": "Mô tả ai làm gì trong dự án (Dev, QA, DevOps, PO, Scrum Master) và phân chia công việc.",
+  "level": "A2",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Mô tả nhiệm vụ của các vai trò trong nhóm bằng tiếng Anh.",
+  "situation_vi": "Họp phân công công việc đầu dự án.",
+  "learner_role_vi": "Thành viên nhóm giải thích sự phân công công việc.",
+  "prerequisite_lesson_slugs": [
+    "confirming-requirements"
+  ],
+  "pronunciation_focus_vi": "Phát âm chuẩn tên các vai trò: Tech Lead, Product Owner, QA Engineer, DevOps.",
+  "final_speaking_task_vi": "Giới thiệu phân công vai trò trong sprint mới.",
+  "pass_conditions_vi": "Mô tả chính xác trách nhiệm của ít nhất 3 vai trò.",
+  "unit_slug": "team-roles",
+  "unit_title_vi": "Vai trò & Trách nhiệm trong Nhóm",
+  "stage": 2,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "905637f0f19aadd2",
+      "tip_vi": "Ôn tập lại cụm từ \"The QA team handles end-to-end testing\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "bc024206534bd66e",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"DevOps manages our CI/CD deployment pipeline\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "321b6ea788c29ac5",
+      "slug": "qa-handles-testing",
+      "order": 0,
+      "phrase_en": "The QA team handles end-to-end testing",
+      "phrase_vi": "Đội QA đảm nhận kiểm thử toàn trình",
+      "explanation_vi": "End-to-end testing chỉ việc kiểm thử từ đầu đến cuối.",
+      "context_sentence_en": "In our daily work: \"The QA team handles end-to-end testing\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Đội QA đảm nhận kiểm thử toàn trình\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "0100385928077fd2"
+      ],
+      "srs_ref_ids": [
+        "905637f0f19aadd2"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "4e48935f3b0ab7a0",
+          "slug": "turn1-qa-handles-testing",
+          "speaker": "A",
+          "text_en": "The QA team handles end-to-end testing?",
+          "text_vi": "Đội QA đảm nhận kiểm thử toàn trình?"
+        },
+        {
+          "id": "55e9497c0dbad52d",
+          "slug": "turn2-qa-handles-testing",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "15e84b8cd64d7327",
+          "slug": "qa-qa-handles-testing",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The QA team handles end-to-end testing\":",
+          "options": [
+            "Đội QA đảm nhận kiểm thử toàn trình",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Đội QA đảm nhận kiểm thử toàn trình",
+          "explanation_vi": "Dịch đúng là: Đội QA đảm nhận kiểm thử toàn trình"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "905637f0f19aadd2"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The QA team handles end-to-end testing\" nghĩa là \"Đội QA đảm nhận kiểm thử toàn trình\"."
+      }
+    },
+    {
+      "id": "d2934d804862ac8e",
+      "slug": "devops-manages-ci",
+      "order": 1,
+      "phrase_en": "DevOps manages our CI/CD deployment pipeline",
+      "phrase_vi": "DevOps quản lý quy trình triển khai CI/CD",
+      "explanation_vi": "Pipeline triển khai tự động hóa.",
+      "context_sentence_en": "In our daily work: \"DevOps manages our CI/CD deployment pipeline\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"DevOps quản lý quy trình triển khai CI/CD\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "c03b94ec6614ae08"
+      ],
+      "srs_ref_ids": [
+        "bc024206534bd66e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "26264dc8e39fe302",
+          "slug": "turn1-devops-manages-ci",
+          "speaker": "A",
+          "text_en": "DevOps manages our CI/CD deployment pipeline?",
+          "text_vi": "DevOps quản lý quy trình triển khai CI/CD?"
+        },
+        {
+          "id": "fdac23475191499c",
+          "slug": "turn2-devops-manages-ci",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "88fc9b8e47272d83",
+          "slug": "qa-devops-manages-ci",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"DevOps manages our CI/CD deployment pipeline\":",
+          "options": [
+            "DevOps quản lý quy trình triển khai CI/CD",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "DevOps quản lý quy trình triển khai CI/CD",
+          "explanation_vi": "Dịch đúng là: DevOps quản lý quy trình triển khai CI/CD"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "bc024206534bd66e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"DevOps manages our CI/CD deployment pipeline\" nghĩa là \"DevOps quản lý quy trình triển khai CI/CD\"."
+      }
+    },
+    {
+      "id": "a89341e870b5796b",
+      "slug": "po-prioritizes-backlog",
+      "order": 2,
+      "phrase_en": "The Product Owner prioritizes the backlog",
+      "phrase_vi": "Product Owner sắp xếp thứ tự ưu tiên backlog",
+      "explanation_vi": "Prioritize backlog nghĩa là quyết định việc nào làm trước.",
+      "context_sentence_en": "In our daily work: \"The Product Owner prioritizes the backlog\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Product Owner sắp xếp thứ tự ưu tiên backlog\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "a6d23d4c387d3733"
+      ],
+      "srs_ref_ids": [
+        "9a7e97868d088d50"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "297ac089bb296f4f",
+          "slug": "turn1-po-prioritizes-backlog",
+          "speaker": "A",
+          "text_en": "The Product Owner prioritizes the backlog?",
+          "text_vi": "Product Owner sắp xếp thứ tự ưu tiên backlog?"
+        },
+        {
+          "id": "004c2119101b9a49",
+          "slug": "turn2-po-prioritizes-backlog",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "bdf8d31da624e32b",
+          "slug": "qa-po-prioritizes-backlog",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The Product Owner prioritizes the backlog\":",
+          "options": [
+            "Product Owner sắp xếp thứ tự ưu tiên backlog",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Product Owner sắp xếp thứ tự ưu tiên backlog",
+          "explanation_vi": "Dịch đúng là: Product Owner sắp xếp thứ tự ưu tiên backlog"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "9a7e97868d088d50"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The Product Owner prioritizes the backlog\" nghĩa là \"Product Owner sắp xếp thứ tự ưu tiên backlog\"."
+      }
+    },
+    {
+      "id": "e4c30737e4e795d0",
+      "slug": "tech-lead-reviews-arch",
+      "order": 3,
+      "phrase_en": "Our Tech Lead reviews architectural decisions",
+      "phrase_vi": "Tech Lead của chúng tôi duyệt các quyết định kiến trúc",
+      "explanation_vi": "Architectural decisions chỉ thiết kế tổng thể hệ thống.",
+      "context_sentence_en": "In our daily work: \"Our Tech Lead reviews architectural decisions\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tech Lead của chúng tôi duyệt các quyết định kiến trúc\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "0758754c9d4896d0"
+      ],
+      "srs_ref_ids": [
+        "04bb9e5c4865140b"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "436f97b27a599ffc",
+          "slug": "turn1-tech-lead-reviews-arch",
+          "speaker": "A",
+          "text_en": "Our Tech Lead reviews architectural decisions?",
+          "text_vi": "Tech Lead của chúng tôi duyệt các quyết định kiến trúc?"
+        },
+        {
+          "id": "7a4b51efe1ef0ae0",
+          "slug": "turn2-tech-lead-reviews-arch",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6c0a85f7b78b1a65",
+          "slug": "qa-tech-lead-reviews-arch",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Our Tech Lead reviews architectural decisions\":",
+          "options": [
+            "Tech Lead của chúng tôi duyệt các quyết định kiến trúc",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tech Lead của chúng tôi duyệt các quyết định kiến trúc",
+          "explanation_vi": "Dịch đúng là: Tech Lead của chúng tôi duyệt các quyết định kiến trúc"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "04bb9e5c4865140b"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Our Tech Lead reviews architectural decisions\" nghĩa là \"Tech Lead của chúng tôi duyệt các quyết định kiến trúc\"."
+      }
+    },
+    {
+      "id": "f753f2d88a489a57",
+      "slug": "who-is-owning-this",
+      "order": 4,
+      "phrase_en": "Who is owning this feature ticket?",
+      "phrase_vi": "Ai đang phụ trách thẻ tính năng này?",
+      "explanation_vi": "Own a ticket nghĩa là chịu trách nhiệm chính cho thẻ đó.",
+      "context_sentence_en": "In our daily work: \"Who is owning this feature ticket?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Ai đang phụ trách thẻ tính năng này?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "af4e1b3e8518bd36"
+      ],
+      "srs_ref_ids": [
+        "8228e7f2b156e754"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "cf5fbc52ced1234a",
+          "slug": "turn1-who-is-owning-this",
+          "speaker": "A",
+          "text_en": "Who is owning this feature ticket??",
+          "text_vi": "Ai đang phụ trách thẻ tính năng này??"
+        },
+        {
+          "id": "e0312588010543b5",
+          "slug": "turn2-who-is-owning-this",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "72826ec9c70b847c",
+          "slug": "qa-who-is-owning-this",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Who is owning this feature ticket?\":",
+          "options": [
+            "Ai đang phụ trách thẻ tính năng này?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Ai đang phụ trách thẻ tính năng này?",
+          "explanation_vi": "Dịch đúng là: Ai đang phụ trách thẻ tính năng này?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "8228e7f2b156e754"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Who is owning this feature ticket?\" nghĩa là \"Ai đang phụ trách thẻ tính năng này?\"."
+      }
+    },
+    {
+      "id": "94ea6363d52a9e18",
+      "slug": "collaborate-with-designer",
+      "order": 5,
+      "phrase_en": "I need to collaborate with the UI/UX designer",
+      "phrase_vi": "Tôi cần phối hợp với thiết kế UI/UX",
+      "explanation_vi": "Collaborate with sb nghĩa là hợp tác làm việc cùng ai.",
+      "context_sentence_en": "In our daily work: \"I need to collaborate with the UI/UX designer\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi cần phối hợp với thiết kế UI/UX\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "652838cbb9097a25"
+      ],
+      "srs_ref_ids": [
+        "1a533d3fed218a49"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e6a697b880935180",
+          "slug": "turn1-collaborate-with-designer",
+          "speaker": "A",
+          "text_en": "I need to collaborate with the UI/UX designer?",
+          "text_vi": "Tôi cần phối hợp với thiết kế UI/UX?"
+        },
+        {
+          "id": "736e71f2693c9250",
+          "slug": "turn2-collaborate-with-designer",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6251594847300dc7",
+          "slug": "qa-collaborate-with-designer",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I need to collaborate with the UI/UX designer\":",
+          "options": [
+            "Tôi cần phối hợp với thiết kế UI/UX",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi cần phối hợp với thiết kế UI/UX",
+          "explanation_vi": "Dịch đúng là: Tôi cần phối hợp với thiết kế UI/UX"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "1a533d3fed218a49"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I need to collaborate with the UI/UX designer\" nghĩa là \"Tôi cần phối hợp với thiết kế UI/UX\"."
+      }
+    },
+    {
+      "id": "29b080ab4a1f7637",
+      "slug": "hand-over-to-qa",
+      "order": 6,
+      "phrase_en": "I will hand this over to QA once built",
+      "phrase_vi": "Tôi sẽ bàn giao cái này cho QA sau khi làm xong",
+      "explanation_vi": "Hand over to sb nghĩa là bàn giao công việc.",
+      "context_sentence_en": "In our daily work: \"I will hand this over to QA once built\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ bàn giao cái này cho QA sau khi làm xong\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "d5035615fde26a30"
+      ],
+      "srs_ref_ids": [
+        "6a6d2097443b4671"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "c2ce847dd1d5aafc",
+          "slug": "turn1-hand-over-to-qa",
+          "speaker": "A",
+          "text_en": "I will hand this over to QA once built?",
+          "text_vi": "Tôi sẽ bàn giao cái này cho QA sau khi làm xong?"
+        },
+        {
+          "id": "8eedc9199e7b20ff",
+          "slug": "turn2-hand-over-to-qa",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "44fa61480bb32ec5",
+          "slug": "qa-hand-over-to-qa",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I will hand this over to QA once built\":",
+          "options": [
+            "Tôi sẽ bàn giao cái này cho QA sau khi làm xong",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi sẽ bàn giao cái này cho QA sau khi làm xong",
+          "explanation_vi": "Dịch đúng là: Tôi sẽ bàn giao cái này cho QA sau khi làm xong"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "6a6d2097443b4671"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I will hand this over to QA once built\" nghĩa là \"Tôi sẽ bàn giao cái này cho QA sau khi làm xong\"."
+      }
+    },
+    {
+      "id": "f9099f9921245abf",
+      "slug": "cross-functional-team",
+      "order": 7,
+      "phrase_en": "We operate as a cross-functional team",
+      "phrase_vi": "Chúng tôi hoạt động như một nhóm đa chức năng",
+      "explanation_vi": "Cross-functional team gồm nhiều chuyên môn khác nhau.",
+      "context_sentence_en": "In our daily work: \"We operate as a cross-functional team\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi hoạt động như một nhóm đa chức năng\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "d7a285c92c1073ff"
+      ],
+      "srs_ref_ids": [
+        "be9cbba9e4e0ed4e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "2a7fd379f3128950",
+          "slug": "turn1-cross-functional-team",
+          "speaker": "A",
+          "text_en": "We operate as a cross-functional team?",
+          "text_vi": "Chúng tôi hoạt động như một nhóm đa chức năng?"
+        },
+        {
+          "id": "265f9e0917526507",
+          "slug": "turn2-cross-functional-team",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "aeb3ee9d7a7fb70a",
+          "slug": "qa-cross-functional-team",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We operate as a cross-functional team\":",
+          "options": [
+            "Chúng tôi hoạt động như một nhóm đa chức năng",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng tôi hoạt động như một nhóm đa chức năng",
+          "explanation_vi": "Dịch đúng là: Chúng tôi hoạt động như một nhóm đa chức năng"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "be9cbba9e4e0ed4e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We operate as a cross-functional team\" nghĩa là \"Chúng tôi hoạt động như một nhóm đa chức năng\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "c99e7851875c36c4",
+      "slug": "gp-1",
+      "name_en": "Pattern for Discussing Engineering Roles & Responsibilities",
+      "name_vi": "Mẫu câu chính bài Thảo luận vai trò và trách nhiệm kỹ thuật",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "The QA team handles end-to-end testing",
+          "vi": "Đội QA đảm nhận kiểm thử toàn trình"
+        },
+        {
+          "en": "DevOps manages our CI/CD deployment pipeline",
+          "vi": "DevOps quản lý quy trình triển khai CI/CD"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "0cfd6139741cdd74",
+      "slug": "v-qa-handles-testing",
+      "word": "The",
+      "word_type": "noun",
+      "meaning_vi": "Đội QA đảm nhận kiểm thử toàn trình",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "The QA team handles end-to-end testing",
+      "example_vi": "Đội QA đảm nhận kiểm thử toàn trình"
+    },
+    {
+      "id": "61ee811b9bfaab5e",
+      "slug": "v-devops-manages-ci",
+      "word": "DevOps",
+      "word_type": "noun",
+      "meaning_vi": "DevOps quản lý quy trình triển khai CI/CD",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "DevOps manages our CI/CD deployment pipeline",
+      "example_vi": "DevOps quản lý quy trình triển khai CI/CD"
+    },
+    {
+      "id": "6ba2c0a39ac367f5",
+      "slug": "v-po-prioritizes-backlog",
+      "word": "The",
+      "word_type": "noun",
+      "meaning_vi": "Product Owner sắp xếp thứ tự ưu tiên backlog",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "The Product Owner prioritizes the backlog",
+      "example_vi": "Product Owner sắp xếp thứ tự ưu tiên backlog"
+    }
+  ],
+  "activities": [
+    {
+      "id": "69ceb2b4ed3c952c",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "321b6ea788c29ac5",
+        "d2934d804862ac8e",
+        "a89341e870b5796b",
+        "e4c30737e4e795d0",
+        "f753f2d88a489a57",
+        "94ea6363d52a9e18",
+        "29b080ab4a1f7637",
+        "f9099f9921245abf"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "a0a8d37d8b9702dd",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "321b6ea788c29ac5",
+        "d2934d804862ac8e",
+        "a89341e870b5796b",
+        "e4c30737e4e795d0"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "5a10ddc95d867a28",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "321b6ea788c29ac5",
+        "d2934d804862ac8e",
+        "a89341e870b5796b",
+        "e4c30737e4e795d0",
+        "f753f2d88a489a57",
+        "94ea6363d52a9e18",
+        "29b080ab4a1f7637",
+        "f9099f9921245abf"
+      ],
+      "qa_ref_ids": [
+        "15e84b8cd64d7327",
+        "88fc9b8e47272d83",
+        "bdf8d31da624e32b",
+        "6c0a85f7b78b1a65",
+        "72826ec9c70b847c",
+        "6251594847300dc7",
+        "44fa61480bb32ec5",
+        "aeb3ee9d7a7fb70a"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "0100385928077fd2",
+      "slug": "aud-qa-handles-testing",
+      "url": "https://assets.lingobites.app/audio/team-roles/qa-handles-testing.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The QA team handles end-to-end testing"
+    },
+    {
+      "id": "c03b94ec6614ae08",
+      "slug": "aud-devops-manages-ci",
+      "url": "https://assets.lingobites.app/audio/team-roles/devops-manages-ci.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "DevOps manages our CI/CD deployment pipeline"
+    },
+    {
+      "id": "a6d23d4c387d3733",
+      "slug": "aud-po-prioritizes-backlog",
+      "url": "https://assets.lingobites.app/audio/team-roles/po-prioritizes-backlog.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The Product Owner prioritizes the backlog"
+    },
+    {
+      "id": "0758754c9d4896d0",
+      "slug": "aud-tech-lead-reviews-arch",
+      "url": "https://assets.lingobites.app/audio/team-roles/tech-lead-reviews-arch.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Our Tech Lead reviews architectural decisions"
+    },
+    {
+      "id": "af4e1b3e8518bd36",
+      "slug": "aud-who-is-owning-this",
+      "url": "https://assets.lingobites.app/audio/team-roles/who-is-owning-this.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Who is owning this feature ticket?"
+    },
+    {
+      "id": "652838cbb9097a25",
+      "slug": "aud-collaborate-with-designer",
+      "url": "https://assets.lingobites.app/audio/team-roles/collaborate-with-designer.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I need to collaborate with the UI/UX designer"
+    },
+    {
+      "id": "d5035615fde26a30",
+      "slug": "aud-hand-over-to-qa",
+      "url": "https://assets.lingobites.app/audio/team-roles/hand-over-to-qa.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I will hand this over to QA once built"
+    },
+    {
+      "id": "d7a285c92c1073ff",
+      "slug": "aud-cross-functional-team",
+      "url": "https://assets.lingobites.app/audio/team-roles/cross-functional-team.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We operate as a cross-functional team"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "905637f0f19aadd2",
+      "slug": "srs-qa-handles-testing",
+      "item_type": "vocabulary",
+      "source_ref_id": "321b6ea788c29ac5",
+      "front": "The QA team handles end-to-end testing",
+      "back": "Đội QA đảm nhận kiểm thử toàn trình",
+      "hint_vi": "Gợi ý: End-to-end testing chỉ việc kiểm thử từ đầu đến cuối."
+    },
+    {
+      "id": "bc024206534bd66e",
+      "slug": "srs-devops-manages-ci",
+      "item_type": "vocabulary",
+      "source_ref_id": "d2934d804862ac8e",
+      "front": "DevOps manages our CI/CD deployment pipeline",
+      "back": "DevOps quản lý quy trình triển khai CI/CD",
+      "hint_vi": "Gợi ý: Pipeline triển khai tự động hóa."
+    },
+    {
+      "id": "9a7e97868d088d50",
+      "slug": "srs-po-prioritizes-backlog",
+      "item_type": "vocabulary",
+      "source_ref_id": "a89341e870b5796b",
+      "front": "The Product Owner prioritizes the backlog",
+      "back": "Product Owner sắp xếp thứ tự ưu tiên backlog",
+      "hint_vi": "Gợi ý: Prioritize backlog nghĩa là quyết định việc nào làm trước."
+    },
+    {
+      "id": "04bb9e5c4865140b",
+      "slug": "srs-tech-lead-reviews-arch",
+      "item_type": "vocabulary",
+      "source_ref_id": "e4c30737e4e795d0",
+      "front": "Our Tech Lead reviews architectural decisions",
+      "back": "Tech Lead của chúng tôi duyệt các quyết định kiến trúc",
+      "hint_vi": "Gợi ý: Architectural decisions chỉ thiết kế tổng thể hệ thống."
+    },
+    {
+      "id": "8228e7f2b156e754",
+      "slug": "srs-who-is-owning-this",
+      "item_type": "vocabulary",
+      "source_ref_id": "f753f2d88a489a57",
+      "front": "Who is owning this feature ticket?",
+      "back": "Ai đang phụ trách thẻ tính năng này?",
+      "hint_vi": "Gợi ý: Own a ticket nghĩa là chịu trách nhiệm chính cho thẻ đó."
+    },
+    {
+      "id": "1a533d3fed218a49",
+      "slug": "srs-collaborate-with-designer",
+      "item_type": "vocabulary",
+      "source_ref_id": "94ea6363d52a9e18",
+      "front": "I need to collaborate with the UI/UX designer",
+      "back": "Tôi cần phối hợp với thiết kế UI/UX",
+      "hint_vi": "Gợi ý: Collaborate with sb nghĩa là hợp tác làm việc cùng ai."
+    },
+    {
+      "id": "6a6d2097443b4671",
+      "slug": "srs-hand-over-to-qa",
+      "item_type": "vocabulary",
+      "source_ref_id": "29b080ab4a1f7637",
+      "front": "I will hand this over to QA once built",
+      "back": "Tôi sẽ bàn giao cái này cho QA sau khi làm xong",
+      "hint_vi": "Gợi ý: Hand over to sb nghĩa là bàn giao công việc."
+    },
+    {
+      "id": "be9cbba9e4e0ed4e",
+      "slug": "srs-cross-functional-team",
+      "item_type": "vocabulary",
+      "source_ref_id": "f9099f9921245abf",
+      "front": "We operate as a cross-functional team",
+      "back": "Chúng tôi hoạt động như một nhóm đa chức năng",
+      "hint_vi": "Gợi ý: Cross-functional team gồm nhiều chuyên môn khác nhau."
+    }
+  ]
+}

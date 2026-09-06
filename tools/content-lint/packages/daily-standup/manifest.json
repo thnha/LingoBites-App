@@ -3,14 +3,182 @@
   "package_id": "732eebf68ad6d6ea",
   "slug": "daily-standup",
   "format": "hybrid-zip",
-  "exported_at": "2026-09-06T11:12:00.000Z",
+  "exported_at": "2026-09-06T23:15:00.000Z",
   "lessons": [
+    {
+      "lesson_id": "0efcefd25a7a14a6",
+      "lesson_slug": "self-introduction",
+      "file": "self-introduction.lesson.json"
+    },
+    {
+      "lesson_id": "6583c69714d4c5e5",
+      "lesson_slug": "team-onboarding",
+      "file": "team-onboarding.lesson.json"
+    },
+    {
+      "lesson_id": "9edc0f18dde5b468",
+      "lesson_slug": "asking-clarification",
+      "file": "asking-clarification.lesson.json"
+    },
+    {
+      "lesson_id": "ad9ea0b05775a32c",
+      "lesson_slug": "confirming-requirements",
+      "file": "confirming-requirements.lesson.json"
+    },
+    {
+      "lesson_id": "909848a9613b1d4d",
+      "lesson_slug": "team-roles",
+      "file": "team-roles.lesson.json"
+    },
+    {
+      "lesson_id": "4e80f932dc1b64ad",
+      "lesson_slug": "code-review-handoff",
+      "file": "code-review-handoff.lesson.json"
+    },
     {
       "lesson_id": "3fdc3340c228cfac",
       "lesson_slug": "daily-standup",
       "file": "daily-standup.lesson.json"
+    },
+    {
+      "lesson_id": "5b4a3f918b797453",
+      "lesson_slug": "standup-blockers",
+      "file": "standup-blockers.lesson.json"
+    },
+    {
+      "lesson_id": "f640ab0dcc9522cb",
+      "lesson_slug": "app-architecture-overview",
+      "file": "app-architecture-overview.lesson.json"
+    },
+    {
+      "lesson_id": "ede02491b9d71ec2",
+      "lesson_slug": "api-data-flow",
+      "file": "api-data-flow.lesson.json"
+    },
+    {
+      "lesson_id": "abac75a7ec143f61",
+      "lesson_slug": "reporting-production-bug",
+      "file": "reporting-production-bug.lesson.json"
+    },
+    {
+      "lesson_id": "6a36704de654d5c9",
+      "lesson_slug": "bug-triage-root-cause",
+      "file": "bug-triage-root-cause.lesson.json"
+    },
+    {
+      "lesson_id": "eaf824dc45109723",
+      "lesson_slug": "technical-skills-profile",
+      "file": "technical-skills-profile.lesson.json"
+    },
+    {
+      "lesson_id": "243188dae09466b4",
+      "lesson_slug": "project-impact-summary",
+      "file": "project-impact-summary.lesson.json"
+    },
+    {
+      "lesson_id": "91400301d0da9b8d",
+      "lesson_slug": "mock-interview-system-design",
+      "file": "mock-interview-system-design.lesson.json"
+    },
+    {
+      "lesson_id": "b28263cb8617329d",
+      "lesson_slug": "mock-interview-behavioral",
+      "file": "mock-interview-behavioral.lesson.json"
     }
   ],
   "audio_base_url": "https://assets.lingobites.app/audio/daily-standup/",
-  "tool_version": "0.1.0"
+  "tool_version": "0.1.0",
+  "checks": [
+    {
+      "id": "fa9dcd3ced43c50f",
+      "slug": "weekly-check-unit1",
+      "type": "weekly_check",
+      "stage": 1,
+      "unit_slug": "introduction",
+      "title_en": "Weekly Check: Introduction & Onboarding",
+      "title_vi": "Kiểm tra tuần: Giới thiệu & Hội nhập",
+      "instructions_vi": "Đánh giá khả năng giới thiệu bản thân và môi trường công nghệ.",
+      "covered_lesson_slugs": [
+        "self-introduction",
+        "team-onboarding"
+      ],
+      "items": [
+        {
+          "id": "d7129c29a307852a",
+          "slug": "wk1-item1",
+          "prompt_en": "Introduce your role as a full-stack developer working with React and Node.js.",
+          "prompt_vi": "Giới thiệu vai trò lập trình viên full-stack của bạn với React và Node.js.",
+          "rubric_vi": "Phát âm rõ ràng các công nghệ và sử dụng đúng mẫu câu giới thiệu.",
+          "target_chunk_ids": [
+            "7e2a92551f811dce"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ae4ea6cec7c3dd00",
+      "slug": "stage-check-stage1",
+      "type": "stage_check",
+      "stage": 1,
+      "title_en": "Stage 1 Check: Foundations & Communication",
+      "title_vi": "Kiểm tra Giai đoạn 1: Nền tảng & Giao tiếp",
+      "instructions_vi": "Bài kiểm tra cột mốc giai đoạn 1 với tình huống thực hành chưa từng gặp.",
+      "covered_lesson_slugs": [
+        "self-introduction",
+        "team-onboarding",
+        "asking-clarification",
+        "confirming-requirements"
+      ],
+      "items": [
+        {
+          "id": "39010e6ed456b984",
+          "slug": "stg1-item1",
+          "prompt_en": "Ask a colleague to repeat and clarify their requirements on Slack.",
+          "prompt_vi": "Nhờ đồng nghiệp lặp lại và làm rõ yêu cầu trên Slack.",
+          "unseen_prompt_en": "Your Tech Lead explained a complex caching policy rapidly. Politely request them to slow down and post the details in Slack.",
+          "unseen_prompt_vi": "Tech Lead giải thích chính sách lưu đệm nhanh. Hãy lịch sự nhờ họ nói chậm lại và đăng chi tiết lên Slack.",
+          "rubric_vi": "Sử dụng cấu trúc câu hỏi lịch sự chưa học vẹt.",
+          "target_chunk_ids": [
+            "6941415dbd7e58ec"
+          ]
+        }
+      ]
+    }
+  ],
+  "progression_graph": {
+    "stages": [
+      {
+        "stage": 1,
+        "name_vi": "Nền tảng & Giao tiếp ban đầu",
+        "unit_slugs": [
+          "introduction",
+          "clarification"
+        ]
+      },
+      {
+        "stage": 2,
+        "name_vi": "Làm việc nhóm & Họp hàng ngày",
+        "unit_slugs": [
+          "team-roles",
+          "daily-standup"
+        ]
+      },
+      {
+        "stage": 3,
+        "name_vi": "Mô tả hệ thống & Báo cáo sự cố",
+        "unit_slugs": [
+          "app-description",
+          "bug-report"
+        ]
+      },
+      {
+        "stage": 4,
+        "name_vi": "Hồ sơ cá nhân & Phỏng vấn kỹ thuật",
+        "unit_slugs": [
+          "career-profile",
+          "interview-practice"
+        ]
+      }
+    ]
+  }
 }

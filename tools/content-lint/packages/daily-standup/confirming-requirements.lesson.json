@@ -1,0 +1,745 @@
+{
+  "id": "ad9ea0b05775a32c",
+  "slug": "confirming-requirements",
+  "schema_version": "0.1.0",
+  "title_en": "Confirming Technical Requirements",
+  "title_vi": "Xác nhận yêu cầu kỹ thuật",
+  "blurb_vi": "Học cách chốt lại yêu cầu kỹ thuật với nhóm sản xuất để đảm bảo không làm sai tính năng.",
+  "level": "A2",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Tóm tắt và xác nhận lại thông số kỹ thuật với khách hàng hoặc nhóm trưởng.",
+  "situation_vi": "Chốt tài liệu kỹ thuật trước khi bắt đầu lập trình.",
+  "learner_role_vi": "Developer xác nhận lại các ràng buộc hệ thống.",
+  "prerequisite_lesson_slugs": [
+    "asking-clarification"
+  ],
+  "pronunciation_focus_vi": "Nhấn giọng vào các từ quan trọng: confirm, requirement, expectation, scope.",
+  "final_speaking_task_vi": "Tóm tắt 3 điểm yêu cầu kỹ thuật vừa thảo luận để chốt với PO.",
+  "pass_conditions_vi": "Tóm tắt rõ ràng và dùng đúng mẫu câu xác nhận.",
+  "unit_slug": "clarification",
+  "unit_title_vi": "Yêu cầu lặp lại & Làm rõ ý",
+  "stage": 1,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "c825e6c53a03386e",
+      "tip_vi": "Ôn tập lại cụm từ \"Just to confirm, the deadline is Thursday?\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "72e7eb3b081edf32",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"What is the expected behavior when token expires?\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "67a6dc9b4937dc4b",
+      "slug": "just-to-confirm",
+      "order": 0,
+      "phrase_en": "Just to confirm, the deadline is Thursday?",
+      "phrase_vi": "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?",
+      "explanation_vi": "Just to confirm... là mẫu câu chốt thông tin cực kỳ phổ biến.",
+      "context_sentence_en": "In our daily work: \"Just to confirm, the deadline is Thursday?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "b81a1ff0e5efd58e"
+      ],
+      "srs_ref_ids": [
+        "c825e6c53a03386e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "c1628ad6555fa80e",
+          "slug": "turn1-just-to-confirm",
+          "speaker": "A",
+          "text_en": "Just to confirm, the deadline is Thursday??",
+          "text_vi": "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không??"
+        },
+        {
+          "id": "60c40b9f4d99f090",
+          "slug": "turn2-just-to-confirm",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "d14fa1d15a52608e",
+          "slug": "qa-just-to-confirm",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Just to confirm, the deadline is Thursday?\":",
+          "options": [
+            "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?",
+          "explanation_vi": "Dịch đúng là: Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "c825e6c53a03386e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Just to confirm, the deadline is Thursday?\" nghĩa là \"Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?\"."
+      }
+    },
+    {
+      "id": "15db9692492f1cd2",
+      "slug": "expected-behavior",
+      "order": 1,
+      "phrase_en": "What is the expected behavior when token expires?",
+      "phrase_vi": "Hành vi mong đợi là gì khi mã token hết hạn?",
+      "explanation_vi": "Expected behavior chỉ kết quả hệ thống cần đạt được.",
+      "context_sentence_en": "In our daily work: \"What is the expected behavior when token expires?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Hành vi mong đợi là gì khi mã token hết hạn?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "657c350557b93e77"
+      ],
+      "srs_ref_ids": [
+        "72e7eb3b081edf32"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "90e711621a1cc0f5",
+          "slug": "turn1-expected-behavior",
+          "speaker": "A",
+          "text_en": "What is the expected behavior when token expires??",
+          "text_vi": "Hành vi mong đợi là gì khi mã token hết hạn??"
+        },
+        {
+          "id": "54a2c4edc6533f82",
+          "slug": "turn2-expected-behavior",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "606b5b65b0ce6921",
+          "slug": "qa-expected-behavior",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"What is the expected behavior when token expires?\":",
+          "options": [
+            "Hành vi mong đợi là gì khi mã token hết hạn?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Hành vi mong đợi là gì khi mã token hết hạn?",
+          "explanation_vi": "Dịch đúng là: Hành vi mong đợi là gì khi mã token hết hạn?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "72e7eb3b081edf32"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"What is the expected behavior when token expires?\" nghĩa là \"Hành vi mong đợi là gì khi mã token hết hạn?\"."
+      }
+    },
+    {
+      "id": "39b2832811c9f772",
+      "slug": "in-terms-of-scope",
+      "order": 2,
+      "phrase_en": "In terms of scope, is push notification included?",
+      "phrase_vi": "Xét về phạm vi, thông báo đẩy có bao gồm không?",
+      "explanation_vi": "In terms of scope dùng để khoanh vùng công việc.",
+      "context_sentence_en": "In our daily work: \"In terms of scope, is push notification included?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Xét về phạm vi, thông báo đẩy có bao gồm không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "dd1c53a3614d8b7d"
+      ],
+      "srs_ref_ids": [
+        "4e0c4d27f753fa06"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e78fdc87ff70ae84",
+          "slug": "turn1-in-terms-of-scope",
+          "speaker": "A",
+          "text_en": "In terms of scope, is push notification included??",
+          "text_vi": "Xét về phạm vi, thông báo đẩy có bao gồm không??"
+        },
+        {
+          "id": "f9c4f60b4132da05",
+          "slug": "turn2-in-terms-of-scope",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "899c032205126607",
+          "slug": "qa-in-terms-of-scope",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"In terms of scope, is push notification included?\":",
+          "options": [
+            "Xét về phạm vi, thông báo đẩy có bao gồm không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Xét về phạm vi, thông báo đẩy có bao gồm không?",
+          "explanation_vi": "Dịch đúng là: Xét về phạm vi, thông báo đẩy có bao gồm không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "4e0c4d27f753fa06"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"In terms of scope, is push notification included?\" nghĩa là \"Xét về phạm vi, thông báo đẩy có bao gồm không?\"."
+      }
+    },
+    {
+      "id": "4c23667578433a5a",
+      "slug": "double-check",
+      "order": 3,
+      "phrase_en": "Let me double-check the API response format",
+      "phrase_vi": "Để tôi kiểm tra kỹ lại định dạng phản hồi API",
+      "explanation_vi": "Double-check nghĩa là kiểm tra lại lần thứ hai cho chắc chắn.",
+      "context_sentence_en": "In our daily work: \"Let me double-check the API response format\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Để tôi kiểm tra kỹ lại định dạng phản hồi API\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "b980880402723458"
+      ],
+      "srs_ref_ids": [
+        "ac0d589a6b2e934e"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "757ab4c8946be8b9",
+          "slug": "turn1-double-check",
+          "speaker": "A",
+          "text_en": "Let me double-check the API response format?",
+          "text_vi": "Để tôi kiểm tra kỹ lại định dạng phản hồi API?"
+        },
+        {
+          "id": "697c45106207612c",
+          "slug": "turn2-double-check",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "f252716cbf8d892f",
+          "slug": "qa-double-check",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Let me double-check the API response format\":",
+          "options": [
+            "Để tôi kiểm tra kỹ lại định dạng phản hồi API",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Để tôi kiểm tra kỹ lại định dạng phản hồi API",
+          "explanation_vi": "Dịch đúng là: Để tôi kiểm tra kỹ lại định dạng phản hồi API"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "ac0d589a6b2e934e"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Let me double-check the API response format\" nghĩa là \"Để tôi kiểm tra kỹ lại định dạng phản hồi API\"."
+      }
+    },
+    {
+      "id": "f262641fc8433d0b",
+      "slug": "correct-me-if-wrong",
+      "order": 4,
+      "phrase_en": "Correct me if I am wrong, but we need auth first",
+      "phrase_vi": "Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước",
+      "explanation_vi": "Cách diễn đạt lịch sự khi muốn đưa ra nhận định.",
+      "context_sentence_en": "In our daily work: \"Correct me if I am wrong, but we need auth first\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "67d8a441dc95669e"
+      ],
+      "srs_ref_ids": [
+        "4ef91e480e381351"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5902a08929f085e3",
+          "slug": "turn1-correct-me-if-wrong",
+          "speaker": "A",
+          "text_en": "Correct me if I am wrong, but we need auth first?",
+          "text_vi": "Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước?"
+        },
+        {
+          "id": "db98e62cc77af0bb",
+          "slug": "turn2-correct-me-if-wrong",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "2c9d7e4c04c6b863",
+          "slug": "qa-correct-me-if-wrong",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Correct me if I am wrong, but we need auth first\":",
+          "options": [
+            "Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước",
+          "explanation_vi": "Dịch đúng là: Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "4ef91e480e381351"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Correct me if I am wrong, but we need auth first\" nghĩa là \"Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước\"."
+      }
+    },
+    {
+      "id": "c7f2000511e5e6a4",
+      "slug": "aligned-on-this",
+      "order": 5,
+      "phrase_en": "Are we all aligned on this approach?",
+      "phrase_vi": "Tất cả chúng ta đã thống nhất về hướng đi này chưa?",
+      "explanation_vi": "Aligned on sth nghĩa là đồng thuận cùng mục tiêu.",
+      "context_sentence_en": "In our daily work: \"Are we all aligned on this approach?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tất cả chúng ta đã thống nhất về hướng đi này chưa?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "883f8e964ba5a9ca"
+      ],
+      "srs_ref_ids": [
+        "699e072492dca044"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "add38a960cd29306",
+          "slug": "turn1-aligned-on-this",
+          "speaker": "A",
+          "text_en": "Are we all aligned on this approach??",
+          "text_vi": "Tất cả chúng ta đã thống nhất về hướng đi này chưa??"
+        },
+        {
+          "id": "dddca54c891c4863",
+          "slug": "turn2-aligned-on-this",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "d5578b972417722b",
+          "slug": "qa-aligned-on-this",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Are we all aligned on this approach?\":",
+          "options": [
+            "Tất cả chúng ta đã thống nhất về hướng đi này chưa?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tất cả chúng ta đã thống nhất về hướng đi này chưa?",
+          "explanation_vi": "Dịch đúng là: Tất cả chúng ta đã thống nhất về hướng đi này chưa?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "699e072492dca044"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Are we all aligned on this approach?\" nghĩa là \"Tất cả chúng ta đã thống nhất về hướng đi này chưa?\"."
+      }
+    },
+    {
+      "id": "6bde4f54e13eb21c",
+      "slug": "put-in-ticket",
+      "order": 6,
+      "phrase_en": "I will put these details in the Jira ticket",
+      "phrase_vi": "Tôi sẽ đưa các chi tiết này vào thẻ Jira",
+      "explanation_vi": "Ghi lại yêu cầu vào hệ thống quản lý công việc.",
+      "context_sentence_en": "In our daily work: \"I will put these details in the Jira ticket\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ đưa các chi tiết này vào thẻ Jira\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "31a1bc2ab473a327"
+      ],
+      "srs_ref_ids": [
+        "e7e024943f564d80"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "69386f2102b3a5a0",
+          "slug": "turn1-put-in-ticket",
+          "speaker": "A",
+          "text_en": "I will put these details in the Jira ticket?",
+          "text_vi": "Tôi sẽ đưa các chi tiết này vào thẻ Jira?"
+        },
+        {
+          "id": "83ea41147939b3d1",
+          "slug": "turn2-put-in-ticket",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "4736927e23597f41",
+          "slug": "qa-put-in-ticket",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I will put these details in the Jira ticket\":",
+          "options": [
+            "Tôi sẽ đưa các chi tiết này vào thẻ Jira",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi sẽ đưa các chi tiết này vào thẻ Jira",
+          "explanation_vi": "Dịch đúng là: Tôi sẽ đưa các chi tiết này vào thẻ Jira"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "e7e024943f564d80"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I will put these details in the Jira ticket\" nghĩa là \"Tôi sẽ đưa các chi tiết này vào thẻ Jira\"."
+      }
+    },
+    {
+      "id": "832f6ad90d5ccad5",
+      "slug": "clear-to-proceed",
+      "order": 7,
+      "phrase_en": "Everything is clear, I can proceed now",
+      "phrase_vi": "Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm",
+      "explanation_vi": "Thông báo sẵn sàng thực thi nhiệm vụ.",
+      "context_sentence_en": "In our daily work: \"Everything is clear, I can proceed now\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "32b6119a4216176c"
+      ],
+      "srs_ref_ids": [
+        "9b90960c2dc5e61b"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "aa7ea467d3388d7b",
+          "slug": "turn1-clear-to-proceed",
+          "speaker": "A",
+          "text_en": "Everything is clear, I can proceed now?",
+          "text_vi": "Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm?"
+        },
+        {
+          "id": "f791634a0ca419fe",
+          "slug": "turn2-clear-to-proceed",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "50a409b89684f364",
+          "slug": "qa-clear-to-proceed",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Everything is clear, I can proceed now\":",
+          "options": [
+            "Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm",
+          "explanation_vi": "Dịch đúng là: Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "9b90960c2dc5e61b"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Everything is clear, I can proceed now\" nghĩa là \"Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "f4917e26f5515212",
+      "slug": "gp-1",
+      "name_en": "Pattern for Confirming Technical Requirements",
+      "name_vi": "Mẫu câu chính bài Xác nhận yêu cầu kỹ thuật",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "Just to confirm, the deadline is Thursday?",
+          "vi": "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?"
+        },
+        {
+          "en": "What is the expected behavior when token expires?",
+          "vi": "Hành vi mong đợi là gì khi mã token hết hạn?"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "472ba81e1f0cf6a8",
+      "slug": "v-just-to-confirm",
+      "word": "Just",
+      "word_type": "noun",
+      "meaning_vi": "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "Just to confirm, the deadline is Thursday?",
+      "example_vi": "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?"
+    },
+    {
+      "id": "33d5e704bd8b8bb1",
+      "slug": "v-expected-behavior",
+      "word": "What",
+      "word_type": "noun",
+      "meaning_vi": "Hành vi mong đợi là gì khi mã token hết hạn?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "What is the expected behavior when token expires?",
+      "example_vi": "Hành vi mong đợi là gì khi mã token hết hạn?"
+    },
+    {
+      "id": "9f13c2d0c7939cab",
+      "slug": "v-in-terms-of-scope",
+      "word": "In",
+      "word_type": "noun",
+      "meaning_vi": "Xét về phạm vi, thông báo đẩy có bao gồm không?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "In terms of scope, is push notification included?",
+      "example_vi": "Xét về phạm vi, thông báo đẩy có bao gồm không?"
+    }
+  ],
+  "activities": [
+    {
+      "id": "de3382e934351488",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "67a6dc9b4937dc4b",
+        "15db9692492f1cd2",
+        "39b2832811c9f772",
+        "4c23667578433a5a",
+        "f262641fc8433d0b",
+        "c7f2000511e5e6a4",
+        "6bde4f54e13eb21c",
+        "832f6ad90d5ccad5"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "10363025dc50c658",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "67a6dc9b4937dc4b",
+        "15db9692492f1cd2",
+        "39b2832811c9f772",
+        "4c23667578433a5a"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "4a6109eb0a9edd55",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "67a6dc9b4937dc4b",
+        "15db9692492f1cd2",
+        "39b2832811c9f772",
+        "4c23667578433a5a",
+        "f262641fc8433d0b",
+        "c7f2000511e5e6a4",
+        "6bde4f54e13eb21c",
+        "832f6ad90d5ccad5"
+      ],
+      "qa_ref_ids": [
+        "d14fa1d15a52608e",
+        "606b5b65b0ce6921",
+        "899c032205126607",
+        "f252716cbf8d892f",
+        "2c9d7e4c04c6b863",
+        "d5578b972417722b",
+        "4736927e23597f41",
+        "50a409b89684f364"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "b81a1ff0e5efd58e",
+      "slug": "aud-just-to-confirm",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/just-to-confirm.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Just to confirm, the deadline is Thursday?"
+    },
+    {
+      "id": "657c350557b93e77",
+      "slug": "aud-expected-behavior",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/expected-behavior.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "What is the expected behavior when token expires?"
+    },
+    {
+      "id": "dd1c53a3614d8b7d",
+      "slug": "aud-in-terms-of-scope",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/in-terms-of-scope.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "In terms of scope, is push notification included?"
+    },
+    {
+      "id": "b980880402723458",
+      "slug": "aud-double-check",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/double-check.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Let me double-check the API response format"
+    },
+    {
+      "id": "67d8a441dc95669e",
+      "slug": "aud-correct-me-if-wrong",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/correct-me-if-wrong.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Correct me if I am wrong, but we need auth first"
+    },
+    {
+      "id": "883f8e964ba5a9ca",
+      "slug": "aud-aligned-on-this",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/aligned-on-this.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Are we all aligned on this approach?"
+    },
+    {
+      "id": "31a1bc2ab473a327",
+      "slug": "aud-put-in-ticket",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/put-in-ticket.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I will put these details in the Jira ticket"
+    },
+    {
+      "id": "32b6119a4216176c",
+      "slug": "aud-clear-to-proceed",
+      "url": "https://assets.lingobites.app/audio/confirming-requirements/clear-to-proceed.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Everything is clear, I can proceed now"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "c825e6c53a03386e",
+      "slug": "srs-just-to-confirm",
+      "item_type": "vocabulary",
+      "source_ref_id": "67a6dc9b4937dc4b",
+      "front": "Just to confirm, the deadline is Thursday?",
+      "back": "Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?",
+      "hint_vi": "Gợi ý: Just to confirm... là mẫu câu chốt thông tin cực kỳ phổ biến."
+    },
+    {
+      "id": "72e7eb3b081edf32",
+      "slug": "srs-expected-behavior",
+      "item_type": "vocabulary",
+      "source_ref_id": "15db9692492f1cd2",
+      "front": "What is the expected behavior when token expires?",
+      "back": "Hành vi mong đợi là gì khi mã token hết hạn?",
+      "hint_vi": "Gợi ý: Expected behavior chỉ kết quả hệ thống cần đạt được."
+    },
+    {
+      "id": "4e0c4d27f753fa06",
+      "slug": "srs-in-terms-of-scope",
+      "item_type": "vocabulary",
+      "source_ref_id": "39b2832811c9f772",
+      "front": "In terms of scope, is push notification included?",
+      "back": "Xét về phạm vi, thông báo đẩy có bao gồm không?",
+      "hint_vi": "Gợi ý: In terms of scope dùng để khoanh vùng công việc."
+    },
+    {
+      "id": "ac0d589a6b2e934e",
+      "slug": "srs-double-check",
+      "item_type": "vocabulary",
+      "source_ref_id": "4c23667578433a5a",
+      "front": "Let me double-check the API response format",
+      "back": "Để tôi kiểm tra kỹ lại định dạng phản hồi API",
+      "hint_vi": "Gợi ý: Double-check nghĩa là kiểm tra lại lần thứ hai cho chắc chắn."
+    },
+    {
+      "id": "4ef91e480e381351",
+      "slug": "srs-correct-me-if-wrong",
+      "item_type": "vocabulary",
+      "source_ref_id": "f262641fc8433d0b",
+      "front": "Correct me if I am wrong, but we need auth first",
+      "back": "Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước",
+      "hint_vi": "Gợi ý: Cách diễn đạt lịch sự khi muốn đưa ra nhận định."
+    },
+    {
+      "id": "699e072492dca044",
+      "slug": "srs-aligned-on-this",
+      "item_type": "vocabulary",
+      "source_ref_id": "c7f2000511e5e6a4",
+      "front": "Are we all aligned on this approach?",
+      "back": "Tất cả chúng ta đã thống nhất về hướng đi này chưa?",
+      "hint_vi": "Gợi ý: Aligned on sth nghĩa là đồng thuận cùng mục tiêu."
+    },
+    {
+      "id": "e7e024943f564d80",
+      "slug": "srs-put-in-ticket",
+      "item_type": "vocabulary",
+      "source_ref_id": "6bde4f54e13eb21c",
+      "front": "I will put these details in the Jira ticket",
+      "back": "Tôi sẽ đưa các chi tiết này vào thẻ Jira",
+      "hint_vi": "Gợi ý: Ghi lại yêu cầu vào hệ thống quản lý công việc."
+    },
+    {
+      "id": "9b90960c2dc5e61b",
+      "slug": "srs-clear-to-proceed",
+      "item_type": "vocabulary",
+      "source_ref_id": "832f6ad90d5ccad5",
+      "front": "Everything is clear, I can proceed now",
+      "back": "Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm",
+      "hint_vi": "Gợi ý: Thông báo sẵn sàng thực thi nhiệm vụ."
+    }
+  ]
+}

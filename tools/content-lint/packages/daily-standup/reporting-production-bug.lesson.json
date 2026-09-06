@@ -1,0 +1,745 @@
+{
+  "id": "abac75a7ec143f61",
+  "slug": "reporting-production-bug",
+  "schema_version": "0.1.0",
+  "title_en": "Reporting a Production Bug",
+  "title_vi": "Báo cáo lỗi trên môi trường Production",
+  "blurb_vi": "Mô tả hiện tượng sự cố, các bước tái hiện lỗi (reproduction steps) và mức độ nghiêm trọng.",
+  "level": "B1",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Trình bày một báo cáo sự cố (bug report) chuẩn cho nhóm phát triển.",
+  "situation_vi": "Phát hiện sự cố thanh toán trên hệ thống live.",
+  "learner_role_vi": "Developer / Tester phát hiện lỗi nghiêm trọng.",
+  "prerequisite_lesson_slugs": [
+    "api-data-flow"
+  ],
+  "pronunciation_focus_vi": "Phát âm chuẩn từ bug, error, steps to reproduce, severity, critical.",
+  "final_speaking_task_vi": "Trình bày sự cố lỗi thanh toán kèm các bước tái hiện trong 90 giây.",
+  "pass_conditions_vi": "Nêu rõ ràng 3 phần: Lỗi gì, Bước tái hiện, Mức độ ưu tiên.",
+  "unit_slug": "bug-report",
+  "unit_title_vi": "Báo lỗi & Sự cố Kỹ thuật (Bug Report)",
+  "stage": 3,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "0a43fe7ce2990ca2",
+      "tip_vi": "Ôn tập lại cụm từ \"I found a critical bug on production environment\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "61d53e90ef2b0828",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"Here are the steps to reproduce the issue\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "01180236f587beb3",
+      "slug": "found-critical-bug",
+      "order": 0,
+      "phrase_en": "I found a critical bug on production environment",
+      "phrase_vi": "Tôi vừa phát hiện một lỗi nghiêm trọng trên production",
+      "explanation_vi": "Critical bug chỉ lỗi có mức độ ảnh hưởng lớn nhất.",
+      "context_sentence_en": "In our daily work: \"I found a critical bug on production environment\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi vừa phát hiện một lỗi nghiêm trọng trên production\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "53a01f30c5925bdb"
+      ],
+      "srs_ref_ids": [
+        "0a43fe7ce2990ca2"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "0b81c88541f9b860",
+          "slug": "turn1-found-critical-bug",
+          "speaker": "A",
+          "text_en": "I found a critical bug on production environment?",
+          "text_vi": "Tôi vừa phát hiện một lỗi nghiêm trọng trên production?"
+        },
+        {
+          "id": "05c3d109e156c163",
+          "slug": "turn2-found-critical-bug",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "3cc07e3f5e2ba0cf",
+          "slug": "qa-found-critical-bug",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I found a critical bug on production environment\":",
+          "options": [
+            "Tôi vừa phát hiện một lỗi nghiêm trọng trên production",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi vừa phát hiện một lỗi nghiêm trọng trên production",
+          "explanation_vi": "Dịch đúng là: Tôi vừa phát hiện một lỗi nghiêm trọng trên production"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "0a43fe7ce2990ca2"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I found a critical bug on production environment\" nghĩa là \"Tôi vừa phát hiện một lỗi nghiêm trọng trên production\"."
+      }
+    },
+    {
+      "id": "4247b25c36d05443",
+      "slug": "steps-to-reproduce",
+      "order": 1,
+      "phrase_en": "Here are the steps to reproduce the issue",
+      "phrase_vi": "Dưới đây là các bước để tái hiện sự cố này",
+      "explanation_vi": "Cụm từ tiêu chuẩn khi báo cáo bug.",
+      "context_sentence_en": "In our daily work: \"Here are the steps to reproduce the issue\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Dưới đây là các bước để tái hiện sự cố này\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "f626e18e8c19f510"
+      ],
+      "srs_ref_ids": [
+        "61d53e90ef2b0828"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "83efda8860a2f92d",
+          "slug": "turn1-steps-to-reproduce",
+          "speaker": "A",
+          "text_en": "Here are the steps to reproduce the issue?",
+          "text_vi": "Dưới đây là các bước để tái hiện sự cố này?"
+        },
+        {
+          "id": "68d14930b09ae3c2",
+          "slug": "turn2-steps-to-reproduce",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "34dbf48918cf294c",
+          "slug": "qa-steps-to-reproduce",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Here are the steps to reproduce the issue\":",
+          "options": [
+            "Dưới đây là các bước để tái hiện sự cố này",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Dưới đây là các bước để tái hiện sự cố này",
+          "explanation_vi": "Dịch đúng là: Dưới đây là các bước để tái hiện sự cố này"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "61d53e90ef2b0828"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Here are the steps to reproduce the issue\" nghĩa là \"Dưới đây là các bước để tái hiện sự cố này\"."
+      }
+    },
+    {
+      "id": "8fb90d031319f370",
+      "slug": "app-crashes-when",
+      "order": 2,
+      "phrase_en": "The app crashes when user submits the form",
+      "phrase_vi": "Ứng dụng bị sập khi người dùng gửi biểu mẫu",
+      "explanation_vi": "Mô tả hiện tượng lỗi đơ / sập app.",
+      "context_sentence_en": "In our daily work: \"The app crashes when user submits the form\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Ứng dụng bị sập khi người dùng gửi biểu mẫu\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "2a699ec0829af476"
+      ],
+      "srs_ref_ids": [
+        "8e9088f2ab222d92"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "0d190f8570c0a1d8",
+          "slug": "turn1-app-crashes-when",
+          "speaker": "A",
+          "text_en": "The app crashes when user submits the form?",
+          "text_vi": "Ứng dụng bị sập khi người dùng gửi biểu mẫu?"
+        },
+        {
+          "id": "36fa1c4c63923ec5",
+          "slug": "turn2-app-crashes-when",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "95cb6a8d639ecf0f",
+          "slug": "qa-app-crashes-when",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The app crashes when user submits the form\":",
+          "options": [
+            "Ứng dụng bị sập khi người dùng gửi biểu mẫu",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Ứng dụng bị sập khi người dùng gửi biểu mẫu",
+          "explanation_vi": "Dịch đúng là: Ứng dụng bị sập khi người dùng gửi biểu mẫu"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "8e9088f2ab222d92"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The app crashes when user submits the form\" nghĩa là \"Ứng dụng bị sập khi người dùng gửi biểu mẫu\"."
+      }
+    },
+    {
+      "id": "90a586327abb4db8",
+      "slug": "null-pointer-exception",
+      "order": 3,
+      "phrase_en": "It throws an unhandled null pointer exception",
+      "phrase_vi": "Nó bắn ra ngoại lệ con trỏ null không được xử lý",
+      "explanation_vi": "Tên lỗi lập trình rất phổ biến.",
+      "context_sentence_en": "In our daily work: \"It throws an unhandled null pointer exception\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Nó bắn ra ngoại lệ con trỏ null không được xử lý\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "af6d7b6f536e5f80"
+      ],
+      "srs_ref_ids": [
+        "331e5e2e972598a6"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "8b02a6090a8fdefe",
+          "slug": "turn1-null-pointer-exception",
+          "speaker": "A",
+          "text_en": "It throws an unhandled null pointer exception?",
+          "text_vi": "Nó bắn ra ngoại lệ con trỏ null không được xử lý?"
+        },
+        {
+          "id": "b2f873169845afc8",
+          "slug": "turn2-null-pointer-exception",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "0795a7239e72fd58",
+          "slug": "qa-null-pointer-exception",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"It throws an unhandled null pointer exception\":",
+          "options": [
+            "Nó bắn ra ngoại lệ con trỏ null không được xử lý",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Nó bắn ra ngoại lệ con trỏ null không được xử lý",
+          "explanation_vi": "Dịch đúng là: Nó bắn ra ngoại lệ con trỏ null không được xử lý"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "331e5e2e972598a6"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"It throws an unhandled null pointer exception\" nghĩa là \"Nó bắn ra ngoại lệ con trỏ null không được xử lý\"."
+      }
+    },
+    {
+      "id": "845e35d6e11ce52c",
+      "slug": "affects-mobile-users",
+      "order": 4,
+      "phrase_en": "This bug mainly affects iOS mobile users",
+      "phrase_vi": "Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS",
+      "explanation_vi": "Khoanh vùng đối tượng bị ảnh hưởng.",
+      "context_sentence_en": "In our daily work: \"This bug mainly affects iOS mobile users\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "af56f939646e9831"
+      ],
+      "srs_ref_ids": [
+        "c77087eca6eafb32"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "2dd1495896d2bed3",
+          "slug": "turn1-affects-mobile-users",
+          "speaker": "A",
+          "text_en": "This bug mainly affects iOS mobile users?",
+          "text_vi": "Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS?"
+        },
+        {
+          "id": "b2f48323fd2670af",
+          "slug": "turn2-affects-mobile-users",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "554efc02bd8230e0",
+          "slug": "qa-affects-mobile-users",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"This bug mainly affects iOS mobile users\":",
+          "options": [
+            "Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS",
+          "explanation_vi": "Dịch đúng là: Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "c77087eca6eafb32"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"This bug mainly affects iOS mobile users\" nghĩa là \"Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS\"."
+      }
+    },
+    {
+      "id": "f3cfb577fce5f6f3",
+      "slug": "high-priority-ticket",
+      "order": 5,
+      "phrase_en": "I have logged a high priority ticket on Jira",
+      "phrase_vi": "Tôi đã tạo một thẻ ưu tiên cao trên Jira",
+      "explanation_vi": "Ghi nhận lỗi vào hệ thống quản lý.",
+      "context_sentence_en": "In our daily work: \"I have logged a high priority ticket on Jira\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã tạo một thẻ ưu tiên cao trên Jira\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "ca6f1bac8f2b14b6"
+      ],
+      "srs_ref_ids": [
+        "a521cf28237a4111"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "c4f17dab8802dc95",
+          "slug": "turn1-high-priority-ticket",
+          "speaker": "A",
+          "text_en": "I have logged a high priority ticket on Jira?",
+          "text_vi": "Tôi đã tạo một thẻ ưu tiên cao trên Jira?"
+        },
+        {
+          "id": "b00fd31e721dc286",
+          "slug": "turn2-high-priority-ticket",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "75a2440a02c586b2",
+          "slug": "qa-high-priority-ticket",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I have logged a high priority ticket on Jira\":",
+          "options": [
+            "Tôi đã tạo một thẻ ưu tiên cao trên Jira",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã tạo một thẻ ưu tiên cao trên Jira",
+          "explanation_vi": "Dịch đúng là: Tôi đã tạo một thẻ ưu tiên cao trên Jira"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "a521cf28237a4111"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I have logged a high priority ticket on Jira\" nghĩa là \"Tôi đã tạo một thẻ ưu tiên cao trên Jira\"."
+      }
+    },
+    {
+      "id": "5d224bb30d4853dd",
+      "slug": "rollback-release",
+      "order": 6,
+      "phrase_en": "We might need to rollback the latest release",
+      "phrase_vi": "Chúng ta có thể cần khôi phục lại bản phát hành gần nhất",
+      "explanation_vi": "Rollback là rút lại phiên bản lỗi.",
+      "context_sentence_en": "In our daily work: \"We might need to rollback the latest release\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta có thể cần khôi phục lại bản phát hành gần nhất\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "4e914d823525f6b2"
+      ],
+      "srs_ref_ids": [
+        "1607537c85816874"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "13f4fc15bfb1836e",
+          "slug": "turn1-rollback-release",
+          "speaker": "A",
+          "text_en": "We might need to rollback the latest release?",
+          "text_vi": "Chúng ta có thể cần khôi phục lại bản phát hành gần nhất?"
+        },
+        {
+          "id": "887d8b7e3623b44c",
+          "slug": "turn2-rollback-release",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "1ec3246f59abc915",
+          "slug": "qa-rollback-release",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"We might need to rollback the latest release\":",
+          "options": [
+            "Chúng ta có thể cần khôi phục lại bản phát hành gần nhất",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng ta có thể cần khôi phục lại bản phát hành gần nhất",
+          "explanation_vi": "Dịch đúng là: Chúng ta có thể cần khôi phục lại bản phát hành gần nhất"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "1607537c85816874"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"We might need to rollback the latest release\" nghĩa là \"Chúng ta có thể cần khôi phục lại bản phát hành gần nhất\"."
+      }
+    },
+    {
+      "id": "f05fcef0d14fb368",
+      "slug": "hotfix-in-progress",
+      "order": 7,
+      "phrase_en": "A hotfix branch is currently in progress",
+      "phrase_vi": "Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý",
+      "explanation_vi": "Hotfix chỉ việc sửa lỗi nhanh trực tiếp.",
+      "context_sentence_en": "In our daily work: \"A hotfix branch is currently in progress\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "4b6e5dc34b85a563"
+      ],
+      "srs_ref_ids": [
+        "b568b4f0ce61470b"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5035860335b1409c",
+          "slug": "turn1-hotfix-in-progress",
+          "speaker": "A",
+          "text_en": "A hotfix branch is currently in progress?",
+          "text_vi": "Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý?"
+        },
+        {
+          "id": "a750b330e67063bc",
+          "slug": "turn2-hotfix-in-progress",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "f44b4af7d6caf81d",
+          "slug": "qa-hotfix-in-progress",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"A hotfix branch is currently in progress\":",
+          "options": [
+            "Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý",
+          "explanation_vi": "Dịch đúng là: Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "b568b4f0ce61470b"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"A hotfix branch is currently in progress\" nghĩa là \"Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "c65061bf3ae2d821",
+      "slug": "gp-1",
+      "name_en": "Pattern for Reporting a Production Bug",
+      "name_vi": "Mẫu câu chính bài Báo cáo lỗi trên môi trường Production",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "I found a critical bug on production environment",
+          "vi": "Tôi vừa phát hiện một lỗi nghiêm trọng trên production"
+        },
+        {
+          "en": "Here are the steps to reproduce the issue",
+          "vi": "Dưới đây là các bước để tái hiện sự cố này"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "4a8a3729aaac2ef4",
+      "slug": "v-found-critical-bug",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi vừa phát hiện một lỗi nghiêm trọng trên production",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "I found a critical bug on production environment",
+      "example_vi": "Tôi vừa phát hiện một lỗi nghiêm trọng trên production"
+    },
+    {
+      "id": "4cf49636be3c7391",
+      "slug": "v-steps-to-reproduce",
+      "word": "Here",
+      "word_type": "noun",
+      "meaning_vi": "Dưới đây là các bước để tái hiện sự cố này",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "Here are the steps to reproduce the issue",
+      "example_vi": "Dưới đây là các bước để tái hiện sự cố này"
+    },
+    {
+      "id": "86c349fe4a9c9e95",
+      "slug": "v-app-crashes-when",
+      "word": "The",
+      "word_type": "noun",
+      "meaning_vi": "Ứng dụng bị sập khi người dùng gửi biểu mẫu",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "The app crashes when user submits the form",
+      "example_vi": "Ứng dụng bị sập khi người dùng gửi biểu mẫu"
+    }
+  ],
+  "activities": [
+    {
+      "id": "029e71b672c00663",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "01180236f587beb3",
+        "4247b25c36d05443",
+        "8fb90d031319f370",
+        "90a586327abb4db8",
+        "845e35d6e11ce52c",
+        "f3cfb577fce5f6f3",
+        "5d224bb30d4853dd",
+        "f05fcef0d14fb368"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "029c76ac4af927fc",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "01180236f587beb3",
+        "4247b25c36d05443",
+        "8fb90d031319f370",
+        "90a586327abb4db8"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "6ee7ee002b92f191",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "01180236f587beb3",
+        "4247b25c36d05443",
+        "8fb90d031319f370",
+        "90a586327abb4db8",
+        "845e35d6e11ce52c",
+        "f3cfb577fce5f6f3",
+        "5d224bb30d4853dd",
+        "f05fcef0d14fb368"
+      ],
+      "qa_ref_ids": [
+        "3cc07e3f5e2ba0cf",
+        "34dbf48918cf294c",
+        "95cb6a8d639ecf0f",
+        "0795a7239e72fd58",
+        "554efc02bd8230e0",
+        "75a2440a02c586b2",
+        "1ec3246f59abc915",
+        "f44b4af7d6caf81d"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "53a01f30c5925bdb",
+      "slug": "aud-found-critical-bug",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/found-critical-bug.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I found a critical bug on production environment"
+    },
+    {
+      "id": "f626e18e8c19f510",
+      "slug": "aud-steps-to-reproduce",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/steps-to-reproduce.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Here are the steps to reproduce the issue"
+    },
+    {
+      "id": "2a699ec0829af476",
+      "slug": "aud-app-crashes-when",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/app-crashes-when.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The app crashes when user submits the form"
+    },
+    {
+      "id": "af6d7b6f536e5f80",
+      "slug": "aud-null-pointer-exception",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/null-pointer-exception.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "It throws an unhandled null pointer exception"
+    },
+    {
+      "id": "af56f939646e9831",
+      "slug": "aud-affects-mobile-users",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/affects-mobile-users.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "This bug mainly affects iOS mobile users"
+    },
+    {
+      "id": "ca6f1bac8f2b14b6",
+      "slug": "aud-high-priority-ticket",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/high-priority-ticket.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I have logged a high priority ticket on Jira"
+    },
+    {
+      "id": "4e914d823525f6b2",
+      "slug": "aud-rollback-release",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/rollback-release.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "We might need to rollback the latest release"
+    },
+    {
+      "id": "4b6e5dc34b85a563",
+      "slug": "aud-hotfix-in-progress",
+      "url": "https://assets.lingobites.app/audio/reporting-production-bug/hotfix-in-progress.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "A hotfix branch is currently in progress"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "0a43fe7ce2990ca2",
+      "slug": "srs-found-critical-bug",
+      "item_type": "vocabulary",
+      "source_ref_id": "01180236f587beb3",
+      "front": "I found a critical bug on production environment",
+      "back": "Tôi vừa phát hiện một lỗi nghiêm trọng trên production",
+      "hint_vi": "Gợi ý: Critical bug chỉ lỗi có mức độ ảnh hưởng lớn nhất."
+    },
+    {
+      "id": "61d53e90ef2b0828",
+      "slug": "srs-steps-to-reproduce",
+      "item_type": "vocabulary",
+      "source_ref_id": "4247b25c36d05443",
+      "front": "Here are the steps to reproduce the issue",
+      "back": "Dưới đây là các bước để tái hiện sự cố này",
+      "hint_vi": "Gợi ý: Cụm từ tiêu chuẩn khi báo cáo bug."
+    },
+    {
+      "id": "8e9088f2ab222d92",
+      "slug": "srs-app-crashes-when",
+      "item_type": "vocabulary",
+      "source_ref_id": "8fb90d031319f370",
+      "front": "The app crashes when user submits the form",
+      "back": "Ứng dụng bị sập khi người dùng gửi biểu mẫu",
+      "hint_vi": "Gợi ý: Mô tả hiện tượng lỗi đơ / sập app."
+    },
+    {
+      "id": "331e5e2e972598a6",
+      "slug": "srs-null-pointer-exception",
+      "item_type": "vocabulary",
+      "source_ref_id": "90a586327abb4db8",
+      "front": "It throws an unhandled null pointer exception",
+      "back": "Nó bắn ra ngoại lệ con trỏ null không được xử lý",
+      "hint_vi": "Gợi ý: Tên lỗi lập trình rất phổ biến."
+    },
+    {
+      "id": "c77087eca6eafb32",
+      "slug": "srs-affects-mobile-users",
+      "item_type": "vocabulary",
+      "source_ref_id": "845e35d6e11ce52c",
+      "front": "This bug mainly affects iOS mobile users",
+      "back": "Lỗi này chủ yếu ảnh hưởng đến người dùng di động iOS",
+      "hint_vi": "Gợi ý: Khoanh vùng đối tượng bị ảnh hưởng."
+    },
+    {
+      "id": "a521cf28237a4111",
+      "slug": "srs-high-priority-ticket",
+      "item_type": "vocabulary",
+      "source_ref_id": "f3cfb577fce5f6f3",
+      "front": "I have logged a high priority ticket on Jira",
+      "back": "Tôi đã tạo một thẻ ưu tiên cao trên Jira",
+      "hint_vi": "Gợi ý: Ghi nhận lỗi vào hệ thống quản lý."
+    },
+    {
+      "id": "1607537c85816874",
+      "slug": "srs-rollback-release",
+      "item_type": "vocabulary",
+      "source_ref_id": "5d224bb30d4853dd",
+      "front": "We might need to rollback the latest release",
+      "back": "Chúng ta có thể cần khôi phục lại bản phát hành gần nhất",
+      "hint_vi": "Gợi ý: Rollback là rút lại phiên bản lỗi."
+    },
+    {
+      "id": "b568b4f0ce61470b",
+      "slug": "srs-hotfix-in-progress",
+      "item_type": "vocabulary",
+      "source_ref_id": "f05fcef0d14fb368",
+      "front": "A hotfix branch is currently in progress",
+      "back": "Nhánh sửa lỗi khẩn cấp (hotfix) đang được xử lý",
+      "hint_vi": "Gợi ý: Hotfix chỉ việc sửa lỗi nhanh trực tiếp."
+    }
+  ]
+}

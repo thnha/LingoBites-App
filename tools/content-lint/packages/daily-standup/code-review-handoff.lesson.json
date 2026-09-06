@@ -1,0 +1,745 @@
+{
+  "id": "4e80f932dc1b64ad",
+  "slug": "code-review-handoff",
+  "schema_version": "0.1.0",
+  "title_en": "Code Review & Task Handoffs",
+  "title_vi": "Đánh giá mã nguồn & Bàn giao nhiệm vụ",
+  "blurb_vi": "Học các mẫu câu khi tạo Pull Request, yêu cầu Review Code và phản hồi góp ý từ đồng nghiệp.",
+  "level": "B1",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Gửi yêu cầu review PR và giải thích các thay đổi mã nguồn.",
+  "situation_vi": "Hoàn thành tính năng và mở Pull Request trên GitHub/GitLab.",
+  "learner_role_vi": "Developer yêu cầu đồng nghiệp duyệt PR.",
+  "prerequisite_lesson_slugs": [
+    "team-roles"
+  ],
+  "pronunciation_focus_vi": "Nhấn âm các thuật ngữ Git: pull request, merge conflict, code review, approval.",
+  "final_speaking_task_vi": "Yêu cầu đồng nghiệp review PR và nêu ngắn gọn những gì đã thay đổi.",
+  "pass_conditions_vi": "Nói rõ ràng lý do tạo PR và cách thử nghiệm.",
+  "unit_slug": "team-roles",
+  "unit_title_vi": "Vai trò & Trách nhiệm trong Nhóm",
+  "stage": 2,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "2180fd461579c49d",
+      "tip_vi": "Ôn tập lại cụm từ \"I have opened a PR for the login feature\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "e4a3b90792d7d664",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"Could someone review my code when free?\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "85d4759291c5cf47",
+      "slug": "opened-a-pr",
+      "order": 0,
+      "phrase_en": "I have opened a PR for the login feature",
+      "phrase_vi": "Tôi đã mở một PR cho tính năng đăng nhập",
+      "explanation_vi": "Open a PR là cụm từ chuẩn khi tạo yêu cầu gộp mã.",
+      "context_sentence_en": "In our daily work: \"I have opened a PR for the login feature\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã mở một PR cho tính năng đăng nhập\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "2e27d18b2a4ceedf"
+      ],
+      "srs_ref_ids": [
+        "2180fd461579c49d"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "97e2c480bac424bc",
+          "slug": "turn1-opened-a-pr",
+          "speaker": "A",
+          "text_en": "I have opened a PR for the login feature?",
+          "text_vi": "Tôi đã mở một PR cho tính năng đăng nhập?"
+        },
+        {
+          "id": "e4340b0906ead3a3",
+          "slug": "turn2-opened-a-pr",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "fdbf272b5f285f5e",
+          "slug": "qa-opened-a-pr",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I have opened a PR for the login feature\":",
+          "options": [
+            "Tôi đã mở một PR cho tính năng đăng nhập",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã mở một PR cho tính năng đăng nhập",
+          "explanation_vi": "Dịch đúng là: Tôi đã mở một PR cho tính năng đăng nhập"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "2180fd461579c49d"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I have opened a PR for the login feature\" nghĩa là \"Tôi đã mở một PR cho tính năng đăng nhập\"."
+      }
+    },
+    {
+      "id": "3bc69ef8bcf120d3",
+      "slug": "please-review-my-code",
+      "order": 1,
+      "phrase_en": "Could someone review my code when free?",
+      "phrase_vi": "Ai đó có thể duyệt mã giúp tôi khi rảnh được không?",
+      "explanation_vi": "Lời nhờ duyệt code trên kênh chat nhóm.",
+      "context_sentence_en": "In our daily work: \"Could someone review my code when free?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Ai đó có thể duyệt mã giúp tôi khi rảnh được không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "1996425cbe14021a"
+      ],
+      "srs_ref_ids": [
+        "e4a3b90792d7d664"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "c05e7779613691bf",
+          "slug": "turn1-please-review-my-code",
+          "speaker": "A",
+          "text_en": "Could someone review my code when free??",
+          "text_vi": "Ai đó có thể duyệt mã giúp tôi khi rảnh được không??"
+        },
+        {
+          "id": "5c3082ec8d9c641a",
+          "slug": "turn2-please-review-my-code",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "c9268e9f7ca6969e",
+          "slug": "qa-please-review-my-code",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Could someone review my code when free?\":",
+          "options": [
+            "Ai đó có thể duyệt mã giúp tôi khi rảnh được không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Ai đó có thể duyệt mã giúp tôi khi rảnh được không?",
+          "explanation_vi": "Dịch đúng là: Ai đó có thể duyệt mã giúp tôi khi rảnh được không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "e4a3b90792d7d664"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Could someone review my code when free?\" nghĩa là \"Ai đó có thể duyệt mã giúp tôi khi rảnh được không?\"."
+      }
+    },
+    {
+      "id": "81252a8c858ed97e",
+      "slug": "addressed-your-comments",
+      "order": 2,
+      "phrase_en": "I have addressed all your review comments",
+      "phrase_vi": "Tôi đã xử lý tất cả các góp ý của bạn",
+      "explanation_vi": "Address comments nghĩa là đã sửa theo các nhận xét.",
+      "context_sentence_en": "In our daily work: \"I have addressed all your review comments\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã xử lý tất cả các góp ý của bạn\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "ea7682462db5c6ab"
+      ],
+      "srs_ref_ids": [
+        "a4f9c02151fef4fd"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "f95efc1aa55abe2f",
+          "slug": "turn1-addressed-your-comments",
+          "speaker": "A",
+          "text_en": "I have addressed all your review comments?",
+          "text_vi": "Tôi đã xử lý tất cả các góp ý của bạn?"
+        },
+        {
+          "id": "bbb6de472e03cce3",
+          "slug": "turn2-addressed-your-comments",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "252327d31d08101d",
+          "slug": "qa-addressed-your-comments",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I have addressed all your review comments\":",
+          "options": [
+            "Tôi đã xử lý tất cả các góp ý của bạn",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã xử lý tất cả các góp ý của bạn",
+          "explanation_vi": "Dịch đúng là: Tôi đã xử lý tất cả các góp ý của bạn"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "a4f9c02151fef4fd"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I have addressed all your review comments\" nghĩa là \"Tôi đã xử lý tất cả các góp ý của bạn\"."
+      }
+    },
+    {
+      "id": "801fe528fc4e5a09",
+      "slug": "ready-to-merge",
+      "order": 3,
+      "phrase_en": "The PR has passed CI and is ready to merge",
+      "phrase_vi": "PR đã qua kiểm tra CI và sẵn sàng gộp mã",
+      "explanation_vi": "Ready to merge nghĩa là mã đã đạt chuẩn để nhập vào nhánh chính.",
+      "context_sentence_en": "In our daily work: \"The PR has passed CI and is ready to merge\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"PR đã qua kiểm tra CI và sẵn sàng gộp mã\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "9d8aaf80603dc435"
+      ],
+      "srs_ref_ids": [
+        "8b76981e9e1d3be4"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "1d7c58e9792e239d",
+          "slug": "turn1-ready-to-merge",
+          "speaker": "A",
+          "text_en": "The PR has passed CI and is ready to merge?",
+          "text_vi": "PR đã qua kiểm tra CI và sẵn sàng gộp mã?"
+        },
+        {
+          "id": "bd2c52d76b3b97fc",
+          "slug": "turn2-ready-to-merge",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "97cc42dc17af071f",
+          "slug": "qa-ready-to-merge",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"The PR has passed CI and is ready to merge\":",
+          "options": [
+            "PR đã qua kiểm tra CI và sẵn sàng gộp mã",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "PR đã qua kiểm tra CI và sẵn sàng gộp mã",
+          "explanation_vi": "Dịch đúng là: PR đã qua kiểm tra CI và sẵn sàng gộp mã"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "8b76981e9e1d3be4"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"The PR has passed CI and is ready to merge\" nghĩa là \"PR đã qua kiểm tra CI và sẵn sàng gộp mã\"."
+      }
+    },
+    {
+      "id": "0c4982282e294243",
+      "slug": "facing-merge-conflict",
+      "order": 4,
+      "phrase_en": "I'm resolving a merge conflict with main branch",
+      "phrase_vi": "Tôi đang giải quyết xung đột mã với nhánh main",
+      "explanation_vi": "Merge conflict xảy ra khi hai thay đổi đè lên nhau.",
+      "context_sentence_en": "In our daily work: \"I'm resolving a merge conflict with main branch\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang giải quyết xung đột mã với nhánh main\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "3cc9378832b46853"
+      ],
+      "srs_ref_ids": [
+        "8650b47b572cd0de"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "a714e87c0eab10fb",
+          "slug": "turn1-facing-merge-conflict",
+          "speaker": "A",
+          "text_en": "I'm resolving a merge conflict with main branch?",
+          "text_vi": "Tôi đang giải quyết xung đột mã với nhánh main?"
+        },
+        {
+          "id": "5cdff219202374d0",
+          "slug": "turn2-facing-merge-conflict",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "8e86ff3f156c2f9a",
+          "slug": "qa-facing-merge-conflict",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm resolving a merge conflict with main branch\":",
+          "options": [
+            "Tôi đang giải quyết xung đột mã với nhánh main",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đang giải quyết xung đột mã với nhánh main",
+          "explanation_vi": "Dịch đúng là: Tôi đang giải quyết xung đột mã với nhánh main"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "8650b47b572cd0de"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm resolving a merge conflict with main branch\" nghĩa là \"Tôi đang giải quyết xung đột mã với nhánh main\"."
+      }
+    },
+    {
+      "id": "c3d71d186906871c",
+      "slug": "left-some-notes",
+      "order": 5,
+      "phrase_en": "I left some inline notes on the PR description",
+      "phrase_vi": "Tôi đã để lại một số ghi chú trong phần mô tả PR",
+      "explanation_vi": "Ghi chú giải thích logic trong mô tả PR.",
+      "context_sentence_en": "In our daily work: \"I left some inline notes on the PR description\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã để lại một số ghi chú trong phần mô tả PR\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "3e8169f62a962d3c"
+      ],
+      "srs_ref_ids": [
+        "c72b84a0575f4cde"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "27e7ab2e87862681",
+          "slug": "turn1-left-some-notes",
+          "speaker": "A",
+          "text_en": "I left some inline notes on the PR description?",
+          "text_vi": "Tôi đã để lại một số ghi chú trong phần mô tả PR?"
+        },
+        {
+          "id": "a552c32b0012a0a7",
+          "slug": "turn2-left-some-notes",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "e774dd072011b893",
+          "slug": "qa-left-some-notes",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I left some inline notes on the PR description\":",
+          "options": [
+            "Tôi đã để lại một số ghi chú trong phần mô tả PR",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã để lại một số ghi chú trong phần mô tả PR",
+          "explanation_vi": "Dịch đúng là: Tôi đã để lại một số ghi chú trong phần mô tả PR"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "c72b84a0575f4cde"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I left some inline notes on the PR description\" nghĩa là \"Tôi đã để lại một số ghi chú trong phần mô tả PR\"."
+      }
+    },
+    {
+      "id": "ef356bcc56f6d981",
+      "slug": "approve-the-changes",
+      "order": 6,
+      "phrase_en": "Please approve the PR if it looks good to you",
+      "phrase_vi": "Vui lòng nhấn approve PR nếu bạn thấy ổn",
+      "explanation_vi": "Approve PR là hành động chấp thuận gộp mã.",
+      "context_sentence_en": "In our daily work: \"Please approve the PR if it looks good to you\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Vui lòng nhấn approve PR nếu bạn thấy ổn\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "42063632776bcdec"
+      ],
+      "srs_ref_ids": [
+        "690a23fc1faa6270"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5f2eebd43edcb4da",
+          "slug": "turn1-approve-the-changes",
+          "speaker": "A",
+          "text_en": "Please approve the PR if it looks good to you?",
+          "text_vi": "Vui lòng nhấn approve PR nếu bạn thấy ổn?"
+        },
+        {
+          "id": "b019c42b237c71cc",
+          "slug": "turn2-approve-the-changes",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "faa6b43469828092",
+          "slug": "qa-approve-the-changes",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Please approve the PR if it looks good to you\":",
+          "options": [
+            "Vui lòng nhấn approve PR nếu bạn thấy ổn",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Vui lòng nhấn approve PR nếu bạn thấy ổn",
+          "explanation_vi": "Dịch đúng là: Vui lòng nhấn approve PR nếu bạn thấy ổn"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "690a23fc1faa6270"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Please approve the PR if it looks good to you\" nghĩa là \"Vui lòng nhấn approve PR nếu bạn thấy ổn\"."
+      }
+    },
+    {
+      "id": "a34c0cb6d457d3c8",
+      "slug": "deployed-to-staging",
+      "order": 7,
+      "phrase_en": "It's automatically deployed to staging environment",
+      "phrase_vi": "Nó đã được tự động triển khai lên môi trường staging",
+      "explanation_vi": "Môi trường thử nghiệm trước khi phát hành.",
+      "context_sentence_en": "In our daily work: \"It's automatically deployed to staging environment\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Nó đã được tự động triển khai lên môi trường staging\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "74d27b18b0b9dfab"
+      ],
+      "srs_ref_ids": [
+        "02dab2904187c78d"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "f651431340bd5f79",
+          "slug": "turn1-deployed-to-staging",
+          "speaker": "A",
+          "text_en": "It's automatically deployed to staging environment?",
+          "text_vi": "Nó đã được tự động triển khai lên môi trường staging?"
+        },
+        {
+          "id": "571224c800e7205d",
+          "slug": "turn2-deployed-to-staging",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "418d83497754c8c1",
+          "slug": "qa-deployed-to-staging",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"It's automatically deployed to staging environment\":",
+          "options": [
+            "Nó đã được tự động triển khai lên môi trường staging",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Nó đã được tự động triển khai lên môi trường staging",
+          "explanation_vi": "Dịch đúng là: Nó đã được tự động triển khai lên môi trường staging"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "02dab2904187c78d"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"It's automatically deployed to staging environment\" nghĩa là \"Nó đã được tự động triển khai lên môi trường staging\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "e2e7f4c8c409dcaf",
+      "slug": "gp-1",
+      "name_en": "Pattern for Code Review & Task Handoffs",
+      "name_vi": "Mẫu câu chính bài Đánh giá mã nguồn & Bàn giao nhiệm vụ",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "I have opened a PR for the login feature",
+          "vi": "Tôi đã mở một PR cho tính năng đăng nhập"
+        },
+        {
+          "en": "Could someone review my code when free?",
+          "vi": "Ai đó có thể duyệt mã giúp tôi khi rảnh được không?"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "bbcf302facacc34f",
+      "slug": "v-opened-a-pr",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi đã mở một PR cho tính năng đăng nhập",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "I have opened a PR for the login feature",
+      "example_vi": "Tôi đã mở một PR cho tính năng đăng nhập"
+    },
+    {
+      "id": "b8b59c3d5a8d2746",
+      "slug": "v-please-review-my-code",
+      "word": "Could",
+      "word_type": "noun",
+      "meaning_vi": "Ai đó có thể duyệt mã giúp tôi khi rảnh được không?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "Could someone review my code when free?",
+      "example_vi": "Ai đó có thể duyệt mã giúp tôi khi rảnh được không?"
+    },
+    {
+      "id": "942429dbc16e12f4",
+      "slug": "v-addressed-your-comments",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi đã xử lý tất cả các góp ý của bạn",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "B1",
+      "example_en": "I have addressed all your review comments",
+      "example_vi": "Tôi đã xử lý tất cả các góp ý của bạn"
+    }
+  ],
+  "activities": [
+    {
+      "id": "4b6c11c756423093",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "85d4759291c5cf47",
+        "3bc69ef8bcf120d3",
+        "81252a8c858ed97e",
+        "801fe528fc4e5a09",
+        "0c4982282e294243",
+        "c3d71d186906871c",
+        "ef356bcc56f6d981",
+        "a34c0cb6d457d3c8"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "1ce82293359a64a1",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "85d4759291c5cf47",
+        "3bc69ef8bcf120d3",
+        "81252a8c858ed97e",
+        "801fe528fc4e5a09"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "056043cd666229c0",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "85d4759291c5cf47",
+        "3bc69ef8bcf120d3",
+        "81252a8c858ed97e",
+        "801fe528fc4e5a09",
+        "0c4982282e294243",
+        "c3d71d186906871c",
+        "ef356bcc56f6d981",
+        "a34c0cb6d457d3c8"
+      ],
+      "qa_ref_ids": [
+        "fdbf272b5f285f5e",
+        "c9268e9f7ca6969e",
+        "252327d31d08101d",
+        "97cc42dc17af071f",
+        "8e86ff3f156c2f9a",
+        "e774dd072011b893",
+        "faa6b43469828092",
+        "418d83497754c8c1"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "2e27d18b2a4ceedf",
+      "slug": "aud-opened-a-pr",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/opened-a-pr.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I have opened a PR for the login feature"
+    },
+    {
+      "id": "1996425cbe14021a",
+      "slug": "aud-please-review-my-code",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/please-review-my-code.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Could someone review my code when free?"
+    },
+    {
+      "id": "ea7682462db5c6ab",
+      "slug": "aud-addressed-your-comments",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/addressed-your-comments.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I have addressed all your review comments"
+    },
+    {
+      "id": "9d8aaf80603dc435",
+      "slug": "aud-ready-to-merge",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/ready-to-merge.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "The PR has passed CI and is ready to merge"
+    },
+    {
+      "id": "3cc9378832b46853",
+      "slug": "aud-facing-merge-conflict",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/facing-merge-conflict.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm resolving a merge conflict with main branch"
+    },
+    {
+      "id": "3e8169f62a962d3c",
+      "slug": "aud-left-some-notes",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/left-some-notes.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I left some inline notes on the PR description"
+    },
+    {
+      "id": "42063632776bcdec",
+      "slug": "aud-approve-the-changes",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/approve-the-changes.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Please approve the PR if it looks good to you"
+    },
+    {
+      "id": "74d27b18b0b9dfab",
+      "slug": "aud-deployed-to-staging",
+      "url": "https://assets.lingobites.app/audio/code-review-handoff/deployed-to-staging.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "It's automatically deployed to staging environment"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "2180fd461579c49d",
+      "slug": "srs-opened-a-pr",
+      "item_type": "vocabulary",
+      "source_ref_id": "85d4759291c5cf47",
+      "front": "I have opened a PR for the login feature",
+      "back": "Tôi đã mở một PR cho tính năng đăng nhập",
+      "hint_vi": "Gợi ý: Open a PR là cụm từ chuẩn khi tạo yêu cầu gộp mã."
+    },
+    {
+      "id": "e4a3b90792d7d664",
+      "slug": "srs-please-review-my-code",
+      "item_type": "vocabulary",
+      "source_ref_id": "3bc69ef8bcf120d3",
+      "front": "Could someone review my code when free?",
+      "back": "Ai đó có thể duyệt mã giúp tôi khi rảnh được không?",
+      "hint_vi": "Gợi ý: Lời nhờ duyệt code trên kênh chat nhóm."
+    },
+    {
+      "id": "a4f9c02151fef4fd",
+      "slug": "srs-addressed-your-comments",
+      "item_type": "vocabulary",
+      "source_ref_id": "81252a8c858ed97e",
+      "front": "I have addressed all your review comments",
+      "back": "Tôi đã xử lý tất cả các góp ý của bạn",
+      "hint_vi": "Gợi ý: Address comments nghĩa là đã sửa theo các nhận xét."
+    },
+    {
+      "id": "8b76981e9e1d3be4",
+      "slug": "srs-ready-to-merge",
+      "item_type": "vocabulary",
+      "source_ref_id": "801fe528fc4e5a09",
+      "front": "The PR has passed CI and is ready to merge",
+      "back": "PR đã qua kiểm tra CI và sẵn sàng gộp mã",
+      "hint_vi": "Gợi ý: Ready to merge nghĩa là mã đã đạt chuẩn để nhập vào nhánh chính."
+    },
+    {
+      "id": "8650b47b572cd0de",
+      "slug": "srs-facing-merge-conflict",
+      "item_type": "vocabulary",
+      "source_ref_id": "0c4982282e294243",
+      "front": "I'm resolving a merge conflict with main branch",
+      "back": "Tôi đang giải quyết xung đột mã với nhánh main",
+      "hint_vi": "Gợi ý: Merge conflict xảy ra khi hai thay đổi đè lên nhau."
+    },
+    {
+      "id": "c72b84a0575f4cde",
+      "slug": "srs-left-some-notes",
+      "item_type": "vocabulary",
+      "source_ref_id": "c3d71d186906871c",
+      "front": "I left some inline notes on the PR description",
+      "back": "Tôi đã để lại một số ghi chú trong phần mô tả PR",
+      "hint_vi": "Gợi ý: Ghi chú giải thích logic trong mô tả PR."
+    },
+    {
+      "id": "690a23fc1faa6270",
+      "slug": "srs-approve-the-changes",
+      "item_type": "vocabulary",
+      "source_ref_id": "ef356bcc56f6d981",
+      "front": "Please approve the PR if it looks good to you",
+      "back": "Vui lòng nhấn approve PR nếu bạn thấy ổn",
+      "hint_vi": "Gợi ý: Approve PR là hành động chấp thuận gộp mã."
+    },
+    {
+      "id": "02dab2904187c78d",
+      "slug": "srs-deployed-to-staging",
+      "item_type": "vocabulary",
+      "source_ref_id": "a34c0cb6d457d3c8",
+      "front": "It's automatically deployed to staging environment",
+      "back": "Nó đã được tự động triển khai lên môi trường staging",
+      "hint_vi": "Gợi ý: Môi trường thử nghiệm trước khi phát hành."
+    }
+  ]
+}

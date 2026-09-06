@@ -282,6 +282,51 @@ export const ActivitySchema = z.object({
 export type Activity = z.infer<typeof ActivitySchema>;
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Expected Error & Check Declarations (REQ-9, REQ-40, REQ-41)
+// ---------------------------------------------------------------------------
+
+export const ExpectedErrorSchema = z.object({
+  category: z.string().min(1),
+  trigger_condition: z.string().min(1),
+  remediation_ref_id: z.string().min(1),
+  tip_vi: z.string().min(1),
+});
+
+export type ExpectedError = z.infer<typeof ExpectedErrorSchema>;
+
+export const CheckTypeSchema = z.enum(['weekly_check', 'stage_check']);
+export type CheckType = z.infer<typeof CheckTypeSchema>;
+
+export const CheckItemSchema = z.object({
+  id: z.string().min(1),
+  slug: z.string().min(1),
+  prompt_en: z.string().min(1),
+  prompt_vi: z.string().min(1),
+  unseen_prompt_en: z.string().optional(),
+  unseen_prompt_vi: z.string().optional(),
+  rubric_vi: z.string().optional(),
+  target_chunk_ids: z.array(z.string()).default([]),
+});
+
+export type CheckItem = z.infer<typeof CheckItemSchema>;
+
+export const CheckDefinitionSchema = z.object({
+  id: z.string().min(1),
+  slug: z.string().min(1),
+  type: CheckTypeSchema,
+  stage: z.number().int().optional(),
+  unit_slug: z.string().optional(),
+  title_en: z.string().min(1),
+  title_vi: z.string().min(1),
+  instructions_vi: z.string().min(1),
+  covered_lesson_slugs: z.array(z.string()).min(1),
+  items: z.array(CheckItemSchema).min(1),
+});
+
+export type CheckDefinition = z.infer<typeof CheckDefinitionSchema>;
+
+// ---------------------------------------------------------------------------
 // Lesson JSON (the full lesson document)
 // ---------------------------------------------------------------------------
 
@@ -300,6 +345,18 @@ export const LessonSchema = z.object({
     .array(z.enum(['speaking', 'listening', 'reading', 'writing']))
     .min(1),
   estimated_duration_minutes: z.number().int().min(1),
+  /** REQ-9 declaration metadata */
+  objective_vi: z.string().optional(),
+  situation_vi: z.string().optional(),
+  learner_role_vi: z.string().optional(),
+  prerequisite_lesson_slugs: z.array(z.string()).default([]),
+  pronunciation_focus_vi: z.string().optional(),
+  final_speaking_task_vi: z.string().optional(),
+  pass_conditions_vi: z.string().optional(),
+  unit_slug: z.string().optional(),
+  unit_title_vi: z.string().optional(),
+  stage: z.number().int().optional(),
+  expected_errors: z.array(ExpectedErrorSchema).default([]),
   /**
    * Chunks: between 8 and 12 (inclusive).
    * Enforced by the lint validator (LNT-003).
@@ -338,6 +395,20 @@ export const ManifestSchema = z.object({
   audio_base_url: z.string().url().optional(),
   /** Semantic version of the exporting tool. */
   tool_version: z.string().optional(),
+  checks: z.array(CheckDefinitionSchema).optional(),
+  progression_graph: z
+    .object({
+      stages: z
+        .array(
+          z.object({
+            stage: z.number().int(),
+            name_vi: z.string(),
+            unit_slugs: z.array(z.string()),
+          }),
+        )
+        .optional(),
+    })
+    .optional(),
 });
 
 export type Manifest = z.infer<typeof ManifestSchema>;

@@ -1,0 +1,745 @@
+{
+  "id": "5b4a3f918b797453",
+  "slug": "standup-blockers",
+  "schema_version": "0.1.0",
+  "title_en": "Raising Stand-up Blockers & Seeking Help",
+  "title_vi": "Báo cáo khó khăn & Nêu yêu cầu hỗ trợ",
+  "blurb_vi": "Nâng cao khả năng trình bày rào cản kỹ thuật (blockers) trong họp stand-up và tìm sự giúp đỡ từ đồng nghiệp.",
+  "level": "A2",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Trình bày rõ ràng rào cản công việc và nhờ đồng nghiệp hỗ trợ trong 1 phút.",
+  "situation_vi": "Buổi họp stand-up khi bạn đang gặp sự cố kỹ thuật chưa giải quyết được.",
+  "learner_role_vi": "Developer báo cáo tiến độ và nêu rào cản.",
+  "prerequisite_lesson_slugs": [
+    "daily-standup"
+  ],
+  "pronunciation_focus_vi": "Phát âm đúng từ blocker, issue, dependency, stuck.",
+  "final_speaking_task_vi": "Nói báo cáo stand-up gồm 3 phần: Đã làm gì, Đang gặp blocker gì, Cần ai giúp.",
+  "pass_conditions_vi": "Nêu rõ ràng vấn đề kỹ thuật và lời đề nghị trợ giúp.",
+  "unit_slug": "daily-standup",
+  "unit_title_vi": "Họp Đứng Hàng Ngày (Daily Stand-up)",
+  "stage": 2,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "bf8d93cd90f24f60",
+      "tip_vi": "Ôn tập lại cụm từ \"I'm currently blocked by the authentication API\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "0b221ce9a0c4eec2",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"I'm stuck on a memory leak issue\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "7cd6c86e7c568bb6",
+      "slug": "currently-blocked-by",
+      "order": 0,
+      "phrase_en": "I'm currently blocked by the authentication API",
+      "phrase_vi": "Tôi hiện đang bị nghẽn bởi API xác thực",
+      "explanation_vi": "Be blocked by sth chỉ việc công việc bị khựng lại do yếu tố bên ngoài.",
+      "context_sentence_en": "In our daily work: \"I'm currently blocked by the authentication API\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi hiện đang bị nghẽn bởi API xác thực\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "7ae40c0a2999f64d"
+      ],
+      "srs_ref_ids": [
+        "bf8d93cd90f24f60"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "923cf16c2071579b",
+          "slug": "turn1-currently-blocked-by",
+          "speaker": "A",
+          "text_en": "I'm currently blocked by the authentication API?",
+          "text_vi": "Tôi hiện đang bị nghẽn bởi API xác thực?"
+        },
+        {
+          "id": "ac8a97a14e6d0f84",
+          "slug": "turn2-currently-blocked-by",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "b2d5dbe3ee94cba6",
+          "slug": "qa-currently-blocked-by",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm currently blocked by the authentication API\":",
+          "options": [
+            "Tôi hiện đang bị nghẽn bởi API xác thực",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi hiện đang bị nghẽn bởi API xác thực",
+          "explanation_vi": "Dịch đúng là: Tôi hiện đang bị nghẽn bởi API xác thực"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "bf8d93cd90f24f60"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm currently blocked by the authentication API\" nghĩa là \"Tôi hiện đang bị nghẽn bởi API xác thực\"."
+      }
+    },
+    {
+      "id": "f252d45fcd9e68fb",
+      "slug": "stuck-on-bug",
+      "order": 1,
+      "phrase_en": "I'm stuck on a memory leak issue",
+      "phrase_vi": "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ",
+      "explanation_vi": "Be stuck on sth nghĩa là gặp bế tắc chưa tìm ra giải pháp.",
+      "context_sentence_en": "In our daily work: \"I'm stuck on a memory leak issue\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "ad5c7c86cc9aa894"
+      ],
+      "srs_ref_ids": [
+        "0b221ce9a0c4eec2"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "82947416a99e6970",
+          "slug": "turn1-stuck-on-bug",
+          "speaker": "A",
+          "text_en": "I'm stuck on a memory leak issue?",
+          "text_vi": "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ?"
+        },
+        {
+          "id": "b2e9443753c6ced2",
+          "slug": "turn2-stuck-on-bug",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "22d7f01cc6d11bdd",
+          "slug": "qa-stuck-on-bug",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm stuck on a memory leak issue\":",
+          "options": [
+            "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ",
+          "explanation_vi": "Dịch đúng là: Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "0b221ce9a0c4eec2"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm stuck on a memory leak issue\" nghĩa là \"Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ\"."
+      }
+    },
+    {
+      "id": "c0ae1123c8b1ef44",
+      "slug": "need-help-from",
+      "order": 2,
+      "phrase_en": "I might need some help from the backend team",
+      "phrase_vi": "Có thể tôi cần sự trợ giúp từ đội backend",
+      "explanation_vi": "Cách đề nghị hỗ trợ lịch sự trong cuộc họp.",
+      "context_sentence_en": "In our daily work: \"I might need some help from the backend team\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Có thể tôi cần sự trợ giúp từ đội backend\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "9f501e76b922b04c"
+      ],
+      "srs_ref_ids": [
+        "e07d5e2460c76927"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "fe797f154c311f55",
+          "slug": "turn1-need-help-from",
+          "speaker": "A",
+          "text_en": "I might need some help from the backend team?",
+          "text_vi": "Có thể tôi cần sự trợ giúp từ đội backend?"
+        },
+        {
+          "id": "21458e443cb04bc3",
+          "slug": "turn2-need-help-from",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "799b6f3b66318598",
+          "slug": "qa-need-help-from",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I might need some help from the backend team\":",
+          "options": [
+            "Có thể tôi cần sự trợ giúp từ đội backend",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Có thể tôi cần sự trợ giúp từ đội backend",
+          "explanation_vi": "Dịch đúng là: Có thể tôi cần sự trợ giúp từ đội backend"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "e07d5e2460c76927"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I might need some help from the backend team\" nghĩa là \"Có thể tôi cần sự trợ giúp từ đội backend\"."
+      }
+    },
+    {
+      "id": "1cd00f541bc22d32",
+      "slug": "waiting-for-design",
+      "order": 3,
+      "phrase_en": "I'm waiting for final UI designs",
+      "phrase_vi": "Tôi đang chờ thiết kế UI chính thức",
+      "explanation_vi": "Báo cáo phụ thuộc vào công việc của người khác.",
+      "context_sentence_en": "In our daily work: \"I'm waiting for final UI designs\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang chờ thiết kế UI chính thức\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "51b2174f35b32621"
+      ],
+      "srs_ref_ids": [
+        "fc0d9973ee2ccbe5"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "7f1054ba2ef7dcd9",
+          "slug": "turn1-waiting-for-design",
+          "speaker": "A",
+          "text_en": "I'm waiting for final UI designs?",
+          "text_vi": "Tôi đang chờ thiết kế UI chính thức?"
+        },
+        {
+          "id": "1de101a78c3cdf97",
+          "slug": "turn2-waiting-for-design",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "132bb8abb87c0593",
+          "slug": "qa-waiting-for-design",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm waiting for final UI designs\":",
+          "options": [
+            "Tôi đang chờ thiết kế UI chính thức",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đang chờ thiết kế UI chính thức",
+          "explanation_vi": "Dịch đúng là: Tôi đang chờ thiết kế UI chính thức"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "fc0d9973ee2ccbe5"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm waiting for final UI designs\" nghĩa là \"Tôi đang chờ thiết kế UI chính thức\"."
+      }
+    },
+    {
+      "id": "eb552f4d30809a2a",
+      "slug": "take-it-offline",
+      "order": 4,
+      "phrase_en": "Let us take this discussion offline",
+      "phrase_vi": "Chúng ta hãy trao đổi riêng việc này sau cuộc họp",
+      "explanation_vi": "Cụm từ họp Agile chuẩn để tránh làm mất thời gian chung.",
+      "context_sentence_en": "In our daily work: \"Let us take this discussion offline\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta hãy trao đổi riêng việc này sau cuộc họp\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "f30f29ee29d46954"
+      ],
+      "srs_ref_ids": [
+        "3fb7bb7c80d6039c"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "3dc58572906a3f81",
+          "slug": "turn1-take-it-offline",
+          "speaker": "A",
+          "text_en": "Let us take this discussion offline?",
+          "text_vi": "Chúng ta hãy trao đổi riêng việc này sau cuộc họp?"
+        },
+        {
+          "id": "d35ee6bede63ef6c",
+          "slug": "turn2-take-it-offline",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "f22484e33d8dafda",
+          "slug": "qa-take-it-offline",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Let us take this discussion offline\":",
+          "options": [
+            "Chúng ta hãy trao đổi riêng việc này sau cuộc họp",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng ta hãy trao đổi riêng việc này sau cuộc họp",
+          "explanation_vi": "Dịch đúng là: Chúng ta hãy trao đổi riêng việc này sau cuộc họp"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "3fb7bb7c80d6039c"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Let us take this discussion offline\" nghĩa là \"Chúng ta hãy trao đổi riêng việc này sau cuộc họp\"."
+      }
+    },
+    {
+      "id": "ffe58ca5c00a3208",
+      "slug": "pair-programming",
+      "order": 5,
+      "phrase_en": "Can we pair program on this for 15 minutes?",
+      "phrase_vi": "Chúng ta có thể lập trình đôi trong 15 phút không?",
+      "explanation_vi": "Pair programming là hai người cùng ngồi soi code giải quyết vấn đề.",
+      "context_sentence_en": "In our daily work: \"Can we pair program on this for 15 minutes?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta có thể lập trình đôi trong 15 phút không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "2d5a07c59f18a32a"
+      ],
+      "srs_ref_ids": [
+        "228ccd0cba39d854"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "e1d0d1ecd80dd680",
+          "slug": "turn1-pair-programming",
+          "speaker": "A",
+          "text_en": "Can we pair program on this for 15 minutes??",
+          "text_vi": "Chúng ta có thể lập trình đôi trong 15 phút không??"
+        },
+        {
+          "id": "9961321a02328b29",
+          "slug": "turn2-pair-programming",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "51739195552e1e41",
+          "slug": "qa-pair-programming",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Can we pair program on this for 15 minutes?\":",
+          "options": [
+            "Chúng ta có thể lập trình đôi trong 15 phút không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng ta có thể lập trình đôi trong 15 phút không?",
+          "explanation_vi": "Dịch đúng là: Chúng ta có thể lập trình đôi trong 15 phút không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "228ccd0cba39d854"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Can we pair program on this for 15 minutes?\" nghĩa là \"Chúng ta có thể lập trình đôi trong 15 phút không?\"."
+      }
+    },
+    {
+      "id": "7e8f15c7d1c205ba",
+      "slug": "impacts-the-timeline",
+      "order": 6,
+      "phrase_en": "This blocker impacts our sprint timeline",
+      "phrase_vi": "Rào cản này ảnh hưởng tới tiến độ sprint",
+      "explanation_vi": "Cảnh báo rủi ro về tiến độ.",
+      "context_sentence_en": "In our daily work: \"This blocker impacts our sprint timeline\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Rào cản này ảnh hưởng tới tiến độ sprint\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "b7667a8a67f272e1"
+      ],
+      "srs_ref_ids": [
+        "42b85130662de147"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "10ebe95400301dc0",
+          "slug": "turn1-impacts-the-timeline",
+          "speaker": "A",
+          "text_en": "This blocker impacts our sprint timeline?",
+          "text_vi": "Rào cản này ảnh hưởng tới tiến độ sprint?"
+        },
+        {
+          "id": "8f9bb3fef3f3d259",
+          "slug": "turn2-impacts-the-timeline",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "63acd210431c1dc0",
+          "slug": "qa-impacts-the-timeline",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"This blocker impacts our sprint timeline\":",
+          "options": [
+            "Rào cản này ảnh hưởng tới tiến độ sprint",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Rào cản này ảnh hưởng tới tiến độ sprint",
+          "explanation_vi": "Dịch đúng là: Rào cản này ảnh hưởng tới tiến độ sprint"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "42b85130662de147"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"This blocker impacts our sprint timeline\" nghĩa là \"Rào cản này ảnh hưởng tới tiến độ sprint\"."
+      }
+    },
+    {
+      "id": "ef1f3932f5063e6c",
+      "slug": "hope-to-resolve-today",
+      "order": 7,
+      "phrase_en": "I hope to resolve this by the end of today",
+      "phrase_vi": "Tôi hy vọng sẽ xử lý xong việc này trong hôm nay",
+      "explanation_vi": "Nêu mục tiêu khắc phục sự cố trong ngày.",
+      "context_sentence_en": "In our daily work: \"I hope to resolve this by the end of today\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi hy vọng sẽ xử lý xong việc này trong hôm nay\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "7072d09a297d1c2b"
+      ],
+      "srs_ref_ids": [
+        "3085d9d56f80bc01"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "5b5eea6a7946e61d",
+          "slug": "turn1-hope-to-resolve-today",
+          "speaker": "A",
+          "text_en": "I hope to resolve this by the end of today?",
+          "text_vi": "Tôi hy vọng sẽ xử lý xong việc này trong hôm nay?"
+        },
+        {
+          "id": "5065fcb42c1e26c8",
+          "slug": "turn2-hope-to-resolve-today",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "5d8c30db4753a704",
+          "slug": "qa-hope-to-resolve-today",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I hope to resolve this by the end of today\":",
+          "options": [
+            "Tôi hy vọng sẽ xử lý xong việc này trong hôm nay",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi hy vọng sẽ xử lý xong việc này trong hôm nay",
+          "explanation_vi": "Dịch đúng là: Tôi hy vọng sẽ xử lý xong việc này trong hôm nay"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "3085d9d56f80bc01"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I hope to resolve this by the end of today\" nghĩa là \"Tôi hy vọng sẽ xử lý xong việc này trong hôm nay\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "1b274476dfc410eb",
+      "slug": "gp-1",
+      "name_en": "Pattern for Raising Stand-up Blockers & Seeking Help",
+      "name_vi": "Mẫu câu chính bài Báo cáo khó khăn & Nêu yêu cầu hỗ trợ",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "I'm currently blocked by the authentication API",
+          "vi": "Tôi hiện đang bị nghẽn bởi API xác thực"
+        },
+        {
+          "en": "I'm stuck on a memory leak issue",
+          "vi": "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "dd4c8d464a1f14dc",
+      "slug": "v-currently-blocked-by",
+      "word": "I'm",
+      "word_type": "noun",
+      "meaning_vi": "Tôi hiện đang bị nghẽn bởi API xác thực",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "I'm currently blocked by the authentication API",
+      "example_vi": "Tôi hiện đang bị nghẽn bởi API xác thực"
+    },
+    {
+      "id": "539dce6902edbf7e",
+      "slug": "v-stuck-on-bug",
+      "word": "I'm",
+      "word_type": "noun",
+      "meaning_vi": "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "I'm stuck on a memory leak issue",
+      "example_vi": "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ"
+    },
+    {
+      "id": "a08a55bf31bbbe6a",
+      "slug": "v-need-help-from",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Có thể tôi cần sự trợ giúp từ đội backend",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A2",
+      "example_en": "I might need some help from the backend team",
+      "example_vi": "Có thể tôi cần sự trợ giúp từ đội backend"
+    }
+  ],
+  "activities": [
+    {
+      "id": "ae5df6b0a956a0cf",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "7cd6c86e7c568bb6",
+        "f252d45fcd9e68fb",
+        "c0ae1123c8b1ef44",
+        "1cd00f541bc22d32",
+        "eb552f4d30809a2a",
+        "ffe58ca5c00a3208",
+        "7e8f15c7d1c205ba",
+        "ef1f3932f5063e6c"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "82498388e937b39c",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "7cd6c86e7c568bb6",
+        "f252d45fcd9e68fb",
+        "c0ae1123c8b1ef44",
+        "1cd00f541bc22d32"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "525d88b65de1788d",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "7cd6c86e7c568bb6",
+        "f252d45fcd9e68fb",
+        "c0ae1123c8b1ef44",
+        "1cd00f541bc22d32",
+        "eb552f4d30809a2a",
+        "ffe58ca5c00a3208",
+        "7e8f15c7d1c205ba",
+        "ef1f3932f5063e6c"
+      ],
+      "qa_ref_ids": [
+        "b2d5dbe3ee94cba6",
+        "22d7f01cc6d11bdd",
+        "799b6f3b66318598",
+        "132bb8abb87c0593",
+        "f22484e33d8dafda",
+        "51739195552e1e41",
+        "63acd210431c1dc0",
+        "5d8c30db4753a704"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "7ae40c0a2999f64d",
+      "slug": "aud-currently-blocked-by",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/currently-blocked-by.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm currently blocked by the authentication API"
+    },
+    {
+      "id": "ad5c7c86cc9aa894",
+      "slug": "aud-stuck-on-bug",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/stuck-on-bug.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm stuck on a memory leak issue"
+    },
+    {
+      "id": "9f501e76b922b04c",
+      "slug": "aud-need-help-from",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/need-help-from.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I might need some help from the backend team"
+    },
+    {
+      "id": "51b2174f35b32621",
+      "slug": "aud-waiting-for-design",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/waiting-for-design.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm waiting for final UI designs"
+    },
+    {
+      "id": "f30f29ee29d46954",
+      "slug": "aud-take-it-offline",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/take-it-offline.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Let us take this discussion offline"
+    },
+    {
+      "id": "2d5a07c59f18a32a",
+      "slug": "aud-pair-programming",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/pair-programming.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Can we pair program on this for 15 minutes?"
+    },
+    {
+      "id": "b7667a8a67f272e1",
+      "slug": "aud-impacts-the-timeline",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/impacts-the-timeline.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "This blocker impacts our sprint timeline"
+    },
+    {
+      "id": "7072d09a297d1c2b",
+      "slug": "aud-hope-to-resolve-today",
+      "url": "https://assets.lingobites.app/audio/standup-blockers/hope-to-resolve-today.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I hope to resolve this by the end of today"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "bf8d93cd90f24f60",
+      "slug": "srs-currently-blocked-by",
+      "item_type": "vocabulary",
+      "source_ref_id": "7cd6c86e7c568bb6",
+      "front": "I'm currently blocked by the authentication API",
+      "back": "Tôi hiện đang bị nghẽn bởi API xác thực",
+      "hint_vi": "Gợi ý: Be blocked by sth chỉ việc công việc bị khựng lại do yếu tố bên ngoài."
+    },
+    {
+      "id": "0b221ce9a0c4eec2",
+      "slug": "srs-stuck-on-bug",
+      "item_type": "vocabulary",
+      "source_ref_id": "f252d45fcd9e68fb",
+      "front": "I'm stuck on a memory leak issue",
+      "back": "Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ",
+      "hint_vi": "Gợi ý: Be stuck on sth nghĩa là gặp bế tắc chưa tìm ra giải pháp."
+    },
+    {
+      "id": "e07d5e2460c76927",
+      "slug": "srs-need-help-from",
+      "item_type": "vocabulary",
+      "source_ref_id": "c0ae1123c8b1ef44",
+      "front": "I might need some help from the backend team",
+      "back": "Có thể tôi cần sự trợ giúp từ đội backend",
+      "hint_vi": "Gợi ý: Cách đề nghị hỗ trợ lịch sự trong cuộc họp."
+    },
+    {
+      "id": "fc0d9973ee2ccbe5",
+      "slug": "srs-waiting-for-design",
+      "item_type": "vocabulary",
+      "source_ref_id": "1cd00f541bc22d32",
+      "front": "I'm waiting for final UI designs",
+      "back": "Tôi đang chờ thiết kế UI chính thức",
+      "hint_vi": "Gợi ý: Báo cáo phụ thuộc vào công việc của người khác."
+    },
+    {
+      "id": "3fb7bb7c80d6039c",
+      "slug": "srs-take-it-offline",
+      "item_type": "vocabulary",
+      "source_ref_id": "eb552f4d30809a2a",
+      "front": "Let us take this discussion offline",
+      "back": "Chúng ta hãy trao đổi riêng việc này sau cuộc họp",
+      "hint_vi": "Gợi ý: Cụm từ họp Agile chuẩn để tránh làm mất thời gian chung."
+    },
+    {
+      "id": "228ccd0cba39d854",
+      "slug": "srs-pair-programming",
+      "item_type": "vocabulary",
+      "source_ref_id": "ffe58ca5c00a3208",
+      "front": "Can we pair program on this for 15 minutes?",
+      "back": "Chúng ta có thể lập trình đôi trong 15 phút không?",
+      "hint_vi": "Gợi ý: Pair programming là hai người cùng ngồi soi code giải quyết vấn đề."
+    },
+    {
+      "id": "42b85130662de147",
+      "slug": "srs-impacts-the-timeline",
+      "item_type": "vocabulary",
+      "source_ref_id": "7e8f15c7d1c205ba",
+      "front": "This blocker impacts our sprint timeline",
+      "back": "Rào cản này ảnh hưởng tới tiến độ sprint",
+      "hint_vi": "Gợi ý: Cảnh báo rủi ro về tiến độ."
+    },
+    {
+      "id": "3085d9d56f80bc01",
+      "slug": "srs-hope-to-resolve-today",
+      "item_type": "vocabulary",
+      "source_ref_id": "ef1f3932f5063e6c",
+      "front": "I hope to resolve this by the end of today",
+      "back": "Tôi hy vọng sẽ xử lý xong việc này trong hôm nay",
+      "hint_vi": "Gợi ý: Nêu mục tiêu khắc phục sự cố trong ngày."
+    }
+  ]
+}

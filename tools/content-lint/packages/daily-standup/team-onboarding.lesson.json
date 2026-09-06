@@ -1,0 +1,745 @@
+{
+  "id": "6583c69714d4c5e5",
+  "slug": "team-onboarding",
+  "schema_version": "0.1.0",
+  "title_en": "Team Onboarding & Project Setup",
+  "title_vi": "Hội nhập nhóm & Thiết lập dự án",
+  "blurb_vi": "Học các câu hỏi và câu nói cần thiết trong ngày đầu tiên hội nhập dự án phần mềm.",
+  "level": "A1",
+  "target_skills": [
+    "speaking",
+    "listening"
+  ],
+  "estimated_duration_minutes": 15,
+  "objective_vi": "Hỏi và trả lời về quy trình onboarding, mã nguồn và tài liệu dự án.",
+  "situation_vi": "Ngày đầu tiên nhận tài liệu và cài đặt môi trường phát triển.",
+  "learner_role_vi": "Kỹ sư phần mềm mới nhận nhiệm vụ.",
+  "prerequisite_lesson_slugs": [
+    "self-introduction"
+  ],
+  "pronunciation_focus_vi": "Phát âm đúng các từ thuật ngữ: repository, documentation, setup, access.",
+  "final_speaking_task_vi": "Hỏi nhóm về quyền truy cập mã nguồn và tài liệu hướng dẫn.",
+  "pass_conditions_vi": "Trả lời đúng các câu hỏi thực hành và phát âm chuẩn các thuật ngữ onboarding.",
+  "unit_slug": "introduction",
+  "unit_title_vi": "Giới thiệu bản thân & Công nghệ",
+  "stage": 1,
+  "expected_errors": [
+    {
+      "category": "vocabulary",
+      "trigger_condition": "Quên từ vựng chuyên ngành",
+      "remediation_ref_id": "12c4c69b64251b66",
+      "tip_vi": "Ôn tập lại cụm từ \"Where can I find the repository link?\"."
+    },
+    {
+      "category": "pronunciation_affecting_meaning",
+      "trigger_condition": "Phát âm sai tên công nghệ",
+      "remediation_ref_id": "82ee228a41e43f10",
+      "tip_vi": "Luyện nghe lại audio câu mẫu \"I need access to clone the project\"."
+    }
+  ],
+  "chunks": [
+    {
+      "id": "332f76db6df4b3a9",
+      "slug": "where-repo",
+      "order": 0,
+      "phrase_en": "Where can I find the repository link?",
+      "phrase_vi": "Tôi có thể tìm liên kết mã nguồn ở đâu?",
+      "explanation_vi": "Câu hỏi phổ biến nhất khi bắt đầu dự án mới.",
+      "context_sentence_en": "In our daily work: \"Where can I find the repository link?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi có thể tìm liên kết mã nguồn ở đâu?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "95015b2ed5cb6f47"
+      ],
+      "srs_ref_ids": [
+        "12c4c69b64251b66"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "31609076a8b170ee",
+          "slug": "turn1-where-repo",
+          "speaker": "A",
+          "text_en": "Where can I find the repository link??",
+          "text_vi": "Tôi có thể tìm liên kết mã nguồn ở đâu??"
+        },
+        {
+          "id": "8769c45f0e50c34f",
+          "slug": "turn2-where-repo",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "5c670d3b78ab2ee6",
+          "slug": "qa-where-repo",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Where can I find the repository link?\":",
+          "options": [
+            "Tôi có thể tìm liên kết mã nguồn ở đâu?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi có thể tìm liên kết mã nguồn ở đâu?",
+          "explanation_vi": "Dịch đúng là: Tôi có thể tìm liên kết mã nguồn ở đâu?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "12c4c69b64251b66"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Where can I find the repository link?\" nghĩa là \"Tôi có thể tìm liên kết mã nguồn ở đâu?\"."
+      }
+    },
+    {
+      "id": "2d948e734123301b",
+      "slug": "clone-project",
+      "order": 1,
+      "phrase_en": "I need access to clone the project",
+      "phrase_vi": "Tôi cần quyền truy cập để tải mã nguồn về",
+      "explanation_vi": "Clone the project nghĩa là tải mã nguồn từ Git về máy cá nhân.",
+      "context_sentence_en": "In our daily work: \"I need access to clone the project\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi cần quyền truy cập để tải mã nguồn về\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "6796662fa1502a06"
+      ],
+      "srs_ref_ids": [
+        "82ee228a41e43f10"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "182bc3e983628598",
+          "slug": "turn1-clone-project",
+          "speaker": "A",
+          "text_en": "I need access to clone the project?",
+          "text_vi": "Tôi cần quyền truy cập để tải mã nguồn về?"
+        },
+        {
+          "id": "8711897d892aa455",
+          "slug": "turn2-clone-project",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "ec4b3996dfa552d1",
+          "slug": "qa-clone-project",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I need access to clone the project\":",
+          "options": [
+            "Tôi cần quyền truy cập để tải mã nguồn về",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi cần quyền truy cập để tải mã nguồn về",
+          "explanation_vi": "Dịch đúng là: Tôi cần quyền truy cập để tải mã nguồn về"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "82ee228a41e43f10"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I need access to clone the project\" nghĩa là \"Tôi cần quyền truy cập để tải mã nguồn về\"."
+      }
+    },
+    {
+      "id": "5e8eaf5425b46396",
+      "slug": "read-readme",
+      "order": 2,
+      "phrase_en": "Please check the README file for setup instructions",
+      "phrase_vi": "Vui lòng đọc tệp README để xem hướng dẫn cài đặt",
+      "explanation_vi": "README là tệp tài liệu hướng dẫn khởi tạo dự án.",
+      "context_sentence_en": "In our daily work: \"Please check the README file for setup instructions\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Vui lòng đọc tệp README để xem hướng dẫn cài đặt\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "a8c9710212eafa29"
+      ],
+      "srs_ref_ids": [
+        "9d6f6ce1314504fb"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "88c438120576e5cd",
+          "slug": "turn1-read-readme",
+          "speaker": "A",
+          "text_en": "Please check the README file for setup instructions?",
+          "text_vi": "Vui lòng đọc tệp README để xem hướng dẫn cài đặt?"
+        },
+        {
+          "id": "4f0afe1ef54ee49e",
+          "slug": "turn2-read-readme",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "ab69fcc8a927e0e4",
+          "slug": "qa-read-readme",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Please check the README file for setup instructions\":",
+          "options": [
+            "Vui lòng đọc tệp README để xem hướng dẫn cài đặt",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Vui lòng đọc tệp README để xem hướng dẫn cài đặt",
+          "explanation_vi": "Dịch đúng là: Vui lòng đọc tệp README để xem hướng dẫn cài đặt"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "9d6f6ce1314504fb"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Please check the README file for setup instructions\" nghĩa là \"Vui lòng đọc tệp README để xem hướng dẫn cài đặt\"."
+      }
+    },
+    {
+      "id": "54cf031023a6118d",
+      "slug": "env-variables",
+      "order": 3,
+      "phrase_en": "Do we have a template for environment variables?",
+      "phrase_vi": "Chúng ta có mẫu cấu hình biến môi trường không?",
+      "explanation_vi": "Environment variables là các biến môi trường (.env).",
+      "context_sentence_en": "In our daily work: \"Do we have a template for environment variables?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta có mẫu cấu hình biến môi trường không?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "1cd59575a7d4e933"
+      ],
+      "srs_ref_ids": [
+        "0f85254541bfcad8"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "f7030f46a2ce20bb",
+          "slug": "turn1-env-variables",
+          "speaker": "A",
+          "text_en": "Do we have a template for environment variables??",
+          "text_vi": "Chúng ta có mẫu cấu hình biến môi trường không??"
+        },
+        {
+          "id": "3b1eb729225f42b9",
+          "slug": "turn2-env-variables",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "add5242130eed256",
+          "slug": "qa-env-variables",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Do we have a template for environment variables?\":",
+          "options": [
+            "Chúng ta có mẫu cấu hình biến môi trường không?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Chúng ta có mẫu cấu hình biến môi trường không?",
+          "explanation_vi": "Dịch đúng là: Chúng ta có mẫu cấu hình biến môi trường không?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "0f85254541bfcad8"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Do we have a template for environment variables?\" nghĩa là \"Chúng ta có mẫu cấu hình biến môi trường không?\"."
+      }
+    },
+    {
+      "id": "07d3b97d427f87b9",
+      "slug": "setting-up-workspace",
+      "order": 4,
+      "phrase_en": "I'm setting up my local development environment",
+      "phrase_vi": "Tôi đang cài đặt môi trường phát triển tại máy",
+      "explanation_vi": "Local development environment là môi trường chạy code trên máy cá nhân.",
+      "context_sentence_en": "In our daily work: \"I'm setting up my local development environment\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang cài đặt môi trường phát triển tại máy\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "2b89d81de9e7d9a8"
+      ],
+      "srs_ref_ids": [
+        "6d8f2083327db88b"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "9d7ffc2af04dbe69",
+          "slug": "turn1-setting-up-workspace",
+          "speaker": "A",
+          "text_en": "I'm setting up my local development environment?",
+          "text_vi": "Tôi đang cài đặt môi trường phát triển tại máy?"
+        },
+        {
+          "id": "53fb9685d33b391f",
+          "slug": "turn2-setting-up-workspace",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "659b083b89f98f89",
+          "slug": "qa-setting-up-workspace",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm setting up my local development environment\":",
+          "options": [
+            "Tôi đang cài đặt môi trường phát triển tại máy",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đang cài đặt môi trường phát triển tại máy",
+          "explanation_vi": "Dịch đúng là: Tôi đang cài đặt môi trường phát triển tại máy"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "6d8f2083327db88b"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm setting up my local development environment\" nghĩa là \"Tôi đang cài đặt môi trường phát triển tại máy\"."
+      }
+    },
+    {
+      "id": "6874d852d39841ff",
+      "slug": "need-credentials",
+      "order": 5,
+      "phrase_en": "I still need credentials for staging server",
+      "phrase_vi": "Tôi vẫn cần thông tin đăng nhập cho máy chủ staging",
+      "explanation_vi": "Credentials chỉ tài khoản và mật khẩu truy cập.",
+      "context_sentence_en": "In our daily work: \"I still need credentials for staging server\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi vẫn cần thông tin đăng nhập cho máy chủ staging\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "f53360e800f6eef3"
+      ],
+      "srs_ref_ids": [
+        "b70217d91a8f4740"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "b84158596eabe6b6",
+          "slug": "turn1-need-credentials",
+          "speaker": "A",
+          "text_en": "I still need credentials for staging server?",
+          "text_vi": "Tôi vẫn cần thông tin đăng nhập cho máy chủ staging?"
+        },
+        {
+          "id": "e2b46764d99f98aa",
+          "slug": "turn2-need-credentials",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "a9c6b7c0af826d12",
+          "slug": "qa-need-credentials",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I still need credentials for staging server\":",
+          "options": [
+            "Tôi vẫn cần thông tin đăng nhập cho máy chủ staging",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi vẫn cần thông tin đăng nhập cho máy chủ staging",
+          "explanation_vi": "Dịch đúng là: Tôi vẫn cần thông tin đăng nhập cho máy chủ staging"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "b70217d91a8f4740"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I still need credentials for staging server\" nghĩa là \"Tôi vẫn cần thông tin đăng nhập cho máy chủ staging\"."
+      }
+    },
+    {
+      "id": "0e5b654d234162b0",
+      "slug": "who-to-ask",
+      "order": 6,
+      "phrase_en": "Who should I contact regarding DB access?",
+      "phrase_vi": "Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?",
+      "explanation_vi": "Cấu trúc Who should I contact regarding... dùng để hỏi người hỗ trợ.",
+      "context_sentence_en": "In our daily work: \"Who should I contact regarding DB access?\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "3b8a2d6a389bb6f6"
+      ],
+      "srs_ref_ids": [
+        "01f26c16c9ab44b7"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "07a02fe63174c37f",
+          "slug": "turn1-who-to-ask",
+          "speaker": "A",
+          "text_en": "Who should I contact regarding DB access??",
+          "text_vi": "Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu??"
+        },
+        {
+          "id": "502a4bf2fcc3d3be",
+          "slug": "turn2-who-to-ask",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "39fc6690318b5345",
+          "slug": "qa-who-to-ask",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"Who should I contact regarding DB access?\":",
+          "options": [
+            "Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?",
+          "explanation_vi": "Dịch đúng là: Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "01f26c16c9ab44b7"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"Who should I contact regarding DB access?\" nghĩa là \"Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?\"."
+      }
+    },
+    {
+      "id": "a77e7fb5604aaf3a",
+      "slug": "ready-for-first-task",
+      "order": 7,
+      "phrase_en": "I'm ready for my first sprint task",
+      "phrase_vi": "Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint",
+      "explanation_vi": "Sprint task là nhiệm vụ trong chu kỳ làm việc Agile.",
+      "context_sentence_en": "In our daily work: \"I'm ready for my first sprint task\".",
+      "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint\".",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "audio_ref_ids": [
+        "bdcd8275576b6ab3"
+      ],
+      "srs_ref_ids": [
+        "fef7e34d8f1abc2f"
+      ],
+      "dialogue_turns": [
+        {
+          "id": "89a567205c138b5a",
+          "slug": "turn1-ready-for-first-task",
+          "speaker": "A",
+          "text_en": "I'm ready for my first sprint task?",
+          "text_vi": "Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint?"
+        },
+        {
+          "id": "1f5282e90fac97a7",
+          "slug": "turn2-ready-for-first-task",
+          "speaker": "B",
+          "text_en": "Yes, exactly.",
+          "text_vi": "Đúng vậy, chính xác."
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "49ccdef655c86c12",
+          "slug": "qa-ready-for-first-task",
+          "type": "multiple_choice",
+          "question": "Choose the correct meaning of \"I'm ready for my first sprint task\":",
+          "options": [
+            "Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint",
+            "Một nghĩa khác không chính xác"
+          ],
+          "answer": "Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint",
+          "explanation_vi": "Dịch đúng là: Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint"
+        }
+      ],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": [
+          "fef7e34d8f1abc2f"
+        ],
+        "tip_vi": "Hãy nhớ cụm từ \"I'm ready for my first sprint task\" nghĩa là \"Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint\"."
+      }
+    }
+  ],
+  "grammar_patterns": [
+    {
+      "id": "110f37a3039dc2c0",
+      "slug": "gp-1",
+      "name_en": "Pattern for Team Onboarding & Project Setup",
+      "name_vi": "Mẫu câu chính bài Hội nhập nhóm & Thiết lập dự án",
+      "pattern": "S + V + O",
+      "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
+      "tied_to_actions": [
+        "speaking",
+        "listening"
+      ],
+      "examples": [
+        {
+          "en": "Where can I find the repository link?",
+          "vi": "Tôi có thể tìm liên kết mã nguồn ở đâu?"
+        },
+        {
+          "en": "I need access to clone the project",
+          "vi": "Tôi cần quyền truy cập để tải mã nguồn về"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "2d1d749966d61e52",
+      "slug": "v-where-repo",
+      "word": "Where",
+      "word_type": "noun",
+      "meaning_vi": "Tôi có thể tìm liên kết mã nguồn ở đâu?",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A1",
+      "example_en": "Where can I find the repository link?",
+      "example_vi": "Tôi có thể tìm liên kết mã nguồn ở đâu?"
+    },
+    {
+      "id": "40033dab7c1792f0",
+      "slug": "v-clone-project",
+      "word": "I",
+      "word_type": "noun",
+      "meaning_vi": "Tôi cần quyền truy cập để tải mã nguồn về",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A1",
+      "example_en": "I need access to clone the project",
+      "example_vi": "Tôi cần quyền truy cập để tải mã nguồn về"
+    },
+    {
+      "id": "c35cd01b122ce0dc",
+      "slug": "v-read-readme",
+      "word": "Please",
+      "word_type": "noun",
+      "meaning_vi": "Vui lòng đọc tệp README để xem hướng dẫn cài đặt",
+      "pronunciation_guide_vi": "phát âm chuẩn",
+      "ipa": "/təʊkən/",
+      "cefr_level": "A1",
+      "example_en": "Please check the README file for setup instructions",
+      "example_vi": "Vui lòng đọc tệp README để xem hướng dẫn cài đặt"
+    }
+  ],
+  "activities": [
+    {
+      "id": "6a3f43610d699a8b",
+      "slug": "shadowing-drill",
+      "type": "listen_and_repeat",
+      "title_vi": "Luyện nhại giọng (Shadowing)",
+      "chunk_ref_ids": [
+        "332f76db6df4b3a9",
+        "2d948e734123301b",
+        "5e8eaf5425b46396",
+        "54cf031023a6118d",
+        "07d3b97d427f87b9",
+        "6874d852d39841ff",
+        "0e5b654d234162b0",
+        "a77e7fb5604aaf3a"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe từng câu mẫu và lặp lại thật rõ ràng."
+    },
+    {
+      "id": "df6b12ebb5c53808",
+      "slug": "roleplay-drill",
+      "type": "role_play",
+      "title_vi": "Đóng vai tình huống (Role-play)",
+      "chunk_ref_ids": [
+        "332f76db6df4b3a9",
+        "2d948e734123301b",
+        "5e8eaf5425b46396",
+        "54cf031023a6118d"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Thực hành đối thoại theo vai lập trình viên."
+    },
+    {
+      "id": "c5d8ebccaec2b841",
+      "slug": "quiz-drill",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra phản xạ chủ động",
+      "chunk_ref_ids": [
+        "332f76db6df4b3a9",
+        "2d948e734123301b",
+        "5e8eaf5425b46396",
+        "54cf031023a6118d",
+        "07d3b97d427f87b9",
+        "6874d852d39841ff",
+        "0e5b654d234162b0",
+        "a77e7fb5604aaf3a"
+      ],
+      "qa_ref_ids": [
+        "5c670d3b78ab2ee6",
+        "ec4b3996dfa552d1",
+        "ab69fcc8a927e0e4",
+        "add5242130eed256",
+        "659b083b89f98f89",
+        "a9c6b7c0af826d12",
+        "39fc6690318b5345",
+        "49ccdef655c86c12"
+      ],
+      "instructions_vi": "Chọn đáp án đúng nhất cho từng câu hỏi."
+    }
+  ],
+  "audio_assets": [
+    {
+      "id": "95015b2ed5cb6f47",
+      "slug": "aud-where-repo",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/where-repo.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Where can I find the repository link?"
+    },
+    {
+      "id": "6796662fa1502a06",
+      "slug": "aud-clone-project",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/clone-project.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I need access to clone the project"
+    },
+    {
+      "id": "a8c9710212eafa29",
+      "slug": "aud-read-readme",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/read-readme.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Please check the README file for setup instructions"
+    },
+    {
+      "id": "1cd59575a7d4e933",
+      "slug": "aud-env-variables",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/env-variables.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Do we have a template for environment variables?"
+    },
+    {
+      "id": "2b89d81de9e7d9a8",
+      "slug": "aud-setting-up-workspace",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/setting-up-workspace.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm setting up my local development environment"
+    },
+    {
+      "id": "f53360e800f6eef3",
+      "slug": "aud-need-credentials",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/need-credentials.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I still need credentials for staging server"
+    },
+    {
+      "id": "3b8a2d6a389bb6f6",
+      "slug": "aud-who-to-ask",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/who-to-ask.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Who should I contact regarding DB access?"
+    },
+    {
+      "id": "bdcd8275576b6ab3",
+      "slug": "aud-ready-for-first-task",
+      "url": "https://assets.lingobites.app/audio/team-onboarding/ready-for-first-task.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm ready for my first sprint task"
+    }
+  ],
+  "srs_items": [
+    {
+      "id": "12c4c69b64251b66",
+      "slug": "srs-where-repo",
+      "item_type": "vocabulary",
+      "source_ref_id": "332f76db6df4b3a9",
+      "front": "Where can I find the repository link?",
+      "back": "Tôi có thể tìm liên kết mã nguồn ở đâu?",
+      "hint_vi": "Gợi ý: Câu hỏi phổ biến nhất khi bắt đầu dự án mới."
+    },
+    {
+      "id": "82ee228a41e43f10",
+      "slug": "srs-clone-project",
+      "item_type": "vocabulary",
+      "source_ref_id": "2d948e734123301b",
+      "front": "I need access to clone the project",
+      "back": "Tôi cần quyền truy cập để tải mã nguồn về",
+      "hint_vi": "Gợi ý: Clone the project nghĩa là tải mã nguồn từ Git về máy cá nhân."
+    },
+    {
+      "id": "9d6f6ce1314504fb",
+      "slug": "srs-read-readme",
+      "item_type": "vocabulary",
+      "source_ref_id": "5e8eaf5425b46396",
+      "front": "Please check the README file for setup instructions",
+      "back": "Vui lòng đọc tệp README để xem hướng dẫn cài đặt",
+      "hint_vi": "Gợi ý: README là tệp tài liệu hướng dẫn khởi tạo dự án."
+    },
+    {
+      "id": "0f85254541bfcad8",
+      "slug": "srs-env-variables",
+      "item_type": "vocabulary",
+      "source_ref_id": "54cf031023a6118d",
+      "front": "Do we have a template for environment variables?",
+      "back": "Chúng ta có mẫu cấu hình biến môi trường không?",
+      "hint_vi": "Gợi ý: Environment variables là các biến môi trường (.env)."
+    },
+    {
+      "id": "6d8f2083327db88b",
+      "slug": "srs-setting-up-workspace",
+      "item_type": "vocabulary",
+      "source_ref_id": "07d3b97d427f87b9",
+      "front": "I'm setting up my local development environment",
+      "back": "Tôi đang cài đặt môi trường phát triển tại máy",
+      "hint_vi": "Gợi ý: Local development environment là môi trường chạy code trên máy cá nhân."
+    },
+    {
+      "id": "b70217d91a8f4740",
+      "slug": "srs-need-credentials",
+      "item_type": "vocabulary",
+      "source_ref_id": "6874d852d39841ff",
+      "front": "I still need credentials for staging server",
+      "back": "Tôi vẫn cần thông tin đăng nhập cho máy chủ staging",
+      "hint_vi": "Gợi ý: Credentials chỉ tài khoản và mật khẩu truy cập."
+    },
+    {
+      "id": "01f26c16c9ab44b7",
+      "slug": "srs-who-to-ask",
+      "item_type": "vocabulary",
+      "source_ref_id": "0e5b654d234162b0",
+      "front": "Who should I contact regarding DB access?",
+      "back": "Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?",
+      "hint_vi": "Gợi ý: Cấu trúc Who should I contact regarding... dùng để hỏi người hỗ trợ."
+    },
+    {
+      "id": "fef7e34d8f1abc2f",
+      "slug": "srs-ready-for-first-task",
+      "item_type": "vocabulary",
+      "source_ref_id": "a77e7fb5604aaf3a",
+      "front": "I'm ready for my first sprint task",
+      "back": "Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint",
+      "hint_vi": "Gợi ý: Sprint task là nhiệm vụ trong chu kỳ làm việc Agile."
+    }
+  ]
+}

@@ -325,6 +325,67 @@ rule('LNT-011', 'SRS items have id, slug, source_ref_id, front, back', () => {
 });
 
 // ---------------------------------------------------------------------------
+// LNT-014: Progression graph prerequisites resolve and graph is acyclic
+// ---------------------------------------------------------------------------
+rule('LNT-014', 'Progression graph prerequisites resolve and graph is acyclic', () => {
+  const errors = [];
+  const lessonSlugs = new Set(lessons.map(l => l.lesson.slug));
+  const graph = new Map();
+  for (const {entry, lesson} of lessons) {
+    const prereqs = lesson.prerequisite_lesson_slugs ?? [];
+    graph.set(lesson.slug, prereqs);
+    for (const p of prereqs) {
+      if (!lessonSlugs.has(p)) {
+        errors.push(`${entry.file}: prerequisite_lesson_slug "${p}" does not exist in package`);
+      }
+    }
+  }
+  const visited = new Set();
+  const recStack = new Set();
+  function hasCycle(node) {
+    if (recStack.has(node)) return true;
+    if (visited.has(node)) return false;
+    visited.add(node);
+    recStack.add(node);
+    for (const neighbor of graph.get(node) ?? []) {
+      if (hasCycle(neighbor)) return true;
+    }
+    recStack.delete(node);
+    return false;
+  }
+  for (const slug of graph.keys()) {
+    if (hasCycle(slug)) {
+      errors.push(`Progression graph contains a cycle involving lesson "${slug}"`);
+      break;
+    }
+  }
+  return errors;
+});
+
+// ---------------------------------------------------------------------------
+// LNT-015: Weekly and stage checks are valid and stage checks use unseen prompts
+// ---------------------------------------------------------------------------
+rule('LNT-015', 'Weekly and stage checks are valid and stage checks use unseen prompts', () => {
+  const errors = [];
+  const lessonSlugs = new Set(lessons.map(l => l.lesson.slug));
+  for (const check of manifest.checks ?? []) {
+    for (const slug of check.covered_lesson_slugs ?? []) {
+      if (!lessonSlugs.has(slug)) {
+        errors.push(`manifest.json check "${check.slug}": covered_lesson_slug "${slug}" does not exist`);
+      }
+    }
+    if (check.type === 'stage_check') {
+      for (const item of check.items ?? []) {
+        if (!item.unseen_prompt_en && !item.unseen_prompt_vi) {
+          errors.push(`manifest.json stage check "${check.slug}" item "${item.slug}" missing unseen prompt`);
+        }
+      }
+    }
+  }
+  return errors;
+});
+
+// ---------------------------------------------------------------------------
 // Print results
 // ---------------------------------------------------------------------------
 const PAD = 10;
