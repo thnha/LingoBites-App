@@ -45,7 +45,7 @@ describe('validateReleaseConfig', () => {
     expect(result.valid).toBe(true);
   });
 
-  it('accepts lingobites-mvp preset', () => {
+  it('accepts lingobites-mvp preset with review enabled and legacy ingestion disabled', () => {
     const config = getReleaseConfig('lingobites-mvp');
     const result = validateReleaseConfig(
       config,
@@ -54,6 +54,18 @@ describe('validateReleaseConfig', () => {
     );
     expect(result.valid).toBe(true);
     expect(result.errors).toEqual([]);
+
+    // The MVP keeps the saved-lesson + review path so the offline review flow
+    // is reachable, while disabling legacy OCR/AI/paste ingestion.
+    expect(config.features.reviewSystem).toBe(true);
+    expect(config.features.lingobitesMvpReviewFlow).toBe(true);
+    expect(config.features.lessonResultView).toBe(true);
+    expect(config.features.lessonSave).toBe(true);
+    expect(config.features.lessonHistory).toBe(true);
+    expect(config.features.pasteTextInput).toBe(false);
+    expect(config.features.imageInput).toBe(false);
+    expect(config.features.ocrScanner).toBe(false);
+    expect(config.features.aiLessonAnalysis).toBe(false);
   });
 
   it('rejects miniGame when lessonSave is disabled', () => {

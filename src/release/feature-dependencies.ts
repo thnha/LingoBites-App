@@ -6,7 +6,7 @@ export const featureDependencies: Record<FeatureKey, string[]> = {
   ocrScanner: ['imageInput'],
   ocrReviewEdit: ['ocrScanner'],
   aiLessonAnalysis: ['pasteTextInput'],
-  lessonResultView: ['aiLessonAnalysis'],
+  lessonResultView: [],
   lessonSave: ['lessonResultView'],
   lessonHistory: ['lessonSave'],
   lingobitesMvpReviewFlow: [],

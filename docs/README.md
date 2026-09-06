@@ -15,6 +15,7 @@ These are the active docs for the LingoBites Offline Review MVP (SETE-92 and rel
 | `implementation-notes/` | Notes accumulated during MVP implementation |
 | `tasks/` | Task briefs for the current MVP sprint |
 | `prompts/` | Prompt templates used by the MVP |
+| `qa/` | Offline QA checklists and recorded results (`qa/lingobites-offline-review-mvp.md`) |
 
 ## How to read
 

@@ -606,6 +606,13 @@ function createMockDatabase() {
     }
 
     if (
+      normalized.startsWith('select') &&
+      normalized.includes('from review_sessions')
+    ) {
+      return toRows([...reviewSessions]);
+    }
+
+    if (
       normalized.includes('from gamification_events') &&
       normalized.startsWith('select')
     ) {
