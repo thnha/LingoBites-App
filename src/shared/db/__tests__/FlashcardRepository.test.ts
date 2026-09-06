@@ -449,4 +449,102 @@ describe('FlashcardRepository', () => {
     );
     expect(listPendingSyncEvents()).toHaveLength(0);
   });
+
+  it('duplicate save is idempotent: no extra rows and schedule is not reset', () => {
+    const lessonId = saveFixtureLesson();
+    const vocabulary = validFullOutput.vocabulary[0];
+
+    const first = saveFlashcard({
+      lessonId,
+      vocabulary,
+      now: '2026-08-17T00:00:00.000Z',
+    });
+    expect(first.ok).toBe(true);
+    if (!first.ok) {
+      return;
+    }
+
+    // Advance the schedule so we can tell if it gets reset.
+    recordFlashcardRating({
+      flashcardId: first.flashcardId,
+      rating: 'good',
+      reviewedAt: '2026-08-17T12:00:00.000Z',
+    });
+    const rowAfterRating = readScheduleRow(first.flashcardId);
+    expect(rowAfterRating?.repetitions).toBe(1);
+
+    // Save the same vocabulary again.
+    const second = saveFlashcard({
+      lessonId,
+      vocabulary,
+      now: '2026-08-17T13:00:00.000Z',
+    });
+    expect(second.ok).toBe(true);
+    if (!second.ok) {
+      return;
+    }
+    expect(second.duplicate).toBe(true);
+    expect(second.flashcardId).toBe(first.flashcardId);
+
+    // Exactly one flashcard row must exist.
+    expect(listFlashcards()).toHaveLength(1);
+
+    // Schedule must not have been reset by the duplicate save.
+    const rowAfterDuplicate = readScheduleRow(first.flashcardId);
+    expect(rowAfterDuplicate?.repetitions).toBe(1);
+    expect(rowAfterDuplicate?.interval_days).toBe(rowAfterRating?.interval_days);
+  });
+
+  it('returns FLASHCARD_NOT_FOUND when rating a nonexistent card', () => {
+    const result = recordFlashcardRating({
+      flashcardId: 'nonexistent-card-id',
+      rating: 'good',
+      reviewedAt: '2026-08-17T12:00:00.000Z',
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+    expect(result.errorCode).toBe('FLASHCARD_NOT_FOUND');
+  });
+
+  it('forgot resets the schedule row interval_days to 1 in the database', () => {
+    const lessonId = saveFixtureLesson();
+    const saved = saveFlashcard({
+      lessonId,
+      vocabulary: validFullOutput.vocabulary[0],
+      now: '2026-08-17T00:00:00.000Z',
+    });
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) {
+      return;
+    }
+
+    // Mature the card so interval_days > 1 before the forgot.
+    recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'good',
+      reviewedAt: '2026-08-17T12:00:00.000Z',
+    });
+    recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'good',
+      reviewedAt: '2026-08-18T12:00:00.000Z',
+    });
+    const rowBeforeForgot = readScheduleRow(saved.flashcardId);
+    expect((rowBeforeForgot?.interval_days ?? 0) > 1).toBe(true);
+
+    // Now forget.
+    recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'forgot',
+      reviewedAt: '2026-08-19T12:00:00.000Z',
+    });
+
+    const row = readScheduleRow(saved.flashcardId);
+    expect(row?.interval_days).toBe(1);
+    expect(row?.repetitions).toBe(0);
+    expect(row?.next_review_at).toBe('2026-08-20T12:00:00.000Z');
+  });
 });

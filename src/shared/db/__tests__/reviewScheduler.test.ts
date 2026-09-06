@@ -160,6 +160,22 @@ describe('reviewScheduler V1 (legacy fixed interval)', () => {
     expect(result.intervalDays).toBe(1);
     expect(result.nextReviewAt).toBe('2026-08-18T12:00:00.000Z');
   });
+
+  it('walks the full remembered interval chain 1 -> 3 -> 7 -> 14 -> 30 -> 60 -> 120 -> 120', () => {
+    const expectedChain = [1, 3, 7, 14, 30, 60, 120, 120];
+    let currentIntervalDays = 0; // start before the first step
+    const reviewedAt = '2026-08-17T12:00:00.000Z';
+
+    for (let index = 0; index < expectedChain.length; index += 1) {
+      const result = calculateNextReviewStateV1({
+        rating: 'remembered',
+        currentIntervalDays,
+        reviewedAt,
+      });
+      expect(result.intervalDays).toBe(expectedChain[index]);
+      currentIntervalDays = result.intervalDays;
+    }
+  });
 });
 
 describe('reviewScheduler backfill derivation', () => {
