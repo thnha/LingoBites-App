@@ -22,6 +22,7 @@ import {GrammarDetailScreen} from '../../modules/lesson/GrammarDetailScreen';
 import {PracticeScreen} from '../../modules/practice/PracticeScreen';
 import {FlashcardListScreen} from '../../modules/lesson/FlashcardListScreen';
 import {DailyReviewScreen} from '../../modules/review/DailyReviewScreen';
+import {TodayScreen} from '../../modules/today/TodayScreen';
 import {ContentLessonListScreen} from '../../modules/content/runtime/ContentLessonListScreen';
 import {ContentLessonDetailScreen} from '../../modules/content/runtime/ContentLessonDetailScreen';
 import {ContentLessonRuntimeScreen} from '../../modules/content/runtime/ContentLessonRuntimeScreen';
@@ -97,6 +98,11 @@ function HomeStackNavigator() {
         options={{headerShown: false}}
       />
       <HomeStack.Screen
+        component={TodayScreen}
+        name="Today"
+        options={{headerShown: false}}
+      />
+      <HomeStack.Screen
         component={SentenceDetailScreen}
         name="SentenceDetail"
         options={{headerShown: false}}
@@ -161,6 +167,11 @@ function LessonsStackNavigator() {
       <LessonsStack.Screen
         component={SpeakingShadowingActivity}
         name="SpeakingShadowing"
+        options={{headerShown: false}}
+      />
+      <LessonsStack.Screen
+        component={TodayScreen}
+        name="Today"
         options={{headerShown: false}}
       />
       <LessonsStack.Screen

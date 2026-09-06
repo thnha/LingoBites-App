@@ -63,6 +63,7 @@ export type HomeStackParamList = {
   SavedLessonDetail: {lessonId: string};
   FlashcardList: {lessonId?: string} | undefined;
   DailyReview: undefined;
+  Today: undefined;
 } & LearningDetailParamList;
 
 export type LessonsStackParamList = {
@@ -76,6 +77,7 @@ export type LessonsStackParamList = {
   /** Speaking Room + shadowing activity (SETE-110 / M5). */
   SpeakingRoom: undefined;
   SpeakingShadowing: undefined;
+  Today: undefined;
 } & LearningDetailParamList;
 
 export type ProfileStackParamList = {
