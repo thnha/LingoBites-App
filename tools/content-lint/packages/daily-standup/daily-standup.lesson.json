@@ -1,0 +1,882 @@
+{
+  "id": "3fdc3340c228cfac",
+  "slug": "daily-standup",
+  "schema_version": "0.1.0",
+  "title_en": "Daily Stand-up",
+  "title_vi": "Họp Đứng Hàng Ngày",
+  "blurb_vi": "Học các cụm từ và mẫu câu thường dùng trong buổi họp đứng hàng ngày (daily stand-up) tại nơi làm việc bằng tiếng Anh.",
+  "level": "A2",
+  "target_skills": ["speaking", "listening"],
+  "estimated_duration_minutes": 20,
+
+  "grammar_patterns": [
+    {
+      "id": "f093233b33860e00",
+      "slug": "present-continuous-update",
+      "name_en": "Present Continuous for Work Updates",
+      "name_vi": "Thì hiện tại tiếp diễn dùng để báo cáo công việc",
+      "pattern": "S + am/is/are + V-ing",
+      "explanation_vi": "Thì hiện tại tiếp diễn (am/is/are + V-ing) được dùng để nói về việc mình đang làm hoặc đang tiến hành. Trong buổi họp đứng, chúng ta thường dùng mẫu này để cập nhật tiến độ công việc.",
+      "tied_to_actions": ["speaking", "listening"],
+      "examples": [
+        { "en": "I'm working on the report.", "vi": "Tôi đang làm báo cáo." },
+        { "en": "She is fixing the bug.", "vi": "Cô ấy đang sửa lỗi." },
+        { "en": "We are meeting a deadline.", "vi": "Chúng tôi đang chạy deadline." }
+      ]
+    },
+    {
+      "id": "93bffa0350cb5b2e",
+      "slug": "question-how-about",
+      "name_en": "How about you? — Asking for an update",
+      "name_vi": "\"How about you?\" — Hỏi cập nhật từ người khác",
+      "pattern": "How about you? / What about you?",
+      "explanation_vi": "Dùng \"How about you?\" hoặc \"What about you?\" sau khi bạn chia sẻ cập nhật của mình để hỏi người khác. Đây là cách lịch sự và tự nhiên trong văn phòng.",
+      "tied_to_actions": ["speaking", "listening"],
+      "examples": [
+        { "en": "I'm done with my tasks. How about you?", "vi": "Tôi đã xong việc rồi. Còn bạn thì sao?" },
+        { "en": "Not much on my end. What about you?", "vi": "Phía tôi không có gì nhiều. Còn bạn?" }
+      ]
+    },
+    {
+      "id": "5dac277e68d5dfaa",
+      "slug": "idiom-swamped",
+      "name_en": "Idiom: Swamped with work",
+      "name_vi": "Thành ngữ: Ngập đầu trong công việc",
+      "pattern": "I'm swamped (with + noun)",
+      "explanation_vi": "\"Swamped\" là thành ngữ tiếng Anh có nghĩa là \"bận quá, không có thời gian\". Bạn có thể nói \"I'm swamped\" hoặc \"I'm swamped with work/emails/tasks\". Rất phổ biến trong môi trường văn phòng.",
+      "tied_to_actions": ["speaking", "listening"],
+      "examples": [
+        { "en": "I'm swamped with emails today.", "vi": "Hôm nay tôi ngập trong email." },
+        { "en": "Sorry, I'm swamped — can we talk later?", "vi": "Xin lỗi, tôi đang bận lắm — nói chuyện sau được không?" }
+      ]
+    }
+  ],
+
+  "vocabulary": [
+    {
+      "id": "18444b7207960a75",
+      "slug": "standup",
+      "word": "stand-up (meeting)",
+      "word_type": "noun",
+      "meaning_vi": "buổi họp đứng, cuộc họp ngắn hàng ngày",
+      "pronunciation_guide_vi": "xtăn-đớp",
+      "ipa": "/ˈstænd.ʌp/",
+      "cefr_level": "B1",
+      "example_en": "Let's have our daily stand-up at 9 AM.",
+      "example_vi": "Hãy bắt đầu buổi họp đứng hàng ngày lúc 9 giờ sáng."
+    },
+    {
+      "id": "79daaa5245b13d0f",
+      "slug": "swamped",
+      "word": "swamped",
+      "word_type": "adjective",
+      "meaning_vi": "bận rộn quá mức, ngập đầu trong công việc",
+      "pronunciation_guide_vi": "xwompt",
+      "ipa": "/swɒmpt/",
+      "cefr_level": "B1",
+      "example_en": "I'm totally swamped this week.",
+      "example_vi": "Tuần này tôi bận kinh khủng.",
+      "audio_ref_id": "b4a76135ac8d7ba8"
+    },
+    {
+      "id": "b5b955d70a01083d",
+      "slug": "deadline",
+      "word": "deadline",
+      "word_type": "noun",
+      "meaning_vi": "hạn chót, deadline",
+      "pronunciation_guide_vi": "đét-lai",
+      "ipa": "/ˈded.laɪn/",
+      "cefr_level": "A2",
+      "example_en": "The deadline is Friday.",
+      "example_vi": "Hạn chót là thứ Sáu."
+    },
+    {
+      "id": "513c2e07745c7252",
+      "slug": "hang-in-there",
+      "word": "hang in there",
+      "word_type": "idiom",
+      "meaning_vi": "cố lên, kiên trì lên (lời động viên)",
+      "pronunciation_guide_vi": "hăng in đe",
+      "ipa": "/hæŋ ɪn ðer/",
+      "cefr_level": "A2",
+      "example_en": "It's tough but hang in there!",
+      "example_vi": "Khó đấy nhưng cố lên nhé!",
+      "audio_ref_id": "e35366c1aa777330"
+    },
+    {
+      "id": "33dc0db525432ae2",
+      "slug": "touch-base",
+      "word": "touch base",
+      "word_type": "idiom",
+      "meaning_vi": "liên lạc lại, check lại với nhau",
+      "pronunciation_guide_vi": "tách bây-s",
+      "ipa": "/tʌtʃ beɪs/",
+      "cefr_level": "B1",
+      "example_en": "Let's touch base tomorrow morning.",
+      "example_vi": "Ngày mai sáng mình liên lạc lại nhé."
+    },
+    {
+      "id": "17410da56d00fe54",
+      "slug": "usual",
+      "word": "the usual",
+      "word_type": "noun phrase",
+      "meaning_vi": "như mọi khi, công việc bình thường",
+      "pronunciation_guide_vi": "diu-diu-ồl",
+      "ipa": "/ˈjuː.ʒu.əl/",
+      "cefr_level": "A2",
+      "example_en": "Just the usual — fixing bugs.",
+      "example_vi": "Như mọi khi thôi — sửa lỗi."
+    },
+    {
+      "id": "ceda02fc6870a9ab",
+      "slug": "tough",
+      "word": "tough",
+      "word_type": "adjective",
+      "meaning_vi": "khó khăn, vất vả",
+      "pronunciation_guide_vi": "tấf",
+      "ipa": "/tʌf/",
+      "cefr_level": "A2",
+      "example_en": "Sounds tough. Do you need help?",
+      "example_vi": "Nghe vất vả đấy. Bạn cần giúp đỡ không?"
+    },
+    {
+      "id": "5369be04228723ea",
+      "slug": "project",
+      "word": "project",
+      "word_type": "noun",
+      "meaning_vi": "dự án, đề án",
+      "pronunciation_guide_vi": "prô-dject",
+      "ipa": "/ˈprɒdʒ.ekt/",
+      "cefr_level": "A1",
+      "example_en": "I'm working on the new project.",
+      "example_vi": "Tôi đang làm dự án mới."
+    },
+    {
+      "id": "0843118c25e2cda2",
+      "slug": "update",
+      "word": "update",
+      "word_type": "noun/verb",
+      "meaning_vi": "cập nhật (thông tin), báo cáo nhanh",
+      "pronunciation_guide_vi": "ắp-đây-t",
+      "ipa": "/ˈʌp.deɪt/",
+      "cefr_level": "A2",
+      "example_en": "Any updates from your side?",
+      "example_vi": "Bên bạn có cập nhật gì không?"
+    },
+    {
+      "id": "23ebe5fd4118e4b2",
+      "slug": "catch-you-later",
+      "word": "catch you later",
+      "word_type": "idiom",
+      "meaning_vi": "hẹn gặp lại, gặp bạn sau",
+      "pronunciation_guide_vi": "kết diu lây-tờ",
+      "ipa": "/kætʃ juː ˈleɪ.tər/",
+      "cefr_level": "A1",
+      "example_en": "Alright, catch you later!",
+      "example_vi": "Được rồi, hẹn gặp sau nhé!"
+    }
+  ],
+
+  "chunks": [
+    {
+      "id": "a121f520aaf20c71",
+      "slug": "how-are-you",
+      "order": 0,
+      "phrase_en": "How are you doing?",
+      "phrase_vi": "Bạn có khỏe không?",
+      "explanation_vi": "\"How are you doing?\" là câu hỏi thăm hỏi thông thường khi gặp đồng nghiệp. Thân mật hơn \"How are you?\" và thường được dùng trong văn phòng hằng ngày.",
+      "context_sentence_en": "Good morning everyone! How are you doing today?",
+      "context_sentence_vi": "Chào buổi sáng mọi người! Hôm nay các bạn có khỏe không?",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": ["0843118c25e2cda2"],
+      "dialogue_turns": [
+        {
+          "id": "a121f520aaf20c71-dt-1",
+          "slug": "how-are-you-dt-1",
+          "speaker": "A",
+          "text_en": "Good morning! How are you doing?",
+          "text_vi": "Chào buổi sáng! Bạn có khỏe không?",
+          "audio_ref_id": "62200d52a7201538",
+          "grammar_ref_ids": []
+        },
+        {
+          "id": "a121f520aaf20c71-dt-2",
+          "slug": "how-are-you-dt-2",
+          "speaker": "B",
+          "text_en": "Not bad, thanks! Ready for the stand-up?",
+          "text_vi": "Cũng được, cảm ơn! Sẵn sàng cho buổi họp đứng chưa?",
+          "grammar_ref_ids": []
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "a121f520aaf20c71-qa-1",
+          "slug": "how-are-you-qa-1",
+          "type": "multiple_choice",
+          "question": "\"How are you doing?\" nghĩa là gì?",
+          "options": ["Bạn đang làm gì vậy?", "Bạn có khỏe không?", "Bạn đã ăn chưa?"],
+          "answer": "Bạn có khỏe không?",
+          "explanation_vi": "\"How are you doing?\" là cách hỏi thăm sức khỏe/trạng thái, không phải hỏi về hành động.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": ["62200d52a7201538"],
+      "srs_ref_ids": [],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["a121f520aaf20c71"],
+        "tip_vi": "Nhớ rằng \"How are you doing?\" hỏi về trạng thái, không phải hành động cụ thể."
+      }
+    },
+    {
+      "id": "6525516c6f072d29",
+      "slug": "not-bad-thanks",
+      "order": 1,
+      "phrase_en": "Not bad, thanks!",
+      "phrase_vi": "Cũng được, cảm ơn!",
+      "explanation_vi": "\"Not bad\" không có nghĩa là \"không tốt\" — ngược lại, đây là cách nói thân thiện rằng mọi thứ ổn, thậm chí tốt. Người Việt dễ nhầm vì dịch theo nghĩa đen.",
+      "context_sentence_en": "How are you? — Not bad, thanks! Busy but good.",
+      "context_sentence_vi": "Bạn có khỏe không? — Cũng được, cảm ơn! Bận nhưng vẫn ổn.",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "dialogue_turns": [],
+      "qa_items": [
+        {
+          "id": "6525516c6f072d29-qa-1",
+          "slug": "not-bad-thanks-qa-1",
+          "type": "multiple_choice",
+          "question": "Khi ai đó nói \"Not bad, thanks!\", họ muốn nói điều gì?",
+          "options": ["Họ đang gặp khó khăn", "Mọi thứ ổn, cũng tốt", "Họ không muốn nói chuyện"],
+          "answer": "Mọi thứ ổn, cũng tốt",
+          "explanation_vi": "\"Not bad\" trong tiếng Anh mang nghĩa tích cực: ổn, thậm chí tốt — không phải nghĩa tiêu cực như dịch đen.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": [],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["6525516c6f072d29"],
+        "tip_vi": "\"Not bad\" = tốt đấy! Đừng dịch theo nghĩa đen nhé."
+      }
+    },
+    {
+      "id": "f836e6316637c128",
+      "slug": "anything-new",
+      "order": 2,
+      "phrase_en": "Anything new on your end?",
+      "phrase_vi": "Bên bạn có gì mới không?",
+      "explanation_vi": "\"On your end\" có nghĩa là \"về phía bạn\" hoặc \"bên bạn\". Câu \"Anything new on your end?\" rất phổ biến trong email và cuộc họp để hỏi xem đối phương có cập nhật gì mới không.",
+      "context_sentence_en": "Let's start. Anything new on your end this morning?",
+      "context_sentence_vi": "Bắt đầu thôi. Bên bạn sáng nay có gì mới không?",
+      "grammar_ref_ids": ["93bffa0350cb5b2e"],
+      "vocab_ref_ids": ["0843118c25e2cda2"],
+      "dialogue_turns": [
+        {
+          "id": "f836e6316637c128-dt-1",
+          "slug": "anything-new-dt-1",
+          "speaker": "A",
+          "text_en": "Anything new on your end?",
+          "text_vi": "Bên bạn có gì mới không?",
+          "grammar_ref_ids": ["93bffa0350cb5b2e"]
+        },
+        {
+          "id": "f836e6316637c128-dt-2",
+          "slug": "anything-new-dt-2",
+          "speaker": "B",
+          "text_en": "Not much. Just the usual tasks.",
+          "text_vi": "Không nhiều. Công việc như mọi khi thôi.",
+          "grammar_ref_ids": []
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "f836e6316637c128-qa-1",
+          "slug": "anything-new-qa-1",
+          "type": "translation",
+          "question": "Dịch sang tiếng Anh: \"Bên bạn có gì mới không?\"",
+          "answer": "Anything new on your end?",
+          "explanation_vi": "\"On your end\" = \"về phía bạn/bên bạn\". Đây là cách diễn đạt tự nhiên trong môi trường làm việc.",
+          "skill": "translation"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": [],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["f836e6316637c128"],
+        "tip_vi": "Nhớ \"on your end\" = về phía bạn. Câu hỏi hoàn chỉnh: \"Anything new on your end?\""
+      }
+    },
+    {
+      "id": "24636fd3a0645493",
+      "slug": "just-the-usual",
+      "order": 3,
+      "phrase_en": "Just the usual.",
+      "phrase_vi": "Như mọi khi thôi.",
+      "explanation_vi": "\"Just the usual\" là cách nói tắt của \"Just the usual work/tasks\" (công việc như mọi khi thôi). Đây là câu trả lời ngắn gọn, thân thiện khi không có gì đặc biệt để báo cáo.",
+      "context_sentence_en": "What are you working on? — Just the usual. Reviewing PRs and fixing bugs.",
+      "context_sentence_vi": "Bạn đang làm gì vậy? — Như mọi khi thôi. Xem PR và sửa lỗi.",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": ["17410da56d00fe54"],
+      "dialogue_turns": [],
+      "qa_items": [
+        {
+          "id": "24636fd3a0645493-qa-1",
+          "slug": "just-the-usual-qa-1",
+          "type": "multiple_choice",
+          "question": "\"Just the usual\" được dùng khi nào?",
+          "options": [
+            "Khi bạn đang làm việc đặc biệt, mới mẻ",
+            "Khi không có gì mới, công việc như thường lệ",
+            "Khi bạn không muốn trả lời"
+          ],
+          "answer": "Khi không có gì mới, công việc như thường lệ",
+          "explanation_vi": "\"Just the usual\" = không có gì đặc biệt, mọi thứ như thường ngày.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": ["a845ba629a24ef1b"],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["24636fd3a0645493"],
+        "tip_vi": "\"Just the usual\" dùng khi không có gì mới để kể."
+      }
+    },
+    {
+      "id": "7436131fa85b88f6",
+      "slug": "swamped-with-work",
+      "order": 4,
+      "phrase_en": "I'm swamped with work.",
+      "phrase_vi": "Tôi đang ngập đầu trong công việc.",
+      "explanation_vi": "\"Swamped\" là thành ngữ nghĩa là bận quá mức. Gốc của từ là \"swamp\" (đầm lầy) — tưởng tượng bạn bị nhấn chìm trong công việc như trong đầm lầy. Rất tự nhiên trong văn phòng để giải thích tại sao bạn không có thời gian.",
+      "context_sentence_en": "Sorry I missed your message — I've been swamped with work all day.",
+      "context_sentence_vi": "Xin lỗi tôi đã bỏ lỡ tin nhắn của bạn — Cả ngày tôi bận bù đầu.",
+      "grammar_ref_ids": ["5dac277e68d5dfaa"],
+      "vocab_ref_ids": ["79daaa5245b13d0f"],
+      "dialogue_turns": [
+        {
+          "id": "7436131fa85b88f6-dt-1",
+          "slug": "swamped-dt-1",
+          "speaker": "A",
+          "text_en": "How's your day going?",
+          "text_vi": "Ngày hôm nay của bạn thế nào?",
+          "grammar_ref_ids": []
+        },
+        {
+          "id": "7436131fa85b88f6-dt-2",
+          "slug": "swamped-dt-2",
+          "speaker": "B",
+          "text_en": "I'm completely swamped. Three meetings and a deadline today.",
+          "text_vi": "Tôi đang bận kinh khủng. Ba cuộc họp và một deadline hôm nay.",
+          "audio_ref_id": "b4a76135ac8d7ba8",
+          "grammar_ref_ids": ["5dac277e68d5dfaa"]
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "7436131fa85b88f6-qa-1",
+          "slug": "swamped-qa-1",
+          "type": "multiple_choice",
+          "question": "\"I'm swamped\" có nghĩa là gì?",
+          "options": ["Tôi đang bơi", "Tôi đang rất bận rộn", "Tôi đang bị ướt"],
+          "answer": "Tôi đang rất bận rộn",
+          "explanation_vi": "\"Swamped\" là thành ngữ có nghĩa \"ngập đầu\" trong công việc = rất bận.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": ["b4a76135ac8d7ba8"],
+      "srs_ref_ids": ["60e9738fac73368c"],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["7436131fa85b88f6", "5dac277e68d5dfaa"],
+        "tip_vi": "\"Swamped\" = ngập đầu trong việc. Không liên quan đến bơi hay nước!"
+      }
+    },
+    {
+      "id": "5615f28aff7bf925",
+      "slug": "deadline-coming-up",
+      "order": 5,
+      "phrase_en": "We have a deadline coming up.",
+      "phrase_vi": "Chúng ta có một deadline sắp đến.",
+      "explanation_vi": "\"Coming up\" có nghĩa là sắp đến / sắp xảy ra. \"Deadline coming up\" = hạn chót đang đến gần. Đây là cách cảnh báo nhóm về thời hạn mà không tạo áp lực quá mức.",
+      "context_sentence_en": "Heads up, we have a deadline coming up this Friday — let's prioritize.",
+      "context_sentence_vi": "Chú ý nhé, chúng ta có deadline vào thứ Sáu này — hãy ưu tiên công việc.",
+      "grammar_ref_ids": ["f093233b33860e00"],
+      "vocab_ref_ids": ["b5b955d70a01083d"],
+      "dialogue_turns": [],
+      "qa_items": [
+        {
+          "id": "5615f28aff7bf925-qa-1",
+          "slug": "deadline-qa-1",
+          "type": "fill_blank",
+          "question": "We have a deadline ________ up this Friday.",
+          "answer": "coming",
+          "explanation_vi": "\"Coming up\" = sắp đến. Đây là cụm từ cố định, không thay đổi.",
+          "skill": "grammar"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": ["8f46273e51eca592"],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["5615f28aff7bf925"],
+        "tip_vi": "\"Coming up\" = sắp tới. \"A deadline coming up\" = một deadline sắp đến."
+      }
+    },
+    {
+      "id": "6ca0124fb2dcd66e",
+      "slug": "sounds-tough",
+      "order": 6,
+      "phrase_en": "Sounds tough! Do you need any help?",
+      "phrase_vi": "Nghe vất vả đấy! Bạn có cần giúp đỡ không?",
+      "explanation_vi": "\"Sounds tough\" là cách bày tỏ sự đồng cảm ngắn gọn — bạn thừa nhận rằng tình huống của đồng nghiệp khó khăn. Tiếp theo, bạn hỏi xem họ cần giúp gì không — đây là văn hóa teamwork phổ biến trong môi trường quốc tế.",
+      "context_sentence_en": "I'm struggling with this bug. — Sounds tough! Do you need any help?",
+      "context_sentence_vi": "Tôi đang vật lộn với lỗi này. — Nghe vất vả đấy! Bạn cần giúp không?",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": ["ceda02fc6870a9ab"],
+      "dialogue_turns": [
+        {
+          "id": "6ca0124fb2dcd66e-dt-1",
+          "slug": "sounds-tough-dt-1",
+          "speaker": "A",
+          "text_en": "I'm blocked on a tricky issue.",
+          "text_vi": "Tôi đang bị chặn bởi một vấn đề khó.",
+          "grammar_ref_ids": []
+        },
+        {
+          "id": "6ca0124fb2dcd66e-dt-2",
+          "slug": "sounds-tough-dt-2",
+          "speaker": "B",
+          "text_en": "Sounds tough! Do you need any help?",
+          "text_vi": "Nghe vất vả đấy! Bạn có cần giúp đỡ không?",
+          "grammar_ref_ids": []
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "6ca0124fb2dcd66e-qa-1",
+          "slug": "sounds-tough-qa-1",
+          "type": "multiple_choice",
+          "question": "Bạn dùng \"Sounds tough!\" để làm gì?",
+          "options": [
+            "Chê bai công việc của đồng nghiệp",
+            "Bày tỏ sự đồng cảm với tình huống khó khăn",
+            "Từ chối giúp đỡ"
+          ],
+          "answer": "Bày tỏ sự đồng cảm với tình huống khó khăn",
+          "explanation_vi": "\"Sounds tough\" = Nghe có vẻ vất vả đấy — thể hiện sự đồng cảm, không phải chê bai.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": ["121f855b2ccb9d1e"],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["6ca0124fb2dcd66e"],
+        "tip_vi": "\"Sounds tough\" là lời đồng cảm. Theo sau thường là lời đề nghị giúp đỡ."
+      }
+    },
+    {
+      "id": "eca681c9d5426a79",
+      "slug": "hang-in-there",
+      "order": 7,
+      "phrase_en": "Hang in there!",
+      "phrase_vi": "Cố lên! / Kiên trì nhé!",
+      "explanation_vi": "\"Hang in there\" là lời động viên thân thiện, có nghĩa là \"cố gắng tiếp tục, đừng bỏ cuộc\". Thường dùng khi đồng nghiệp đang vất vả. Câu này nghe nhẹ nhàng, không sáo rỗng như \"Good luck!\"",
+      "context_sentence_en": "It's been a tough sprint but hang in there — the weekend is almost here!",
+      "context_sentence_vi": "Sprint này vất vả nhưng cố lên nhé — cuối tuần gần rồi!",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": ["513c2e07745c7252"],
+      "dialogue_turns": [
+        {
+          "id": "eca681c9d5426a79-dt-1",
+          "slug": "hang-in-there-dt-1",
+          "speaker": "A",
+          "text_en": "I've been working overtime all week.",
+          "text_vi": "Tôi làm thêm giờ cả tuần rồi.",
+          "audio_ref_id": "e35366c1aa777330",
+          "grammar_ref_ids": ["f093233b33860e00"]
+        },
+        {
+          "id": "eca681c9d5426a79-dt-2",
+          "slug": "hang-in-there-dt-2",
+          "speaker": "B",
+          "text_en": "Hang in there! You're almost done.",
+          "text_vi": "Cố lên! Gần xong rồi.",
+          "grammar_ref_ids": []
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "eca681c9d5426a79-qa-1",
+          "slug": "hang-in-there-qa-1",
+          "type": "multiple_choice",
+          "question": "Khi nào bạn dùng \"Hang in there!\"?",
+          "options": [
+            "Khi muốn ai đó giữ thứ gì đó lại",
+            "Khi động viên ai đó đang vất vả",
+            "Khi kết thúc cuộc họp"
+          ],
+          "answer": "Khi động viên ai đó đang vất vả",
+          "explanation_vi": "\"Hang in there\" = cố lên, đừng bỏ cuộc — dùng để động viên đồng nghiệp.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": ["e35366c1aa777330"],
+      "srs_ref_ids": ["5f0518f6f8e3f967"],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["eca681c9d5426a79"],
+        "tip_vi": "\"Hang in there\" = tiếp tục cố gắng. Không liên quan đến giữ đồ vật!"
+      }
+    },
+    {
+      "id": "54fc094f00ab6a06",
+      "slug": "how-about-you",
+      "order": 8,
+      "phrase_en": "How about you?",
+      "phrase_vi": "Còn bạn thì sao?",
+      "explanation_vi": "\"How about you?\" hoặc \"What about you?\" dùng để chuyển lượt nói trong cuộc hội thoại. Sau khi bạn chia sẻ cập nhật, bạn dùng câu này để hỏi người kia. Rất lịch sự và tự nhiên trong môi trường họp.",
+      "context_sentence_en": "I'm working on the API integration today. How about you?",
+      "context_sentence_vi": "Hôm nay tôi đang làm phần tích hợp API. Còn bạn thì sao?",
+      "grammar_ref_ids": ["93bffa0350cb5b2e"],
+      "vocab_ref_ids": [],
+      "dialogue_turns": [
+        {
+          "id": "54fc094f00ab6a06-dt-1",
+          "slug": "how-about-you-dt-1",
+          "speaker": "A",
+          "text_en": "I finished the design review yesterday. How about you?",
+          "text_vi": "Hôm qua tôi đã xong phần review thiết kế. Còn bạn thì sao?",
+          "grammar_ref_ids": ["93bffa0350cb5b2e"]
+        },
+        {
+          "id": "54fc094f00ab6a06-dt-2",
+          "slug": "how-about-you-dt-2",
+          "speaker": "B",
+          "text_en": "I'm starting on the new feature today.",
+          "text_vi": "Hôm nay tôi bắt đầu tính năng mới.",
+          "grammar_ref_ids": ["f093233b33860e00"]
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "54fc094f00ab6a06-qa-1",
+          "slug": "how-about-you-qa-1",
+          "type": "multiple_choice",
+          "question": "\"How about you?\" được dùng để làm gì trong cuộc họp?",
+          "options": [
+            "Hỏi về sở thích cá nhân",
+            "Chuyển lượt nói, hỏi cập nhật của người kia",
+            "Kết thúc cuộc họp"
+          ],
+          "answer": "Chuyển lượt nói, hỏi cập nhật của người kia",
+          "explanation_vi": "\"How about you?\" = \"Còn bạn thì sao?\" — dùng để mời người khác chia sẻ sau khi bạn xong.",
+          "skill": "speaking"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": [],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["54fc094f00ab6a06", "93bffa0350cb5b2e"],
+        "tip_vi": "\"How about you?\" luôn hướng đến người khác để hỏi cập nhật của họ."
+      }
+    },
+    {
+      "id": "a709e8b6de3c6ea8",
+      "slug": "same-here",
+      "order": 9,
+      "phrase_en": "Same here.",
+      "phrase_vi": "Tôi cũng vậy. / Giống tôi.",
+      "explanation_vi": "\"Same here\" là cách ngắn gọn để nói rằng tình huống hoặc cảm xúc của bạn giống người kia. Tương đương với \"Me too\" nhưng tự nhiên hơn trong ngữ cảnh công việc.",
+      "context_sentence_en": "I have a lot on my plate today. — Same here, it's going to be a busy one.",
+      "context_sentence_vi": "Hôm nay tôi có nhiều việc lắm. — Tôi cũng vậy, sẽ là một ngày bận rộn.",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": [],
+      "dialogue_turns": [],
+      "qa_items": [
+        {
+          "id": "a709e8b6de3c6ea8-qa-1",
+          "slug": "same-here-qa-1",
+          "type": "multiple_choice",
+          "question": "\"Same here\" có nghĩa là gì?",
+          "options": [
+            "Ở đây giống nhau",
+            "Tôi cũng vậy / Giống tôi",
+            "Cùng địa điểm"
+          ],
+          "answer": "Tôi cũng vậy / Giống tôi",
+          "explanation_vi": "\"Same here\" = \"Me too\" nhưng nghe tự nhiên hơn trong môi trường làm việc.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": [],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["a709e8b6de3c6ea8"],
+        "tip_vi": "\"Same here\" = tôi cũng thế, không phải mô tả vị trí."
+      }
+    },
+    {
+      "id": "e71224d250ecf82f",
+      "slug": "catch-you-later",
+      "order": 10,
+      "phrase_en": "Catch you later!",
+      "phrase_vi": "Hẹn gặp lại sau! / Bái bai!",
+      "explanation_vi": "\"Catch you later\" là cách nói tạm biệt thân thiện trong văn phòng. \"Catch\" ở đây có nghĩa là \"gặp lại\", không phải \"bắt\". Thường dùng khi kết thúc cuộc họp nhanh hoặc khi chia tay đồng nghiệp.",
+      "context_sentence_en": "Alright, good meeting everyone — catch you later!",
+      "context_sentence_vi": "Được rồi, cuộc họp tốt đẹp nhé mọi người — hẹn gặp lại sau!",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": ["23ebe5fd4118e4b2"],
+      "dialogue_turns": [],
+      "qa_items": [
+        {
+          "id": "e71224d250ecf82f-qa-1",
+          "slug": "catch-you-later-qa-1",
+          "type": "multiple_choice",
+          "question": "\"Catch you later!\" được dùng khi nào?",
+          "options": [
+            "Khi bạn muốn bắt ai đó",
+            "Khi tạm biệt đồng nghiệp",
+            "Khi bắt đầu cuộc họp"
+          ],
+          "answer": "Khi tạm biệt đồng nghiệp",
+          "explanation_vi": "\"Catch you later\" = hẹn gặp lại sau — cách nói tạm biệt thân thiện trong văn phòng.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": ["c69c4e05fa9fee8e"],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["e71224d250ecf82f"],
+        "tip_vi": "\"Catch\" ở đây = gặp lại, không phải bắt. \"Catch you later\" = hẹn gặp sau."
+      }
+    },
+    {
+      "id": "d98f41811c5967e7",
+      "slug": "touch-base-tomorrow",
+      "order": 11,
+      "phrase_en": "Let's touch base tomorrow.",
+      "phrase_vi": "Ngày mai mình liên lạc lại nhé.",
+      "explanation_vi": "\"Touch base\" là thành ngữ có nghĩa là \"kết nối lại, liên lạc nhanh để cập nhật tình hình\". \"Let's touch base\" rất phổ biến để đề xuất một cuộc nói chuyện ngắn trong tương lai. Thường nghe trong cuộc họp khi cần follow-up.",
+      "context_sentence_en": "We didn't finish discussing the budget — let's touch base tomorrow at 10.",
+      "context_sentence_vi": "Chúng ta chưa thảo luận xong về ngân sách — ngày mai 10 giờ mình kết nối lại nhé.",
+      "grammar_ref_ids": [],
+      "vocab_ref_ids": ["33dc0db525432ae2"],
+      "dialogue_turns": [
+        {
+          "id": "d98f41811c5967e7-dt-1",
+          "slug": "touch-base-dt-1",
+          "speaker": "A",
+          "text_en": "There's more to discuss but we're out of time.",
+          "text_vi": "Còn nhiều điều cần thảo luận nhưng hết giờ rồi.",
+          "grammar_ref_ids": []
+        },
+        {
+          "id": "d98f41811c5967e7-dt-2",
+          "slug": "touch-base-dt-2",
+          "speaker": "B",
+          "text_en": "Agreed. Let's touch base tomorrow morning.",
+          "text_vi": "Đồng ý. Sáng mai mình liên lạc lại nhé.",
+          "grammar_ref_ids": []
+        }
+      ],
+      "qa_items": [
+        {
+          "id": "d98f41811c5967e7-qa-1",
+          "slug": "touch-base-qa-1",
+          "type": "multiple_choice",
+          "question": "\"Let's touch base\" có nghĩa là gì?",
+          "options": [
+            "Hãy chạm vào nền",
+            "Hãy liên lạc lại / gặp nhau nhanh để cập nhật",
+            "Hãy chơi thể thao cùng nhau"
+          ],
+          "answer": "Hãy liên lạc lại / gặp nhau nhanh để cập nhật",
+          "explanation_vi": "\"Touch base\" = check in, liên lạc nhanh. Phổ biến trong văn phòng để đề xuất follow-up.",
+          "skill": "vocabulary"
+        }
+      ],
+      "audio_ref_ids": [],
+      "srs_ref_ids": ["da07bb18651e2427"],
+      "remediation": {
+        "trigger": "wrong_answer",
+        "re_present_refs": ["d98f41811c5967e7", "33dc0db525432ae2"],
+        "tip_vi": "\"Touch base\" là thành ngữ nghĩa là \"liên lạc nhanh để cập nhật\". Không liên quan đến thể thao hay vật lý."
+      }
+    }
+  ],
+
+  "activities": [
+    {
+      "id": "32244621930a53ae",
+      "slug": "listen-repeat-greetings",
+      "type": "listen_and_repeat",
+      "title_vi": "Nghe và nhắc lại: Câu chào hỏi",
+      "chunk_ref_ids": [
+        "a121f520aaf20c71",
+        "6525516c6f072d29",
+        "f836e6316637c128"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Nghe câu tiếng Anh, sau đó lặp lại to và rõ ràng. Tập trung vào ngữ điệu tự nhiên."
+    },
+    {
+      "id": "c26cffbfbd106b5e",
+      "slug": "role-play-standup",
+      "type": "role_play",
+      "title_vi": "Nhập vai: Buổi họp đứng",
+      "chunk_ref_ids": [
+        "7436131fa85b88f6",
+        "5615f28aff7bf925",
+        "6ca0124fb2dcd66e",
+        "eca681c9d5426a79",
+        "54fc094f00ab6a06"
+      ],
+      "qa_ref_ids": [],
+      "instructions_vi": "Bạn là thành viên A trong buổi họp đứng. Chia sẻ cập nhật công việc của mình và hỏi cập nhật từ đồng nghiệp."
+    },
+    {
+      "id": "5ff8502321f42079",
+      "slug": "mc-quiz",
+      "type": "multiple_choice",
+      "title_vi": "Kiểm tra nhanh: Chọn đáp án đúng",
+      "chunk_ref_ids": [
+        "a121f520aaf20c71",
+        "6525516c6f072d29",
+        "24636fd3a0645493",
+        "7436131fa85b88f6",
+        "eca681c9d5426a79",
+        "a709e8b6de3c6ea8",
+        "e71224d250ecf82f",
+        "d98f41811c5967e7"
+      ],
+      "qa_ref_ids": [
+        "a121f520aaf20c71-qa-1",
+        "6525516c6f072d29-qa-1",
+        "24636fd3a0645493-qa-1",
+        "7436131fa85b88f6-qa-1",
+        "eca681c9d5426a79-qa-1",
+        "a709e8b6de3c6ea8-qa-1",
+        "e71224d250ecf82f-qa-1",
+        "d98f41811c5967e7-qa-1"
+      ],
+      "instructions_vi": "Chọn đáp án đúng cho mỗi câu hỏi. Đọc kỹ trước khi chọn!"
+    }
+  ],
+
+  "audio_assets": [
+    {
+      "id": "f21d566e3615e1e8",
+      "slug": "intro-audio",
+      "url": "https://assets.lingobites.app/audio/daily-standup/intro.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Welcome to the Daily Stand-up lesson. Let's learn the most common phrases used in a morning stand-up meeting."
+    },
+    {
+      "id": "62200d52a7201538",
+      "slug": "chunk-how-are-you-audio",
+      "url": "https://assets.lingobites.app/audio/daily-standup/how-are-you.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Good morning! How are you doing?"
+    },
+    {
+      "id": "b4a76135ac8d7ba8",
+      "slug": "chunk-swamped-audio",
+      "url": "https://assets.lingobites.app/audio/daily-standup/swamped.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "I'm completely swamped. Three meetings and a deadline today."
+    },
+    {
+      "id": "e35366c1aa777330",
+      "slug": "chunk-hang-in-there-audio",
+      "url": "https://assets.lingobites.app/audio/daily-standup/hang-in-there.mp3",
+      "checksum": "sha256:placeholder",
+      "locale": "en-US",
+      "transcript": "Hang in there! You're almost done."
+    }
+  ],
+
+  "srs_items": [
+    {
+      "id": "60e9738fac73368c",
+      "slug": "srs-swamped",
+      "item_type": "vocabulary",
+      "source_ref_id": "7436131fa85b88f6",
+      "front": "I'm ________ with work. (Tôi đang ngập đầu trong công việc.)",
+      "back": "swamped",
+      "hint_vi": "Từ này bắt đầu bằng chữ S và là thành ngữ có nghĩa \"ngập đầu\"."
+    },
+    {
+      "id": "8f46273e51eca592",
+      "slug": "srs-deadline",
+      "item_type": "vocabulary",
+      "source_ref_id": "5615f28aff7bf925",
+      "front": "Hạn chót trong tiếng Anh là gì?",
+      "back": "deadline",
+      "hint_vi": "Từ này gồm \"dead\" + \"line\" — nghĩa là ranh giới không thể vượt qua."
+    },
+    {
+      "id": "5f0518f6f8e3f967",
+      "slug": "srs-hang-in-there",
+      "item_type": "vocabulary",
+      "source_ref_id": "eca681c9d5426a79",
+      "front": "Cách nói động viên ai đó đang vất vả: \"________ in there!\"",
+      "back": "Hang",
+      "hint_vi": "\"Hang in there\" = cố lên, đừng bỏ cuộc."
+    },
+    {
+      "id": "da07bb18651e2427",
+      "slug": "srs-touch-base",
+      "item_type": "vocabulary",
+      "source_ref_id": "d98f41811c5967e7",
+      "front": "\"Let's ________ base tomorrow.\" nghĩa là gì?",
+      "back": "touch — \"Liên lạc lại / gặp nhau nhanh để cập nhật\"",
+      "hint_vi": "\"Touch base\" là thành ngữ, không phải nghĩa đen."
+    },
+    {
+      "id": "c69c4e05fa9fee8e",
+      "slug": "srs-catch-you-later",
+      "item_type": "vocabulary",
+      "source_ref_id": "e71224d250ecf82f",
+      "front": "Cách nói tạm biệt thân thiện trong văn phòng (informal):",
+      "back": "Catch you later!",
+      "hint_vi": "\"Catch\" ở đây có nghĩa là \"gặp lại\" chứ không phải \"bắt\"."
+    },
+    {
+      "id": "a845ba629a24ef1b",
+      "slug": "srs-usual",
+      "item_type": "vocabulary",
+      "source_ref_id": "24636fd3a0645493",
+      "front": "\"Just the ________\" — Cách nói \"không có gì mới, như mọi khi\":",
+      "back": "usual",
+      "hint_vi": "\"The usual\" = thứ quen thuộc, như mọi ngày."
+    },
+    {
+      "id": "121f855b2ccb9d1e",
+      "slug": "srs-tough",
+      "item_type": "vocabulary",
+      "source_ref_id": "6ca0124fb2dcd66e",
+      "front": "\"Sounds ________!\" — Dùng để bày tỏ sự đồng cảm khi ai đó đang khó khăn:",
+      "back": "tough",
+      "hint_vi": "\"Tough\" = khó khăn, vất vả. \"Sounds tough\" = Nghe vất vả đấy."
+    },
+    {
+      "id": "e8084720f711e197",
+      "slug": "srs-standup",
+      "item_type": "vocabulary",
+      "source_ref_id": "a121f520aaf20c71",
+      "front": "\"________-up meeting\" — cuộc họp đứng ngắn hàng ngày:",
+      "back": "stand",
+      "hint_vi": "\"Stand-up\" = đứng. Cuộc họp ngắn thường diễn ra khi mọi người đứng."
+    }
+  ]
+}

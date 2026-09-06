@@ -6,6 +6,7 @@
     "android": "react-native run-android --mode developmentDebug",
     "ios": "cross-env ENVFILE=.env.development ruby ./node_modules/react-native-config/ios/ReactNativeConfig/BuildXCConfig.rb . ios/tmp.xcconfig && cp .env.development .env && cross-env ENVFILE=.env.development react-native run-ios --scheme Development --mode DebugDev --simulator \"iPhone 17\"",
     "lint": "eslint .",
+    "lint:content": "node tools/content-lint/lint.mjs",
     "start": "react-native start",
     "test": "jest",
     "ios:dev": "cross-env ENVFILE=.env.development ruby ./node_modules/react-native-config/ios/ReactNativeConfig/BuildXCConfig.rb . ios/tmp.xcconfig && cp .env.development .env && cross-env ENVFILE=.env.development react-native run-ios --scheme Development --mode DebugDev --simulator \"iPhone 17\"",

@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1.0",
+  "package_id": "732eebf68ad6d6ea",
+  "slug": "daily-standup",
+  "format": "hybrid-zip",
+  "exported_at": "2026-09-06T11:12:00.000Z",
+  "lessons": [
+    {
+      "lesson_id": "3fdc3340c228cfac",
+      "lesson_slug": "daily-standup",
+      "file": "daily-standup.lesson.json"
+    }
+  ],
+  "audio_base_url": "https://assets.lingobites.app/audio/daily-standup/",
+  "tool_version": "0.1.0"
+}
