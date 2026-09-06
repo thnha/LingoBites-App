@@ -9,6 +9,7 @@ export const featureDependencies: Record<FeatureKey, string[]> = {
   lessonResultView: ['aiLessonAnalysis'],
   lessonSave: ['lessonResultView'],
   lessonHistory: ['lessonSave'],
+  lingobitesMvpReviewFlow: [],
   shortPractice: ['lessonResultView'],
   pronunciationSupport: ['lessonResultView'],
 

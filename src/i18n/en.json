@@ -2,6 +2,12 @@
   "home": {
     "title": "What do you want to learn from today?",
     "subtitle": "Choose how to extract vocabulary from any text you read.",
+    "mvp_subtitle": "Review the lessons and flashcards already saved on your device, fully offline.",
+    "mvp_content_title": "Review with your saved content",
+    "mvp_content_body": "This trial version reviews the lessons and flashcards already saved on your device. Open the Lessons tab to pick something to review.",
+    "mvp_open_lessons": "Open saved lessons",
+    "mvp_open_lessons_a11y": "Open the Lessons tab to view saved lessons",
+    "mvp_empty_lessons": "No lessons saved on this device yet. This trial version reviews lessons and flashcards that were saved beforehand.",
     "settings_a11y": "Settings",
     "capture_photo": "Capture photo",
     "capture_photo_hint": "Point the camera at any document",

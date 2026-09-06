@@ -26,6 +26,7 @@ export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
+  const mvpReviewFlowEnabled = useFeatureEnabled('lingobitesMvpReviewFlow');
   const tabNavigation = navigation.getParent<NavigationProp<RootTabParamList>>();
   const [recentLessons, setRecentLessons] = useState<LessonCardView[]>([]);
   const [dueReviewCount, setDueReviewCount] = useState(0);
@@ -96,7 +97,7 @@ export function HomeScreen({navigation}: Props) {
         <View style={{gap: 6}}>
           <AppText variant="h1">{t('home.title')}</AppText>
           <AppText color="secondary" variant="body">
-            {t('home.subtitle')}
+            {t(mvpReviewFlowEnabled ? 'home.mvp_subtitle' : 'home.subtitle')}
           </AppText>
         </View>
 
@@ -141,98 +142,152 @@ export function HomeScreen({navigation}: Props) {
           </Pressable>
         ) : null}
 
-        <Pressable
-          accessibilityLabel={t('home.capture_photo_a11y')}
-          accessibilityRole="button"
-          onPress={() => selectInputMethod('camera')}
-          style={({pressed}) => [
-            {
-              alignItems: 'center',
-              backgroundColor: theme.colors.accent,
-              borderRadius: theme.radius.xl,
-              gap: 10,
-              opacity: pressed ? theme.states.pressedOpacity : 1,
-              paddingHorizontal: 24,
-              paddingVertical: 32,
-              shadowColor: theme.colors.primary,
-              shadowOffset: {width: 0, height: 16},
-              shadowOpacity: 0.16,
-              shadowRadius: 34,
-              elevation: 8,
-            },
-          ]}>
+        {mvpReviewFlowEnabled ? (
           <View
             style={{
               alignItems: 'center',
-              backgroundColor: theme.colors.overlayLight,
-              borderRadius: 999,
-              height: 84,
-              justifyContent: 'center',
-              width: 84,
-            }}>
-            <MaterialIcon color={theme.colors.accentInk} filled name="photo_camera" size={42} />
-          </View>
-          <AppText style={{color: theme.colors.accentInk, fontSize: 22, fontWeight: '600'}}>
-            {t('home.capture_photo')}
-          </AppText>
-          <AppText style={{color: theme.colors.accentInk, fontSize: 12, opacity: 0.85}}>
-            {t('home.capture_photo_hint')}
-          </AppText>
-        </Pressable>
-
-        <View style={{flexDirection: 'row', gap: 14}}>
-          <Pressable
-            accessibilityLabel={t('home.upload_image_a11y')}
-            accessibilityRole="button"
-            onPress={() => selectInputMethod('gallery')}
-            style={({pressed}) => [
-              {
-                alignItems: 'center',
-                backgroundColor: theme.colors.secondaryContainer,
-                borderRadius: theme.radius.lg,
-                flex: 1,
-                gap: 10,
-                opacity: pressed ? theme.states.pressedOpacity : 1,
-                paddingHorizontal: 14,
-                paddingVertical: 22,
-                ...theme.shadow.strong,
-              },
-            ]}>
-            <MaterialIcon color={theme.colors.text.inverse} name="upload_file" size={30} />
-            <AppText style={{color: theme.colors.text.inverse, fontSize: 14, fontWeight: '600'}}>
-              {t('home.upload_image')}
-            </AppText>
-          </Pressable>
-
-          <Pressable
-            accessibilityLabel={t('home.paste_text_a11y')}
-            accessibilityRole="button"
-            onPress={() => selectInputMethod('paste_text')}
-            style={({pressed}) => [
-              {
+              backgroundColor: theme.colors.accentSoft,
+              borderRadius: theme.radius.xl,
+              gap: theme.spacing.sm,
+              padding: 24,
+            }}
+            testID="mvp-no-content-card">
+            <View
+              style={{
                 alignItems: 'center',
                 backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.accentSoft,
-                borderRadius: theme.radius.lg,
-                borderWidth: 2,
-                flex: 1,
-                gap: 10,
-                opacity: pressed ? theme.states.pressedOpacity : 1,
-                paddingHorizontal: 14,
-                paddingVertical: 22,
-                shadowColor: theme.colors.primary,
-                shadowOffset: {width: 0, height: 8},
-                shadowOpacity: 0.05,
-                shadowRadius: 22,
-                elevation: 2,
-              },
-            ]}>
-            <MaterialIcon color={theme.colors.primary} name="content_paste" size={30} />
-            <AppText style={{color: theme.colors.primary, fontSize: 14, fontWeight: '600'}}>
-              {t('home.paste_text')}
+                borderRadius: 999,
+                height: 64,
+                justifyContent: 'center',
+                width: 64,
+              }}>
+              <MaterialIcon color={theme.colors.primary} name="menu_book" size={30} />
+            </View>
+            <AppText
+              style={{textAlign: 'center'}}
+              variant="h3">
+              {t('home.mvp_content_title')}
             </AppText>
-          </Pressable>
-        </View>
+            <AppText color="secondary" style={{textAlign: 'center'}}>
+              {t('home.mvp_content_body')}
+            </AppText>
+            <Pressable
+              accessibilityLabel={t('home.mvp_open_lessons_a11y')}
+              accessibilityRole="button"
+              onPress={() => tabNavigation?.navigate('Lessons')}
+              style={({pressed}) => [
+                {
+                  alignItems: 'center',
+                  backgroundColor: theme.colors.surface,
+                  borderRadius: theme.radius.pill,
+                  marginTop: theme.spacing.sm,
+                  opacity: pressed ? theme.states.pressedOpacity : 1,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                },
+              ]}
+              testID="mvp-open-lessons">
+              <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
+                {t('home.mvp_open_lessons')}
+              </AppText>
+            </Pressable>
+          </View>
+        ) : (
+          <>
+            <Pressable
+              accessibilityLabel={t('home.capture_photo_a11y')}
+              accessibilityRole="button"
+              onPress={() => selectInputMethod('camera')}
+              style={({pressed}) => [
+                {
+                  alignItems: 'center',
+                  backgroundColor: theme.colors.accent,
+                  borderRadius: theme.radius.xl,
+                  gap: 10,
+                  opacity: pressed ? theme.states.pressedOpacity : 1,
+                  paddingHorizontal: 24,
+                  paddingVertical: 32,
+                  shadowColor: theme.colors.primary,
+                  shadowOffset: {width: 0, height: 16},
+                  shadowOpacity: 0.16,
+                  shadowRadius: 34,
+                  elevation: 8,
+                },
+              ]}>
+              <View
+                style={{
+                  alignItems: 'center',
+                  backgroundColor: theme.colors.overlayLight,
+                  borderRadius: 999,
+                  height: 84,
+                  justifyContent: 'center',
+                  width: 84,
+                }}>
+                <MaterialIcon color={theme.colors.accentInk} filled name="photo_camera" size={42} />
+              </View>
+              <AppText style={{color: theme.colors.accentInk, fontSize: 22, fontWeight: '600'}}>
+                {t('home.capture_photo')}
+              </AppText>
+              <AppText style={{color: theme.colors.accentInk, fontSize: 12, opacity: 0.85}}>
+                {t('home.capture_photo_hint')}
+              </AppText>
+            </Pressable>
+
+            <View style={{flexDirection: 'row', gap: 14}}>
+              <Pressable
+                accessibilityLabel={t('home.upload_image_a11y')}
+                accessibilityRole="button"
+                onPress={() => selectInputMethod('gallery')}
+                style={({pressed}) => [
+                  {
+                    alignItems: 'center',
+                    backgroundColor: theme.colors.secondaryContainer,
+                    borderRadius: theme.radius.lg,
+                    flex: 1,
+                    gap: 10,
+                    opacity: pressed ? theme.states.pressedOpacity : 1,
+                    paddingHorizontal: 14,
+                    paddingVertical: 22,
+                    ...theme.shadow.strong,
+                  },
+                ]}>
+                <MaterialIcon color={theme.colors.text.inverse} name="upload_file" size={30} />
+                <AppText style={{color: theme.colors.text.inverse, fontSize: 14, fontWeight: '600'}}>
+                  {t('home.upload_image')}
+                </AppText>
+              </Pressable>
+
+              <Pressable
+                accessibilityLabel={t('home.paste_text_a11y')}
+                accessibilityRole="button"
+                onPress={() => selectInputMethod('paste_text')}
+                style={({pressed}) => [
+                  {
+                    alignItems: 'center',
+                    backgroundColor: theme.colors.surface,
+                    borderColor: theme.colors.accentSoft,
+                    borderRadius: theme.radius.lg,
+                    borderWidth: 2,
+                    flex: 1,
+                    gap: 10,
+                    opacity: pressed ? theme.states.pressedOpacity : 1,
+                    paddingHorizontal: 14,
+                    paddingVertical: 22,
+                    shadowColor: theme.colors.primary,
+                    shadowOffset: {width: 0, height: 8},
+                    shadowOpacity: 0.05,
+                    shadowRadius: 22,
+                    elevation: 2,
+                  },
+                ]}>
+                <MaterialIcon color={theme.colors.primary} name="content_paste" size={30} />
+                <AppText style={{color: theme.colors.primary, fontSize: 14, fontWeight: '600'}}>
+                  {t('home.paste_text')}
+                </AppText>
+              </Pressable>
+            </View>
+          </>
+        )}
 
         <View style={{gap: 10}}>
           <SectionHeader
@@ -252,7 +307,11 @@ export function HomeScreen({navigation}: Props) {
           {emptyRecent ? (
             <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 8}}>
               <Medallion label="📚" />
-              <AppText color="secondary">{NO_LESSONS_MESSAGE}</AppText>
+              <AppText color="secondary">
+                {mvpReviewFlowEnabled
+                  ? t('home.mvp_empty_lessons')
+                  : NO_LESSONS_MESSAGE}
+              </AppText>
             </View>
           ) : (
             recentLessons.map((item, index) => (
@@ -268,26 +327,28 @@ export function HomeScreen({navigation}: Props) {
           )}
         </View>
 
-        <View
-          style={{
-            alignItems: 'center',
-            backgroundColor: theme.colors.tertiarySoft,
-            borderRadius: theme.radius.lg,
-            flexDirection: 'row',
-            gap: 12,
-            padding: 16,
-          }}>
-          <MaterialIcon color={theme.colors.tertiary} name="lightbulb" size={22} />
-          <AppText
+        {!mvpReviewFlowEnabled ? (
+          <View
             style={{
-              color: theme.colors.tertiary,
-              flex: 1,
-              fontSize: 13,
-              fontWeight: '600',
+              alignItems: 'center',
+              backgroundColor: theme.colors.tertiarySoft,
+              borderRadius: theme.radius.lg,
+              flexDirection: 'row',
+              gap: 12,
+              padding: 16,
             }}>
-            {t('home.tip')}
-          </AppText>
-        </View>
+            <MaterialIcon color={theme.colors.tertiary} name="lightbulb" size={22} />
+            <AppText
+              style={{
+                color: theme.colors.tertiary,
+                flex: 1,
+                fontSize: 13,
+                fontWeight: '600',
+              }}>
+              {t('home.tip')}
+            </AppText>
+          </View>
+        ) : null}
       </ScrollView>
     </AppScreen>
   );

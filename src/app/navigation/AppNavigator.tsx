@@ -24,7 +24,9 @@ import {FlashcardListScreen} from '../../modules/lesson/FlashcardListScreen';
 import {DailyReviewScreen} from '../../modules/review/DailyReviewScreen';
 import {PrivacyNoteScreen} from '../../modules/settings/PrivacyNoteScreen';
 import {ProfileScreen} from '../../modules/settings/ProfileScreen';
+import {useFeatureEnabled} from '../../release';
 import {TabBar} from './TabBar';
+import {isIngestionRouteHiddenForMvp} from './ingestionRouteGate';
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const LessonsStack = createNativeStackNavigator<LessonsStackParamList>();
@@ -32,6 +34,8 @@ const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 function HomeStackNavigator() {
+  const mvpReviewFlowEnabled = useFeatureEnabled('lingobitesMvpReviewFlow');
+
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
@@ -39,26 +43,34 @@ function HomeStackNavigator() {
         name="HomeMain"
         options={{headerShown: false}}
       />
-      <HomeStack.Screen
-        component={PasteTextScreen}
-        name="PasteText"
-        options={{headerShown: false}}
-      />
-      <HomeStack.Screen
-        component={ImageCaptureScreen}
-        name="ImageCapture"
-        options={{headerShown: false}}
-      />
-      <HomeStack.Screen
-        component={OCRReviewScreen}
-        name="OCRReview"
-        options={{headerShown: false}}
-      />
-      <HomeStack.Screen
-        component={AnalyzingScreen}
-        name="Analyzing"
-        options={{headerShown: false, gestureEnabled: false}}
-      />
+      {!isIngestionRouteHiddenForMvp('PasteText', mvpReviewFlowEnabled) && (
+        <HomeStack.Screen
+          component={PasteTextScreen}
+          name="PasteText"
+          options={{headerShown: false}}
+        />
+      )}
+      {!isIngestionRouteHiddenForMvp('ImageCapture', mvpReviewFlowEnabled) && (
+        <HomeStack.Screen
+          component={ImageCaptureScreen}
+          name="ImageCapture"
+          options={{headerShown: false}}
+        />
+      )}
+      {!isIngestionRouteHiddenForMvp('OCRReview', mvpReviewFlowEnabled) && (
+        <HomeStack.Screen
+          component={OCRReviewScreen}
+          name="OCRReview"
+          options={{headerShown: false}}
+        />
+      )}
+      {!isIngestionRouteHiddenForMvp('Analyzing', mvpReviewFlowEnabled) && (
+        <HomeStack.Screen
+          component={AnalyzingScreen}
+          name="Analyzing"
+          options={{headerShown: false, gestureEnabled: false}}
+        />
+      )}
       <HomeStack.Screen
         component={LessonResultScreen}
         name="LessonResult"

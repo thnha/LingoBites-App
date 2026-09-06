@@ -45,6 +45,17 @@ describe('validateReleaseConfig', () => {
     expect(result.valid).toBe(true);
   });
 
+  it('accepts lingobites-mvp preset', () => {
+    const config = getReleaseConfig('lingobites-mvp');
+    const result = validateReleaseConfig(
+      config,
+      featureRegistry,
+      featureDependencies,
+    );
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
   it('rejects miniGame when lessonSave is disabled', () => {
     const config = getReleaseConfig('close-beta-1');
     const result = validateReleaseConfig(
@@ -64,13 +75,14 @@ describe('validateReleaseConfig', () => {
     expect(result.errors.some(error => error.includes('miniGame'))).toBe(true);
   });
 
-  it('rejects when a required feature is disabled', () => {
+  it('rejects reviewSystem when lessonSave is disabled', () => {
     const config = getReleaseConfig('close-beta-1');
     const result = validateReleaseConfig(
       {
         ...config,
         features: {
           ...config.features,
+          reviewSystem: true,
           lessonSave: false,
         },
       },
@@ -78,7 +90,7 @@ describe('validateReleaseConfig', () => {
       featureDependencies,
     );
     expect(result.valid).toBe(false);
-    expect(result.errors.some(error => error.includes('lessonSave'))).toBe(
+    expect(result.errors.some(error => error.includes('reviewSystem'))).toBe(
       true,
     );
   });

@@ -2,6 +2,12 @@
   "home": {
     "title": "Hôm nay bạn muốn học từ đâu?",
     "subtitle": "Chọn cách để lấy từ vựng từ bất cứ đoạn text nào bạn đọc.",
+    "mvp_subtitle": "Ôn tập bài học và thẻ ghi nhớ đã lưu trên máy, hoàn toàn ngoại tuyến.",
+    "mvp_content_title": "Ôn tập với nội dung đã lưu",
+    "mvp_content_body": "Bản dùng thử này ôn tập từ các bài học và thẻ ghi nhớ đã được lưu sẵn trên thiết bị của bạn. Mở tab Bài học để chọn nội dung đã lưu.",
+    "mvp_open_lessons": "Mở bài học đã lưu",
+    "mvp_open_lessons_a11y": "Mở tab Bài học để xem bài học đã lưu",
+    "mvp_empty_lessons": "Chưa có bài học được lưu trên máy. Bản dùng thử này ôn tập dựa trên bài học và thẻ đã được lưu sẵn.",
     "settings_a11y": "Cài đặt",
     "capture_photo": "Chụp ảnh học ngay",
     "capture_photo_hint": "Chĩa camera vào tài liệu bất kỳ",
