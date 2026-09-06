@@ -1,3 +1,11 @@
+# hermes-engine resolves Hermes V1 by default (its podspec only falls back to
+# the legacy engine when RCT_HERMES_V1_ENABLED == "0"), but React Native core's
+# own build-setting helpers (and react-native-worklets' RNWorklets.podspec) only
+# define the HERMES_V1_ENABLED compiler flag when this env var is explicitly "1".
+# Without it, code that guards on `!defined(HERMES_V1_ENABLED)` incorrectly takes
+# the pre-V1 code path and fails to compile against Hermes V1's headers.
+ENV['RCT_HERMES_V1_ENABLED'] ||= '1'
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -50,7 +58,6 @@ target 'ScanLearnEnglish' do
         target.resources_build_phase.remove_file_reference(file.file_ref)
       end
     end
-
   end
 
   # Run after CocoaPods integrates the user project so resource scripts/file lists

@@ -16,6 +16,7 @@ import {saveLesson} from '../../../shared/db/LessonRepository';
 import {SavedLessonDetailScreen} from '../SavedLessonDetailScreen';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {LessonsStackParamList} from '../../../app/navigation/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const mockAnalyzeText = jest.fn();
 
@@ -29,17 +30,19 @@ const navigation = {
 } as unknown as NativeStackNavigationProp<LessonsStackParamList, 'SavedLessonDetail'>;
 
 describe('SavedLessonDetailScreen', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     mockAnalyzeText.mockReset();
     jest.clearAllMocks();
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
+    await AsyncStorage.clear();
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
+
 
   it('opens saved lesson from DB without calling AI', async () => {
     const saved = saveLesson({
@@ -168,5 +171,63 @@ describe('SavedLessonDetailScreen', () => {
 
     expect(Alert.alert).not.toHaveBeenCalled();
     expect(navigation.goBack).toHaveBeenCalled();
+  });
+
+  it('saves vocabulary flashcard when word card save is confirmed from a saved lesson', async () => {
+    const saved = saveLesson({
+      confirmedText: validFullOutput.original_text,
+      sourceType: 'paste_text',
+      lesson: validFullOutput,
+    });
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) {
+      return;
+    }
+
+    const word = validFullOutput.vocabulary[0];
+    const route = {
+      key: 'SavedLessonDetail',
+      name: 'SavedLessonDetail',
+      params: {lessonId: saved.lessonId},
+    } as React.ComponentProps<typeof SavedLessonDetailScreen>['route'];
+
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    await ReactTestRenderer.act(async () => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider releaseName="situation-learning-release">
+          <AppThemeProvider>
+            <SavedLessonDetailScreen navigation={navigation} route={route} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+      await Promise.resolve();
+    });
+
+    // Press the word card save button — this triggers the disclosure alert.
+    await ReactTestRenderer.act(async () => {
+      tree.root
+        .findByProps({testID: `word-card-save-${word.id}`})
+        .props.onPress();
+      await Promise.resolve();
+    });
+
+    // Confirm the first-save disclosure.
+    const confirmButton = (Alert.alert as jest.Mock).mock.calls[0][2].find(
+      (button: {text: string}) => button.text === 'Đã hiểu, lưu từ',
+    );
+    await ReactTestRenderer.act(async () => {
+      confirmButton.onPress();
+      await Promise.resolve();
+    });
+
+    // The flashcard must be in the DB, linked to the correct lesson.
+    const cards = listFlashcards({lessonId: saved.lessonId});
+    expect(cards).toHaveLength(1);
+    expect(cards[0]).toMatchObject({
+      word: word.word,
+      vocabularyId: word.id,
+      lessonId: saved.lessonId,
+      isSaved: true,
+    });
   });
 });

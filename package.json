@@ -26,7 +26,8 @@
     "open:ios": "xed -b ios",
     "open:android": "open -a '/Applications/Android Studio.app' android",
     "assets:link": "react-native-asset",
-    "icons:subset": "node scripts/subset-material-icons.mjs"
+    "icons:subset": "node scripts/subset-material-icons.mjs",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@babel/runtime": "^7.25.0",
@@ -46,11 +47,12 @@
     "react-native-image-picker": "^8.2.1",
     "react-native-keychain": "^10.0.0",
     "react-native-quick-sqlite": "^8.2.7",
-    "react-native-reanimated": "3.19.5",
+    "react-native-reanimated": "^4.6.0",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.25.2",
     "react-native-sound": "^0.13.0",
     "react-native-vector-icons": "^10.3.0",
+    "react-native-worklets": "^0.12.0",
     "uuid": "^14.0.0",
     "zod": "^3.25.76",
     "zustand": "^5.0.14"
@@ -74,6 +76,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.19.0",
     "jest": "^29.6.3",
+    "patch-package": "^8.0.1",
     "prettier": "2.8.8",
     "react-test-renderer": "19.2.3",
     "subset-font": "^2.5.0",
