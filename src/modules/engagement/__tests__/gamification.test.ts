@@ -36,7 +36,7 @@ describe('gamification snapshot service (VC-6)', () => {
       const session = startReviewSession();
       session.record({
         flashcardId: `card-${dayKey}`,
-        rating: 'good',
+        rating: 'remembered',
         dueAt: DUE_AT,
         reviewedAt: REVIEWED_AT,
       });
@@ -49,7 +49,7 @@ describe('gamification snapshot service (VC-6)', () => {
       new Date(`${lastDayKey}T12:00:00`),
     );
     expect(snapshot.totalSessions).toBe(2);
-    expect(snapshot.totalXp).toBe(14); // 2 × good(7)
+    expect(snapshot.totalXp).toBe(14); // 2 × remembered(7)
     expect(snapshot.waterUnits).toBe(2);
     expect(snapshot.currentStreak).toBe(2);
     expect(snapshot.bestStreak).toBe(2);

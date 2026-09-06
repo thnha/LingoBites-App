@@ -19,12 +19,12 @@ async function render(ui: React.ReactElement) {
 }
 
 describe('RatingControl', () => {
-  it('calls all four rating callbacks plus skip from icon-labeled controls', async () => {
+  it('calls both rating callbacks plus skip from icon-labeled controls', async () => {
     const onRate = jest.fn();
     const onSkip = jest.fn();
     const tree = await render(<RatingControl onRate={onRate} onSkip={onSkip} />);
 
-    const ratings = ['forgot', 'hard', 'good', 'easy'];
+    const ratings = ['remembered', 'forgot'];
     for (const rating of ratings) {
       await act(async () => {
         tree.root.findByProps({testID: `rating-${rating}`}).props.onPress();
@@ -34,16 +34,12 @@ describe('RatingControl', () => {
       tree.root.findByProps({testID: 'rating-skip'}).props.onPress();
     });
 
-    expect(onRate).toHaveBeenNthCalledWith(1, 'forgot');
-    expect(onRate).toHaveBeenNthCalledWith(2, 'hard');
-    expect(onRate).toHaveBeenNthCalledWith(3, 'good');
-    expect(onRate).toHaveBeenNthCalledWith(4, 'easy');
+    expect(onRate).toHaveBeenNthCalledWith(1, 'remembered');
+    expect(onRate).toHaveBeenNthCalledWith(2, 'forgot');
     expect(onSkip).toHaveBeenCalledTimes(1);
 
+    expect(tree.root.findAllByProps({children: 'Nhớ'}).length).toBeGreaterThan(0);
     expect(tree.root.findAllByProps({children: 'Quên'}).length).toBeGreaterThan(0);
-    expect(tree.root.findAllByProps({children: 'Khó'}).length).toBeGreaterThan(0);
-    expect(tree.root.findAllByProps({children: 'Tốt'}).length).toBeGreaterThan(0);
-    expect(tree.root.findAllByProps({children: 'Dễ'}).length).toBeGreaterThan(0);
     expect(tree.root.findAllByProps({children: 'Bỏ qua'}).length).toBeGreaterThan(0);
   });
 

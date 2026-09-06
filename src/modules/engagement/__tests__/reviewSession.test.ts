@@ -22,13 +22,13 @@ describe('reviewSession (engagement)', () => {
     const session = startReviewSession();
     session.record({
       flashcardId: 'card-1',
-      rating: 'good',
+      rating: 'remembered',
       dueAt: '2026-09-05T02:00:00.000Z',
       reviewedAt: '2026-09-05T20:00:00.000Z',
     });
     session.record({
       flashcardId: 'card-2',
-      rating: 'hard',
+      rating: 'forgot',
       dueAt: '2026-09-04T02:00:00.000Z',
       reviewedAt: '2026-09-05T20:00:00.000Z',
     });
@@ -37,7 +37,7 @@ describe('reviewSession (engagement)', () => {
     const result = session.finish('2026-09-05T21:00:00.000Z');
     expect(result).toEqual({
       ok: true,
-      xpEarned: 12, // good(7) + hard(5)
+      xpEarned: 9, // remembered(7) + forgot(2)
       onTimeCount: 1, // only card-1 reviewed on its due day
       waterUnits: 1,
     });
@@ -48,7 +48,7 @@ describe('reviewSession (engagement)', () => {
       event => event.eventType === 'review_session_completed',
     );
     const onTimeEvent = events.find(event => event.eventType === 'review_on_time');
-    expect(sessionEvent?.points).toBe(12);
+    expect(sessionEvent?.points).toBe(9);
     expect(sessionEvent?.sourceEventId).toBe(session.sessionId);
     expect(sessionEvent?.createdAt).toBe('2026-09-05T21:00:00.000Z');
     expect(onTimeEvent?.points).toBe(1);
@@ -59,7 +59,7 @@ describe('reviewSession (engagement)', () => {
     const session = startReviewSession();
     session.record({
       flashcardId: 'card-1',
-      rating: 'easy',
+      rating: 'remembered',
       dueAt: '2026-09-05T02:00:00.000Z',
       reviewedAt: '2026-09-05T20:00:00.000Z',
     });
@@ -74,7 +74,7 @@ describe('reviewSession (engagement)', () => {
     const session = startReviewSession();
     session.record({
       flashcardId: 'card-1',
-      rating: 'good',
+      rating: 'remembered',
       dueAt: '2026-09-05T02:00:00.000Z',
       reviewedAt: '2026-09-05T20:00:00.000Z',
     });
@@ -82,7 +82,7 @@ describe('reviewSession (engagement)', () => {
     expect(first?.ok).toBe(true);
     session.record({
       flashcardId: 'card-2',
-      rating: 'good',
+      rating: 'remembered',
       dueAt: '2026-09-05T02:00:00.000Z',
       reviewedAt: '2026-09-05T21:00:00.000Z',
     });

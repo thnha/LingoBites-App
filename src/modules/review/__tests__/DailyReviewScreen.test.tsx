@@ -114,7 +114,7 @@ describe('DailyReviewScreen', () => {
 
     await revealCard(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
     });
     await revealCard(tree);
     await act(async () => {
@@ -123,7 +123,7 @@ describe('DailyReviewScreen', () => {
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children).toBe(2);
-    expect(tree.root.findByProps({testID: 'summary-good-count'}).props.children).toBe(1);
+    expect(tree.root.findByProps({testID: 'summary-remembered-count'}).props.children).toBe(1);
     expect(tree.root.findByProps({testID: 'summary-forgot-count'}).props.children).toBe(0);
   });
 
@@ -145,7 +145,7 @@ describe('DailyReviewScreen', () => {
 
     await revealCard(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
     });
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
@@ -167,11 +167,11 @@ describe('DailyReviewScreen', () => {
 
     await revealCard(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
     });
     await revealCard(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
     });
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
@@ -200,12 +200,12 @@ describe('DailyReviewScreen', () => {
       <DailyReviewScreen navigation={navigation() as never} />,
     );
 
-    expect(tree.root.findByProps({testID: 'rating-good'}).props.disabled).toBe(true);
+    expect(tree.root.findByProps({testID: 'rating-remembered'}).props.disabled).toBe(true);
     expect(tree.root.findByProps({testID: 'rating-forgot'}).props.disabled).toBe(true);
 
     await revealCard(tree);
 
-    expect(tree.root.findByProps({testID: 'rating-good'}).props.disabled).toBe(false);
+    expect(tree.root.findByProps({testID: 'rating-remembered'}).props.disabled).toBe(false);
     expect(tree.root.findByProps({testID: 'rating-forgot'}).props.disabled).toBe(false);
   });
 
@@ -231,7 +231,7 @@ describe('DailyReviewScreen', () => {
       .mockReturnValue(failure);
 
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
     });
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -245,7 +245,7 @@ describe('DailyReviewScreen', () => {
     spy.mockRestore();
 
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
     });
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();

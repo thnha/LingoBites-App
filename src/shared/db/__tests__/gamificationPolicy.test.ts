@@ -50,14 +50,10 @@ describe('gamificationPolicy', () => {
   describe('XP scale', () => {
     it('scores each rating and sums a session from its counts', () => {
       expect(XP_PER_RATING.forgot).toBe(2);
-      expect(XP_PER_RATING.hard).toBe(5);
-      expect(XP_PER_RATING.good).toBe(7);
-      expect(XP_PER_RATING.easy).toBe(10);
+      expect(XP_PER_RATING.remembered).toBe(7);
 
-      expect(
-        sessionXp({ forgot: 1, hard: 1, good: 1, easy: 1 }),
-      ).toBe(2 + 5 + 7 + 10);
-      expect(sessionXp({ good: 3 })).toBe(21);
+      expect(sessionXp({ remembered: 1, forgot: 1 })).toBe(7 + 2);
+      expect(sessionXp({ remembered: 3 })).toBe(21);
       expect(sessionXp({})).toBe(0);
     });
   });
@@ -219,14 +215,14 @@ describe('gamificationPolicy', () => {
     it('sums XP/water and reproduces streak state from events only', () => {
       const events = [
         sessionEvent('2026-09-04', 7),
-        sessionEvent('2026-09-05', sessionXp({ good: 1, hard: 1 })),
+        sessionEvent('2026-09-05', sessionXp({ remembered: 1, forgot: 1 })),
         onTimeEvent('2026-09-05'),
         onTimeEvent('2026-09-05'),
         sessionEvent('2026-09-03', 2),
       ];
       const snapshot = deriveGamificationSnapshot(events, today);
       expect(snapshot.totalSessions).toBe(3);
-      expect(snapshot.totalXp).toBe(7 + 12 + 2);
+      expect(snapshot.totalXp).toBe(7 + 9 + 2);
       expect(snapshot.waterUnits).toBe(2);
       expect(snapshot.currentStreak).toBe(3); // 03, 04, 05
       expect(snapshot.bestStreak).toBe(3);

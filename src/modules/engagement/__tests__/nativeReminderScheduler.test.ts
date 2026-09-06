@@ -85,7 +85,7 @@ function seedFlashcardDueInFuture(): string {
   }
   recordFlashcardRating({
     flashcardId: saveResult.flashcardId,
-    rating: 'good',
+    rating: 'remembered',
     reviewedAt: '2026-09-02T08:00:00.000Z',
   });
   return saveResult.flashcardId;
@@ -146,7 +146,7 @@ describe('createNativeReminderScheduler', () => {
     scheduler.schedule({
       cardId: 'card-1',
       word: 'hello',
-      dueAt: '2026-09-03T08:00:00.000Z',
+      dueAt: '2026-09-05T08:00:00.000Z',
     });
 
     expect(calls.scheduled).toHaveLength(1);
@@ -163,17 +163,17 @@ describe('createNativeReminderScheduler', () => {
     expect(scheduled.notification.id).toBe('card-1');
     expect(scheduled.notification.title).toContain('ôn tập');
     expect(scheduled.notification.body).toContain('hello');
-    expect(scheduled.notification.data.dueAt).toBe('2026-09-03T08:00:00.000Z');
+    expect(scheduled.notification.data.dueAt).toBe('2026-09-05T08:00:00.000Z');
     expect(scheduled.notification.android.channelId).toBe(
       GOLDEN_HOUR_CHANNEL_ID,
     );
     expect(scheduled.trigger.type).toBe(TriggerType.TIMESTAMP);
     expect(scheduled.trigger.timestamp).toBe(
-      Date.parse('2026-09-03T08:00:00.000Z'),
+      Date.parse('2026-09-05T08:00:00.000Z'),
     );
 
     expect(scheduler.listPending()).toEqual([
-      { cardId: 'card-1', dueAt: '2026-09-03T08:00:00.000Z' },
+      { cardId: 'card-1', dueAt: '2026-09-05T08:00:00.000Z' },
     ]);
   });
 
@@ -191,7 +191,7 @@ describe('createNativeReminderScheduler', () => {
   it('cancels a card from pending and from the OS', () => {
     const { api, calls } = createFakeNotifee();
     const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
-    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-03T08:00:00.000Z' });
+    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-05T08:00:00.000Z' });
 
     scheduler.cancel('card-1');
 
@@ -207,7 +207,7 @@ describe('createNativeReminderScheduler', () => {
     });
     const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
 
-    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-03T08:00:00.000Z' });
+    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-05T08:00:00.000Z' });
     expect(scheduler.listPending()).toHaveLength(1);
 
     await flushMicrotasks();
@@ -221,7 +221,7 @@ describe('createNativeReminderScheduler', () => {
           {
             notification: {
               id: 'from-data',
-              data: { dueAt: '2026-09-03T08:00:00.000Z' },
+              data: { dueAt: '2026-09-05T08:00:00.000Z' },
             },
             trigger: { type: TriggerType.TIMESTAMP, timestamp: Date.parse('2026-09-04T08:00:00.000Z') },
           },
@@ -242,7 +242,7 @@ describe('createNativeReminderScheduler', () => {
     await scheduler.refreshPending();
 
     const expected: PendingReminder[] = [
-      { cardId: 'from-data', dueAt: '2026-09-03T08:00:00.000Z' },
+      { cardId: 'from-data', dueAt: '2026-09-05T08:00:00.000Z' },
       { cardId: 'from-trigger', dueAt: new Date(Date.parse('2026-09-05T08:00:00.000Z')).toISOString() },
     ];
     expect(scheduler.listPending()).toEqual(expected);
@@ -255,12 +255,12 @@ describe('createNativeReminderScheduler', () => {
       },
     });
     const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
-    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-03T08:00:00.000Z' });
+    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-05T08:00:00.000Z' });
 
     await scheduler.refreshPending();
 
     expect(scheduler.listPending()).toEqual([
-      { cardId: 'card-1', dueAt: '2026-09-03T08:00:00.000Z' },
+      { cardId: 'card-1', dueAt: '2026-09-05T08:00:00.000Z' },
     ]);
   });
 });
@@ -285,7 +285,7 @@ describe('configureNativeReminderNotifications', () => {
       notification: { id: string; data: { dueAt: string } };
     };
     expect(scheduled.notification.id).toBe(cardId);
-    expect(scheduled.notification.data.dueAt).toBe('2026-09-03T08:00:00.000Z');
+    expect(scheduled.notification.data.dueAt).toBe('2026-09-05T08:00:00.000Z');
   });
 
   it('creates the Android channel before installing on Android', async () => {

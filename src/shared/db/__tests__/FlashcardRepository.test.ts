@@ -30,36 +30,6 @@ function saveFixtureLesson(): string {
   return result.lessonId;
 }
 
-function insertLegacyScheduleRow({
-  cardId,
-  intervalDays,
-  updatedAt = '2026-08-10T00:00:00.000Z',
-}: {
-  cardId: string;
-  intervalDays: number;
-  updatedAt?: string;
-}): void {
-  const db = open({ name: DB_NAME });
-  db.execute(
-    `INSERT INTO review_schedule (
-      card_id, lesson_id, interval_days, next_review_at, last_reviewed_at,
-      created_at, updated_at, ease_factor, repetitions, rating_scale
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-    [
-      cardId,
-      'legacy-lesson',
-      intervalDays,
-      '2026-08-10T00:00:00.000Z',
-      null,
-      updatedAt,
-      updatedAt,
-      2.5,
-      0,
-      'v1',
-    ],
-  );
-}
-
 function readScheduleRow(cardId: string) {
   const result = getDatabase().execute(
     'SELECT * FROM review_schedule WHERE card_id = ? LIMIT 1;',
@@ -70,9 +40,6 @@ function readScheduleRow(cardId: string) {
         card_id: string;
         interval_days: number;
         next_review_at: string;
-        ease_factor: number;
-        repetitions: number;
-        rating_scale: string;
         updated_at: string;
       }
     | undefined) ?? null;
@@ -147,7 +114,7 @@ describe('FlashcardRepository', () => {
 
     recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T09:00:00.000Z',
     });
 
@@ -161,7 +128,7 @@ describe('FlashcardRepository', () => {
     });
   });
 
-  it('records a good rating and pushes the card out of today due queue', () => {
+  it('records a remembered rating and pushes the card out of today due queue', () => {
     const lessonId = saveFixtureLesson();
     const saved = saveFlashcard({
       lessonId,
@@ -179,7 +146,7 @@ describe('FlashcardRepository', () => {
 
     const result = recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
 
@@ -187,9 +154,7 @@ describe('FlashcardRepository', () => {
     if (!result.ok) {
       return;
     }
-    expect(result.intervalDays).toBe(1);
-    expect(result.easeFactor).toBeCloseTo(2.5);
-    expect(result.repetitions).toBe(1);
+    expect(result.intervalDays).toBe(3);
     expect(
       getDueFlashcards({ today: '2026-08-17T12:01:00.000Z' }),
     ).toHaveLength(0);
@@ -235,7 +200,7 @@ describe('FlashcardRepository', () => {
 
     recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
     const result = recordFlashcardRating({
@@ -249,126 +214,45 @@ describe('FlashcardRepository', () => {
       return;
     }
     expect(result.intervalDays).toBe(1);
-    expect(result.repetitions).toBe(0);
 
     const row = readScheduleRow(saved.flashcardId);
     expect(row?.interval_days).toBe(1);
-    expect(row?.repetitions).toBe(0);
-    expect(row?.rating_scale).toBe('v2');
     expect(row?.next_review_at).toBe('2026-08-19T12:00:00.000Z');
   });
 
-  it('persists SM-2 ease and repetitions for hard, good and easy ratings', () => {
+  it('walks remembered ratings through the fixed interval chain', () => {
     const lessonId = saveFixtureLesson();
-
-    const cases: Array<{
-      rating: 'hard' | 'good' | 'easy';
-      intervalDays: number;
-      easeFactor: number;
-      repetitions: number;
-    }> = [
-      { rating: 'hard', intervalDays: 7, easeFactor: 2.5, repetitions: 2 },
-      { rating: 'good', intervalDays: 7, easeFactor: 2.5, repetitions: 2 },
-      { rating: 'easy', intervalDays: 7, easeFactor: 2.5, repetitions: 2 },
-    ];
-
-    for (const testCase of cases) {
-      const saved = saveFlashcard({
-        lessonId,
-        vocabulary: {
-          ...validFullOutput.vocabulary[0],
-          id: `sm2-${testCase.rating}`,
-          word: `sm2-${testCase.rating}`,
-        },
-        now: '2026-08-17T00:00:00.000Z',
-      });
-      expect(saved.ok).toBe(true);
-      if (!saved.ok) {
-        return;
-      }
-
-      // Move the row to a mature SM-2 state so the rating produces a growth step.
-      const db = getDatabase();
-      db.execute(
-        `UPDATE review_schedule
-          SET interval_days = ?, ease_factor = ?, repetitions = ?, rating_scale = 'v2', updated_at = ?
-          WHERE card_id = ?;`,
-        [
-          testCase.intervalDays,
-          testCase.easeFactor,
-          testCase.repetitions,
-          '2026-08-17T00:00:00.000Z',
-          saved.flashcardId,
-        ],
-      );
-
-      const result = recordFlashcardRating({
-        flashcardId: saved.flashcardId,
-        rating: testCase.rating,
-        reviewedAt: '2026-08-17T12:00:00.000Z',
-      });
-      expect(result.ok).toBe(true);
-      if (!result.ok) {
-        return;
-      }
-
-      const row = readScheduleRow(saved.flashcardId);
-      expect(row?.rating_scale).toBe('v2');
-      expect(row?.interval_days).toBe(result.intervalDays);
-      expect(row?.ease_factor).toBeCloseTo(result.easeFactor);
-      expect(row?.repetitions).toBe(result.repetitions);
-    }
-  });
-
-  it('backfills pre-existing fixed-interval rows into SM-2 during migration', () => {
-    insertLegacyScheduleRow({ cardId: 'legacy-new', intervalDays: 1 });
-    insertLegacyScheduleRow({ cardId: 'legacy-7d', intervalDays: 7 });
-    insertLegacyScheduleRow({ cardId: 'legacy-120d', intervalDays: 120 });
-
-    // First database access applies migrations + one-time backfill.
-    resetDatabaseForTests(getDatabase());
-
-    expect(readScheduleRow('legacy-new')).toMatchObject({
-      rating_scale: 'v2',
-      ease_factor: 2.5,
-      repetitions: 0,
+    const saved = saveFlashcard({
+      lessonId,
+      vocabulary: validFullOutput.vocabulary[0],
+      now: '2026-08-17T00:00:00.000Z',
     });
-    expect(readScheduleRow('legacy-7d')).toMatchObject({
-      rating_scale: 'v2',
-      ease_factor: 2.5,
-      repetitions: 2,
-    });
-    expect(readScheduleRow('legacy-120d')).toMatchObject({
-      rating_scale: 'v2',
-      ease_factor: 2.5,
-      repetitions: 6,
-    });
-  });
-
-  it('upgrades a still-v1 schedule row on its first SM-2 rating', () => {
-    // Migrations have already run, then a legacy-v1 row appears (e.g. written by
-    // an older code path mid-rollout). Rating must upgrade it before scheduling.
-    getDatabase();
-    insertLegacyScheduleRow({ cardId: 'late-v1', intervalDays: 7 });
-
-    const result = recordFlashcardRating({
-      flashcardId: 'late-v1',
-      rating: 'good',
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-
-    expect(result.ok).toBe(true);
-    if (!result.ok) {
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) {
       return;
     }
-    expect(result.intervalDays).toBe(18); // round(7 * 2.5)
-    expect(result.repetitions).toBe(3); // backfill(7) = 2, plus the good recall
 
-    const row = readScheduleRow('late-v1');
-    expect(row?.rating_scale).toBe('v2');
-    expect(row?.interval_days).toBe(18);
-    expect(row?.repetitions).toBe(3);
-    expect(row?.next_review_at).toBe('2026-09-04T12:00:00.000Z');
+    // Fresh rows start at interval 1 and are immediately due.
+    const first = recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'remembered',
+      reviewedAt: '2026-08-17T12:00:00.000Z',
+    });
+    expect(first.ok && first.intervalDays).toBe(3);
+
+    const second = recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'remembered',
+      reviewedAt: '2026-08-20T12:00:00.000Z',
+    });
+    expect(second.ok && second.intervalDays).toBe(7);
+
+    const third = recordFlashcardRating({
+      flashcardId: saved.flashcardId,
+      rating: 'remembered',
+      reviewedAt: '2026-08-27T12:00:00.000Z',
+    });
+    expect(third.ok && third.intervalDays).toBe(14);
   });
 
   it('enqueues a pending outbox event atomically with each recorded rating', () => {
@@ -385,7 +269,7 @@ describe('FlashcardRepository', () => {
 
     const result = recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'easy',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
     expect(result.ok).toBe(true);
@@ -403,11 +287,9 @@ describe('FlashcardRepository', () => {
       schema_version: 1,
       card_id: saved.flashcardId,
       lesson_id: lessonId,
-      rating: 'easy',
+      rating: 'remembered',
       reviewed_at: '2026-08-17T12:00:00.000Z',
-      interval_days: 1,
-      ease_factor: 2.5,
-      repetitions: 1,
+      interval_days: 3,
     });
     expect(pending[0].payload.next_review_at).toBe(
       result.ok ? result.nextReviewAt : '',
@@ -417,7 +299,7 @@ describe('FlashcardRepository', () => {
   it('does not enqueue an outbox event when the rating fails', () => {
     const result = recordFlashcardRating({
       flashcardId: 'missing-card',
-      rating: 'good',
+      rating: 'forgot',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
     expect(result.ok).toBe(false);
@@ -436,7 +318,7 @@ describe('FlashcardRepository', () => {
     }
     recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
 
@@ -467,11 +349,11 @@ describe('FlashcardRepository', () => {
     // Advance the schedule so we can tell if it gets reset.
     recordFlashcardRating({
       flashcardId: first.flashcardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
     const rowAfterRating = readScheduleRow(first.flashcardId);
-    expect(rowAfterRating?.repetitions).toBe(1);
+    expect(rowAfterRating?.interval_days).toBe(3);
 
     // Save the same vocabulary again.
     const second = saveFlashcard({
@@ -491,14 +373,14 @@ describe('FlashcardRepository', () => {
 
     // Schedule must not have been reset by the duplicate save.
     const rowAfterDuplicate = readScheduleRow(first.flashcardId);
-    expect(rowAfterDuplicate?.repetitions).toBe(1);
+    expect(rowAfterDuplicate?.interval_days).toBe(3);
     expect(rowAfterDuplicate?.interval_days).toBe(rowAfterRating?.interval_days);
   });
 
   it('returns FLASHCARD_NOT_FOUND when rating a nonexistent card', () => {
     const result = recordFlashcardRating({
       flashcardId: 'nonexistent-card-id',
-      rating: 'good',
+      rating: 'forgot',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
 
@@ -524,13 +406,13 @@ describe('FlashcardRepository', () => {
     // Mature the card so interval_days > 1 before the forgot.
     recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
     recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'good',
-      reviewedAt: '2026-08-18T12:00:00.000Z',
+      rating: 'remembered',
+      reviewedAt: '2026-08-20T12:00:00.000Z',
     });
     const rowBeforeForgot = readScheduleRow(saved.flashcardId);
     expect((rowBeforeForgot?.interval_days ?? 0) > 1).toBe(true);
@@ -539,12 +421,11 @@ describe('FlashcardRepository', () => {
     recordFlashcardRating({
       flashcardId: saved.flashcardId,
       rating: 'forgot',
-      reviewedAt: '2026-08-19T12:00:00.000Z',
+      reviewedAt: '2026-08-27T12:00:00.000Z',
     });
 
     const row = readScheduleRow(saved.flashcardId);
     expect(row?.interval_days).toBe(1);
-    expect(row?.repetitions).toBe(0);
-    expect(row?.next_review_at).toBe('2026-08-20T12:00:00.000Z');
+    expect(row?.next_review_at).toBe('2026-08-28T12:00:00.000Z');
   });
 });

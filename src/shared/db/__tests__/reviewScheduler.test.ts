@@ -1,11 +1,7 @@
 import {
-  DEFAULT_EASE_FACTOR,
   DEFAULT_REVIEW_INTERVAL_DAYS,
-  RATING_SCALE_V1,
-  RATING_SCALE_V2,
-  calculateNextReviewStateV1,
-  calculateNextReviewStateV2,
-  legacyRepetitionsFromInterval,
+  FIXED_INTERVAL_DAYS,
+  calculateNextReviewState,
   selectDueReviewCards,
 } from '../reviewScheduler';
 import type { ReviewScheduleRecord } from '../types';
@@ -19,128 +15,14 @@ function schedule(
     intervalDays: overrides.intervalDays ?? DEFAULT_REVIEW_INTERVAL_DAYS,
     nextReviewAt: overrides.nextReviewAt ?? '2026-08-17T00:00:00.000Z',
     lastReviewedAt: overrides.lastReviewedAt ?? null,
-    easeFactor: overrides.easeFactor ?? DEFAULT_EASE_FACTOR,
-    repetitions: overrides.repetitions ?? 0,
-    ratingScale: overrides.ratingScale ?? RATING_SCALE_V2,
     createdAt: overrides.createdAt ?? '2026-08-10T00:00:00.000Z',
     updatedAt: overrides.updatedAt ?? '2026-08-10T00:00:00.000Z',
   };
 }
 
-describe('reviewScheduler V2 (SM-2 four-rating)', () => {
-  it('resets repetitions to a 1-day relearn when forgot', () => {
-    const result = calculateNextReviewStateV2({
-      rating: 'forgot',
-      easeFactor: 2.5,
-      repetitions: 4,
-      intervalDays: 30,
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-
-    expect(result.repetitions).toBe(0);
-    expect(result.easeFactor).toBeCloseTo(2.5);
-    expect(result.intervalDays).toBe(1);
-    expect(result.nextReviewAt).toBe('2026-08-18T12:00:00.000Z');
-  });
-
-  it('keeps the first successful interval at 1 day regardless of rating', () => {
-    for (const rating of ['hard', 'good', 'easy'] as const) {
-      const result = calculateNextReviewStateV2({
-        rating,
-        easeFactor: 2.5,
-        repetitions: 0,
-        intervalDays: 1,
-        reviewedAt: '2026-08-17T12:00:00.000Z',
-      });
-
-      expect(result.repetitions).toBe(1);
-      expect(result.intervalDays).toBe(1);
-      expect(result.nextReviewAt).toBe('2026-08-18T12:00:00.000Z');
-    }
-  });
-
-  it('uses the SM-2 six-day interval on the second successful recall', () => {
-    const result = calculateNextReviewStateV2({
-      rating: 'good',
-      easeFactor: 2.5,
-      repetitions: 1,
-      intervalDays: 1,
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-
-    expect(result.repetitions).toBe(2);
-    expect(result.intervalDays).toBe(6);
-    expect(result.nextReviewAt).toBe('2026-08-23T12:00:00.000Z');
-  });
-
-  it('good keeps ease factor unchanged and grows the interval by ease', () => {
-    const result = calculateNextReviewStateV2({
-      rating: 'good',
-      easeFactor: 2.5,
-      repetitions: 4,
-      intervalDays: 3,
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-
-    expect(result.repetitions).toBe(5);
-    expect(result.easeFactor).toBeCloseTo(2.5);
-    expect(result.intervalDays).toBe(8);
-    expect(result.nextReviewAt).toBe('2026-08-25T12:00:00.000Z');
-  });
-
-  it('hard lowers the ease factor and shortens the next interval', () => {
-    const result = calculateNextReviewStateV2({
-      rating: 'hard',
-      easeFactor: 2.5,
-      repetitions: 4,
-      intervalDays: 3,
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-
-    expect(result.repetitions).toBe(5);
-    expect(result.easeFactor).toBeCloseTo(2.36);
-    expect(result.intervalDays).toBe(7);
-    expect(result.nextReviewAt).toBe('2026-08-24T12:00:00.000Z');
-  });
-
-  it('easy raises the ease factor toward the upper clamp', () => {
-    const result = calculateNextReviewStateV2({
-      rating: 'easy',
-      easeFactor: 2.4,
-      repetitions: 4,
-      intervalDays: 3,
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-
-    expect(result.repetitions).toBe(5);
-    expect(result.easeFactor).toBeCloseTo(2.5);
-    expect(result.intervalDays).toBe(8);
-  });
-
-  it('clamps the ease factor to [1.3, 2.5]', () => {
-    const hardAtFloor = calculateNextReviewStateV2({
-      rating: 'hard',
-      easeFactor: 1.3,
-      repetitions: 2,
-      intervalDays: 3,
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-    expect(hardAtFloor.easeFactor).toBeCloseTo(1.3);
-
-    const easyAtCap = calculateNextReviewStateV2({
-      rating: 'easy',
-      easeFactor: 2.5,
-      repetitions: 2,
-      intervalDays: 3,
-      reviewedAt: '2026-08-17T12:00:00.000Z',
-    });
-    expect(easyAtCap.easeFactor).toBeCloseTo(2.5);
-  });
-});
-
-describe('reviewScheduler V1 (legacy fixed interval)', () => {
+describe('reviewScheduler (MVP fixed-interval two-rating)', () => {
   it('increases interval and moves the next review date when remembered', () => {
-    const result = calculateNextReviewStateV1({
+    const result = calculateNextReviewState({
       rating: 'remembered',
       currentIntervalDays: 1,
       reviewedAt: '2026-08-17T12:00:00.000Z',
@@ -151,7 +33,7 @@ describe('reviewScheduler V1 (legacy fixed interval)', () => {
   });
 
   it('resets interval to tomorrow when forgot', () => {
-    const result = calculateNextReviewStateV1({
+    const result = calculateNextReviewState({
       rating: 'forgot',
       currentIntervalDays: 14,
       reviewedAt: '2026-08-17T12:00:00.000Z',
@@ -167,7 +49,7 @@ describe('reviewScheduler V1 (legacy fixed interval)', () => {
     const reviewedAt = '2026-08-17T12:00:00.000Z';
 
     for (let index = 0; index < expectedChain.length; index += 1) {
-      const result = calculateNextReviewStateV1({
+      const result = calculateNextReviewState({
         rating: 'remembered',
         currentIntervalDays,
         reviewedAt,
@@ -176,34 +58,15 @@ describe('reviewScheduler V1 (legacy fixed interval)', () => {
       currentIntervalDays = result.intervalDays;
     }
   });
-});
 
-describe('reviewScheduler backfill derivation', () => {
-  it('derives repetitions from the legacy interval bucket', () => {
-    expect(legacyRepetitionsFromInterval(1)).toBe(0);
-    expect(legacyRepetitionsFromInterval(3)).toBe(1);
-    expect(legacyRepetitionsFromInterval(7)).toBe(2);
-    expect(legacyRepetitionsFromInterval(14)).toBe(3);
-    expect(legacyRepetitionsFromInterval(30)).toBe(4);
-    expect(legacyRepetitionsFromInterval(60)).toBe(5);
-    expect(legacyRepetitionsFromInterval(120)).toBe(6);
-  });
-
-  it('falls back to a fresh state for unrecognised intervals', () => {
-    expect(legacyRepetitionsFromInterval(0)).toBe(0);
-    expect(legacyRepetitionsFromInterval(2)).toBe(0);
-    expect(legacyRepetitionsFromInterval(-5)).toBe(0);
-  });
-
-  it('leaves a legacy v1 row schedulable under SM-2 after upgrade', () => {
-    const v1Result = calculateNextReviewStateV1({
+  it('caps the interval chain at 120 days', () => {
+    expect(FIXED_INTERVAL_DAYS).toEqual([1, 3, 7, 14, 30, 60, 120]);
+    const result = calculateNextReviewState({
       rating: 'remembered',
-      currentIntervalDays: 1,
+      currentIntervalDays: 120,
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
-    expect(v1Result.intervalDays).toBe(3);
-    expect(RATING_SCALE_V1).toBe('v1');
-    expect(RATING_SCALE_V2).toBe('v2');
+    expect(result.intervalDays).toBe(120);
   });
 });
 

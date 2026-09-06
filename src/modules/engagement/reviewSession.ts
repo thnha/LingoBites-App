@@ -78,7 +78,7 @@ export function startReviewSession(): ReviewSession {
     finished = true;
 
     try {
-      const counts = { forgot: 0, hard: 0, good: 0, easy: 0 };
+      const counts = { remembered: 0, forgot: 0 };
       for (const outcome of outcomes) {
         counts[outcome.rating] += 1;
       }

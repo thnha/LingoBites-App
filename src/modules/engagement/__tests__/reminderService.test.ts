@@ -67,7 +67,7 @@ describe('reminderService', () => {
     const cardId = seedFlashcard();
     recordFlashcardRating({
       flashcardId: cardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-09-02T08:00:00.000Z',
     });
     const fake = createFakeScheduler();
@@ -78,7 +78,7 @@ describe('reminderService', () => {
     expect(fake.calls.scheduled).toHaveLength(1);
     expect(fake.calls.scheduled[0]).toMatchObject({
       cardId,
-      dueAt: '2026-09-03T08:00:00.000Z',
+      dueAt: '2026-09-05T08:00:00.000Z',
     });
     expect(fake.calls.scheduled[0].word.length).toBeGreaterThan(0);
   });
@@ -87,7 +87,7 @@ describe('reminderService', () => {
     const cardId = seedFlashcard();
     recordFlashcardRating({
       flashcardId: cardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-09-02T08:00:00.000Z',
     });
     const fake = createFakeScheduler();
@@ -105,16 +105,17 @@ describe('reminderService', () => {
     const cardId = seedFlashcard();
     recordFlashcardRating({
       flashcardId: cardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-09-02T08:00:00.000Z',
     });
     const fake = createFakeScheduler();
     syncReviewReminders(fake.scheduler, '2026-09-02T09:00:00.000Z');
 
-    // Learner reviews the card again the next day — SM-2 moves its due time.
+    // Learner reviews the card again two days later — the fixed scheduler
+    // advances the card to the next bucket, moving its due time.
     recordFlashcardRating({
       flashcardId: cardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-09-03T09:00:00.000Z',
     });
     const result = syncReviewReminders(fake.scheduler, '2026-09-03T10:00:00.000Z');
@@ -122,14 +123,14 @@ describe('reminderService', () => {
     expect(result).toEqual({ scheduled: 1, cancelled: 1 });
     expect(fake.calls.cancelled).toEqual([cardId]);
     expect(fake.calls.scheduled).toHaveLength(2);
-    expect(fake.calls.scheduled[1].dueAt).toBe('2026-09-09T09:00:00.000Z');
+    expect(fake.calls.scheduled[1].dueAt).toBe('2026-09-10T09:00:00.000Z');
   });
 
   it('cancels stale notifications for cards no longer due in the future', () => {
     const cardId = seedFlashcard();
     recordFlashcardRating({
       flashcardId: cardId,
-      rating: 'good',
+      rating: 'forgot',
       reviewedAt: '2026-09-02T08:00:00.000Z',
     });
     const fake = createFakeScheduler();
@@ -150,7 +151,7 @@ describe('reminderService', () => {
     const cardId = seedFlashcard();
     recordFlashcardRating({
       flashcardId: cardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-09-02T08:00:00.000Z',
     });
     const fake = createFakeScheduler();
@@ -158,6 +159,6 @@ describe('reminderService', () => {
 
     const result = reconcileReminders('2026-09-02T09:00:00.000Z');
     expect(result).toEqual({ scheduled: 1, cancelled: 0 });
-    expect(fake.pending.get(cardId)).toBe('2026-09-03T08:00:00.000Z');
+    expect(fake.pending.get(cardId)).toBe('2026-09-05T08:00:00.000Z');
   });
 });

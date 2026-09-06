@@ -22,10 +22,8 @@ import type {
 
 /** XP a completed session earns per rated card (SETE-89 product rule). */
 export const XP_PER_RATING: Record<ReviewRating, number> = {
+  remembered: 7,
   forgot: 2,
-  hard: 5,
-  good: 7,
-  easy: 10,
 };
 
 /** Water a timely card review pours on the virtual plant. */
@@ -33,22 +31,18 @@ export const ON_TIME_WATER_POINTS = 1;
 
 /** Counts of each rating inside one finished review session. */
 export type ReviewSessionCounts = {
+  remembered: number;
   forgot: number;
-  hard: number;
-  good: number;
-  easy: number;
 };
 
-const EMPTY_COUNTS: ReviewSessionCounts = { forgot: 0, hard: 0, good: 0, easy: 0 };
+const EMPTY_COUNTS: ReviewSessionCounts = { remembered: 0, forgot: 0 };
 
 /** XP for a whole session = sum of per-rating XP over its rated cards. */
 export function sessionXp(counts: Partial<ReviewSessionCounts>): number {
   const merged = { ...EMPTY_COUNTS, ...counts };
   return (
-    merged.forgot * XP_PER_RATING.forgot +
-    merged.hard * XP_PER_RATING.hard +
-    merged.good * XP_PER_RATING.good +
-    merged.easy * XP_PER_RATING.easy
+    merged.remembered * XP_PER_RATING.remembered +
+    merged.forgot * XP_PER_RATING.forgot
   );
 }
 

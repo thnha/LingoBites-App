@@ -38,10 +38,8 @@ type Props = {
 
 type Summary = {
   reviewed: number;
+  remembered: number;
   forgot: number;
-  hard: number;
-  good: number;
-  easy: number;
 };
 
 function FlashcardFace({
@@ -99,10 +97,8 @@ export function DailyReviewScreen({
   const [ratingError, setRatingError] = useState<string | null>(null);
   const [summary, setSummary] = useState<Summary>({
     reviewed: 0,
+    remembered: 0,
     forgot: 0,
-    hard: 0,
-    good: 0,
-    easy: 0,
   });
   const [complete, setComplete] = useState(false);
   // Engagement session (SETE-89): records the rated cards and, when the session
@@ -166,10 +162,8 @@ export function DailyReviewScreen({
 
     const nextSummary = {
       reviewed: summary.reviewed + 1,
+      remembered: summary.remembered + (rating === 'remembered' ? 1 : 0),
       forgot: summary.forgot + (rating === 'forgot' ? 1 : 0),
-      hard: summary.hard + (rating === 'hard' ? 1 : 0),
-      good: summary.good + (rating === 'good' ? 1 : 0),
-      easy: summary.easy + (rating === 'easy' ? 1 : 0),
     };
     finishNext(nextSummary);
   }
@@ -259,34 +253,18 @@ export function DailyReviewScreen({
             <View style={styles.breakdown}>
               <View style={styles.breakdownItem}>
                 <AppText color="secondary" variant="label">
+                  {t('review.summary_remembered_label')}
+                </AppText>
+                <AppText testID="summary-remembered-count" variant="h3">
+                  {summary.remembered}
+                </AppText>
+              </View>
+              <View style={styles.breakdownItem}>
+                <AppText color="secondary" variant="label">
                   {t('review.summary_forgot_label')}
                 </AppText>
                 <AppText testID="summary-forgot-count" variant="h3">
                   {summary.forgot}
-                </AppText>
-              </View>
-              <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">
-                  {t('review.summary_hard_label')}
-                </AppText>
-                <AppText testID="summary-hard-count" variant="h3">
-                  {summary.hard}
-                </AppText>
-              </View>
-              <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">
-                  {t('review.summary_good_label')}
-                </AppText>
-                <AppText testID="summary-good-count" variant="h3">
-                  {summary.good}
-                </AppText>
-              </View>
-              <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">
-                  {t('review.summary_easy_label')}
-                </AppText>
-                <AppText testID="summary-easy-count" variant="h3">
-                  {summary.easy}
                 </AppText>
               </View>
             </View>

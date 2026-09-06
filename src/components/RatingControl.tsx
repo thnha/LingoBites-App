@@ -17,33 +17,21 @@ type RatingOption = {
   rating: ReviewRating;
   labelKey: string;
   accessibilityKey: string;
-  icon: 'refresh' | 'bolt' | 'check_circle' | 'auto_awesome';
+  icon: 'check_circle' | 'refresh';
 };
 
 const RATING_OPTIONS: RatingOption[] = [
+  {
+    rating: 'remembered',
+    labelKey: 'rating.remembered_label',
+    accessibilityKey: 'rating.remembered_a11y',
+    icon: 'check_circle',
+  },
   {
     rating: 'forgot',
     labelKey: 'rating.forgot_label',
     accessibilityKey: 'rating.forgot_a11y',
     icon: 'refresh',
-  },
-  {
-    rating: 'hard',
-    labelKey: 'rating.hard_label',
-    accessibilityKey: 'rating.hard_a11y',
-    icon: 'bolt',
-  },
-  {
-    rating: 'good',
-    labelKey: 'rating.good_label',
-    accessibilityKey: 'rating.good_a11y',
-    icon: 'check_circle',
-  },
-  {
-    rating: 'easy',
-    labelKey: 'rating.easy_label',
-    accessibilityKey: 'rating.easy_a11y',
-    icon: 'auto_awesome',
   },
 ];
 
@@ -52,23 +40,11 @@ function ratingTone(
   rating: ReviewRating,
 ): {background: string; border: string; ink: string} {
   switch (rating) {
-    case 'hard':
-      return {
-        background: theme.colors.secondarySoft,
-        border: theme.colors.outlineVariant,
-        ink: theme.colors.secondary,
-      };
-    case 'good':
+    case 'remembered':
       return {
         background: theme.colors.accentSoft,
         border: theme.colors.primary,
         ink: theme.colors.primary,
-      };
-    case 'easy':
-      return {
-        background: theme.colors.tertiarySoft,
-        border: theme.colors.outlineVariant,
-        ink: theme.colors.tertiary,
       };
     case 'forgot':
     default:

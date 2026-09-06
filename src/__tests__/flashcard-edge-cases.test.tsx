@@ -326,7 +326,7 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
 
       await revealCard(tree);
       await act(async () => {
-        tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+        tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
       });
 
       // Now render again - should show "all done" state

@@ -48,15 +48,15 @@ describe('Offline review QA (SETE-101)', () => {
     // 2. Complete one review session while offline: rate the due card.
     const rating = recordFlashcardRating({
       flashcardId: saved.flashcardId,
-      rating: 'good',
+      rating: 'remembered',
       reviewedAt: '2026-08-17T12:00:00.000Z',
     });
     expect(rating.ok).toBe(true);
     if (!rating.ok) {
       return;
     }
-    expect(rating.intervalDays).toBe(1);
-    expect(rating.repetitions).toBe(1);
+    // Fixed interval: a fresh card reviewed as remembered moves to the 3-day bucket.
+    expect(rating.intervalDays).toBe(3);
 
     // The card leaves today's due queue after the session.
     expect(
@@ -69,11 +69,11 @@ describe('Offline review QA (SETE-101)', () => {
     const reopened = getDatabase();
     expect(reopened).toBeDefined();
 
-    // 4. Schedule persisted: the card is still saved and due tomorrow.
+    // 4. Schedule persisted: the card is still saved and due in 3 days.
     expect(listFlashcards()).toHaveLength(1);
-    expect(getCardDueAt(saved.flashcardId)).toBe('2026-08-18T12:00:00.000Z');
+    expect(getCardDueAt(saved.flashcardId)).toBe('2026-08-20T12:00:00.000Z');
     expect(
-      getDueFlashcards({ today: '2026-08-18T12:00:00.000Z' }),
+      getDueFlashcards({ today: '2026-08-20T12:00:00.000Z' }),
     ).toHaveLength(1);
 
     // 5. The review_sessions row written during the offline session persisted.
@@ -92,9 +92,9 @@ describe('Offline review QA (SETE-101)', () => {
         }
       | undefined;
     expect(session?.card_id).toBe(saved.flashcardId);
-    expect(session?.rating).toBe('good');
+    expect(session?.rating).toBe('remembered');
     expect(session?.reviewed_at).toBe('2026-08-17T12:00:00.000Z');
-    expect(session?.interval_days).toBe(1);
-    expect(session?.next_review_at).toBe('2026-08-18T12:00:00.000Z');
+    expect(session?.interval_days).toBe(3);
+    expect(session?.next_review_at).toBe('2026-08-20T12:00:00.000Z');
   });
 });

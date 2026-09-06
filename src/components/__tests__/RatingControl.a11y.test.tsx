@@ -10,10 +10,8 @@ import {
 } from '../../../test-utils/a11yTestUtils';
 
 const RATING_BUTTONS = [
+  {testID: 'rating-remembered', label: 'Đã nhớ - lên lịch ôn sau'},
   {testID: 'rating-forgot', label: 'Không nhớ - ôn lại sau 1 ngày'},
-  {testID: 'rating-hard', label: 'Nhớ nhưng khó - ôn sớm hơn'},
-  {testID: 'rating-good', label: 'Nhớ - lên lịch ôn sau'},
-  {testID: 'rating-easy', label: 'Rất dễ - lên lịch ôn lâu hơn'},
 ];
 
 async function render(ui: React.ReactElement) {

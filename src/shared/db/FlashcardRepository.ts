@@ -5,12 +5,8 @@ import { getDatabase, withTransaction } from './database';
 import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
 import { REVIEW_EVENT_SCHEMA_VERSION } from './types';
 import {
-  DEFAULT_EASE_FACTOR,
   DEFAULT_REVIEW_INTERVAL_DAYS,
-  RATING_SCALE_V1,
-  RATING_SCALE_V2,
-  calculateNextReviewStateV2,
-  legacyRepetitionsFromInterval,
+  calculateNextReviewState,
 } from './reviewScheduler';
 import type {
   FlashcardRecord,
@@ -47,9 +43,6 @@ type ReviewScheduleRow = {
   interval_days: number;
   next_review_at: string;
   last_reviewed_at: string | null;
-  ease_factor: number;
-  repetitions: number;
-  rating_scale: string;
   created_at: string;
   updated_at: string;
 };
@@ -129,8 +122,8 @@ export function saveFlashcard(input: SaveFlashcardInput): SaveFlashcardResult {
     db.execute(
       `INSERT INTO review_schedule (
         card_id, lesson_id, interval_days, next_review_at, last_reviewed_at,
-        created_at, updated_at, ease_factor, repetitions, rating_scale
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
       [
         flashcardId,
         input.lessonId,
@@ -139,9 +132,6 @@ export function saveFlashcard(input: SaveFlashcardInput): SaveFlashcardResult {
         null,
         now,
         now,
-        DEFAULT_EASE_FACTOR,
-        0,
-        RATING_SCALE_V2,
       ],
     );
 
@@ -238,42 +228,14 @@ export function getDueFlashcards({
 }
 
 /**
- * Returns SM-2 state for a schedule row, upgrading it from the legacy `v1`
- * scheme first if needed. `v1` rows reached their current interval bucket via
- * the old fixed-step scheduler, so `repetitions` is derived from that bucket
- * (same rule as the migration backfill) rather than reinterpreted.
+ * Records a two-rating review outcome on a schedule row.
+ *
+ * The MVP contract (SETE-92) is a fixed-interval two-rating model:
+ * `remembered` advances the card to the next fixed bucket and `forgot`
+ * resets it to a 1-day relearn. The review write and its outbox row are
+ * committed atomically (ADR-2): a crash mid-rating can leave a recorded
+ * session but never a session without a matching outbox event waiting to sync.
  */
-function upgradeReviewScheduleToV2(
-  db: ReturnType<typeof getDatabase>,
-  schedule: ReviewScheduleRow,
-): { easeFactor: number; repetitions: number } {
-  if (schedule.rating_scale === RATING_SCALE_V2) {
-    return {
-      easeFactor: schedule.ease_factor,
-      repetitions: schedule.repetitions,
-    };
-  }
-
-  const easeFactor = DEFAULT_EASE_FACTOR;
-  const repetitions = legacyRepetitionsFromInterval(schedule.interval_days);
-  const updatedAt = new Date().toISOString();
-  db.execute(
-    `UPDATE review_schedule
-      SET ease_factor = ?, repetitions = ?, rating_scale = ?, updated_at = ?
-      WHERE card_id = ? AND rating_scale = ?;`,
-    [
-      easeFactor,
-      repetitions,
-      RATING_SCALE_V2,
-      updatedAt,
-      schedule.card_id,
-      RATING_SCALE_V1,
-    ],
-  );
-
-  return { easeFactor, repetitions };
-}
-
 export function recordFlashcardRating(
   input: RecordFlashcardRatingInput,
 ): RecordFlashcardRatingResult {
@@ -295,18 +257,10 @@ export function recordFlashcardRating(
 
     const reviewedAt = input.reviewedAt ?? new Date().toISOString();
 
-    // The review write and its outbox row are committed atomically (ADR-2): a
-    // crash mid-rating can leave a recorded session but never a session without
-    // a matching outbox event waiting to sync.
     const outcome = withTransaction(db, () => {
-      // Rows flagged `v1` (not yet backfilled by the migration) are upgraded to
-      // the SM-2 scheme on first rating so they keep working during rollout.
-      const sm2State = upgradeReviewScheduleToV2(db, schedule);
-      const next = calculateNextReviewStateV2({
+      const next = calculateNextReviewState({
         rating: input.rating,
-        easeFactor: sm2State.easeFactor,
-        repetitions: sm2State.repetitions,
-        intervalDays: schedule.interval_days,
+        currentIntervalDays: schedule.interval_days,
         reviewedAt,
       });
       const sessionId = createRequestId();
@@ -329,16 +283,13 @@ export function recordFlashcardRating(
       );
       db.execute(
         `UPDATE review_schedule
-          SET interval_days = ?, next_review_at = ?, last_reviewed_at = ?, updated_at = ?,
-              ease_factor = ?, repetitions = ?
+          SET interval_days = ?, next_review_at = ?, last_reviewed_at = ?, updated_at = ?
           WHERE card_id = ?;`,
         [
           next.intervalDays,
           next.nextReviewAt,
           reviewedAt,
           reviewedAt,
-          next.easeFactor,
-          next.repetitions,
           input.flashcardId,
         ],
       );
@@ -357,8 +308,6 @@ export function recordFlashcardRating(
           reviewed_at: reviewedAt,
           interval_days: next.intervalDays,
           next_review_at: next.nextReviewAt,
-          ease_factor: next.easeFactor,
-          repetitions: next.repetitions,
         },
       });
 
@@ -369,8 +318,6 @@ export function recordFlashcardRating(
       ok: true,
       intervalDays: outcome.intervalDays,
       nextReviewAt: outcome.nextReviewAt,
-      easeFactor: outcome.easeFactor,
-      repetitions: outcome.repetitions,
     };
   } catch {
     return {

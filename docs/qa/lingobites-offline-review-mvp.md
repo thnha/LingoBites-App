@@ -1,9 +1,10 @@
 # LingoBites Offline Review MVP — Manual QA & Release Acceptance
 
-- **Issue:** SETE-101 (SETE-92 Task 9)
+- **Issue:** SETE-101 (SETE-92 Task 9), scheduler acceptance resolved in SETE-102 (Task 10)
 - **Date:** 2026-09-06
 - **Branch:** `main` (shared feature branch), based on `origin/main`
-- **Base revision:** `c5dceec` (SETE-100). QA changes in this run are committed on top.
+- **Base revision:** `c5dceec` (SETE-100). QA changes committed on top; SETE-102 restored
+  the accepted fixed two-rating scheduler on top of the QA revision.
 - **Release under test:** `lingobites-mvp` (activated via `DEFAULT_RELEASE_NAME`)
 
 ## 1. Environment under test
@@ -65,10 +66,10 @@ Commands (run from `mobile-app/`):
 
 | Command | Result |
 |---|---|
-| `yarn jest --runInBand src/release/__tests__/validate-release-config.test.ts` | PASS, 8/8 |
-| MVP targeted set (release config, route gating, feature flags, Home MVP/DailyReview, FlashcardRepository, reviewScheduler, offline QA) | PASS, 63/63 |
-| `yarn jest --runInBand src/shared/db/__tests__/offlineReviewQa.test.ts` | PASS (new QA evidence test) |
-| `yarn test --runInBand` (full suite) | **PASS — 73 suites, 542 passed, 1 skipped** |
+| `yarn jest --runInBand src/release/__tests__/validate-release-config.test.ts` | PASS |
+| MVP targeted set (release config, route gating, feature flags, Home MVP/DailyReview, FlashcardRepository, reviewScheduler, offline QA) | PASS |
+| `yarn jest --runInBand src/shared/db/__tests__/offlineReviewQa.test.ts` | PASS (offline review evidence test) |
+| `yarn test --runInBand` (full suite) | **PASS — 73 suites, 531 passed, 1 skipped** |
 | `yarn lint` (`eslint .`) | **0 errors**, 317 pre-existing warnings (no new warnings in touched files) |
 | `yarn tsc --noEmit` | 1 **pre-existing** error in `test-utils/a11yTestUtils.ts:56` (TS2367), reproduced on the clean tree at `c5dceec`; unrelated to MVP files. No `typecheck` script is configured in the repo. |
 
@@ -120,24 +121,24 @@ real SQLite-backed quick-sqlite mock) or **blocked / manual-on-device** with the
 
 | # | Step | Expected | Result |
 |---|---|---|---|
-| 1 | Save a flashcard from a saved lesson (local, offline entry point) | `saveFlashcard` creates one flashcard + a `review_schedule` row (`rating_scale v2`, interval 1d, due immediately); duplicate save is idempotent (no duplicate row, no schedule reset) | **PASS** — `FlashcardRepository.test.ts` (idempotency, list, unsave) + `offlineReviewQa.test.ts`; component path `SavedLessonDetailScreen`/`LessonResultScreen` covered by `SavedLessonDetailScreen.test.tsx` / `LessonResultScreen.flashcards.test.tsx` |
+| 1 | Save a flashcard from a saved lesson (local, offline entry point) | `saveFlashcard` creates one flashcard + a `review_schedule` row (interval 1d, due immediately) under the fixed two-rating scheduler; duplicate save is idempotent (no duplicate row, no schedule reset) | **PASS** — `FlashcardRepository.test.ts` (idempotency, list, unsave) + `offlineReviewQa.test.ts`; component path `SavedLessonDetailScreen`/`LessonResultScreen` covered by `SavedLessonDetailScreen.test.tsx` / `LessonResultScreen.flashcards.test.tsx` |
 | 2 | Enable airplane mode (device) | All writes local; no network required for save/review | **BLOCKED (device)** — cannot toggle airplane mode on simulator. Repository layer performs no network I/O on save/rate; rating only enqueues a local `sync_outbox` row (see §8 note) |
-| 3 | Complete one review session (front-first active recall) | Rating buttons disabled until card flip/reveal; `recordFlashcardRating` moves card out of today's due queue; summary shows reviewed/forgot (and SM-2) counts; forgot resets interval to 1d; rating-write failure does **not** auto-advance the session and shows a translated error | **PASS (automated)** — `DailyReviewScreen.test.tsx` + `.a11y.test.tsx`, `feature-flag.test.tsx`, `FlashcardRepository.test.ts` (forgot reset, FLASHCARD_NOT_FOUND, outbox atomicity). UI tap-through on device: BLOCKED (no UI driver) |
+| 3 | Complete one review session (front-first active recall) | Rating buttons disabled until card flip/reveal; exactly two ratings (`remembered | forgot`); `recordFlashcardRating` moves card out of today's due queue; summary shows reviewed/remembered/forgot counts; forgot resets interval to 1d; rating-write failure does **not** auto-advance the session and shows a translated error | **PASS (automated)** — `DailyReviewScreen.test.tsx` + `.a11y.test.tsx`, `feature-flag.test.tsx`, `FlashcardRepository.test.ts` (remembered chain, forgot reset, FLASHCARD_NOT_FOUND, outbox atomicity). UI tap-through on device: BLOCKED (no UI driver) |
 | 4 | Restart app (device) | Data survives restart; app boots into MVP config | **PASS (boot smoke)** — app relaunched/terminated cleanly on simulator; DB file persists in container. Full UI re-login walkthrough on device: BLOCKED |
-| 5 | Confirm schedule / `review_sessions` persistence | After restart the card's `next_review_at` reflects the last rating and the `review_sessions` row remains | **PASS (automated replica)** — new `offlineReviewQa.test.ts` performs save → offline rating → drop DB handle + reopen (restart) → asserts flashcard saved, `next_review_at = 2026-08-18T12:00:00Z` (due tomorrow), due queue empty today / due tomorrow, and the `review_sessions` row persisted with the rating. Device check: BLOCKED |
+| 5 | Confirm schedule / `review_sessions` persistence | After restart the card's `next_review_at` reflects the last rating and the `review_sessions` row remains | **PASS (automated replica)** — `offlineReviewQa.test.ts` performs save → offline rating → drop DB handle + reopen (restart) → asserts flashcard saved, `next_review_at = 2026-08-20T12:00:00Z` (remembered advances 1 → 3d), due queue empty until day 3, and the `review_sessions` row persisted with the rating. Device check: BLOCKED |
 | 6 | Empty states distinct ("no flashcards" vs "all done today") | Two distinct translated empty states driven by saved-card count | **PASS (automated)** — `DailyReviewScreen.test.tsx`, `flashcard-edge-cases.test.tsx` (empty-state suites) |
 | 7 | Home in MVP mode | Ingestion CTAs hidden; MVP no-content card explains saved-lesson flow; due-count widget only when `reviewSystem` on and a card is due; no route-not-found path | **PASS (automated)** — `HomeScreenMvp.test.tsx`, `ingestionRouteGate.test.ts`, `HomeScreenDailyReview.test.tsx`. Visual confirmation on simulator: BLOCKED (no image review in this session) |
 
-### Offline QA evidence test (added)
+### Offline QA evidence test
 
 `src/shared/db/__tests__/offlineReviewQa.test.ts` replicates the acceptance flow at the
 repository boundary (no network dependency):
 
 1. save lesson + flashcard locally;
-2. complete one review session (rate `good`) while "offline";
+2. complete one review session (rate `remembered`) while "offline";
 3. simulate restart (`resetDatabaseForTests(null)` + reopen);
-4. assert schedule advanced (card due tomorrow, not today) and the `review_sessions`
-   row persisted.
+4. assert schedule advanced (card due on day 3 per the fixed `[1,3,7,…]` chain, not today)
+   and the `review_sessions` row persisted with the `remembered` rating.
 
 Result: **PASS**. Supporting mock change: `test-utils/sqliteMock.js` gained a
 `SELECT … FROM review_sessions` handler so the session row can be read back.
@@ -150,27 +151,32 @@ Result: **PASS**. Supporting mock change: `test-utils/sqliteMock.js` gained a
 - On-device manual steps (airplane mode toggle, UI tap-through, device restart
   walkthrough, visual confirmation) are **blocked in this environment** and are recorded
   as such; the underlying flow is verified by the automated replica above.
-- **Scheduler/rating-model divergence (needs human/orchestrator acknowledgment):** the
-  shared `main` carries the SETE-86 SM-2 four-rating scheduler (`forgot|hard|good|easy`,
-  `review_schedule.rating_scale = 'v2'`), so cards saved in this MVP build schedule under
-  SM-2 (`1 → 6 → ×ease`), **not** the fixed `[1,3,7,14,30,60,120]` two-rating
-  (`remembered|forgot`) chain from the original SETE-92 constraints. The fixed-interval
-  V1 scheduler still exists and is covered by tests (`reviewScheduler.test.ts`) but is a
-  legacy path for pre-backfill rows only. Earlier accepted tasks (SETE-95/97/98) locked
-  tests around this reality. No code change was made here to re-introduce the fixed
-  two-rating scheduler because that is a scheduler/rating-model re-architecture beyond
-  QA scope and touches the SETE-92 human-approval gates.
-- Related: rating currently also enqueues a local `sync_outbox` row and the shared `main`
-  includes gamification/reminder code reached from the review session. These exist on the
-  integration branch that all nine tasks built on; they are noted here as acceptance
+- **Scheduler/rating-model divergence — RESOLVED by SETE-102:** the shared `main` had
+  carried the SETE-86 SM-2 four-rating scheduler (`forgot|hard|good|easy`,
+  `review_schedule.rating_scale = 'v2'`), which the coordinator decision declined to
+  accept for this MVP (no human approval existed; SETE-92 gates any rating-model
+  expansion). Task 10 restored the accepted fixed two-rating contract on `main`: the
+  review flow now schedules under the fixed `[1,3,7,14,30,60,120]` chain with exactly
+  `remembered | forgot`. The SM-2 `v1/v2` scale columns, `v1 → v2` backfill, ease
+  factor / repetition bookkeeping, and the four-rating UI were removed from the
+  scheduler, persistence layer, Daily Review flow, and their tests. New cards save at
+  interval 1d and `remembered` advances to the next fixed bucket; `forgot` resets to 1d.
+- Related: rating also enqueues a local `sync_outbox` row and the shared `main` includes
+  gamification/reminder code reached from the review session. These exist on the
+  integration branch that the tasks built on; they are noted here as acceptance
   context, not newly added by this task.
 - The MVP config defect (review path disabled) found during this gate was corrected so
   the MVP build can actually save and review; see §3.
 
 ## 8. Evidence / artifacts
 
-- `src/shared/db/__tests__/offlineReviewQa.test.ts` (new)
+- `src/shared/db/__tests__/offlineReviewQa.test.ts`
 - `test-utils/sqliteMock.js` (review_sessions read support)
 - `src/release/configs/lingobites-mvp.json`, `src/release/feature-dependencies.ts`,
   `src/release/release-manifest.ts`, `src/release/__tests__/validate-release-config.test.ts`
+- SETE-102 restore of the fixed two-rating scheduler: `src/shared/db/reviewScheduler.ts`,
+  `src/shared/db/types.ts`, `src/shared/db/FlashcardRepository.ts`,
+  `src/shared/db/migrations.ts`, `src/components/RatingControl.tsx`,
+  `src/modules/review/DailyReviewScreen.tsx`, `src/i18n/{vi,en}.json`, and the
+  scheduler/persistence/Daily Review/release-config tests updated to match.
 - Simulator boot screenshot captured during this run (attached to the issue comment).

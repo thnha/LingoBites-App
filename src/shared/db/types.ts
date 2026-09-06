@@ -48,15 +48,7 @@ export type SaveLessonResult =
       message: string;
     };
 
-export type ReviewRating = 'forgot' | 'hard' | 'good' | 'easy';
-
-/**
- * Version flag for the scheduling model a schedule row is tracked under.
- * `v1` = legacy fixed-interval two-rating scheme (`remembered | forgot`);
- * `v2` = SM-2 four-rating scheme. Existing rows are one-time backfilled to `v2`
- * during the migration so old history is not silently reinterpreted.
- */
-export type ReviewRatingScale = 'v1' | 'v2';
+export type ReviewRating = 'remembered' | 'forgot';
 
 export type FlashcardRecord = {
   id: string;
@@ -83,12 +75,6 @@ export type ReviewScheduleRecord = {
   intervalDays: number;
   nextReviewAt: string;
   lastReviewedAt: string | null;
-  /** SM-2 ease factor (clamped to [1.3, 2.5]); default 2.5. */
-  easeFactor: number;
-  /** SM-2 repetition count of successful recalls. */
-  repetitions: number;
-  /** Scheduling model version this row is tracked under (see `ReviewRatingScale`). */
-  ratingScale: ReviewRatingScale;
   createdAt: string;
   updatedAt: string;
 };
@@ -120,13 +106,7 @@ export type RecordFlashcardRatingInput = {
 };
 
 export type RecordFlashcardRatingResult =
-  | {
-      ok: true;
-      intervalDays: number;
-      nextReviewAt: string;
-      easeFactor: number;
-      repetitions: number;
-    }
+  | { ok: true; intervalDays: number; nextReviewAt: string }
   | {
       ok: false;
       errorCode: 'FLASHCARD_NOT_FOUND' | 'LOCAL_DB_ERROR';
@@ -222,8 +202,6 @@ export type ReviewEventPayload = {
   reviewed_at: string;
   interval_days: number;
   next_review_at: string;
-  ease_factor: number;
-  repetitions: number;
 };
 
 export const REVIEW_EVENT_SCHEMA_VERSION = 1 as const;

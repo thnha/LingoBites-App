@@ -1,10 +1,4 @@
 import type { QuickSQLiteConnection } from 'react-native-quick-sqlite';
-import {
-  DEFAULT_EASE_FACTOR,
-  RATING_SCALE_V1,
-  RATING_SCALE_V2,
-  legacyRepetitionsFromInterval,
-} from './reviewScheduler';
 
 const MIGRATIONS = [
   `CREATE TABLE IF NOT EXISTS lessons (
@@ -90,11 +84,6 @@ const MIGRATIONS = [
     synced_at TEXT
   );`,
   `CREATE INDEX IF NOT EXISTS idx_sync_outbox_pending ON sync_outbox (synced_at, created_at);`,
-  // SM-2 four-rating migration (SETE-86). Existing columns are kept; SM-2 state
-  // is added next to them so legacy rows are upgraded, never reinterpreted.
-  `ALTER TABLE review_schedule ADD COLUMN ease_factor REAL NOT NULL DEFAULT 2.5;`,
-  `ALTER TABLE review_schedule ADD COLUMN repetitions INTEGER NOT NULL DEFAULT 0;`,
-  `ALTER TABLE review_schedule ADD COLUMN rating_scale TEXT NOT NULL DEFAULT 'v1';`,
   // Offline chapter-audio cache (SETE-88, ADR-3). The server only serves a
   // manifest; audio files are downloaded straight to device storage and this
   // table tracks each file so the cache can stay bounded (cap + eviction).
@@ -124,45 +113,6 @@ const MIGRATIONS = [
   `CREATE INDEX IF NOT EXISTS idx_gamification_events_type_created ON gamification_events (event_type, created_at);`,
 ];
 
-/**
- * One-time `v1 -> v2` backfill of review_schedule rows.
- *
- * Legacy fixed-interval rows are given SM-2 state derived from their current
- * interval bucket (`repetitions` = number of "remembered" steps that reached
- * that bucket) plus the default ease factor. The guard `rating_scale = 'v1'`
- * makes this idempotent: it runs on every app launch but only touches rows that
- * have not been backfilled yet. History is not silently reinterpreted as if it
- * had always been SM-2 — cadence only follows SM-2 from the backfill onward.
- */
-function backfillLegacyReviewSchedules(db: QuickSQLiteConnection): void {
-  const result = db.execute(
-    'SELECT card_id, interval_days FROM review_schedule WHERE rating_scale = ?;',
-    [RATING_SCALE_V1],
-  );
-  const rows = result.rows;
-  if (!rows) {
-    return;
-  }
-
-  const now = new Date().toISOString();
-  for (let index = 0; index < rows.length; index += 1) {
-    const row = rows.item(index) as { card_id: string; interval_days: number };
-    db.execute(
-      `UPDATE review_schedule
-        SET ease_factor = ?, repetitions = ?, rating_scale = ?, updated_at = ?
-        WHERE card_id = ? AND rating_scale = ?;`,
-      [
-        DEFAULT_EASE_FACTOR,
-        legacyRepetitionsFromInterval(row.interval_days),
-        RATING_SCALE_V2,
-        now,
-        row.card_id,
-        RATING_SCALE_V1,
-      ],
-    );
-  }
-}
-
 export function runMigrations(db: QuickSQLiteConnection): void {
   for (const sql of MIGRATIONS) {
     try {
@@ -179,5 +129,4 @@ export function runMigrations(db: QuickSQLiteConnection): void {
       throw error;
     }
   }
-  backfillLegacyReviewSchedules(db);
 }

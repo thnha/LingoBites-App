@@ -36,10 +36,8 @@
     "carry_over": "{{count}} cards saved for next session",
     "summary_title": "Review summary",
     "summary_reviewed_label": "Reviewed",
+    "summary_remembered_label": "Remembered",
     "summary_forgot_label": "Forgot",
-    "summary_hard_label": "Hard",
-    "summary_good_label": "Good",
-    "summary_easy_label": "Easy",
     "summary_xp": "+{{xp}} XP today",
     "back_to_home": "Back to Home",
     "back_to_home_a11y": "Back to Home"
@@ -47,12 +45,8 @@
   "rating": {
     "forgot_label": "Forgot",
     "forgot_a11y": "Don't remember - review again in 1 day",
-    "hard_label": "Hard",
-    "hard_a11y": "Remember but hard - review sooner",
-    "good_label": "Good",
-    "good_a11y": "Remember - schedule review later",
-    "easy_label": "Easy",
-    "easy_a11y": "Very easy - schedule review much later",
+    "remembered_label": "Remembered",
+    "remembered_a11y": "Remember - schedule review later",
     "skip_label": "Skip",
     "skip_a11y": "Skip this card"
   }

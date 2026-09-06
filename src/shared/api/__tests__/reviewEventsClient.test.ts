@@ -13,12 +13,10 @@ const payload: ReviewEventPayload = {
   anonymous_user_id: 'user-1',
   card_id: 'card-1',
   lesson_id: 'lesson-1',
-  rating: 'good',
+  rating: 'remembered',
   reviewed_at: '2026-09-05T12:00:00.000Z',
   interval_days: 7,
   next_review_at: '2026-09-12T12:00:00.000Z',
-  ease_factor: 2.5,
-  repetitions: 2,
 };
 
 const events = [

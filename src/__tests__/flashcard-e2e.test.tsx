@@ -147,11 +147,11 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     const progress = reviewTree.root.findByProps({testID: 'review-progress'});
     expect(progress.props.children).toBe('1 / 1');
 
-    // === STEP 5: Rate the card as "good" ===
-    const goodButton = reviewTree.root.findByProps({testID: 'rating-good'});
+    // === STEP 5: Rate the card as "remembered" ===
+    const rememberedButton = reviewTree.root.findByProps({testID: 'rating-remembered'});
     await revealCard(reviewTree);
     await act(async () => {
-      goodButton.props.onPress();
+      rememberedButton.props.onPress();
     });
 
     // === STEP 6: Verify summary screen appears ===
@@ -160,11 +160,11 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
 
     // Verify summary stats
     const reviewedCount = reviewTree.root.findByProps({testID: 'summary-reviewed-count'});
-    const goodCount = reviewTree.root.findByProps({testID: 'summary-good-count'});
+    const rememberedCount = reviewTree.root.findByProps({testID: 'summary-remembered-count'});
     const forgotCount = reviewTree.root.findByProps({testID: 'summary-forgot-count'});
 
     expect(reviewedCount.props.children).toBe(1);
-    expect(goodCount.props.children).toBe(1);
+    expect(rememberedCount.props.children).toBe(1);
     expect(forgotCount.props.children).toBe(0);
 
     // Session completion wrote gamification events: XP is shown on the summary.
@@ -179,7 +179,7 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     );
     expect(returnButtons.length).toBeGreaterThan(0);
 
-    // === STEP 7: Verify card is no longer due (was marked as good) ===
+    // === STEP 7: Verify card is no longer due (was marked as remembered) ===
     const dueAfterReview = getDueFlashcards();
     expect(dueAfterReview.length).toBe(0); // Card should be rescheduled for future
 
@@ -230,10 +230,10 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     let progress = tree.root.findByProps({testID: 'review-progress'});
     expect(progress.props.children).toBe('1 / 3');
 
-    // Rate first card as good
+    // Rate first card as remembered
     await revealCard(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
     });
 
     // Verify progress shows "2 / 3"
@@ -261,11 +261,11 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     expect(summary).toBeTruthy();
 
     const reviewedCount = tree.root.findByProps({testID: 'summary-reviewed-count'});
-    const goodCount = tree.root.findByProps({testID: 'summary-good-count'});
+    const rememberedCount = tree.root.findByProps({testID: 'summary-remembered-count'});
     const forgotCount = tree.root.findByProps({testID: 'summary-forgot-count'});
 
     expect(reviewedCount.props.children).toBe(3);
-    expect(goodCount.props.children).toBe(1);
+    expect(rememberedCount.props.children).toBe(1);
     expect(forgotCount.props.children).toBe(1);
   });
 });

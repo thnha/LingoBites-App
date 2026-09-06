@@ -131,7 +131,7 @@ describe('DailyReviewScreen - Accessibility', () => {
         <DailyReviewScreen navigation={navigation() as never} />,
       );
 
-      const ratingButtons = ['rating-forgot', 'rating-hard', 'rating-good', 'rating-easy'];
+      const ratingButtons = ['rating-forgot', 'rating-remembered'];
       const skipButton = tree.root.findByProps({testID: 'rating-skip'});
 
       expect(hasAccessibilityLabel(skipButton)).toBe(true);
@@ -150,7 +150,7 @@ describe('DailyReviewScreen - Accessibility', () => {
         <DailyReviewScreen navigation={navigation() as never} />,
       );
 
-      const ratingButtons = ['rating-forgot', 'rating-hard', 'rating-good', 'rating-easy'];
+      const ratingButtons = ['rating-forgot', 'rating-remembered'];
       for (const testID of ratingButtons) {
         expect(tree.root.findByProps({testID}).props.disabled).toBe(true);
       }
@@ -183,7 +183,7 @@ describe('DailyReviewScreen - Accessibility', () => {
 
       await revealCard(tree);
       await act(async () => {
-        tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+        tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
       });
       await revealCard(tree);
       await act(async () => {
@@ -194,22 +194,16 @@ describe('DailyReviewScreen - Accessibility', () => {
       expect(summary).toBeTruthy();
 
       const reviewedCount = tree.root.findByProps({testID: 'summary-reviewed-count'});
-      const goodCount = tree.root.findByProps({testID: 'summary-good-count'});
+      const rememberedCount = tree.root.findByProps({testID: 'summary-remembered-count'});
       const forgotCount = tree.root.findByProps({testID: 'summary-forgot-count'});
-      const hardCount = tree.root.findByProps({testID: 'summary-hard-count'});
-      const easyCount = tree.root.findByProps({testID: 'summary-easy-count'});
 
       expect(reviewedCount).toBeTruthy();
-      expect(goodCount).toBeTruthy();
+      expect(rememberedCount).toBeTruthy();
       expect(forgotCount).toBeTruthy();
-      expect(hardCount).toBeTruthy();
-      expect(easyCount).toBeTruthy();
 
       expect(reviewedCount.props.children).toBe(2);
-      expect(goodCount.props.children).toBe(1);
+      expect(rememberedCount.props.children).toBe(1);
       expect(forgotCount.props.children).toBe(1);
-      expect(hardCount.props.children).toBe(0);
-      expect(easyCount.props.children).toBe(0);
     });
 
     it('has accessible return button on summary', async () => {
@@ -257,7 +251,7 @@ describe('DailyReviewScreen - Accessibility', () => {
 
       await revealCard(tree);
       await act(async () => {
-        tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+        tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
       });
 
       const secondTree = await renderScreen(
