@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
+import {useTranslation} from 'react-i18next';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -23,6 +24,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;
 
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const tabNavigation = navigation.getParent<NavigationProp<RootTabParamList>>();
   const [recentLessons, setRecentLessons] = useState<LessonCardView[]>([]);
@@ -47,12 +49,12 @@ export function HomeScreen({navigation}: Props) {
         listLessons(3).map(item => ({
           id: item.id,
           title: item.title,
-          meta: `${item.vocabularyCount} từ vựng`,
+          meta: t('home.vocab_count', {count: item.vocabularyCount}),
           blurb: item.previewText,
         })),
       );
       setDueReviewCount(reviewSystemEnabled ? getDueFlashcards().length : 0);
-    }, [reviewSystemEnabled]),
+    }, [reviewSystemEnabled, t]),
   );
 
   const emptyRecent = useMemo(() => recentLessons.length === 0, [recentLessons]);
@@ -76,7 +78,7 @@ export function HomeScreen({navigation}: Props) {
           </AppText>
         </View>
         <IconButton
-          accessibilityLabel="Cài đặt"
+          accessibilityLabel={t('home.settings_a11y')}
           icon="settings"
           onPress={() => tabNavigation?.navigate('Profile')}
           tone="surface"
@@ -92,15 +94,15 @@ export function HomeScreen({navigation}: Props) {
         }}
         showsVerticalScrollIndicator={false}>
         <View style={{gap: 6}}>
-          <AppText variant="h1">Hôm nay bạn muốn học từ đâu?</AppText>
+          <AppText variant="h1">{t('home.title')}</AppText>
           <AppText color="secondary" variant="body">
-            Chọn cách để lấy từ vựng từ bất cứ đoạn text nào bạn đọc.
+            {t('home.subtitle')}
           </AppText>
         </View>
 
         {reviewSystemEnabled && dueReviewCount > 0 ? (
           <Pressable
-            accessibilityLabel="Mở ôn tập hôm nay"
+            accessibilityLabel={t('home.daily_review_widget_a11y')}
             accessibilityRole="button"
             onPress={() => navigation.navigate('DailyReview')}
             style={({pressed}) => [
@@ -130,9 +132,9 @@ export function HomeScreen({navigation}: Props) {
               <MaterialIcon color={theme.colors.primary} name="refresh" size={26} />
             </View>
             <View style={{flex: 1, gap: 2}}>
-              <AppText variant="h3">Ôn tập hôm nay</AppText>
+              <AppText variant="h3">{t('home.daily_review_widget_title')}</AppText>
               <AppText color="secondary" variant="label">
-                {`${dueReviewCount} thẻ đến hạn hôm nay`}
+                {t('home.daily_review_widget_due', {count: dueReviewCount})}
               </AppText>
             </View>
             <MaterialIcon color={theme.colors.primary} name="chevron_right" size={24} />
@@ -140,7 +142,7 @@ export function HomeScreen({navigation}: Props) {
         ) : null}
 
         <Pressable
-          accessibilityLabel="Chụp ảnh học ngay"
+          accessibilityLabel={t('home.capture_photo_a11y')}
           accessibilityRole="button"
           onPress={() => selectInputMethod('camera')}
           style={({pressed}) => [
@@ -171,16 +173,16 @@ export function HomeScreen({navigation}: Props) {
             <MaterialIcon color={theme.colors.accentInk} filled name="photo_camera" size={42} />
           </View>
           <AppText style={{color: theme.colors.accentInk, fontSize: 22, fontWeight: '600'}}>
-            Chụp ảnh học ngay
+            {t('home.capture_photo')}
           </AppText>
           <AppText style={{color: theme.colors.accentInk, fontSize: 12, opacity: 0.85}}>
-            Chĩa camera vào tài liệu bất kỳ
+            {t('home.capture_photo_hint')}
           </AppText>
         </Pressable>
 
         <View style={{flexDirection: 'row', gap: 14}}>
           <Pressable
-            accessibilityLabel="Upload ảnh"
+            accessibilityLabel={t('home.upload_image_a11y')}
             accessibilityRole="button"
             onPress={() => selectInputMethod('gallery')}
             style={({pressed}) => [
@@ -198,12 +200,12 @@ export function HomeScreen({navigation}: Props) {
             ]}>
             <MaterialIcon color={theme.colors.text.inverse} name="upload_file" size={30} />
             <AppText style={{color: theme.colors.text.inverse, fontSize: 14, fontWeight: '600'}}>
-              Upload ảnh
+              {t('home.upload_image')}
             </AppText>
           </Pressable>
 
           <Pressable
-            accessibilityLabel="Dán text"
+            accessibilityLabel={t('home.paste_text_a11y')}
             accessibilityRole="button"
             onPress={() => selectInputMethod('paste_text')}
             style={({pressed}) => [
@@ -227,22 +229,22 @@ export function HomeScreen({navigation}: Props) {
             ]}>
             <MaterialIcon color={theme.colors.primary} name="content_paste" size={30} />
             <AppText style={{color: theme.colors.primary, fontSize: 14, fontWeight: '600'}}>
-              Dán text
+              {t('home.paste_text')}
             </AppText>
           </Pressable>
         </View>
 
         <View style={{gap: 10}}>
           <SectionHeader
-            title="Bài học gần đây"
+            title={t('home.recent_lessons')}
             action={
               <Pressable
-                accessibilityLabel="Xem tất cả bài học"
+                accessibilityLabel={t('home.view_all_a11y')}
                 accessibilityRole="button"
                 onPress={() => tabNavigation?.navigate('Lessons')}
                 style={{minHeight: 44, justifyContent: 'center'}}>
                 <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
-                  Xem tất cả
+                  {t('home.view_all')}
                 </AppText>
               </Pressable>
             }
@@ -283,7 +285,7 @@ export function HomeScreen({navigation}: Props) {
               fontSize: 13,
               fontWeight: '600',
             }}>
-            Mẹo: chụp text rõ, đủ sáng để OCR chính xác hơn.
+            {t('home.tip')}
           </AppText>
         </View>
       </ScrollView>

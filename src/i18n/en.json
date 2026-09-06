@@ -1,0 +1,53 @@
+{
+  "home": {
+    "title": "What do you want to learn from today?",
+    "subtitle": "Choose how to extract vocabulary from any text you read.",
+    "settings_a11y": "Settings",
+    "capture_photo": "Capture photo",
+    "capture_photo_hint": "Point the camera at any document",
+    "capture_photo_a11y": "Capture photo to learn",
+    "upload_image": "Upload image",
+    "upload_image_a11y": "Upload image",
+    "paste_text": "Paste text",
+    "paste_text_a11y": "Paste text",
+    "recent_lessons": "Recent lessons",
+    "view_all": "View all",
+    "view_all_a11y": "View all lessons",
+    "tip": "Tip: use a clear, well-lit photo for better OCR accuracy.",
+    "vocab_count": "{{count}} words",
+    "daily_review_widget_title": "Review today",
+    "daily_review_widget_due": "{{count}} cards due today",
+    "daily_review_widget_a11y": "Open today's review"
+  },
+  "review": {
+    "title": "Review today",
+    "close_a11y": "Close review session",
+    "feature_disabled": "The review feature is not enabled yet.",
+    "empty_no_cards_title": "No flashcards yet",
+    "empty_no_cards_body": "Save your first flashcard to start reviewing every day.",
+    "empty_done_title": "Done for today",
+    "empty_done_body": "You have reviewed all cards due today.",
+    "carry_over": "{{count}} cards saved for next session",
+    "summary_title": "Review summary",
+    "summary_reviewed_label": "Reviewed",
+    "summary_forgot_label": "Forgot",
+    "summary_hard_label": "Hard",
+    "summary_good_label": "Good",
+    "summary_easy_label": "Easy",
+    "summary_xp": "+{{xp}} XP today",
+    "back_to_home": "Back to Home",
+    "back_to_home_a11y": "Back to Home"
+  },
+  "rating": {
+    "forgot_label": "Forgot",
+    "forgot_a11y": "Don't remember - review again in 1 day",
+    "hard_label": "Hard",
+    "hard_a11y": "Remember but hard - review sooner",
+    "good_label": "Good",
+    "good_a11y": "Remember - schedule review later",
+    "easy_label": "Easy",
+    "easy_a11y": "Very easy - schedule review much later",
+    "skip_label": "Skip",
+    "skip_a11y": "Skip this card"
+  }
+}

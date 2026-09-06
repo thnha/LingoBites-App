@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import {useTranslation} from 'react-i18next';
 import {AppButton} from '../../components/AppButton';
 import {AppCard} from '../../components/AppCard';
 import {AppScreen} from '../../components/AppScreen';
@@ -42,10 +43,6 @@ type Summary = {
   good: number;
   easy: number;
 };
-
-function carryOverMessage(count: number): string {
-  return `còn ${count} thẻ để dành lần ôn sau`;
-}
 
 function FlashcardFace({
   card,
@@ -93,6 +90,7 @@ export function DailyReviewScreen({
   softCap = DEFAULT_SOFT_CAP,
 }: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const [allDueCount] = useState(() => getDueFlashcards().length);
   const [sessionCards] = useState(() => getDueFlashcards({limit: softCap}));
@@ -189,7 +187,7 @@ export function DailyReviewScreen({
     return (
       <AppScreen>
         <View style={styles.centered}>
-          <ErrorCard message="Tính năng ôn tập hiện chưa được bật." />
+          <ErrorCard message={t('review.feature_disabled')} />
         </View>
       </AppScreen>
     );
@@ -199,9 +197,9 @@ export function DailyReviewScreen({
     return (
       <AppScreen>
         <View style={[styles.header, {paddingHorizontal: theme.gutter}]}>
-          <AppText variant="h2">Ôn tập hôm nay</AppText>
+          <AppText variant="h2">{t('review.title')}</AppText>
           <Pressable
-            accessibilityLabel="Đóng phiên ôn tập"
+            accessibilityLabel={t('review.close_a11y')}
             accessibilityRole="button"
             onPress={handleClose}
             style={styles.closeButton}
@@ -212,12 +210,14 @@ export function DailyReviewScreen({
         <View style={styles.emptyState}>
           <Medallion label={savedCardCount === 0 ? '0' : '✓'} />
           <AppText style={styles.emptyTitle} variant="h2">
-            {savedCardCount === 0 ? 'Chưa có flashcard' : 'Hoàn thành hôm nay'}
+            {savedCardCount === 0
+              ? t('review.empty_no_cards_title')
+              : t('review.empty_done_title')}
           </AppText>
           <AppText color="secondary" style={styles.emptyCopy}>
             {savedCardCount === 0
-              ? 'Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.'
-              : 'Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.'}
+              ? t('review.empty_no_cards_body')
+              : t('review.empty_done_body')}
           </AppText>
         </View>
       </AppScreen>
@@ -233,15 +233,20 @@ export function DailyReviewScreen({
             {paddingHorizontal: theme.gutter},
           ]}
           testID="review-summary">
-          <AppText variant="h1">Tổng kết ôn tập</AppText>
+          <AppText variant="h1">{t('review.summary_title')}</AppText>
           {carryOverCount > 0 ? (
-            <Banner message={carryOverMessage(carryOverCount)} variant="neutral" />
+            <Banner
+              message={t('review.carry_over', {count: carryOverCount})}
+              variant="neutral"
+            />
           ) : null}
           <AppCard style={styles.summaryCard}>
             <View style={styles.statRow}>
               <Medallion label={`${summary.reviewed}`} size={76} />
               <View style={styles.statText}>
-                <AppText color="secondary" variant="label">Đã ôn</AppText>
+                <AppText color="secondary" variant="label">
+                  {t('review.summary_reviewed_label')}
+                </AppText>
                 <AppText testID="summary-reviewed-count" variant="h2">
                   {summary.reviewed}
                 </AppText>
@@ -249,25 +254,33 @@ export function DailyReviewScreen({
             </View>
             <View style={styles.breakdown}>
               <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">Quên</AppText>
+                <AppText color="secondary" variant="label">
+                  {t('review.summary_forgot_label')}
+                </AppText>
                 <AppText testID="summary-forgot-count" variant="h3">
                   {summary.forgot}
                 </AppText>
               </View>
               <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">Khó</AppText>
+                <AppText color="secondary" variant="label">
+                  {t('review.summary_hard_label')}
+                </AppText>
                 <AppText testID="summary-hard-count" variant="h3">
                   {summary.hard}
                 </AppText>
               </View>
               <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">Tốt</AppText>
+                <AppText color="secondary" variant="label">
+                  {t('review.summary_good_label')}
+                </AppText>
                 <AppText testID="summary-good-count" variant="h3">
                   {summary.good}
                 </AppText>
               </View>
               <View style={styles.breakdownItem}>
-                <AppText color="secondary" variant="label">Dễ</AppText>
+                <AppText color="secondary" variant="label">
+                  {t('review.summary_easy_label')}
+                </AppText>
                 <AppText testID="summary-easy-count" variant="h3">
                   {summary.easy}
                 </AppText>
@@ -282,15 +295,15 @@ export function DailyReviewScreen({
                 <AppText
                   style={[styles.xpText, {color: theme.colors.primary}]}
                   testID="summary-xp-earned">
-                  {`+${sessionXpEarned} XP hôm nay`}
+                  {t('review.summary_xp', {xp: sessionXpEarned})}
                 </AppText>
               </View>
             ) : null}
           </AppCard>
           <AppButton
-            accessibilityLabel="Quay về Home"
+            accessibilityLabel={t('review.back_to_home_a11y')}
             onPress={() => navigation?.popToTop?.() ?? navigation?.goBack?.()}
-            title="Quay về Home"
+            title={t('review.back_to_home')}
           />
         </ScrollView>
       </AppScreen>
@@ -301,13 +314,13 @@ export function DailyReviewScreen({
     <AppScreen>
       <View style={[styles.header, {paddingHorizontal: theme.gutter}]}>
         <View>
-          <AppText color="secondary" variant="label">Ôn tập hôm nay</AppText>
+          <AppText color="secondary" variant="label">{t('review.title')}</AppText>
           <AppText testID="review-progress" variant="h2">
             {`${currentIndex + 1} / ${sessionCards.length}`}
           </AppText>
         </View>
         <Pressable
-          accessibilityLabel="Đóng phiên ôn tập"
+          accessibilityLabel={t('review.close_a11y')}
           accessibilityRole="button"
           onPress={() => navigation?.goBack?.()}
           style={styles.closeButton}
@@ -322,7 +335,10 @@ export function DailyReviewScreen({
           {paddingHorizontal: theme.gutter},
         ]}>
         {carryOverCount > 0 ? (
-          <Banner message={carryOverMessage(carryOverCount)} variant="neutral" />
+          <Banner
+            message={t('review.carry_over', {count: carryOverCount})}
+            variant="neutral"
+          />
         ) : null}
         {ratingError ? <ErrorCard message={ratingError} /> : null}
         {activeCard ? (

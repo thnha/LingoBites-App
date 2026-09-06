@@ -1,0 +1,53 @@
+{
+  "home": {
+    "title": "Hôm nay bạn muốn học từ đâu?",
+    "subtitle": "Chọn cách để lấy từ vựng từ bất cứ đoạn text nào bạn đọc.",
+    "settings_a11y": "Cài đặt",
+    "capture_photo": "Chụp ảnh học ngay",
+    "capture_photo_hint": "Chĩa camera vào tài liệu bất kỳ",
+    "capture_photo_a11y": "Chụp ảnh học ngay",
+    "upload_image": "Upload ảnh",
+    "upload_image_a11y": "Upload ảnh",
+    "paste_text": "Dán text",
+    "paste_text_a11y": "Dán text",
+    "recent_lessons": "Bài học gần đây",
+    "view_all": "Xem tất cả",
+    "view_all_a11y": "Xem tất cả bài học",
+    "tip": "Mẹo: chụp text rõ, đủ sáng để OCR chính xác hơn.",
+    "vocab_count": "{{count}} từ vựng",
+    "daily_review_widget_title": "Ôn tập hôm nay",
+    "daily_review_widget_due": "{{count}} thẻ đến hạn hôm nay",
+    "daily_review_widget_a11y": "Mở ôn tập hôm nay"
+  },
+  "review": {
+    "title": "Ôn tập hôm nay",
+    "close_a11y": "Đóng phiên ôn tập",
+    "feature_disabled": "Tính năng ôn tập hiện chưa được bật.",
+    "empty_no_cards_title": "Chưa có flashcard",
+    "empty_no_cards_body": "Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.",
+    "empty_done_title": "Hoàn thành hôm nay",
+    "empty_done_body": "Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.",
+    "carry_over": "còn {{count}} thẻ để dành lần ôn sau",
+    "summary_title": "Tổng kết ôn tập",
+    "summary_reviewed_label": "Đã ôn",
+    "summary_forgot_label": "Quên",
+    "summary_hard_label": "Khó",
+    "summary_good_label": "Tốt",
+    "summary_easy_label": "Dễ",
+    "summary_xp": "+{{xp}} XP hôm nay",
+    "back_to_home": "Quay về Home",
+    "back_to_home_a11y": "Quay về Home"
+  },
+  "rating": {
+    "forgot_label": "Quên",
+    "forgot_a11y": "Không nhớ - ôn lại sau 1 ngày",
+    "hard_label": "Khó",
+    "hard_a11y": "Nhớ nhưng khó - ôn sớm hơn",
+    "good_label": "Tốt",
+    "good_a11y": "Nhớ - lên lịch ôn sau",
+    "easy_label": "Dễ",
+    "easy_a11y": "Rất dễ - lên lịch ôn lâu hơn",
+    "skip_label": "Bỏ qua",
+    "skip_a11y": "Bỏ qua thẻ này"
+  }
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
+import {useTranslation} from 'react-i18next';
 import {AppText} from './AppText';
 import {MaterialIcon} from './MaterialIcon';
 import {useAppTheme} from '../theme';
@@ -14,34 +15,34 @@ type Props = {
 
 type RatingOption = {
   rating: ReviewRating;
-  label: string;
-  accessibilityLabel: string;
+  labelKey: string;
+  accessibilityKey: string;
   icon: 'refresh' | 'bolt' | 'check_circle' | 'auto_awesome';
 };
 
 const RATING_OPTIONS: RatingOption[] = [
   {
     rating: 'forgot',
-    label: 'Quên',
-    accessibilityLabel: 'Không nhớ - ôn lại sau 1 ngày',
+    labelKey: 'rating.forgot_label',
+    accessibilityKey: 'rating.forgot_a11y',
     icon: 'refresh',
   },
   {
     rating: 'hard',
-    label: 'Khó',
-    accessibilityLabel: 'Nhớ nhưng khó - ôn sớm hơn',
+    labelKey: 'rating.hard_label',
+    accessibilityKey: 'rating.hard_a11y',
     icon: 'bolt',
   },
   {
     rating: 'good',
-    label: 'Tốt',
-    accessibilityLabel: 'Nhớ - lên lịch ôn sau',
+    labelKey: 'rating.good_label',
+    accessibilityKey: 'rating.good_a11y',
     icon: 'check_circle',
   },
   {
     rating: 'easy',
-    label: 'Dễ',
-    accessibilityLabel: 'Rất dễ - lên lịch ôn lâu hơn',
+    labelKey: 'rating.easy_label',
+    accessibilityKey: 'rating.easy_a11y',
     icon: 'auto_awesome',
   },
 ];
@@ -81,6 +82,7 @@ function ratingTone(
 
 export function RatingControl({onRate, onSkip, disabled = false}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
 
   return (
     <View style={styles.container}>
@@ -88,7 +90,7 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
         const tone = ratingTone(theme, option.rating);
         return (
           <Pressable
-            accessibilityLabel={option.accessibilityLabel}
+            accessibilityLabel={t(option.accessibilityKey)}
             accessibilityRole="button"
             disabled={disabled}
             key={option.rating}
@@ -104,14 +106,14 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
             testID={`rating-${option.rating}`}>
             <MaterialIcon color={tone.ink} name={option.icon} size={22} />
             <AppText style={{color: tone.ink}} variant="label">
-              {option.label}
+              {t(option.labelKey)}
             </AppText>
           </Pressable>
         );
       })}
 
       <Pressable
-        accessibilityLabel="Bỏ qua thẻ này"
+        accessibilityLabel={t('rating.skip_a11y')}
         accessibilityRole="button"
         disabled={disabled}
         onPress={onSkip}
@@ -125,7 +127,7 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
         ]}
         testID="rating-skip">
         <MaterialIcon color={theme.colors.text.secondary} name="chevron_right" size={22} />
-        <AppText color="secondary" variant="label">Bỏ qua</AppText>
+        <AppText color="secondary" variant="label">{t('rating.skip_label')}</AppText>
       </Pressable>
     </View>
   );
