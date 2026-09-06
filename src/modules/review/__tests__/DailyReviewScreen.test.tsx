@@ -5,6 +5,7 @@ import {FeatureFlagProvider} from '../../../release';
 import {DB_NAME} from '../../../shared/db/constants';
 import {resetDatabaseForTests} from '../../../shared/db/database';
 import {saveFlashcard} from '../../../shared/db/FlashcardRepository';
+import * as FlashcardRepository from '../../../shared/db/FlashcardRepository';
 import {saveLesson} from '../../../shared/db/LessonRepository';
 import {validFullOutput} from '../../../shared/fixtures';
 import {AppThemeProvider} from '../../../theme';
@@ -33,6 +34,17 @@ async function renderScreen(ui: React.ReactElement) {
   });
   renderedTrees.push(tree);
   return tree;
+}
+
+function revealCard(tree: ReactTestRenderer.ReactTestRenderer) {
+  return act(async () => {
+    const flipCard = tree.root.find(
+      node =>
+        node.props.testID === 'daily-review-flip-card' &&
+        typeof node.props.onPress === 'function',
+    );
+    flipCard.props.onPress();
+  });
 }
 
 function seedCards(count: number) {
@@ -100,9 +112,11 @@ describe('DailyReviewScreen', () => {
       <DailyReviewScreen navigation={nav as never} softCap={5} />,
     );
 
+    await revealCard(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'rating-good'}).props.onPress();
     });
+    await revealCard(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'rating-skip'}).props.onPress();
     });
@@ -129,6 +143,7 @@ describe('DailyReviewScreen', () => {
       <DailyReviewScreen navigation={navigation() as never} />,
     );
 
+    await revealCard(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'rating-good'}).props.onPress();
     });
@@ -144,6 +159,27 @@ describe('DailyReviewScreen', () => {
     ).toBeGreaterThan(0);
   });
 
+  it('renders the carry-over count on the summary when the soft cap leaves cards behind', async () => {
+    seedCards(3);
+    const tree = await renderScreen(
+      <DailyReviewScreen navigation={navigation() as never} softCap={2} />,
+    );
+
+    await revealCard(tree);
+    await act(async () => {
+      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+    });
+    await revealCard(tree);
+    await act(async () => {
+      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+    });
+
+    expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
+    expect(
+      tree.root.findAllByProps({children: 'còn 1 thẻ để dành lần ôn sau'}).length,
+    ).toBeGreaterThan(0);
+  });
+
   it('exits without confirmation', async () => {
     seedCards(1);
     const nav = navigation();
@@ -156,5 +192,63 @@ describe('DailyReviewScreen', () => {
     });
 
     expect(nav.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps rating controls disabled until the card is revealed', async () => {
+    seedCards(1);
+    const tree = await renderScreen(
+      <DailyReviewScreen navigation={navigation() as never} />,
+    );
+
+    expect(tree.root.findByProps({testID: 'rating-good'}).props.disabled).toBe(true);
+    expect(tree.root.findByProps({testID: 'rating-forgot'}).props.disabled).toBe(true);
+
+    await revealCard(tree);
+
+    expect(tree.root.findByProps({testID: 'rating-good'}).props.disabled).toBe(false);
+    expect(tree.root.findByProps({testID: 'rating-forgot'}).props.disabled).toBe(false);
+  });
+
+  it('shows the translated error and does not advance when rating persistence fails', async () => {
+    seedCards(1);
+    const tree = await renderScreen(
+      <DailyReviewScreen navigation={navigation() as never} />,
+    );
+
+    await revealCard(tree);
+
+    const failure: {
+      ok: false;
+      errorCode: 'LOCAL_DB_ERROR';
+      message: string;
+    } = {
+      ok: false,
+      errorCode: 'LOCAL_DB_ERROR',
+      message: 'Không thể lưu kết quả ôn tập. Vui lòng thử lại.',
+    };
+    const spy = jest
+      .spyOn(FlashcardRepository, 'recordFlashcardRating')
+      .mockReturnValue(failure);
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+    });
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(tree.root.findByProps({testID: 'review-progress'}).props.children).toBe('1 / 1');
+    expect(tree.root.findAllByProps({testID: 'review-summary'})).toHaveLength(0);
+    expect(
+      tree.root.findAllByProps({children: 'Không thể lưu kết quả ôn tập. Vui lòng thử lại.'})
+        .length,
+    ).toBeGreaterThan(0);
+
+    spy.mockRestore();
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'rating-good'}).props.onPress();
+    });
+
+    expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children).toBe(1);
   });
 });

@@ -148,6 +148,22 @@ export function DailyReviewScreen({
     // Due instant before rating — needed to tell whether this was on time.
     const dueAt = getCardDueAt(card.id);
     const result = recordFlashcardRating({flashcardId: card.id, rating});
+
+    if (!result.ok) {
+      // Persistence failed: keep the learner on this card and surface the
+      // translated error instead of silently advancing the session.
+      setRatingError(result.message);
+      return;
+    }
+
+    session.record({
+      flashcardId: card.id,
+      rating,
+      dueAt,
+      reviewedAt,
+    });
+    requestSync();
+
     const nextSummary = {
       reviewed: summary.reviewed + 1,
       forgot: summary.forgot + (rating === 'forgot' ? 1 : 0),
@@ -155,18 +171,6 @@ export function DailyReviewScreen({
       good: summary.good + (rating === 'good' ? 1 : 0),
       easy: summary.easy + (rating === 'easy' ? 1 : 0),
     };
-
-    if (!result.ok) {
-      setRatingError(result.message);
-    } else {
-      session.record({
-        flashcardId: card.id,
-        rating,
-        dueAt,
-        reviewedAt,
-      });
-      requestSync();
-    }
     finishNext(nextSummary);
   }
 
@@ -350,7 +354,11 @@ export function DailyReviewScreen({
             testID="daily-review-flip-card"
           />
         ) : null}
-        <RatingControl onRate={handleRate} onSkip={handleSkip} />
+        <RatingControl
+          disabled={!flipped}
+          onRate={handleRate}
+          onSkip={handleSkip}
+        />
       </ScrollView>
     </AppScreen>
   );

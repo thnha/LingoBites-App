@@ -36,6 +36,17 @@ async function renderScreen(ui: React.ReactElement) {
   return tree;
 }
 
+function revealCard(tree: ReactTestRenderer.ReactTestRenderer) {
+  return act(async () => {
+    const flipCard = tree.root.find(
+      node =>
+        node.props.testID === 'daily-review-flip-card' &&
+        typeof node.props.onPress === 'function',
+    );
+    flipCard.props.onPress();
+  });
+}
+
 function seedCards(count: number) {
   const lessonRes = saveLesson({
     confirmedText: `${validFullOutput.original_text} ${count}`,
@@ -133,6 +144,24 @@ describe('DailyReviewScreen - Accessibility', () => {
       }
     });
 
+    it('gates rating buttons behind a reveal for accessibility', async () => {
+      seedCards(1);
+      const tree = await renderScreen(
+        <DailyReviewScreen navigation={navigation() as never} />,
+      );
+
+      const ratingButtons = ['rating-forgot', 'rating-hard', 'rating-good', 'rating-easy'];
+      for (const testID of ratingButtons) {
+        expect(tree.root.findByProps({testID}).props.disabled).toBe(true);
+      }
+
+      await revealCard(tree);
+
+      for (const testID of ratingButtons) {
+        expect(tree.root.findByProps({testID}).props.disabled).toBe(false);
+      }
+    });
+
     it('has accessible progress indicator', async () => {
       seedCards(3);
       const tree = await renderScreen(
@@ -152,9 +181,11 @@ describe('DailyReviewScreen - Accessibility', () => {
         <DailyReviewScreen navigation={navigation() as never} />,
       );
 
+      await revealCard(tree);
       await act(async () => {
         tree.root.findByProps({testID: 'rating-good'}).props.onPress();
       });
+      await revealCard(tree);
       await act(async () => {
         tree.root.findByProps({testID: 'rating-forgot'}).props.onPress();
       });
@@ -187,6 +218,7 @@ describe('DailyReviewScreen - Accessibility', () => {
         <DailyReviewScreen navigation={navigation() as never} />,
       );
 
+      await revealCard(tree);
       await act(async () => {
         tree.root.findByProps({testID: 'rating-skip'}).props.onPress();
       });
@@ -223,6 +255,7 @@ describe('DailyReviewScreen - Accessibility', () => {
         <DailyReviewScreen navigation={navigation() as never} />,
       );
 
+      await revealCard(tree);
       await act(async () => {
         tree.root.findByProps({testID: 'rating-good'}).props.onPress();
       });

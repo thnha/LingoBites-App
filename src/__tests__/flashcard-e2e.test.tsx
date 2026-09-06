@@ -44,6 +44,17 @@ async function renderScreen(ui: React.ReactElement) {
   return tree;
 }
 
+function revealCard(tree: ReactTestRenderer.ReactTestRenderer) {
+  return act(async () => {
+    const flipCard = tree.root.find(
+      node =>
+        node.props.testID === 'daily-review-flip-card' &&
+        typeof node.props.onPress === 'function',
+    );
+    flipCard.props.onPress();
+  });
+}
+
 function createMockNavigation() {
   return {
     goBack: jest.fn(),
@@ -138,6 +149,7 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
 
     // === STEP 5: Rate the card as "good" ===
     const goodButton = reviewTree.root.findByProps({testID: 'rating-good'});
+    await revealCard(reviewTree);
     await act(async () => {
       goodButton.props.onPress();
     });
@@ -219,6 +231,7 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     expect(progress.props.children).toBe('1 / 3');
 
     // Rate first card as good
+    await revealCard(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'rating-good'}).props.onPress();
     });
@@ -228,6 +241,7 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     expect(progress.props.children).toBe('2 / 3');
 
     // Rate second card as forgot
+    await revealCard(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'rating-forgot'}).props.onPress();
     });
@@ -237,6 +251,7 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     expect(progress.props.children).toBe('3 / 3');
 
     // Skip third card
+    await revealCard(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'rating-skip'}).props.onPress();
     });

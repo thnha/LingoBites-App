@@ -43,6 +43,17 @@ async function renderScreen(ui: React.ReactElement) {
   return tree;
 }
 
+function revealCard(tree: ReactTestRenderer.ReactTestRenderer) {
+  return act(async () => {
+    const flipCard = tree.root.find(
+      node =>
+        node.props.testID === 'daily-review-flip-card' &&
+        typeof node.props.onPress === 'function',
+    );
+    flipCard.props.onPress();
+  });
+}
+
 function createMockNavigation() {
   return {
     goBack: jest.fn(),
@@ -313,6 +324,7 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
       const nav = createMockNavigation();
       const tree = await renderScreen(<DailyReviewScreen navigation={nav as never} />);
 
+      await revealCard(tree);
       await act(async () => {
         tree.root.findByProps({testID: 'rating-good'}).props.onPress();
       });
