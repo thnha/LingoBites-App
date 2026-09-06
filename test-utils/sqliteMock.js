@@ -20,6 +20,13 @@ function createMockDatabase() {
   const audioAssets = [];
   const gamificationEvents = [];
   const syncOutbox = [];
+  // SETE-107 / M2: content package tables
+  const contentPackages = [];
+  const contentLessons = [];
+  const contentItems = [];
+  const contentUnits = [];
+  const contentActivities = [];
+  const contentAudioAssets = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -573,6 +580,249 @@ function createMockDatabase() {
     if (normalized.includes('from app_settings where key')) {
       const key = params[0];
       return toRows(appSettings.filter(row => row.key === key));
+    }
+
+    // ---- SETE-107 / M2 content package tables ----
+    if (normalized.startsWith('insert into content_packages')) {
+      contentPackages.push({
+        id: params[0],
+        slug: params[1],
+        schema_version: params[2],
+        source_url: params[3],
+        sha256: params[4],
+        is_active: params[5],
+        imported_at: params[6],
+        deactivated_at: params[7],
+      });
+      return { rowsAffected: 1, insertId: contentPackages.length };
+    }
+
+    if (normalized.startsWith('insert into content_lessons')) {
+      contentLessons.push({
+        id: params[0],
+        package_id: params[1],
+        slug: params[2],
+        schema_version: params[3],
+        title_en: params[4],
+        title_vi: params[5],
+        blurb_vi: params[6],
+        level: params[7],
+        target_skills_json: params[8],
+        estimated_duration_minutes: params[9],
+      });
+      return { rowsAffected: 1, insertId: contentLessons.length };
+    }
+
+    if (normalized.startsWith('insert into content_items')) {
+      contentItems.push({
+        id: params[0],
+        lesson_id: params[1],
+        package_id: params[2],
+        slug: params[3],
+        chunk_order: params[4],
+        phrase_en: params[5],
+        phrase_vi: params[6],
+        explanation_vi: params[7],
+        context_sentence_en: params[8],
+        context_sentence_vi: params[9],
+        payload_json: params[10],
+      });
+      return { rowsAffected: 1, insertId: contentItems.length };
+    }
+
+    if (normalized.startsWith('insert into content_units')) {
+      contentUnits.push({
+        id: params[0],
+        lesson_id: params[1],
+        package_id: params[2],
+        unit_type: params[3],
+        slug: params[4],
+        payload_json: params[5],
+      });
+      return { rowsAffected: 1, insertId: contentUnits.length };
+    }
+
+    if (normalized.startsWith('insert into content_activities')) {
+      contentActivities.push({
+        id: params[0],
+        lesson_id: params[1],
+        package_id: params[2],
+        slug: params[3],
+        activity_type: params[4],
+        title_vi: params[5],
+        chunk_ref_ids_json: params[6],
+        qa_ref_ids_json: params[7],
+        instructions_vi: params[8],
+      });
+      return { rowsAffected: 1, insertId: contentActivities.length };
+    }
+
+    if (normalized.startsWith('insert into content_audio_assets')) {
+      contentAudioAssets.push({
+        id: params[0],
+        lesson_id: params[1],
+        package_id: params[2],
+        slug: params[3],
+        url: params[4],
+        checksum: params[5],
+        bytes: params[6],
+        locale: params[7],
+        transcript: params[8],
+      });
+      return { rowsAffected: 1, insertId: contentAudioAssets.length };
+    }
+
+    if (
+      normalized.startsWith('update content_packages') &&
+      normalized.includes('is_active = 0')
+    ) {
+      const deactivatedAt = params[0];
+      const id = params[1];
+      const row = contentPackages.find(p => p.id === id);
+      if (!row) return { rowsAffected: 0 };
+      row.is_active = 0;
+      row.deactivated_at = deactivatedAt;
+      return { rowsAffected: 1 };
+    }
+
+    if (
+      normalized.startsWith('update content_packages') &&
+      normalized.includes('is_active = 1')
+    ) {
+      const id = params[0];
+      const row = contentPackages.find(p => p.id === id);
+      if (!row) return { rowsAffected: 0 };
+      row.is_active = 1;
+      row.deactivated_at = null;
+      return { rowsAffected: 1 };
+    }
+
+    if (normalized.includes('from content_packages where is_active = 1')) {
+      return toRows(contentPackages.filter(p => p.is_active === 1));
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from content_packages where id') &&
+      !normalized.includes('count(*)')
+    ) {
+      const id = params[0];
+      return toRows(contentPackages.filter(p => p.id === id));
+    }
+
+    if (normalized.includes('from content_packages order by')) {
+      const sorted = [...contentPackages].sort((a, b) =>
+        String(b.imported_at).localeCompare(String(a.imported_at)),
+      );
+      return toRows(sorted);
+    }
+
+    if (
+      normalized.includes('from content_packages') &&
+      normalized.includes('where is_active = 0') &&
+      normalized.includes('order by datetime(deactivated_at) desc')
+    ) {
+      const sorted = contentPackages
+        .filter(p => p.is_active === 0 && p.deactivated_at !== null)
+        .sort((a, b) =>
+          String(b.deactivated_at).localeCompare(String(a.deactivated_at)),
+        );
+      return toRows(sorted.slice(0, 1));
+    }
+
+    if (normalized.startsWith('select count(*)') && normalized.includes('from content_lessons')) {
+      const packageId = params[0];
+      const n = contentLessons.filter(l => l.package_id === packageId).length;
+      return toRows([{ n }]);
+    }
+
+    if (normalized.startsWith('select count(*)') && normalized.includes('from content_items')) {
+      let rows = contentItems;
+      if (normalized.includes('where lesson_id')) {
+        const lessonId = params[0];
+        rows = contentItems.filter(i => i.lesson_id === lessonId);
+      }
+      return toRows([{ n: rows.length }]);
+    }
+
+    if (normalized.startsWith('select') && normalized.includes('from content_items')) {
+      let rows = [...contentItems];
+      if (normalized.includes('where lesson_id = ?')) {
+        const lessonId = params[params.length - 1];
+        rows = rows.filter(i => i.lesson_id === lessonId);
+      }
+      if (normalized.includes('order by chunk_order')) {
+        rows.sort((a, b) => a.chunk_order - b.chunk_order);
+      }
+      return toRows(rows);
+    }
+
+    if (normalized.startsWith('select') && normalized.includes('from content_lessons')) {
+      let rows = [...contentLessons];
+      if (normalized.includes('where package_id = ?')) {
+        const packageId = params[0];
+        rows = rows.filter(l => l.package_id === packageId);
+      }
+      if (normalized.includes('where id = ?')) {
+        const id = params[0];
+        rows = rows.filter(l => l.id === id);
+      }
+      return toRows(rows);
+    }
+
+    if (normalized.startsWith('select count(*)') && normalized.includes('from content_packages')) {
+      const id = params[0];
+      const n = contentPackages.filter(p => p.id === id).length;
+      return toRows([{ n }]);
+    }
+
+    if (normalized.startsWith('delete from content_audio_assets where package_id')) {
+      const packageId = params[0];
+      const before = contentAudioAssets.length;
+      const remaining = contentAudioAssets.filter(a => a.package_id !== packageId);
+      contentAudioAssets.length = 0;
+      contentAudioAssets.push(...remaining);
+      return { rowsAffected: before - remaining.length };
+    }
+    if (normalized.startsWith('delete from content_activities where package_id')) {
+      const packageId = params[0];
+      const before = contentActivities.length;
+      const remaining = contentActivities.filter(a => a.package_id !== packageId);
+      contentActivities.length = 0;
+      contentActivities.push(...remaining);
+      return { rowsAffected: before - remaining.length };
+    }
+    if (normalized.startsWith('delete from content_units where package_id')) {
+      const packageId = params[0];
+      const before = contentUnits.length;
+      const remaining = contentUnits.filter(a => a.package_id !== packageId);
+      contentUnits.length = 0;
+      contentUnits.push(...remaining);
+      return { rowsAffected: before - remaining.length };
+    }
+    if (normalized.startsWith('delete from content_items where package_id')) {
+      const packageId = params[0];
+      const before = contentItems.length;
+      const remaining = contentItems.filter(a => a.package_id !== packageId);
+      contentItems.length = 0;
+      contentItems.push(...remaining);
+      return { rowsAffected: before - remaining.length };
+    }
+    if (normalized.startsWith('delete from content_lessons where package_id')) {
+      const packageId = params[0];
+      const before = contentLessons.length;
+      const remaining = contentLessons.filter(a => a.package_id !== packageId);
+      contentLessons.length = 0;
+      contentLessons.push(...remaining);
+      return { rowsAffected: before - remaining.length };
+    }
+    if (normalized.startsWith('delete from content_packages where id')) {
+      const id = params[0];
+      const before = contentPackages.length;
+      const remaining = contentPackages.filter(p => p.id !== id);
+      contentPackages.length = 0;
+      contentPackages.push(...remaining);
+      return { rowsAffected: before - remaining.length };
     }
 
     return { rowsAffected: 0 };

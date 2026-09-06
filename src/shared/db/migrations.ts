@@ -111,6 +111,146 @@ const MIGRATIONS = [
     created_at TEXT NOT NULL
   );`,
   `CREATE INDEX IF NOT EXISTS idx_gamification_events_type_created ON gamification_events (event_type, created_at);`,
+  // ---- SETE-107 / M2: offline content package import ----
+  // One row per imported content package. `is_active` is the single source of
+  // truth for "which package's lessons the app is currently serving" — there
+  // must be at most one row with is_active = 1. Activation swap is performed
+  // in a single transaction (see importer/ContentPackageImporter).
+  `CREATE TABLE IF NOT EXISTS content_packages (
+    id TEXT PRIMARY KEY NOT NULL,
+    slug TEXT NOT NULL,
+    schema_version TEXT NOT NULL,
+    source_url TEXT NOT NULL,
+    sha256 TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 0,
+    imported_at TEXT NOT NULL,
+    deactivated_at TEXT
+  );`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS idx_content_packages_active_singleton
+    ON content_packages (is_active) WHERE is_active = 1;`,
+  `CREATE INDEX IF NOT EXISTS idx_content_packages_slug ON content_packages (slug);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_packages_imported_at
+    ON content_packages (imported_at DESC);`,
+  // One row per lesson in an imported package. `package_id` references
+  // content_packages.id; the importer cascades deletes for a package.
+  `CREATE TABLE IF NOT EXISTS content_lessons (
+    id TEXT PRIMARY KEY NOT NULL,
+    package_id TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    schema_version TEXT NOT NULL,
+    title_en TEXT NOT NULL,
+    title_vi TEXT NOT NULL,
+    blurb_vi TEXT NOT NULL,
+    level TEXT NOT NULL,
+    target_skills_json TEXT NOT NULL,
+    estimated_duration_minutes INTEGER NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_content_lessons_package_id
+    ON content_lessons (package_id);`,
+  // One row per chunk in a lesson. Nested per-chunk arrays (dialogue_turns,
+  // qa_items, srs_ref_ids, etc.) are stored as JSON to keep M2 schema small;
+  // they are fully validated by the M1 content lint before insert.
+  `CREATE TABLE IF NOT EXISTS content_items (
+    id TEXT PRIMARY KEY NOT NULL,
+    lesson_id TEXT NOT NULL,
+    package_id TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    chunk_order INTEGER NOT NULL,
+    phrase_en TEXT NOT NULL,
+    phrase_vi TEXT NOT NULL,
+    explanation_vi TEXT NOT NULL,
+    context_sentence_en TEXT,
+    context_sentence_vi TEXT,
+    payload_json TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_content_items_lesson_id
+    ON content_items (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_items_package_id
+    ON content_items (package_id);`,
+  // One row per ancillary content unit (vocab, grammar, dialogue_turn, srs).
+  // `unit_type` discriminates so a single table covers the four unit kinds
+  // and consumers can `WHERE unit_type = 'vocabulary'`.
+  `CREATE TABLE IF NOT EXISTS content_units (
+    id TEXT PRIMARY KEY NOT NULL,
+    lesson_id TEXT NOT NULL,
+    package_id TEXT NOT NULL,
+    unit_type TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    payload_json TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_content_units_lesson_id
+    ON content_units (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_units_package_id
+    ON content_units (package_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_units_type
+    ON content_units (unit_type);`,
+  // One row per declared activity. Chunk references are stored as a JSON
+  // array of content_items.id values.
+  `CREATE TABLE IF NOT EXISTS content_activities (
+    id TEXT PRIMARY KEY NOT NULL,
+    lesson_id TEXT NOT NULL,
+    package_id TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    activity_type TEXT NOT NULL,
+    title_vi TEXT NOT NULL,
+    chunk_ref_ids_json TEXT NOT NULL,
+    qa_ref_ids_json TEXT NOT NULL,
+    instructions_vi TEXT
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_content_activities_lesson_id
+    ON content_activities (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_activities_package_id
+    ON content_activities (package_id);`,
+  // Audio asset metadata only. File download + storage is M5 territory; this
+  // row records the contract (url + checksum + size) so the player can later
+  // resolve a content chunk's audio_ref_id to a downloadable file.
+  `CREATE TABLE IF NOT EXISTS content_audio_assets (
+    id TEXT PRIMARY KEY NOT NULL,
+    lesson_id TEXT NOT NULL,
+    package_id TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    url TEXT NOT NULL,
+    checksum TEXT NOT NULL,
+    bytes INTEGER NOT NULL DEFAULT 0,
+    locale TEXT,
+    transcript TEXT
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_content_audio_assets_lesson_id
+    ON content_audio_assets (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_audio_assets_package_id
+    ON content_audio_assets (package_id);`,
+];
+
+/**
+ * Reverse-order DROP statements corresponding 1:1 with the entries in
+ * `MIGRATIONS` added by the M2 content-package task (SETE-107). Used by
+ * `downgradeMigrations` to satisfy CHANGE-3: any schema migration added in
+ * this task must be reversible.
+ *
+ * Only the M2 tables are listed; earlier SETE-8x migrations are out of scope
+ * for the M2 down path because they pre-date the package feature and are not
+ * touched by the importer. If a down path for them is needed, add it there.
+ */
+const DOWN_MIGRATIONS_M2: string[] = [
+  `DROP INDEX IF EXISTS idx_content_audio_assets_package_id;`,
+  `DROP INDEX IF EXISTS idx_content_audio_assets_lesson_id;`,
+  `DROP TABLE IF EXISTS content_audio_assets;`,
+  `DROP INDEX IF EXISTS idx_content_activities_package_id;`,
+  `DROP INDEX IF EXISTS idx_content_activities_lesson_id;`,
+  `DROP TABLE IF EXISTS content_activities;`,
+  `DROP INDEX IF EXISTS idx_content_units_type;`,
+  `DROP INDEX IF EXISTS idx_content_units_package_id;`,
+  `DROP INDEX IF EXISTS idx_content_units_lesson_id;`,
+  `DROP TABLE IF EXISTS content_units;`,
+  `DROP INDEX IF EXISTS idx_content_items_package_id;`,
+  `DROP INDEX IF EXISTS idx_content_items_lesson_id;`,
+  `DROP TABLE IF EXISTS content_items;`,
+  `DROP INDEX IF EXISTS idx_content_lessons_package_id;`,
+  `DROP TABLE IF EXISTS content_lessons;`,
+  `DROP INDEX IF EXISTS idx_content_packages_imported_at;`,
+  `DROP INDEX IF EXISTS idx_content_packages_slug;`,
+  `DROP INDEX IF EXISTS idx_content_packages_active_singleton;`,
+  `DROP TABLE IF EXISTS content_packages;`,
 ];
 
 export function runMigrations(db: QuickSQLiteConnection): void {
@@ -128,5 +268,19 @@ export function runMigrations(db: QuickSQLiteConnection): void {
       }
       throw error;
     }
+  }
+}
+
+/**
+ * Reverse the M2 content-package schema migrations. Provided so the package
+ * tables can be rolled back without touching earlier SETE-8x tables. Used
+ * in tests; production code should call this only via an explicit operator
+ * action (e.g. a maintenance screen or a "reset content" debug action).
+ */
+export function downgradeContentPackageMigrations(
+  db: QuickSQLiteConnection,
+): void {
+  for (const sql of DOWN_MIGRATIONS_M2) {
+    db.execute(sql);
   }
 }
