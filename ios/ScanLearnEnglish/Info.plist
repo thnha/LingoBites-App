@@ -37,6 +37,8 @@
 	<string>LingoBites cần quyền camera để chụp ảnh chứa đoạn tiếng Anh bạn muốn học.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>LingoBites cần quyền thư viện ảnh để chọn ảnh chứa đoạn tiếng Anh bạn muốn học.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>LingoBites cần quyền micro để bạn ghi âm giọng nói trong Phòng luyện nói.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIAppFonts</key>

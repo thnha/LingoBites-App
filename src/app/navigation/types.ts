@@ -73,6 +73,9 @@ export type LessonsStackParamList = {
   ContentLessonList: undefined;
   ContentLessonDetail: {lessonId: string};
   ContentLessonRuntime: {lessonId: string};
+  /** Speaking Room + shadowing activity (SETE-110 / M5). */
+  SpeakingRoom: undefined;
+  SpeakingShadowing: undefined;
 } & LearningDetailParamList;
 
 export type ProfileStackParamList = {

@@ -128,4 +128,24 @@ describe('ProfileScreen', () => {
       expect.stringContaining('Chưa có âm thanh'),
     );
   });
+
+  it('triggers confirmation when tapping delete speaking data button (CHANGE-S3)', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = renderProfileScreen();
+    });
+
+    const deleteSpeakingBtn = findPressableByLabel(tree!.root, 'Xóa dữ liệu luyện nói & ghi âm');
+
+    await ReactTestRenderer.act(async () => {
+      deleteSpeakingBtn?.props.onPress();
+    });
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Xóa dữ liệu luyện nói',
+      expect.stringContaining('bản ghi âm'),
+      expect.any(Array),
+    );
+  });
 });

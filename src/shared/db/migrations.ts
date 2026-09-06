@@ -248,6 +248,43 @@ const MIGRATIONS = [
     ON content_review_items (lesson_id);`,
   `CREATE INDEX IF NOT EXISTS idx_content_review_items_next_review_at
     ON content_review_items (next_review_at);`,
+  // ---- SETE-110 / M5: Speaking Room recordings + Error Notebook ----
+  // Recording metadata only (REQ-20/21); the audio file itself lives in the
+  // app's local documents/cache directory, not inline in SQLite. `mode`
+  // identifies which Speaking Room mode produced the recording (shadowing,
+  // quick_answer, standup, app_description, bug_report, mock_interview).
+  `CREATE TABLE IF NOT EXISTS speaking_recordings (
+    id TEXT PRIMARY KEY NOT NULL,
+    activity_id TEXT,
+    lesson_id TEXT,
+    mode TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    duration_ms INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_speaking_recordings_lesson_id
+    ON speaking_recordings (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_speaking_recordings_created_at
+    ON speaking_recordings (created_at DESC);`,
+  // Automatic Error Notebook capture (REQ-28/29). `category` is one of the six
+  // required error categories; CON-6 requires this table to carry only
+  // category/timing/outcome data, never the raw sentence spoken/typed or
+  // audio bytes. `review_item_id` links to the `content_review_items` row
+  // (M4) the error created or updated, tagged `item_type = 'speaking_error'`
+  // there so delete-my-data can scope to just this milestone's contribution.
+  `CREATE TABLE IF NOT EXISTS error_events (
+    id TEXT PRIMARY KEY NOT NULL,
+    source TEXT NOT NULL,
+    category TEXT NOT NULL,
+    activity_id TEXT,
+    lesson_id TEXT,
+    review_item_id TEXT,
+    created_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_error_events_lesson_id
+    ON error_events (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_error_events_created_at
+    ON error_events (created_at DESC);`,
 ];
 
 /**
@@ -269,6 +306,20 @@ const DOWN_MIGRATIONS_M3: string[] = [
   `DROP INDEX IF EXISTS idx_content_review_items_next_review_at;`,
   `DROP INDEX IF EXISTS idx_content_review_items_lesson_id;`,
   `DROP TABLE IF EXISTS content_review_items;`,
+];
+
+/**
+ * Reverse-order DROP statements for the M5 Speaking Room / Error Notebook
+ * tables (SETE-110). Kept separate so each milestone's rollback stays
+ * independently addressable, matching the CHANGE-3 convention.
+ */
+const DOWN_MIGRATIONS_M5: string[] = [
+  `DROP INDEX IF EXISTS idx_error_events_created_at;`,
+  `DROP INDEX IF EXISTS idx_error_events_lesson_id;`,
+  `DROP TABLE IF EXISTS error_events;`,
+  `DROP INDEX IF EXISTS idx_speaking_recordings_created_at;`,
+  `DROP INDEX IF EXISTS idx_speaking_recordings_lesson_id;`,
+  `DROP TABLE IF EXISTS speaking_recordings;`,
 ];
 
 const DOWN_MIGRATIONS_M2: string[] = [
@@ -333,6 +384,19 @@ export function downgradeLessonRuntimeMigrations(
   db: QuickSQLiteConnection,
 ): void {
   for (const sql of DOWN_MIGRATIONS_M3) {
+    db.execute(sql);
+  }
+}
+
+/**
+ * Reverse the M5 Speaking Room / Error Notebook schema migrations
+ * (SETE-110). Used in tests; production code should call this only via an
+ * explicit operator action.
+ */
+export function downgradeSpeakingRoomMigrations(
+  db: QuickSQLiteConnection,
+): void {
+  for (const sql of DOWN_MIGRATIONS_M5) {
     db.execute(sql);
   }
 }

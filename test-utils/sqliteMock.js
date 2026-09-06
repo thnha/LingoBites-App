@@ -29,6 +29,9 @@ function createMockDatabase() {
   const contentAudioAssets = [];
   // SETE-108 / M3: lesson runtime review items
   const contentReviewItems = [];
+  // SETE-110 / M5: Speaking Room recordings + Error Notebook
+  const speakingRecordings = [];
+  const errorEvents = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -853,6 +856,112 @@ function createMockDatabase() {
         rows = rows.filter(u => u.unit_type === 'srs');
       }
       return toRows(rows);
+    }
+
+    // ---- SETE-110 / M5 error notebook review item creation ----
+    if (normalized.startsWith('insert into content_review_items')) {
+      contentReviewItems.push({
+        id: params[0],
+        srs_item_id: params[1],
+        lesson_id: params[2],
+        package_id: params[3],
+        item_type: params[4],
+        source_ref_id: params[5],
+        front: params[6],
+        back: params[7],
+        hint_vi: params[8],
+        mastery_state: 'new',
+        next_review_at: params[9],
+        created_at: params[10],
+        updated_at: params[11],
+      });
+      return { rowsAffected: 1, insertId: contentReviewItems.length };
+    }
+
+    if (normalized.startsWith('delete from content_review_items where item_type = ?')) {
+      const itemType = params[0];
+      for (let i = contentReviewItems.length - 1; i >= 0; i -= 1) {
+        if (contentReviewItems[i].item_type === itemType) {
+          contentReviewItems.splice(i, 1);
+        }
+      }
+      return { rowsAffected: 1 };
+    }
+
+    // ---- SETE-110 / M5 speaking recordings ----
+    if (normalized.startsWith('insert into speaking_recordings')) {
+      speakingRecordings.push({
+        id: params[0],
+        activity_id: params[1],
+        lesson_id: params[2],
+        mode: params[3],
+        file_path: params[4],
+        duration_ms: params[5],
+        created_at: params[6],
+      });
+      return { rowsAffected: 1, insertId: speakingRecordings.length };
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from speaking_recordings')
+    ) {
+      if (normalized.includes('where id = ?')) {
+        const id = params[0];
+        return toRows(speakingRecordings.filter(r => r.id === id));
+      }
+      if (normalized.includes('where lesson_id = ?')) {
+        const lessonId = params[0];
+        return toRows(speakingRecordings.filter(r => r.lesson_id === lessonId));
+      }
+      return toRows([...speakingRecordings]);
+    }
+
+    if (normalized.startsWith('delete from speaking_recordings where id = ?')) {
+      const id = params[0];
+      const index = speakingRecordings.findIndex(r => r.id === id);
+      if (index === -1) {
+        return { rowsAffected: 0 };
+      }
+      speakingRecordings.splice(index, 1);
+      return { rowsAffected: 1 };
+    }
+
+    if (normalized.startsWith('delete from speaking_recordings')) {
+      const count = speakingRecordings.length;
+      speakingRecordings.length = 0;
+      return { rowsAffected: count };
+    }
+
+    // ---- SETE-110 / M5 error events ----
+    if (normalized.startsWith('insert into error_events')) {
+      errorEvents.push({
+        id: params[0],
+        source: params[1],
+        category: params[2],
+        activity_id: params[3],
+        lesson_id: params[4],
+        review_item_id: params[5],
+        created_at: params[6],
+      });
+      return { rowsAffected: 1, insertId: errorEvents.length };
+    }
+
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from error_events')
+    ) {
+      if (normalized.includes('where lesson_id = ?')) {
+        const lessonId = params[0];
+        return toRows(errorEvents.filter(e => e.lesson_id === lessonId));
+      }
+      return toRows([...errorEvents]);
+    }
+
+    if (normalized.startsWith('delete from error_events')) {
+      const count = errorEvents.length;
+      errorEvents.length = 0;
+      return { rowsAffected: count };
     }
 
     // ---- SETE-108 / M3 lesson runtime review items ----

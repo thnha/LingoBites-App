@@ -56,3 +56,9 @@ export const CLEAR_DATA_CONFIRM_MESSAGE =
 export const CLEAR_DATA_DONE_MESSAGE = 'Đã xóa dữ liệu học trên máy.';
 
 export const RETRY_ACTION_LABEL = 'Thử lại';
+
+export const CLEAR_SPEAKING_DATA_CONFIRM_MESSAGE =
+  'Xóa toàn bộ bản ghi âm luyện nói và lịch sử lỗi/ôn tập từ Phòng luyện nói trên thiết bị này?';
+
+export const CLEAR_SPEAKING_DATA_DONE_MESSAGE =
+  'Đã xóa dữ liệu luyện nói trên máy.';

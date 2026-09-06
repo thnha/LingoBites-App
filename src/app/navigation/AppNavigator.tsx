@@ -25,6 +25,8 @@ import {DailyReviewScreen} from '../../modules/review/DailyReviewScreen';
 import {ContentLessonListScreen} from '../../modules/content/runtime/ContentLessonListScreen';
 import {ContentLessonDetailScreen} from '../../modules/content/runtime/ContentLessonDetailScreen';
 import {ContentLessonRuntimeScreen} from '../../modules/content/runtime/ContentLessonRuntimeScreen';
+import {SpeakingRoomScreen} from '../../modules/speaking/SpeakingRoomScreen';
+import {SpeakingShadowingActivity} from '../../modules/speaking/activities/SpeakingShadowingActivity';
 import {PrivacyNoteScreen} from '../../modules/settings/PrivacyNoteScreen';
 import {ProfileScreen} from '../../modules/settings/ProfileScreen';
 import {useFeatureEnabled} from '../../release';
@@ -150,6 +152,16 @@ function LessonsStackNavigator() {
         component={ContentLessonRuntimeScreen}
         name="ContentLessonRuntime"
         options={{headerShown: false, gestureEnabled: false}}
+      />
+      <LessonsStack.Screen
+        component={SpeakingRoomScreen}
+        name="SpeakingRoom"
+        options={{headerShown: false}}
+      />
+      <LessonsStack.Screen
+        component={SpeakingShadowingActivity}
+        name="SpeakingShadowing"
+        options={{headerShown: false}}
       />
       <LessonsStack.Screen
         component={SentenceDetailScreen}

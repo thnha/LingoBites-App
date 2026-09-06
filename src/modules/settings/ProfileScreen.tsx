@@ -75,6 +75,29 @@ export function ProfileScreen({navigation}: Props) {
     ]);
   }
 
+  function handleClearSpeakingData() {
+    Alert.alert(
+      'Xóa dữ liệu luyện nói',
+      'Tất cả bản ghi âm và lịch sử sổ tay lỗi nói sẽ bị xóa khỏi máy. Bạn có chắc chắn không?',
+      [
+        {text: 'Hủy', style: 'cancel'},
+        {
+          text: 'Xóa',
+          style: 'destructive',
+          onPress: async () => {
+            const {clearSpeakingData} = require('../../shared/db/SpeakingRepository');
+            const {deleteRecordingFile} = require('../speaking/recordingService');
+            const {deletedFilePaths} = clearSpeakingData();
+            for (const path of deletedFilePaths) {
+              await deleteRecordingFile(path);
+            }
+            setStatusMessage('Đã xóa toàn bộ dữ liệu luyện nói và ghi âm.');
+          },
+        },
+      ],
+    );
+  }
+
   function handleSupport() {
     const subject = encodeURIComponent('LingoBites — Góp ý / báo lỗi');
     void Linking.openURL(`mailto:${supportEmail}?subject=${subject}`);
@@ -319,6 +342,28 @@ export function ProfileScreen({navigation}: Props) {
           </AppText>
           <ThemePicker />
         </AppCard>
+
+        <Pressable
+          accessibilityLabel="Xóa dữ liệu luyện nói"
+          accessibilityRole="button"
+          onPress={handleClearSpeakingData}
+          style={({pressed}) => [
+            {
+              alignItems: 'center',
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.danger,
+              borderRadius: theme.radius.lg,
+              borderWidth: 1,
+              justifyContent: 'center',
+              minHeight: 48,
+              opacity: pressed ? theme.states.pressedOpacity : 1,
+              paddingHorizontal: theme.spacing.lg,
+            },
+          ]}>
+          <AppText color="danger" style={{fontWeight: theme.typography.weight.bold}}>
+            Xóa dữ liệu luyện nói & ghi âm
+          </AppText>
+        </Pressable>
 
         <Pressable
           accessibilityLabel="Xóa dữ liệu học trên máy"

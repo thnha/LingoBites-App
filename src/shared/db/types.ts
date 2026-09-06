@@ -260,3 +260,79 @@ export type ContentReviewItemRecord = {
   createdAt: string;
   updatedAt: string;
 };
+
+/**
+ * `item_type` tag used on `content_review_items` rows created by the Error
+ * Notebook (SETE-110 / M5), so delete-my-data and other M5-scoped queries
+ * can select just this milestone's contribution without touching M3/M4 rows.
+ */
+export const SPEAKING_ERROR_REVIEW_ITEM_TYPE = 'speaking_error' as const;
+
+/** Speaking Room mode that produced a recording or a captured error event. */
+export type SpeakingMode =
+  | 'shadowing'
+  | 'quick_answer'
+  | 'standup'
+  | 'app_description'
+  | 'bug_report'
+  | 'mock_interview';
+
+/** A row of the `speaking_recordings` table (SETE-110 / M5, REQ-20/21). */
+export type SpeakingRecordingRecord = {
+  id: string;
+  activityId: string | null;
+  lessonId: string | null;
+  mode: SpeakingMode;
+  filePath: string;
+  durationMs: number;
+  createdAt: string;
+};
+
+export type InsertSpeakingRecordingInput = {
+  id: string;
+  activityId?: string | null;
+  lessonId?: string | null;
+  mode: SpeakingMode;
+  filePath: string;
+  durationMs: number;
+  createdAt?: string;
+};
+
+/**
+ * Six required error categories (REQ-28). CON-6: only this category code,
+ * timestamps, and outcome flags may ever leave the device in a sync payload
+ * — never the raw sentence the learner spoke/typed, and never audio bytes.
+ */
+export type ErrorEventCategory =
+  | 'vocabulary'
+  | 'structure'
+  | 'listening'
+  | 'pronunciation_affecting_meaning'
+  | 'slow_response'
+  | 'context_mismatch';
+
+export type ErrorEventSource = 'lesson_runtime' | 'speaking_room';
+
+/** A row of the `error_events` table (SETE-110 / M5, REQ-28/29). */
+export type ErrorEventRecord = {
+  id: string;
+  source: ErrorEventSource;
+  category: ErrorEventCategory;
+  activityId: string | null;
+  lessonId: string | null;
+  reviewItemId: string | null;
+  createdAt: string;
+};
+
+export type CaptureErrorEventInput = {
+  id: string;
+  source: ErrorEventSource;
+  category: ErrorEventCategory;
+  activityId?: string | null;
+  lessonId?: string | null;
+  /** Front/back copy for the review item created for this error, if any. */
+  reviewFront?: string;
+  reviewBack?: string;
+  reviewHintVi?: string | null;
+  createdAt?: string;
+};

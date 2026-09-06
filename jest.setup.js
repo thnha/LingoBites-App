@@ -110,6 +110,23 @@ jest.mock('react-native-sound', () => {
   return MockSound;
 });
 
+jest.mock('react-native-audio-recorder-player', () => {
+  class MockAudioRecorderPlayer {
+    startRecorder = jest.fn(async (uri) => uri ?? '/mock/recording.m4a');
+    stopRecorder = jest.fn(async () => '/mock/recording.m4a');
+    startPlayer = jest.fn(async () => '/mock/recording.m4a');
+    stopPlayer = jest.fn(async () => '/mock/recording.m4a');
+    addRecordBackListener = jest.fn();
+    removeRecordBackListener = jest.fn();
+    addPlayBackListener = jest.fn();
+    removePlayBackListener = jest.fn();
+  }
+  return {
+    __esModule: true,
+    default: MockAudioRecorderPlayer,
+  };
+});
+
 jest.mock('react-native-vector-icons/MaterialIcons', () => 'MaterialIcons');
 
 jest.mock('@react-navigation/native', () => {

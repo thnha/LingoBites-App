@@ -6,6 +6,7 @@ import type {LessonsStackParamList} from '../../../app/navigation/types';
 import {AppCard} from '../../../components/AppCard';
 import {AppScreen} from '../../../components/AppScreen';
 import {AppText} from '../../../components/AppText';
+import {IconButton} from '../../../components/IconButton';
 import {ScreenHeader} from '../../../components/ScreenHeader';
 import {Medallion} from '../../../components/Medallion';
 import {listActivePackageLessons} from '../../../shared/db/ContentRuntimeRepository';
@@ -26,7 +27,18 @@ export function ContentLessonListScreen({navigation}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader onBack={() => navigation.goBack()} title="Bài học đóng gói" />
+      <ScreenHeader
+        onBack={() => navigation.goBack()}
+        rightAction={
+          <IconButton
+            accessibilityLabel="Phòng luyện nói"
+            icon="mic"
+            onPress={() => navigation.navigate('SpeakingRoom')}
+            tone="ghost"
+          />
+        }
+        title="Bài học đóng gói"
+      />
       <FlatList
         contentContainerStyle={{gap: theme.spacing.md, padding: theme.gutter}}
         data={lessons}
