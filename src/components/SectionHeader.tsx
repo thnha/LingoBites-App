@@ -1,15 +1,15 @@
 import React from 'react';
-import {View} from 'react-native';
-import {AppText} from './AppText';
-import {useAppTheme} from '../theme';
+import { View } from 'react-native';
+import { useAppTheme } from '../theme';
+import { AppText } from './AppText';
 
 type Props = {
   title: string;
   action?: React.ReactNode;
 };
 
-export function SectionHeader({title, action}: Props) {
-  const {theme} = useAppTheme();
+export function SectionHeader({ title, action }: Props) {
+  const { theme } = useAppTheme();
   return (
     <View
       style={{
@@ -17,7 +17,8 @@ export function SectionHeader({title, action}: Props) {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: theme.spacing.sm,
-      }}>
+      }}
+    >
       <AppText variant="h3">{title}</AppText>
       {action}
     </View>

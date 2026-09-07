@@ -1,40 +1,49 @@
-import React, {useCallback, useMemo, useState} from 'react';
-import {ActivityIndicator, FlatList, Pressable, ScrollView, View} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
-import type {NavigationProp} from '@react-navigation/native';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {LessonsStackParamList, RootTabParamList} from '../../app/navigation/types';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {Chip} from '../../components/Chip';
-import {LibraryLessonCard} from '../../components/LibraryLessonCard';
-import {IconButton} from '../../components/IconButton';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {Medallion} from '../../components/Medallion';
-import {SectionHeader} from '../../components/SectionHeader';
-import {TextField} from '../../components/TextField';
-import {NO_LESSONS_MESSAGE} from '../../shared/copy/userMessages';
+import type { NavigationProp } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
-  useLibraryStore,
-  type LibrarySubjectFilter,
-} from '../../store/useLibraryStore';
-import {useAppTheme} from '../../theme';
-import type {LibraryLessonCardView} from '../../types/lesson';
-import {bootstrapContentPackage} from '../content/bootstrap';
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native';
+import type {
+  LessonsStackParamList,
+  RootTabParamList,
+} from '../../app/navigation/types';
+import { AppButton } from '../../components/AppButton';
+import { AppCard } from '../../components/AppCard';
+import { AppScreen } from '../../components/AppScreen';
+import { AppText } from '../../components/AppText';
+import { Chip } from '../../components/Chip';
+import { IconButton } from '../../components/IconButton';
+import { LibraryLessonCard } from '../../components/LibraryLessonCard';
+import { MaterialIcon } from '../../components/MaterialIcon';
+import { Medallion } from '../../components/Medallion';
+import { SectionHeader } from '../../components/SectionHeader';
+import { TextField } from '../../components/TextField';
+import { NO_LESSONS_MESSAGE } from '../../shared/copy/userMessages';
 import {
   listActivePackageLessons,
   type ContentLessonListItem,
 } from '../../shared/db/ContentRuntimeRepository';
+import {
+  useLibraryStore,
+  type LibrarySubjectFilter,
+} from '../../store/useLibraryStore';
+import { useAppTheme } from '../../theme';
+import type { LibraryLessonCardView } from '../../types/lesson';
+import { bootstrapContentPackage } from '../content/bootstrap';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'LessonsList'>;
 
-const FILTER_CHIPS: Array<{key: LibrarySubjectFilter; label: string}> = [
-  {key: 'all', label: 'Tất cả'},
-  {key: 'grammar', label: 'Ngữ pháp'},
-  {key: 'vocabulary', label: 'Từ vựng'},
-  {key: 'idioms', label: 'Thành ngữ'},
+const FILTER_CHIPS: Array<{ key: LibrarySubjectFilter; label: string }> = [
+  { key: 'all', label: 'Tất cả' },
+  { key: 'grammar', label: 'Ngữ pháp' },
+  { key: 'vocabulary', label: 'Từ vựng' },
+  { key: 'idioms', label: 'Thành ngữ' },
 ];
 
 /** Placeholder stats until progress store ships (handoff visual parity). */
@@ -43,9 +52,10 @@ const SUMMARY_PLACEHOLDER = {
   streakDays: 5,
 } as const;
 
-export function LessonsHistoryScreen({navigation}: Props) {
-  const {theme} = useAppTheme();
-  const tabNavigation = navigation.getParent<NavigationProp<RootTabParamList>>();
+export function LessonsHistoryScreen({ navigation }: Props) {
+  const { theme } = useAppTheme();
+  const tabNavigation =
+    navigation.getParent<NavigationProp<RootTabParamList>>();
   const query = useLibraryStore(state => state.query);
   const subjectFilter = useLibraryStore(state => state.subjectFilter);
   const setQuery = useLibraryStore(state => state.setQuery);
@@ -53,10 +63,16 @@ export function LessonsHistoryScreen({navigation}: Props) {
   const [userLessons, setUserLessons] = useState<LibraryLessonCardView[]>(() =>
     useLibraryStore.getState().getLibraryCards(),
   );
-  const [summary, setSummary] = useState(() => useLibraryStore.getState().getSummary());
+  const [summary, setSummary] = useState(() =>
+    useLibraryStore.getState().getSummary(),
+  );
 
-  const [packagedLessons, setPackagedLessons] = useState<ContentLessonListItem[]>([]);
-  const [bootstrapState, setBootstrapState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [packagedLessons, setPackagedLessons] = useState<
+    ContentLessonListItem[]
+  >([]);
+  const [bootstrapState, setBootstrapState] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
   const [bootstrapError, setBootstrapError] = useState<string | null>(null);
 
   const runBootstrap = useCallback(async () => {
@@ -70,7 +86,9 @@ export function LessonsHistoryScreen({navigation}: Props) {
         setBootstrapState('success');
       } else {
         setBootstrapState('error');
-        setBootstrapError(res.error.message || 'Không thể chuẩn bị nội dung bài học.');
+        setBootstrapError(
+          res.error.message || 'Không thể chuẩn bị nội dung bài học.',
+        );
       }
     } catch (e) {
       const activeLessons = listActivePackageLessons();
@@ -79,7 +97,10 @@ export function LessonsHistoryScreen({navigation}: Props) {
         setBootstrapState('success');
       } else {
         setBootstrapState('error');
-        setBootstrapError((e as Error).message || 'Gói bài học chưa thể chuẩn bị. Vui lòng thử lại.');
+        setBootstrapError(
+          (e as Error).message ||
+            'Gói bài học chưa thể chuẩn bị. Vui lòng thử lại.',
+        );
       }
     }
   }, []);
@@ -127,16 +148,33 @@ export function LessonsHistoryScreen({navigation}: Props) {
           height: 56,
           justifyContent: 'space-between',
           paddingHorizontal: theme.gutter,
-        }}>
-        <View style={{alignItems: 'center', flexDirection: 'row', gap: 10, minWidth: 0}}>
-          <MaterialIcon color={theme.colors.primary} name="translate" size={26} />
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            gap: 10,
+            minWidth: 0,
+          }}
+        >
+          <MaterialIcon
+            color={theme.colors.primary}
+            name="translate"
+            size={26}
+          />
           <AppText
             numberOfLines={1}
-            style={{color: theme.colors.primary, fontSize: 20, fontWeight: '600'}}>
+            style={{
+              color: theme.colors.primary,
+              fontSize: 20,
+              fontWeight: '600',
+            }}
+          >
             Bài học
           </AppText>
         </View>
-        <View style={{flexDirection: 'row', gap: 8}}>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
           <IconButton
             accessibilityLabel="Bài học đóng gói"
             icon="school"
@@ -162,10 +200,18 @@ export function LessonsHistoryScreen({navigation}: Props) {
         data={userLessons}
         keyExtractor={item => item.id}
         ListEmptyComponent={
-          !hasAnyLessons && bootstrapState !== 'loading' && bootstrapState !== 'error' ? (
-            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 24}}>
+          !hasAnyLessons &&
+          bootstrapState !== 'loading' &&
+          bootstrapState !== 'error' ? (
+            <View
+              style={{
+                alignItems: 'center',
+                gap: theme.spacing.md,
+                paddingVertical: 24,
+              }}
+            >
               <Medallion label="📖" />
-              <AppText color="secondary" style={{textAlign: 'center'}}>
+              <AppText color="secondary" style={{ textAlign: 'center' }}>
                 {query || subjectFilter !== 'all'
                   ? 'Không tìm thấy bài học phù hợp.'
                   : NO_LESSONS_MESSAGE}
@@ -174,9 +220,9 @@ export function LessonsHistoryScreen({navigation}: Props) {
           ) : null
         }
         ListFooterComponent={
-          <View style={{gap: 12, marginTop: theme.spacing.sm}}>
+          <View style={{ gap: 12, marginTop: theme.spacing.sm }}>
             <SectionHeader title="Tổng kết học tập" />
-            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 12}}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
               <View
                 style={{
                   alignItems: 'center',
@@ -186,11 +232,24 @@ export function LessonsHistoryScreen({navigation}: Props) {
                   flexGrow: 1,
                   paddingHorizontal: 12,
                   paddingVertical: 16,
-                }}>
-                <AppText style={{color: theme.colors.primary, fontSize: 26, fontWeight: '700'}}>
+                }}
+              >
+                <AppText
+                  style={{
+                    color: theme.colors.primary,
+                    fontSize: 26,
+                    fontWeight: '700',
+                  }}
+                >
                   {summary.lessonCount}
                 </AppText>
-                <AppText style={{color: theme.colors.primary, fontSize: 12, fontWeight: '600'}}>
+                <AppText
+                  style={{
+                    color: theme.colors.primary,
+                    fontSize: 12,
+                    fontWeight: '600',
+                  }}
+                >
                   Bài đã học
                 </AppText>
               </View>
@@ -203,11 +262,24 @@ export function LessonsHistoryScreen({navigation}: Props) {
                   flexGrow: 1,
                   paddingHorizontal: 12,
                   paddingVertical: 16,
-                }}>
-                <AppText style={{color: theme.colors.tertiary, fontSize: 26, fontWeight: '700'}}>
+                }}
+              >
+                <AppText
+                  style={{
+                    color: theme.colors.tertiary,
+                    fontSize: 26,
+                    fontWeight: '700',
+                  }}
+                >
                   {wordCountLabel}
                 </AppText>
-                <AppText style={{color: theme.colors.tertiary, fontSize: 12, fontWeight: '600'}}>
+                <AppText
+                  style={{
+                    color: theme.colors.tertiary,
+                    fontSize: 12,
+                    fontWeight: '600',
+                  }}
+                >
                   Từ đã biết
                 </AppText>
               </View>
@@ -220,11 +292,24 @@ export function LessonsHistoryScreen({navigation}: Props) {
                   flexGrow: 1,
                   paddingHorizontal: 12,
                   paddingVertical: 16,
-                }}>
-                <AppText style={{color: theme.colors.secondary, fontSize: 26, fontWeight: '700'}}>
+                }}
+              >
+                <AppText
+                  style={{
+                    color: theme.colors.secondary,
+                    fontSize: 26,
+                    fontWeight: '700',
+                  }}
+                >
                   {SUMMARY_PLACEHOLDER.accuracy}
                 </AppText>
-                <AppText style={{color: theme.colors.secondary, fontSize: 12, fontWeight: '600'}}>
+                <AppText
+                  style={{
+                    color: theme.colors.secondary,
+                    fontSize: 12,
+                    fontWeight: '600',
+                  }}
+                >
                   Độ chính xác
                 </AppText>
               </View>
@@ -237,11 +322,24 @@ export function LessonsHistoryScreen({navigation}: Props) {
                   flexGrow: 1,
                   paddingHorizontal: 12,
                   paddingVertical: 16,
-                }}>
-                <AppText style={{color: theme.colors.primary, fontSize: 26, fontWeight: '700'}}>
+                }}
+              >
+                <AppText
+                  style={{
+                    color: theme.colors.primary,
+                    fontSize: 26,
+                    fontWeight: '700',
+                  }}
+                >
                   {SUMMARY_PLACEHOLDER.streakDays}
                 </AppText>
-                <AppText style={{color: theme.colors.primary, fontSize: 12, fontWeight: '600'}}>
+                <AppText
+                  style={{
+                    color: theme.colors.primary,
+                    fontSize: 12,
+                    fontWeight: '600',
+                  }}
+                >
                   Chuỗi ngày
                 </AppText>
               </View>
@@ -249,7 +347,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
           </View>
         }
         ListHeaderComponent={
-          <View style={{gap: theme.spacing.md, marginBottom: 2}}>
+          <View style={{ gap: theme.spacing.md, marginBottom: 2 }}>
             <View>
               <View
                 pointerEvents="none"
@@ -261,8 +359,13 @@ export function LessonsHistoryScreen({navigation}: Props) {
                   position: 'absolute',
                   top: 0,
                   zIndex: 1,
-                }}>
-                <MaterialIcon color={theme.colors.primary} name="search" size={22} />
+                }}
+              >
+                <MaterialIcon
+                  color={theme.colors.primary}
+                  name="search"
+                  size={22}
+                />
               </View>
               <TextField
                 onChangeText={value => {
@@ -283,7 +386,8 @@ export function LessonsHistoryScreen({navigation}: Props) {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{gap: 10, paddingBottom: 2}}>
+              contentContainerStyle={{ gap: 10, paddingBottom: 2 }}
+            >
               {FILTER_CHIPS.map(chip => (
                 <Chip
                   key={chip.key}
@@ -298,21 +402,42 @@ export function LessonsHistoryScreen({navigation}: Props) {
             </ScrollView>
 
             {bootstrapState === 'loading' && packagedLessons.length === 0 && (
-              <AppCard testID="content-bootstrap-loading-card" style={{alignItems: 'center', gap: theme.spacing.sm, paddingVertical: 24}}>
-                <ActivityIndicator color={theme.colors.primary} size="large" testID="content-bootstrap-loading" />
+              <AppCard
+                testID="content-bootstrap-loading-card"
+                style={{
+                  alignItems: 'center',
+                  gap: theme.spacing.sm,
+                  paddingVertical: 24,
+                }}
+              >
+                <ActivityIndicator
+                  color={theme.colors.primary}
+                  size="large"
+                  testID="content-bootstrap-loading"
+                />
                 <AppText variant="h3">Đang chuẩn bị gói bài học…</AppText>
-                <AppText color="secondary" style={{textAlign: 'center'}}>
+                <AppText color="secondary" style={{ textAlign: 'center' }}>
                   Hệ thống đang khởi tạo 16 bài học đóng gói offline.
                 </AppText>
               </AppCard>
             )}
 
             {bootstrapState === 'error' && packagedLessons.length === 0 && (
-              <AppCard testID="content-bootstrap-error-card" style={{alignItems: 'center', gap: theme.spacing.sm, paddingVertical: 20}}>
+              <AppCard
+                testID="content-bootstrap-error-card"
+                style={{
+                  alignItems: 'center',
+                  gap: theme.spacing.sm,
+                  paddingVertical: 20,
+                }}
+              >
                 <Medallion label="⚠️" />
-                <AppText variant="h3">Không thể chuẩn bị nội dung bài học</AppText>
-                <AppText color="secondary" style={{textAlign: 'center'}}>
-                  {bootstrapError ?? 'Gói bài học chưa thể chuẩn bị. Vui lòng thử lại.'}
+                <AppText variant="h3">
+                  Không thể chuẩn bị nội dung bài học
+                </AppText>
+                <AppText color="secondary" style={{ textAlign: 'center' }}>
+                  {bootstrapError ??
+                    'Gói bài học chưa thể chuẩn bị. Vui lòng thử lại.'}
                 </AppText>
                 <AppButton
                   accessibilityLabel="Thử lại"
@@ -325,7 +450,9 @@ export function LessonsHistoryScreen({navigation}: Props) {
             )}
 
             {filteredPackagedLessons.length > 0 && (
-              <View style={{gap: theme.spacing.sm, marginTop: theme.spacing.xs}}>
+              <View
+                style={{ gap: theme.spacing.sm, marginTop: theme.spacing.xs }}
+              >
                 <SectionHeader
                   subtitle={`${filteredPackagedLessons.length} bài học đóng gói`}
                   title="Bài học theo lộ trình (MVP)"
@@ -335,12 +462,21 @@ export function LessonsHistoryScreen({navigation}: Props) {
                     accessibilityRole="button"
                     key={item.id}
                     onPress={() =>
-                      navigation.navigate('ContentLessonDetail', {lessonId: item.id})
+                      navigation.navigate('ContentLessonDetail', {
+                        lessonId: item.id,
+                      })
                     }
-                    testID={`packaged-lesson-${item.id}`}>
-                    <AppCard style={{gap: theme.spacing.xs}}>
-                      <View style={{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <AppText style={{flex: 1}} variant="h3">
+                    testID={`packaged-lesson-${item.id}`}
+                  >
+                    <AppCard style={{ gap: theme.spacing.xs }}>
+                      <View
+                        style={{
+                          alignItems: 'center',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <AppText style={{ flex: 1 }} variant="h3">
                           {item.titleVi}
                         </AppText>
                         <Chip label={item.level} tone="accent" />
@@ -356,17 +492,17 @@ export function LessonsHistoryScreen({navigation}: Props) {
             )}
 
             {userLessons.length > 0 && (
-              <View style={{marginTop: theme.spacing.xs}}>
+              <View style={{ marginTop: theme.spacing.xs }}>
                 <SectionHeader title="Bài học cá nhân / Đã lưu" />
               </View>
             )}
           </View>
         }
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <LibraryLessonCard
             lesson={item}
             onPress={() =>
-              navigation.navigate('SavedLessonDetail', {lessonId: item.id})
+              navigation.navigate('SavedLessonDetail', { lessonId: item.id })
             }
           />
         )}
@@ -375,4 +511,3 @@ export function LessonsHistoryScreen({navigation}: Props) {
     </AppScreen>
   );
 }
-
