@@ -1,8 +1,9 @@
 import React, {useCallback, useState} from 'react';
-import {FlatList, Pressable, View} from 'react-native';
+import {ActivityIndicator, FlatList, Pressable, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {LessonsStackParamList} from '../../../app/navigation/types';
+import {AppButton} from '../../../components/AppButton';
 import {AppCard} from '../../../components/AppCard';
 import {AppScreen} from '../../../components/AppScreen';
 import {AppText} from '../../../components/AppText';
@@ -12,17 +13,43 @@ import {Medallion} from '../../../components/Medallion';
 import {listActivePackageLessons} from '../../../shared/db/ContentRuntimeRepository';
 import type {ContentLessonListItem} from '../../../shared/db/ContentRuntimeRepository';
 import {useAppTheme} from '../../../theme';
+import {bootstrapContentPackage} from '../bootstrap';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'ContentLessonList'>;
 
 export function ContentLessonListScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const [lessons, setLessons] = useState<ContentLessonListItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadLessons = useCallback(async () => {
+    let items = listActivePackageLessons();
+    if (items.length === 0) {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await bootstrapContentPackage();
+        items = listActivePackageLessons();
+        if (!res.ok && items.length === 0) {
+          setError(res.error.message || 'Không thể chuẩn bị nội dung bài học.');
+        }
+      } catch (e) {
+        items = listActivePackageLessons();
+        if (items.length === 0) {
+          setError((e as Error).message || 'Gói bài học chưa thể chuẩn bị.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    setLessons(items);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      setLessons(listActivePackageLessons());
-    }, []),
+      loadLessons();
+    }, [loadLessons]),
   );
 
   return (
@@ -44,12 +71,35 @@ export function ContentLessonListScreen({navigation}: Props) {
         data={lessons}
         keyExtractor={item => item.id}
         ListEmptyComponent={
-          <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 32}}>
-            <Medallion label="📦" />
-            <AppText color="secondary" style={{textAlign: 'center'}}>
-              Chưa có bài học nào được nhập vào máy.
-            </AppText>
-          </View>
+          loading ? (
+            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 32}}>
+              <ActivityIndicator color={theme.colors.primary} size="large" />
+              <AppText color="secondary">Đang nạp gói bài học…</AppText>
+            </View>
+          ) : error ? (
+            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 32}}>
+              <Medallion label="⚠️" />
+              <AppText color="danger" style={{textAlign: 'center'}} variant="h3">
+                Không thể chuẩn bị nội dung bài học
+              </AppText>
+              <AppText color="secondary" style={{textAlign: 'center'}}>
+                {error}
+              </AppText>
+              <AppButton
+                accessibilityLabel="Thử lại"
+                onPress={loadLessons}
+                title="Thử lại"
+                tone="primary"
+              />
+            </View>
+          ) : (
+            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 32}}>
+              <Medallion label="📦" />
+              <AppText color="secondary" style={{textAlign: 'center'}}>
+                Chưa có bài học nào được nhập vào máy.
+              </AppText>
+            </View>
+          )
         }
         renderItem={({item}) => (
           <Pressable
@@ -71,3 +121,4 @@ export function ContentLessonListScreen({navigation}: Props) {
     </AppScreen>
   );
 }
+

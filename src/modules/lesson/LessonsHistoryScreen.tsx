@@ -1,9 +1,11 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {FlatList, ScrollView, View} from 'react-native';
+import {ActivityIndicator, FlatList, Pressable, ScrollView, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {LessonsStackParamList, RootTabParamList} from '../../app/navigation/types';
+import {AppButton} from '../../components/AppButton';
+import {AppCard} from '../../components/AppCard';
 import {AppScreen} from '../../components/AppScreen';
 import {AppText} from '../../components/AppText';
 import {Chip} from '../../components/Chip';
@@ -20,6 +22,11 @@ import {
 } from '../../store/useLibraryStore';
 import {useAppTheme} from '../../theme';
 import type {LibraryLessonCardView} from '../../types/lesson';
+import {bootstrapContentPackage} from '../content/bootstrap';
+import {
+  listActivePackageLessons,
+  type ContentLessonListItem,
+} from '../../shared/db/ContentRuntimeRepository';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'LessonsList'>;
 
@@ -43,20 +50,50 @@ export function LessonsHistoryScreen({navigation}: Props) {
   const subjectFilter = useLibraryStore(state => state.subjectFilter);
   const setQuery = useLibraryStore(state => state.setQuery);
   const setSubjectFilter = useLibraryStore(state => state.setSubjectFilter);
-  const [lessons, setLessons] = useState<LibraryLessonCardView[]>(() =>
+  const [userLessons, setUserLessons] = useState<LibraryLessonCardView[]>(() =>
     useLibraryStore.getState().getLibraryCards(),
   );
   const [summary, setSummary] = useState(() => useLibraryStore.getState().getSummary());
 
+  const [packagedLessons, setPackagedLessons] = useState<ContentLessonListItem[]>([]);
+  const [bootstrapState, setBootstrapState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [bootstrapError, setBootstrapError] = useState<string | null>(null);
+
+  const runBootstrap = useCallback(async () => {
+    setBootstrapState('loading');
+    setBootstrapError(null);
+    try {
+      const res = await bootstrapContentPackage();
+      const activeLessons = listActivePackageLessons();
+      if (res.ok || activeLessons.length > 0) {
+        setPackagedLessons(activeLessons);
+        setBootstrapState('success');
+      } else {
+        setBootstrapState('error');
+        setBootstrapError(res.error.message || 'Không thể chuẩn bị nội dung bài học.');
+      }
+    } catch (e) {
+      const activeLessons = listActivePackageLessons();
+      if (activeLessons.length > 0) {
+        setPackagedLessons(activeLessons);
+        setBootstrapState('success');
+      } else {
+        setBootstrapState('error');
+        setBootstrapError((e as Error).message || 'Gói bài học chưa thể chuẩn bị. Vui lòng thử lại.');
+      }
+    }
+  }, []);
+
   const refresh = useCallback(() => {
-    setLessons(useLibraryStore.getState().getLibraryCards());
+    setUserLessons(useLibraryStore.getState().getLibraryCards());
     setSummary(useLibraryStore.getState().getSummary());
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       refresh();
-    }, [refresh]),
+      runBootstrap();
+    }, [refresh, runBootstrap]),
   );
 
   const wordCountLabel = useMemo(() => {
@@ -66,7 +103,20 @@ export function LessonsHistoryScreen({navigation}: Props) {
     return String(summary.wordCount);
   }, [summary.wordCount]);
 
-  const listEmpty = lessons.length === 0;
+  const filteredPackagedLessons = useMemo(() => {
+    if (!query.trim()) {
+      return packagedLessons;
+    }
+    const q = query.toLowerCase();
+    return packagedLessons.filter(
+      item =>
+        item.titleVi.toLowerCase().includes(q) ||
+        item.titleEn.toLowerCase().includes(q) ||
+        item.blurbVi.toLowerCase().includes(q),
+    );
+  }, [packagedLessons, query]);
+
+  const hasAnyLessons = userLessons.length > 0 || packagedLessons.length > 0;
 
   return (
     <AppScreen>
@@ -109,10 +159,10 @@ export function LessonsHistoryScreen({navigation}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        data={lessons}
+        data={userLessons}
         keyExtractor={item => item.id}
         ListEmptyComponent={
-          listEmpty ? (
+          !hasAnyLessons && bootstrapState !== 'loading' && bootstrapState !== 'error' ? (
             <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 24}}>
               <Medallion label="📖" />
               <AppText color="secondary" style={{textAlign: 'center'}}>
@@ -246,6 +296,70 @@ export function LessonsHistoryScreen({navigation}: Props) {
                 />
               ))}
             </ScrollView>
+
+            {bootstrapState === 'loading' && packagedLessons.length === 0 && (
+              <AppCard testID="content-bootstrap-loading-card" style={{alignItems: 'center', gap: theme.spacing.sm, paddingVertical: 24}}>
+                <ActivityIndicator color={theme.colors.primary} size="large" testID="content-bootstrap-loading" />
+                <AppText variant="h3">Đang chuẩn bị gói bài học…</AppText>
+                <AppText color="secondary" style={{textAlign: 'center'}}>
+                  Hệ thống đang khởi tạo 16 bài học đóng gói offline.
+                </AppText>
+              </AppCard>
+            )}
+
+            {bootstrapState === 'error' && packagedLessons.length === 0 && (
+              <AppCard testID="content-bootstrap-error-card" style={{alignItems: 'center', gap: theme.spacing.sm, paddingVertical: 20}}>
+                <Medallion label="⚠️" />
+                <AppText variant="h3">Không thể chuẩn bị nội dung bài học</AppText>
+                <AppText color="secondary" style={{textAlign: 'center'}}>
+                  {bootstrapError ?? 'Gói bài học chưa thể chuẩn bị. Vui lòng thử lại.'}
+                </AppText>
+                <AppButton
+                  accessibilityLabel="Thử lại"
+                  onPress={runBootstrap}
+                  testID="content-bootstrap-retry"
+                  title="Thử lại"
+                  tone="primary"
+                />
+              </AppCard>
+            )}
+
+            {filteredPackagedLessons.length > 0 && (
+              <View style={{gap: theme.spacing.sm, marginTop: theme.spacing.xs}}>
+                <SectionHeader
+                  subtitle={`${filteredPackagedLessons.length} bài học đóng gói`}
+                  title="Bài học theo lộ trình (MVP)"
+                />
+                {filteredPackagedLessons.map(item => (
+                  <Pressable
+                    accessibilityRole="button"
+                    key={item.id}
+                    onPress={() =>
+                      navigation.navigate('ContentLessonDetail', {lessonId: item.id})
+                    }
+                    testID={`packaged-lesson-${item.id}`}>
+                    <AppCard style={{gap: theme.spacing.xs}}>
+                      <View style={{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <AppText style={{flex: 1}} variant="h3">
+                          {item.titleVi}
+                        </AppText>
+                        <Chip label={item.level} tone="accent" />
+                      </View>
+                      <AppText color="secondary">{item.blurbVi}</AppText>
+                      <AppText color="muted" variant="label">
+                        {`${item.titleEn} · ${item.estimatedDurationMinutes} phút`}
+                      </AppText>
+                    </AppCard>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+
+            {userLessons.length > 0 && (
+              <View style={{marginTop: theme.spacing.xs}}>
+                <SectionHeader title="Bài học cá nhân / Đã lưu" />
+              </View>
+            )}
           </View>
         }
         renderItem={({item}) => (
@@ -261,3 +375,4 @@ export function LessonsHistoryScreen({navigation}: Props) {
     </AppScreen>
   );
 }
+
