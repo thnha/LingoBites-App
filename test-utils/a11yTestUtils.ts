@@ -15,23 +15,186 @@ function getComponentName(type: ReactTestInstance['type']): string | null {
 }
 
 /**
- * Checks if a component has proper accessibility label
+ * Components React Native treats as `accessible: true` by default even when
+ * the prop isn't set explicitly (see node_modules/react-native/Libraries/Components/Pressable/Pressable.js
+ * and the Touchable* wrappers built on the same default).
  */
-export function hasAccessibilityLabel(instance: ReactTestInstance): boolean {
+const IMPLICITLY_ACCESSIBLE_COMPONENTS = new Set([
+  'Pressable',
+  'TouchableOpacity',
+  'TouchableHighlight',
+  'TouchableWithoutFeedback',
+  'TouchableNativeFeedback',
+]);
+
+function isAccessibleNode(instance: ReactTestInstance): boolean {
+  if (instance.props.accessible === false) {
+    return false;
+  }
+  if (instance.props.accessible === true) {
+    return true;
+  }
+  const name = getComponentName(instance.type);
+  return name !== null && IMPLICITLY_ACCESSIBLE_COMPONENTS.has(name);
+}
+
+function isHiddenFromAccessibility(instance: ReactTestInstance): boolean {
   return (
-    typeof instance.props.accessibilityLabel === 'string' &&
-    instance.props.accessibilityLabel.length > 0
+    instance.props.accessibilityElementsHidden === true ||
+    instance.props.importantForAccessibility === 'no-hide-descendants'
+  );
+}
+
+function childInstances(instance: ReactTestInstance): ReactTestInstance[] {
+  return (instance.children ?? []).filter(
+    (child): child is ReactTestInstance =>
+      typeof child === 'object' && child !== null,
   );
 }
 
 /**
- * Checks if a component has proper accessibility role
+ * Flattens the string/number leaves rendered under a Text/AppText node,
+ * e.g. `<Text>{'a'}{1}</Text>` -> "a1".
  */
-export function hasAccessibilityRole(instance: ReactTestInstance): boolean {
-  return (
-    typeof instance.props.accessibilityRole === 'string' &&
-    instance.props.accessibilityRole.length > 0
-  );
+function extractStringContent(instance: ReactTestInstance): string {
+  const parts: string[] = [];
+  function walk(node: ReactTestInstance) {
+    (node.children ?? []).forEach(child => {
+      if (typeof child === 'string' || typeof child === 'number') {
+        parts.push(String(child));
+      } else if (child !== null && typeof child === 'object') {
+        walk(child);
+      }
+    });
+  }
+  walk(instance);
+  return parts.join('');
+}
+
+/**
+ * Collects every Text/AppText leaf under `instance`, without regard to
+ * accessibility grouping. Used by `findMaskedContent` to see everything a
+ * sighted user can read, so it can be compared against what a static
+ * accessibilityLabel actually announces.
+ */
+function collectAllTextLeaves(instance: ReactTestInstance): string[] {
+  const texts: string[] = [];
+  function walk(node: ReactTestInstance) {
+    const name = getComponentName(node.type);
+    if (name === 'Text' || name === 'AppText') {
+      const content = extractStringContent(node);
+      if (content.trim().length > 0) {
+        texts.push(content);
+      }
+      return;
+    }
+    childInstances(node).forEach(walk);
+  }
+  walk(instance);
+  return texts;
+}
+
+/**
+ * Mirrors RN's announcement grouping: a nested node that is itself
+ * accessible with its own label contributes that label (not its children's
+ * text) to the ancestor's announced content.
+ */
+function collectAnnouncedDescendantText(instance: ReactTestInstance): string {
+  return childInstances(instance)
+    .map(child => {
+      if (isHiddenFromAccessibility(child)) {
+        return '';
+      }
+      const name = getComponentName(child.type);
+      if (name === 'Text' || name === 'AppText') {
+        return extractStringContent(child);
+      }
+      const label = child.props.accessibilityLabel;
+      if (isAccessibleNode(child) && typeof label === 'string' && label) {
+        return label;
+      }
+      return collectAnnouncedDescendantText(child);
+    })
+    .filter(text => text.trim().length > 0)
+    .join(' ');
+}
+
+/**
+ * Simulates the string a screen reader announces for `instance`, following
+ * React Native's grouping rules:
+ * 1. `accessible === true` + `accessibilityLabel` -> the label REPLACES all
+ *    descendant content.
+ * 2. `accessible === true` + no label -> descendant Text content is
+ *    concatenated in tree order.
+ * 3. `accessibilityElementsHidden` / `importantForAccessibility="no-hide-descendants"`
+ *    -> announces nothing.
+ * 4. `accessibilityValue.text`, if present, is appended.
+ */
+export function getAnnouncedText(instance: ReactTestInstance): string {
+  if (isHiddenFromAccessibility(instance)) {
+    return '';
+  }
+
+  const label = instance.props.accessibilityLabel;
+  const hasLabel = typeof label === 'string' && label.length > 0;
+  const base =
+    isAccessibleNode(instance) && hasLabel
+      ? label
+      : collectAnnouncedDescendantText(instance);
+
+  const value = instance.props.accessibilityValue?.text;
+  const hasValue = typeof value === 'string' && value.length > 0;
+  return hasValue ? [base, value].filter(Boolean).join(' ') : base;
+}
+
+export interface MaskedNode {
+  path: string;
+  label: string;
+  maskedText: string[];
+}
+
+/**
+ * Scans the tree under `root` for nodes where a static accessibilityLabel
+ * silently swallows real, visible text content — the FlipCard bug class
+ * (SETE-122). A node is reported when it is accessible, has a non-empty
+ * accessibilityLabel, AND has at least one Text/AppText descendant whose
+ * content is not already a substring of that label.
+ */
+export function findMaskedContent(root: ReactTestInstance): MaskedNode[] {
+  const results: MaskedNode[] = [];
+
+  function visit(instance: ReactTestInstance, path: string) {
+    const name = getComponentName(instance.type) ?? 'Unknown';
+    const currentPath = `${path}/${name}`;
+
+    if (isAccessibleNode(instance)) {
+      // An accessible node is an accessibility boundary: RN exposes it as
+      // one opaque unit to screen readers, so descendants (including the
+      // wrapper Views Pressable/Touchable* render internally with the same
+      // forwarded props) are never independently reachable. Recursing past
+      // it would re-report the same masking once per wrapper layer.
+      const label = instance.props.accessibilityLabel;
+      const hasLabel = typeof label === 'string' && label.length > 0;
+      if (hasLabel) {
+        // Case-insensitive: screen readers pronounce text the same
+        // regardless of capitalization, so a label that re-cases the same
+        // word mid-sentence (e.g. "Nhớ" -> "Đã nhớ - ...") isn't masking.
+        const lowerLabel = label.toLowerCase();
+        const maskedText = collectAllTextLeaves(instance).filter(
+          text => !lowerLabel.includes(text.toLowerCase()),
+        );
+        if (maskedText.length > 0) {
+          results.push({path: currentPath, label, maskedText});
+        }
+      }
+      return;
+    }
+
+    childInstances(instance).forEach(child => visit(child, currentPath));
+  }
+
+  visit(root, '');
+  return results;
 }
 
 /**

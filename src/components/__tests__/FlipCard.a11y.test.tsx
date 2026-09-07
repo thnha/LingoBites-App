@@ -5,8 +5,8 @@ import {FlipCard} from '../FlipCard';
 import {AppThemeProvider} from '../../theme';
 import {FeatureFlagProvider} from '../../release';
 import {
-  hasAccessibilityLabel,
-  hasAccessibilityRole,
+  findMaskedContent,
+  getAnnouncedText,
 } from '../../../test-utils/a11yTestUtils';
 
 async function render(ui: React.ReactElement) {
@@ -33,8 +33,7 @@ describe('FlipCard - Accessibility', () => {
     );
 
     const cardButton = tree.root.findByProps({testID: 'flip-card'});
-    expect(hasAccessibilityLabel(cardButton)).toBe(true);
-    expect(cardButton.props.accessibilityLabel).toBe('Mặt trước flashcard');
+    expect(getAnnouncedText(cardButton)).toBe('Mặt trước flashcard');
 
     // Re-render with flipped=true
     const flippedTree = await render(
@@ -49,10 +48,7 @@ describe('FlipCard - Accessibility', () => {
     const flippedCardButton = flippedTree.root.findByProps({
       testID: 'flip-card',
     });
-    expect(hasAccessibilityLabel(flippedCardButton)).toBe(true);
-    expect(flippedCardButton.props.accessibilityLabel).toBe(
-      'Mặt sau flashcard',
-    );
+    expect(getAnnouncedText(flippedCardButton)).toBe('Mặt sau flashcard');
   });
 
   it('has accessibility hint for flip action', async () => {
@@ -80,8 +76,39 @@ describe('FlipCard - Accessibility', () => {
     );
 
     const cardButton = tree.root.findByProps({testID: 'flip-card'});
-    expect(hasAccessibilityRole(cardButton)).toBe(true);
     expect(cardButton.props.accessibilityRole).toBe('button');
+  });
+
+  // SETE-122: red test — a static accessibilityLabel on an accessible
+  // Pressable REPLACES descendant Text content for screen readers (RN
+  // behavior), so the actual card content (front/back) is never announced.
+  // Fixing FlipCard itself is out of scope for this issue (tooling only).
+  it('announces the card content to screen readers, not just a static label', async () => {
+    const tree = await render(
+      <FlipCard
+        back={<Text>Back content</Text>}
+        flipped={false}
+        front={<Text>hello</Text>}
+        onFlip={jest.fn()}
+      />,
+    );
+
+    const cardButton = tree.root.findByProps({testID: 'flip-card'});
+    expect(getAnnouncedText(cardButton)).toContain('hello');
+  });
+
+  it('flags FlipCard as masking its front content (SETE-122 known bug)', async () => {
+    const tree = await render(
+      <FlipCard
+        back={<Text>Back content</Text>}
+        flipped={false}
+        front={<Text>hello</Text>}
+        onFlip={jest.fn()}
+      />,
+    );
+
+    const masked = findMaskedContent(tree.root);
+    expect(masked.some(node => node.maskedText.includes('hello'))).toBe(true);
   });
 
   it('triggers onFlip when pressed (supports screen reader double-tap)', async () => {

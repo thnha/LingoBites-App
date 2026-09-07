@@ -10,10 +10,7 @@ import {validFullOutput} from '../../../shared/fixtures';
 import {AppThemeProvider} from '../../../theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {DailyReviewScreen} from '../DailyReviewScreen';
-import {
-  hasAccessibilityLabel,
-  hasAccessibilityRole,
-} from '../../../../test-utils/a11yTestUtils';
+import {getAnnouncedText} from '../../../../test-utils/a11yTestUtils';
 
 const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
 
@@ -102,9 +99,7 @@ describe('DailyReviewScreen - Accessibility', () => {
       );
 
       const closeButton = tree.root.findByProps({testID: 'review-close'});
-      expect(hasAccessibilityLabel(closeButton)).toBe(true);
-      expect(hasAccessibilityRole(closeButton)).toBe(true);
-      expect(closeButton.props.accessibilityLabel).toBe('Đóng phiên ôn tập');
+      expect(getAnnouncedText(closeButton)).toBe('Đóng phiên ôn tập');
       expect(closeButton.props.accessibilityRole).toBe('button');
     });
 
@@ -123,9 +118,29 @@ describe('DailyReviewScreen - Accessibility', () => {
       expect(flipCardPressables.length).toBeGreaterThan(0);
 
       const flipCard = flipCardPressables[0];
-      expect(hasAccessibilityLabel(flipCard)).toBe(true);
-      expect(hasAccessibilityRole(flipCard)).toBe(true);
+      expect(typeof flipCard.props.accessibilityLabel).toBe('string');
+      expect(flipCard.props.accessibilityRole).toBe('button');
       expect(flipCard.props.accessibilityHint).toBe('Chạm để lật thẻ');
+    });
+
+    // SETE-122 known bug: with a real seeded flashcard (word "word-1",
+    // meaning "meaning-1"), FlipCard's static accessibilityLabel masks that
+    // content from screen readers. Fixing FlipCard is out of scope here
+    // (tooling only) — this documents the bug is reachable from this real
+    // screen, not just from FlipCard's own unit tests.
+    it('announces flashcard word/meaning on the FlipCard (currently red — SETE-122)', async () => {
+      seedCards(1);
+      const tree = await renderScreen(
+        <DailyReviewScreen navigation={navigation() as never} />,
+      );
+
+      const flipCard = tree.root.findAll(
+        node =>
+          node.props.testID === 'daily-review-flip-card' &&
+          node.props.accessibilityLabel !== undefined,
+      )[0];
+
+      expect(getAnnouncedText(flipCard)).toContain('word-1');
     });
 
     it('has accessible RatingControl buttons', async () => {
@@ -137,13 +152,13 @@ describe('DailyReviewScreen - Accessibility', () => {
       const ratingButtons = ['rating-forgot', 'rating-remembered'];
       const skipButton = tree.root.findByProps({testID: 'rating-skip'});
 
-      expect(hasAccessibilityLabel(skipButton)).toBe(true);
-      expect(hasAccessibilityRole(skipButton)).toBe(true);
+      expect(typeof skipButton.props.accessibilityLabel).toBe('string');
+      expect(skipButton.props.accessibilityRole).toBe('button');
 
       for (const testID of ratingButtons) {
         const button = tree.root.findByProps({testID});
-        expect(hasAccessibilityLabel(button)).toBe(true);
-        expect(hasAccessibilityRole(button)).toBe(true);
+        expect(typeof button.props.accessibilityLabel).toBe('string');
+        expect(button.props.accessibilityRole).toBe('button');
       }
     });
 
@@ -235,7 +250,7 @@ describe('DailyReviewScreen - Accessibility', () => {
 
       expect(buttons.length).toBeGreaterThan(0);
       const returnButton = buttons[0];
-      expect(hasAccessibilityLabel(returnButton)).toBe(true);
+      expect(getAnnouncedText(returnButton)).toBe('Quay về Home');
     });
   });
 
