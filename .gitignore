@@ -92,3 +92,8 @@ AGENTS.md
 description.md
 reply.md
 artifacts/
+
+.vscode/*
+.vibeguard/*
+.worktree/*
+.multica/*
