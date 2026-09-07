@@ -6,17 +6,12 @@
   "title_vi": "Giải thích kiến trúc hệ thống",
   "blurb_vi": "Học cách thuyết trình và giải thích kiến trúc ứng dụng (Monolith, Microservices, Cloud, DB).",
   "level": "B1",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Thuyết trình tổng quan về kiến trúc phần mềm đang phát triển.",
   "situation_vi": "Giải thích hệ thống cho nhân sự mới hoặc khách hàng.",
   "learner_role_vi": "Full-stack Developer trình bày sơ đồ hệ thống.",
-  "prerequisite_lesson_slugs": [
-    "standup-blockers"
-  ],
+  "prerequisite_lesson_slugs": ["standup-blockers"],
   "pronunciation_focus_vi": "Nhấn âm chính xác: architecture, microservices, database, frontend, backend.",
   "final_speaking_task_vi": "Mô tả bức tranh tổng thể kiến trúc ứng dụng của bạn trong 2 phút.",
   "pass_conditions_vi": "Trình bày trôi chảy các thành phần hệ thống chính và luồng kết nối.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Ứng dụng của chúng tôi được xây dựng với frontend React\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2fb7dc820e36b4eb"
-      ],
-      "srs_ref_ids": [
-        "8970a3f21c451f1e"
-      ],
+      "audio_ref_ids": ["2fb7dc820e36b4eb"],
+      "srs_ref_ids": ["8970a3f21c451f1e"],
       "dialogue_turns": [
         {
           "id": "659e51b3e5cfa531",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "8970a3f21c451f1e"
-        ],
+        "re_present_refs": ["8970a3f21c451f1e"],
         "tip_vi": "Hãy nhớ cụm từ \"Our application is built with a React frontend\" nghĩa là \"Ứng dụng của chúng tôi được xây dựng với frontend React\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Dịch vụ backend được vận hành bởi Node.js\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7db56ef0aab65970"
-      ],
-      "srs_ref_ids": [
-        "7bf85f0389d6b13a"
-      ],
+      "audio_ref_ids": ["7db56ef0aab65970"],
+      "srs_ref_ids": ["7bf85f0389d6b13a"],
       "dialogue_turns": [
         {
           "id": "03897442fe7a7fb5",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "7bf85f0389d6b13a"
-        ],
+        "re_present_refs": ["7bf85f0389d6b13a"],
         "tip_vi": "Hãy nhớ cụm từ \"The backend service is powered by Node.js\" nghĩa là \"Dịch vụ backend được vận hành bởi Node.js\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "8a2fe8f176e472d3"
-      ],
-      "srs_ref_ids": [
-        "9d39322b440736b9"
-      ],
+      "audio_ref_ids": ["8a2fe8f176e472d3"],
+      "srs_ref_ids": ["9d39322b440736b9"],
       "dialogue_turns": [
         {
           "id": "2d7516dbb840a237",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "9d39322b440736b9"
-        ],
+        "re_present_refs": ["9d39322b440736b9"],
         "tip_vi": "Hãy nhớ cụm từ \"We use PostgreSQL for relational data storage\" nghĩa là \"Chúng tôi dùng PostgreSQL để lưu trữ dữ liệu quan hệ\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Toàn bộ hạ tầng được lưu trữ trên AWS\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "e771daf956454a7c"
-      ],
-      "srs_ref_ids": [
-        "66d3be0c0e04ac57"
-      ],
+      "audio_ref_ids": ["e771daf956454a7c"],
+      "srs_ref_ids": ["66d3be0c0e04ac57"],
       "dialogue_turns": [
         {
           "id": "d168c9abb8cd05fe",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "66d3be0c0e04ac57"
-        ],
+        "re_present_refs": ["66d3be0c0e04ac57"],
         "tip_vi": "Hãy nhớ cụm từ \"The entire infrastructure is hosted on AWS\" nghĩa là \"Toàn bộ hạ tầng được lưu trữ trên AWS\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Được thiết kế theo kiến trúc microservice có thể mở rộng\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "c669c89eb11c861e"
-      ],
-      "srs_ref_ids": [
-        "30de386338fb01f2"
-      ],
+      "audio_ref_ids": ["c669c89eb11c861e"],
+      "srs_ref_ids": ["30de386338fb01f2"],
       "dialogue_turns": [
         {
           "id": "72667e47e9abff1d",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "30de386338fb01f2"
-        ],
+        "re_present_refs": ["30de386338fb01f2"],
         "tip_vi": "Hãy nhớ cụm từ \"Designed as a microservice scalable architecture\" nghĩa là \"Được thiết kế theo kiến trúc microservice có thể mở rộng\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Các dịch vụ giao tiếp qua gRPC và REST\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "1f69cc05d4d35adb"
-      ],
-      "srs_ref_ids": [
-        "0b6e85101e519570"
-      ],
+      "audio_ref_ids": ["1f69cc05d4d35adb"],
+      "srs_ref_ids": ["0b6e85101e519570"],
       "dialogue_turns": [
         {
           "id": "8a709d12e2525c5b",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "0b6e85101e519570"
-        ],
+        "re_present_refs": ["0b6e85101e519570"],
         "tip_vi": "Hãy nhớ cụm từ \"Services communicate via gRPC and REST\" nghĩa là \"Các dịch vụ giao tiếp qua gRPC và REST\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "ef9501072ad7d701"
-      ],
-      "srs_ref_ids": [
-        "dc1ce42ecdb3b0a5"
-      ],
+      "audio_ref_ids": ["ef9501072ad7d701"],
+      "srs_ref_ids": ["dc1ce42ecdb3b0a5"],
       "dialogue_turns": [
         {
           "id": "41c38109e9b84b49",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "dc1ce42ecdb3b0a5"
-        ],
+        "re_present_refs": ["dc1ce42ecdb3b0a5"],
         "tip_vi": "Hãy nhớ cụm từ \"It is optimized to handle high concurrent traffic\" nghĩa là \"Nó được tối ưu để xử lý lưu lượng truy cập đồng thời cao\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi duy trì mã nguồn sạch và theo mô-đun\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "a92b9ab20db60f4b"
-      ],
-      "srs_ref_ids": [
-        "328f757695c30d8a"
-      ],
+      "audio_ref_ids": ["a92b9ab20db60f4b"],
+      "srs_ref_ids": ["328f757695c30d8a"],
       "dialogue_turns": [
         {
           "id": "692420eb75d1e116",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "328f757695c30d8a"
-        ],
+        "re_present_refs": ["328f757695c30d8a"],
         "tip_vi": "Hãy nhớ cụm từ \"We maintain a clean and modular codebase\" nghĩa là \"Chúng tôi duy trì mã nguồn sạch và theo mô-đun\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Giải thích kiến trúc hệ thống",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "Our application is built with a React frontend",

@@ -47,13 +47,17 @@ export function ThemePicker() {
                 backgroundColor: theme.colors.primary,
                 borderColor: theme.colors.primary,
               },
-            ]}>
+            ]}
+          >
             <Text
               style={{
-                color: selected ? theme.colors.text.inverse : theme.colors.text.secondary,
+                color: selected
+                  ? theme.colors.text.inverse
+                  : theme.colors.text.secondary,
                 fontSize: theme.typography.size.sm,
                 fontWeight: theme.typography.weight.medium,
-              }}>
+              }}
+            >
               {themes[id].name}
             </Text>
           </Pressable>

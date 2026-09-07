@@ -23,7 +23,11 @@ export type RuntimeStepKind =
   | 'exit_check'
   | 'feedback';
 
-export type RuntimeAttemptState = 'pending' | 'completed' | 'skipped' | 'failed';
+export type RuntimeAttemptState =
+  | 'pending'
+  | 'completed'
+  | 'skipped'
+  | 'failed';
 
 export type ContextStepData = {
   kind: 'context';

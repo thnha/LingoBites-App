@@ -8,7 +8,9 @@ import {buildLessonSteps} from '../buildLessonSteps';
 import type {ContentChunkRow} from '../../../../shared/db/ContentRuntimeRepository';
 import type {LessonRuntimeData} from '../types';
 
-function chunk(overrides: Partial<ContentChunkRow> & {id: string; order: number}): ContentChunkRow {
+function chunk(
+  overrides: Partial<ContentChunkRow> & {id: string; order: number},
+): ContentChunkRow {
   return {
     lessonId: 'lesson-1',
     packageId: 'pkg-1',
@@ -28,7 +30,9 @@ function chunk(overrides: Partial<ContentChunkRow> & {id: string; order: number}
   };
 }
 
-function baseData(overrides: Partial<LessonRuntimeData> = {}): LessonRuntimeData {
+function baseData(
+  overrides: Partial<LessonRuntimeData> = {},
+): LessonRuntimeData {
   return {
     lesson: {
       id: 'lesson-1',
@@ -73,28 +77,31 @@ describe('buildLessonSteps', () => {
     ['fill_blank', 'guided_practice'],
     ['translation', 'guided_practice'],
     ['multiple_choice', 'active_recall'],
-  ] as const)('maps activity type %s to step kind %s', (activityType, expectedKind) => {
-    const c1 = chunk({id: 'c1', order: 0});
-    const data = baseData({
-      chunks: [c1],
-      activities: [
-        {
-          id: 'act-1',
-          lessonId: 'lesson-1',
-          packageId: 'pkg-1',
-          slug: 'act-1',
-          type: activityType,
-          titleVi: 'Hoạt động',
-          chunkRefIds: ['c1'],
-          qaRefIds: [],
-          instructionsVi: null,
-        },
-      ],
-    });
-    const steps = buildLessonSteps(data);
-    const activityStep = steps.find(s => s.id === 'activity:act-1');
-    expect(activityStep?.kind).toBe(expectedKind);
-  });
+  ] as const)(
+    'maps activity type %s to step kind %s',
+    (activityType, expectedKind) => {
+      const c1 = chunk({id: 'c1', order: 0});
+      const data = baseData({
+        chunks: [c1],
+        activities: [
+          {
+            id: 'act-1',
+            lessonId: 'lesson-1',
+            packageId: 'pkg-1',
+            slug: 'act-1',
+            type: activityType,
+            titleVi: 'Hoạt động',
+            chunkRefIds: ['c1'],
+            qaRefIds: [],
+            instructionsVi: null,
+          },
+        ],
+      });
+      const steps = buildLessonSteps(data);
+      const activityStep = steps.find(s => s.id === 'activity:act-1');
+      expect(activityStep?.kind).toBe(expectedKind);
+    },
+  );
 
   it('role_play step collects dialogue turns from referenced chunks', () => {
     const turn = {

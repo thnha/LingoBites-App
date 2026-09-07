@@ -46,9 +46,13 @@ describe('FlipCard - Accessibility', () => {
       />,
     );
 
-    const flippedCardButton = flippedTree.root.findByProps({testID: 'flip-card'});
+    const flippedCardButton = flippedTree.root.findByProps({
+      testID: 'flip-card',
+    });
     expect(hasAccessibilityLabel(flippedCardButton)).toBe(true);
-    expect(flippedCardButton.props.accessibilityLabel).toBe('Mặt sau flashcard');
+    expect(flippedCardButton.props.accessibilityLabel).toBe(
+      'Mặt sau flashcard',
+    );
   });
 
   it('has accessibility hint for flip action', async () => {

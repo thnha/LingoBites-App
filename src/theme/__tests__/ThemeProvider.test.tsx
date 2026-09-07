@@ -39,7 +39,9 @@ describe('AppThemeProvider', () => {
   });
 
   it('useAppTheme throws outside the provider', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     let caught: Error | undefined;
 
     class TestBoundary extends React.Component<
@@ -79,19 +81,25 @@ describe('AppThemeProvider', () => {
 
   it('defaults to pastel-kids when nothing is persisted', async () => {
     const tree = await renderWithProviders();
-    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe('pastel-kids');
+    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+      'pastel-kids',
+    );
   });
 
   it('restores a valid persisted theme on mount', async () => {
     await AsyncStorage.setItem(THEME_STORAGE_KEY, 'dark');
     const tree = await renderWithProviders();
-    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe('dark');
+    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+      'dark',
+    );
   });
 
   it('falls back to pastel-kids for an unknown/removed persisted id', async () => {
     await AsyncStorage.setItem(THEME_STORAGE_KEY, 'ocean-removed');
     const tree = await renderWithProviders();
-    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe('pastel-kids');
+    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+      'pastel-kids',
+    );
   });
 
   it('setThemeId updates context and persists', async () => {
@@ -99,7 +107,9 @@ describe('AppThemeProvider', () => {
     await act(async () => {
       tree.root.findByProps({testID: 'probe'}).props.onPress();
     });
-    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe('dark');
+    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+      'dark',
+    );
     expect(await AsyncStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
   });
 });

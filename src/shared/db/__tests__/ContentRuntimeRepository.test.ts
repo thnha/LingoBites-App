@@ -34,13 +34,28 @@ function setup() {
   return db;
 }
 
-function insertLesson(db: ReturnType<typeof open>, id: string, packageId: string) {
+function insertLesson(
+  db: ReturnType<typeof open>,
+  id: string,
+  packageId: string,
+) {
   db.execute(
     `INSERT INTO content_lessons (
       id, package_id, slug, schema_version, title_en, title_vi, blurb_vi,
       level, target_skills_json, estimated_duration_minutes
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-    [id, packageId, id, '0.1.0', `Title ${id}`, `Tiêu đề ${id}`, 'blurb', 'A2', JSON.stringify(['speaking']), 15],
+    [
+      id,
+      packageId,
+      id,
+      '0.1.0',
+      `Title ${id}`,
+      `Tiêu đề ${id}`,
+      'blurb',
+      'A2',
+      JSON.stringify(['speaking']),
+      15,
+    ],
   );
 }
 
@@ -155,7 +170,11 @@ describe('ContentRuntimeRepository', () => {
       const vocabId = insertReviewItem('vocabulary');
       const dialogueId = insertReviewItem('dialogue_turn');
 
-      const vocabResult = recordContentReviewEvent({reviewItemId: vocabId, correct: true, reviewedAt: NOW});
+      const vocabResult = recordContentReviewEvent({
+        reviewItemId: vocabId,
+        correct: true,
+        reviewedAt: NOW,
+      });
       const dialogueResult = recordContentReviewEvent({
         reviewItemId: dialogueId,
         correct: true,
@@ -167,7 +186,11 @@ describe('ContentRuntimeRepository', () => {
 
     it('advances a fast, hint-free correct review further than a hinted/slow one', () => {
       const fastId = insertReviewItem('qa');
-      recordContentReviewEvent({reviewItemId: fastId, correct: true, reviewedAt: NOW});
+      recordContentReviewEvent({
+        reviewItemId: fastId,
+        correct: true,
+        reviewedAt: NOW,
+      });
       const fastSecond = recordContentReviewEvent({
         reviewItemId: fastId,
         correct: true,
@@ -177,7 +200,11 @@ describe('ContentRuntimeRepository', () => {
       });
 
       const hintedId = insertReviewItem('grammar');
-      recordContentReviewEvent({reviewItemId: hintedId, correct: true, reviewedAt: NOW});
+      recordContentReviewEvent({
+        reviewItemId: hintedId,
+        correct: true,
+        reviewedAt: NOW,
+      });
       const hintedSecond = recordContentReviewEvent({
         reviewItemId: hintedId,
         correct: true,
@@ -195,8 +222,14 @@ describe('ContentRuntimeRepository', () => {
     });
 
     it('returns an error for an unknown review item id', () => {
-      const result = recordContentReviewEvent({reviewItemId: 'missing', correct: true});
-      expect(result).toMatchObject({ok: false, errorCode: 'REVIEW_ITEM_NOT_FOUND'});
+      const result = recordContentReviewEvent({
+        reviewItemId: 'missing',
+        correct: true,
+      });
+      expect(result).toMatchObject({
+        ok: false,
+        errorCode: 'REVIEW_ITEM_NOT_FOUND',
+      });
     });
   });
 
@@ -204,7 +237,11 @@ describe('ContentRuntimeRepository', () => {
     it('selects only rows due at or before now, earliest first', () => {
       const dueId = insertReviewItem('vocabulary');
       const futureId = insertReviewItem('grammar');
-      recordContentReviewEvent({reviewItemId: dueId, correct: true, reviewedAt: NOW});
+      recordContentReviewEvent({
+        reviewItemId: dueId,
+        correct: true,
+        reviewedAt: NOW,
+      });
       recordContentReviewEvent({
         reviewItemId: futureId,
         correct: true,

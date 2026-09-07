@@ -12,7 +12,8 @@ export function AppScreen({style, children, ...rest}: ViewProps) {
         {backgroundColor: theme.colors.background},
         style,
       ])}
-      {...rest}>
+      {...rest}
+    >
       <View style={styles.fill}>{children}</View>
     </SafeAreaView>
   );

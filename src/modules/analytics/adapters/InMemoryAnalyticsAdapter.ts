@@ -1,4 +1,8 @@
-import type {AnalyticsAdapter, AnalyticsEventName, AnalyticsProperties} from '../types';
+import type {
+  AnalyticsAdapter,
+  AnalyticsEventName,
+  AnalyticsProperties,
+} from '../types';
 import {sanitizeAnalyticsPayload} from '../sanitizeAnalyticsPayload';
 
 export type RecordedAnalyticsEvent = {

@@ -102,9 +102,7 @@ describe('drainOutboxOnce', () => {
 
   it('draining an already-synced batch is a no-op, so the server sees each event once (VC-3)', async () => {
     seedEvent('event-1');
-    mockFetch.mockResolvedValueOnce(
-      response(successBody(['event-1'])),
-    );
+    mockFetch.mockResolvedValueOnce(response(successBody(['event-1'])));
 
     await drainOutboxOnce();
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -156,11 +154,7 @@ describe('drainOutboxOnce', () => {
 
   it('does not attempt rows that reached the attempt cap and reports stuck', async () => {
     seedEvent('event-stuck');
-    for (
-      let attempt = 0;
-      attempt < MAX_SYNC_ATTEMPTS;
-      attempt += 1
-    ) {
+    for (let attempt = 0; attempt < MAX_SYNC_ATTEMPTS; attempt += 1) {
       markSyncEventsFailed(['event-stuck'], 'network down');
     }
 

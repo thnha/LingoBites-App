@@ -54,7 +54,10 @@ themeIds.forEach(themeId => {
     // FlipCard
     {
       name: 'FlipCard: text.primary on card.background',
-      ...checkContrast(theme.colors.text.primary, theme.components.card.background),
+      ...checkContrast(
+        theme.colors.text.primary,
+        theme.components.card.background,
+      ),
     },
     {
       name: 'FlipCard: primary on card.background',
@@ -62,7 +65,10 @@ themeIds.forEach(themeId => {
     },
     {
       name: 'FlipCard: text.muted on card.background',
-      ...checkContrast(theme.colors.text.muted, theme.components.card.background),
+      ...checkContrast(
+        theme.colors.text.muted,
+        theme.components.card.background,
+      ),
     },
     {
       name: 'FlipCard: border on card.background',
@@ -80,7 +86,11 @@ themeIds.forEach(themeId => {
     console.log('### Failures:');
     failures.forEach(check => {
       console.log(`  ✗ ${check.name}`);
-      console.log(`    Ratio: ${check.ratio.toFixed(2)} (need ≥4.5 for text, ≥3 for UI components)`);
+      console.log(
+        `    Ratio: ${check.ratio.toFixed(
+          2,
+        )} (need ≥4.5 for text, ≥3 for UI components)`,
+      );
       console.log(`    FG: ${check.foreground}`);
       console.log(`    BG: ${check.background}\n`);
     });
@@ -107,5 +117,7 @@ const allPassing = themeIds.filter(id => {
 
 console.log(`Themes passing all checks: ${allPassing.join(', ') || 'none'}`);
 console.log(
-  `Themes needing fixes: ${themeIds.filter(id => !allPassing.includes(id)).join(', ')}\n`,
+  `Themes needing fixes: ${themeIds
+    .filter(id => !allPassing.includes(id))
+    .join(', ')}\n`,
 );

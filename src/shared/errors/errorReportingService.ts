@@ -3,7 +3,9 @@ import type {ErrorReportContext, ErrorReportingAdapter} from './types';
 
 let adapter: ErrorReportingAdapter = createConsoleErrorReportingAdapter();
 
-export function setErrorReportingAdapter(nextAdapter: ErrorReportingAdapter): void {
+export function setErrorReportingAdapter(
+  nextAdapter: ErrorReportingAdapter,
+): void {
   adapter = nextAdapter;
 }
 
@@ -11,7 +13,10 @@ export function resetErrorReportingAdapter(): void {
   adapter = createConsoleErrorReportingAdapter();
 }
 
-export function reportError(error: unknown, context?: ErrorReportContext): void {
+export function reportError(
+  error: unknown,
+  context?: ErrorReportContext,
+): void {
   adapter.reportError(error, context);
 }
 

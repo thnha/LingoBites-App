@@ -26,7 +26,10 @@ type Props =
 
 export function SentenceDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
-  const nav = navigation as NativeStackScreenProps<HomeStackParamList, 'SentenceDetail'>['navigation'];
+  const nav = navigation as NativeStackScreenProps<
+    HomeStackParamList,
+    'SentenceDetail'
+  >['navigation'];
   const {sentences, index, practice} = route.params;
   const sentence = sentences[index];
   const total = sentences.length;
@@ -56,7 +59,8 @@ export function SentenceDetailScreen({navigation, route}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <HandoffProgressTrack
           label={`${index + 1} / ${total}`}
           progress={progress}
@@ -69,12 +73,15 @@ export function SentenceDetailScreen({navigation, route}: Props) {
             borderBottomColor: theme.colors.accent,
             borderBottomWidth: 4,
             gap: theme.spacing.sm,
-          }}>
+          }}
+        >
           <Chip label="English" tone="accentSoft" />
           <AppText style={{lineHeight: 28}} variant="h2">
             {sentence.original}
           </AppText>
-          <View style={{backgroundColor: theme.colors.outlineVariant, height: 1}} />
+          <View
+            style={{backgroundColor: theme.colors.outlineVariant, height: 1}}
+          />
           <Chip label="Tiếng Việt" tone="coralSoft" />
           <AppText color="secondary" variant="bodyLg">
             {sentence.translation}
@@ -86,7 +93,13 @@ export function SentenceDetailScreen({navigation, route}: Props) {
 
         <SectionHeader
           title="Tách thành cụm"
-          action={<MaterialIcon color={theme.colors.text.secondary} name="info" size={20} />}
+          action={
+            <MaterialIcon
+              color={theme.colors.text.secondary}
+              name="info"
+              size={20}
+            />
+          }
         />
 
         {chunks.length === 0 ? (
@@ -112,7 +125,12 @@ export function SentenceDetailScreen({navigation, route}: Props) {
             ? hasPractice
               ? () => nav.navigate('Practice', {questions: practice})
               : undefined
-            : () => nav.navigate('SentenceDetail', {sentences, index: index + 1, practice})
+            : () =>
+                nav.navigate('SentenceDetail', {
+                  sentences,
+                  index: index + 1,
+                  practice,
+                })
         }
       />
     </AppScreen>

@@ -21,7 +21,10 @@ export type SpeakingModeInfo = {
   available: boolean;
 };
 
-const SHADOWING_ACTIVITY_TYPES = new Set(['listen_and_repeat', 'speaking_drill']);
+const SHADOWING_ACTIVITY_TYPES = new Set([
+  'listen_and_repeat',
+  'speaking_drill',
+]);
 
 export type SpeakingContentLine = {
   textEn: string;
@@ -74,7 +77,9 @@ export function getShadowingContent(): SpeakingModeContent[] {
 }
 
 /** Helper to collect content for a given mode by matching lesson slugs/keywords/activities. */
-export function getModeContentByKeywords(keywords: string[]): SpeakingModeContent[] {
+export function getModeContentByKeywords(
+  keywords: string[],
+): SpeakingModeContent[] {
   const lessons = listActivePackageLessons();
   const content: SpeakingModeContent[] = [];
   for (const lessonSummary of lessons) {
@@ -106,7 +111,13 @@ export function getModeContentByKeywords(keywords: string[]): SpeakingModeConten
 }
 
 export function getQuickAnswerContent(): SpeakingModeContent[] {
-  return getModeContentByKeywords(['clarification', 'repetition', 'quick', 'role', 'asking']);
+  return getModeContentByKeywords([
+    'clarification',
+    'repetition',
+    'quick',
+    'role',
+    'asking',
+  ]);
 }
 
 export function getStandupContent(): SpeakingModeContent[] {
@@ -114,7 +125,13 @@ export function getStandupContent(): SpeakingModeContent[] {
 }
 
 export function getAppDescriptionContent(): SpeakingModeContent[] {
-  return getModeContentByKeywords(['app', 'architecture', 'system', 'api', 'data-flow']);
+  return getModeContentByKeywords([
+    'app',
+    'architecture',
+    'system',
+    'api',
+    'data-flow',
+  ]);
 }
 
 export function getBugReportContent(): SpeakingModeContent[] {
@@ -122,10 +139,19 @@ export function getBugReportContent(): SpeakingModeContent[] {
 }
 
 export function getMockInterviewContent(): SpeakingModeContent[] {
-  return getModeContentByKeywords(['interview', 'career', 'profile', 'behavioral', 'system-design']);
+  return getModeContentByKeywords([
+    'interview',
+    'career',
+    'profile',
+    'behavioral',
+    'system-design',
+  ]);
 }
 
-const MODE_COPY: Record<SpeakingMode, {titleVi: string; descriptionVi: string}> = {
+const MODE_COPY: Record<
+  SpeakingMode,
+  {titleVi: string; descriptionVi: string}
+> = {
   shadowing: {
     titleVi: 'Lặp lại theo mẫu (Shadowing)',
     descriptionVi: 'Nghe câu mẫu, ghi âm lại và tự kiểm tra.',

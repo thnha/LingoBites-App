@@ -45,7 +45,9 @@ describe('calculateNextContentReviewState (fixed-interval schedule, REQ-26)', ()
       outcome: {correct: true},
       reviewedAt: REVIEWED_AT,
     });
-    expect(capped.intervalMinutes).toBe(CONTENT_INTERVAL_MINUTES[CONTENT_INTERVAL_MINUTES.length - 1]);
+    expect(capped.intervalMinutes).toBe(
+      CONTENT_INTERVAL_MINUTES[CONTENT_INTERVAL_MINUTES.length - 1],
+    );
     expect(capped.state).toBe('mastered');
   });
 
@@ -53,7 +55,8 @@ describe('calculateNextContentReviewState (fixed-interval schedule, REQ-26)', ()
     const result = calculateNextContentReviewState({
       itemType: 'vocabulary',
       currentState: 'mastered',
-      currentIntervalMinutes: CONTENT_INTERVAL_MINUTES[CONTENT_INTERVAL_MINUTES.length - 1],
+      currentIntervalMinutes:
+        CONTENT_INTERVAL_MINUTES[CONTENT_INTERVAL_MINUTES.length - 1],
       outcome: {correct: false},
       reviewedAt: REVIEWED_AT,
     });
@@ -92,7 +95,13 @@ describe('mastery lifecycle (REQ-25)', () => {
     seen.add(relearned.state);
 
     expect(seen).toEqual(
-      new Set<ContentMasteryState>(['new', 'learning', 'reviewing', 'mastered', 'relearning']),
+      new Set<ContentMasteryState>([
+        'new',
+        'learning',
+        'reviewing',
+        'mastered',
+        'relearning',
+      ]),
     );
   });
 
@@ -118,8 +127,14 @@ describe('generalized across item types (REQ-24, VC-5)', () => {
       reviewedAt: REVIEWED_AT,
     };
 
-    const vocabulary = calculateNextContentReviewState({itemType: 'vocabulary', ...base});
-    const dialogueTurn = calculateNextContentReviewState({itemType: 'dialogue_turn', ...base});
+    const vocabulary = calculateNextContentReviewState({
+      itemType: 'vocabulary',
+      ...base,
+    });
+    const dialogueTurn = calculateNextContentReviewState({
+      itemType: 'dialogue_turn',
+      ...base,
+    });
 
     expect(dialogueTurn).toEqual(vocabulary);
   });
@@ -143,7 +158,9 @@ describe('scoring inputs (REQ-27)', () => {
       outcome: {correct: true, hintsUsed: 1, responseTimeMs: 12000},
     });
 
-    expect(hintedAndSlow.intervalMinutes).toBeLessThan(fastNoHints.intervalMinutes);
+    expect(hintedAndSlow.intervalMinutes).toBeLessThan(
+      fastNoHints.intervalMinutes,
+    );
   });
 
   it('does not require hints/response-time signals an activity never captured', () => {

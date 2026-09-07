@@ -29,7 +29,9 @@ describe('importState', () => {
 
   it('emits a sequence of progress events to subscribers', () => {
     const events: string[] = [];
-    const unsub = subscribeImportState(state => events.push(state.current?.phase ?? 'null'));
+    const unsub = subscribeImportState(state =>
+      events.push(state.current?.phase ?? 'null'),
+    );
     startImport({
       phase: 'downloading',
       ratio: null,
@@ -107,7 +109,9 @@ describe('importState', () => {
 
   it('stops emitting to unsubscribed listeners', () => {
     const events: string[] = [];
-    const unsub = subscribeImportState(state => events.push(state.current?.phase ?? 'null'));
+    const unsub = subscribeImportState(state =>
+      events.push(state.current?.phase ?? 'null'),
+    );
     reportProgress({
       phase: 'downloading',
       ratio: null,

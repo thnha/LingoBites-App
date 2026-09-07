@@ -1,5 +1,5 @@
-import { getAppConfig } from '../../shared/api/appConfig';
-import type { ChapterAudioAsset } from '../../shared/db/types';
+import {getAppConfig} from '../../shared/api/appConfig';
+import type {ChapterAudioAsset} from '../../shared/db/types';
 
 export type ChapterAudioManifest = {
   chapterId: string;
@@ -7,7 +7,7 @@ export type ChapterAudioManifest = {
 };
 
 export type ChapterAudioManifestResult =
-  | { ok: true; manifest: ChapterAudioManifest }
+  | {ok: true; manifest: ChapterAudioManifest}
   | {
       ok: false;
       errorCode: 'NETWORK_ERROR' | 'SERVER_ERROR' | 'INVALID_MANIFEST';
@@ -60,7 +60,7 @@ function parseManifest(
     }
     assets.push(asset);
   }
-  return { chapterId, assets };
+  return {chapterId, assets};
 }
 
 export function buildAudioManifestUrl(
@@ -81,14 +81,14 @@ export async function fetchChapterAudioManifest(
   chapterId: string,
   fetchFn: typeof fetch = fetch,
 ): Promise<ChapterAudioManifestResult> {
-  const { apiBaseUrl } = getAppConfig();
+  const {apiBaseUrl} = getAppConfig();
   const url = buildAudioManifestUrl(apiBaseUrl, chapterId);
 
   let response: Response;
   try {
     response = await fetchFn(url, {
       method: 'GET',
-      headers: { Accept: 'application/json' },
+      headers: {Accept: 'application/json'},
     });
   } catch {
     return {
@@ -126,5 +126,5 @@ export async function fetchChapterAudioManifest(
     };
   }
 
-  return { ok: true, manifest };
+  return {ok: true, manifest};
 }

@@ -22,12 +22,22 @@ export function RolePlayCard({data, onPlayAudio, onComplete, onSkip}: Props) {
 
   return (
     <View style={{gap: theme.spacing.lg}}>
-      {data.instructionsVi ? <AppText color="secondary">{data.instructionsVi}</AppText> : null}
+      {data.instructionsVi ? (
+        <AppText color="secondary">{data.instructionsVi}</AppText>
+      ) : null}
       {data.turns.map((turn, index) => (
         <AppCard key={turn.id} style={{gap: theme.spacing.sm}}>
-          <AppText color="secondary" variant="label">{`Người ${turn.speaker}`}</AppText>
+          <AppText
+            color="secondary"
+            variant="label"
+          >{`Người ${turn.speaker}`}</AppText>
           <View
-            style={{alignItems: 'center', flexDirection: 'row', gap: theme.spacing.sm}}>
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: theme.spacing.sm,
+            }}
+          >
             <AppText variant="h3">{turn.text_en}</AppText>
             <IconButton
               accessibilityLabel="Nghe phát âm"
@@ -39,7 +49,9 @@ export function RolePlayCard({data, onPlayAudio, onComplete, onSkip}: Props) {
           <AppText color="primary">{turn.text_vi}</AppText>
           {index <= confirmedIndex ? (
             <AppButton
-              onPress={() => setConfirmedIndex(prev => Math.max(prev, index + 1))}
+              onPress={() =>
+                setConfirmedIndex(prev => Math.max(prev, index + 1))
+              }
               title="Đã luyện tập lượt này"
               variant="secondary"
             />

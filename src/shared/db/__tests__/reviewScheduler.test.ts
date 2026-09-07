@@ -4,7 +4,7 @@ import {
   calculateNextReviewState,
   selectDueReviewCards,
 } from '../reviewScheduler';
-import type { ReviewScheduleRecord } from '../types';
+import type {ReviewScheduleRecord} from '../types';
 
 function schedule(
   overrides: Partial<ReviewScheduleRecord>,
@@ -85,7 +85,7 @@ describe('selectDueReviewCards', () => {
         cardId: 'due-today',
         nextReviewAt: '2026-08-17T23:59:59.000Z',
       }),
-      schedule({ cardId: 'future', nextReviewAt: '2026-08-18T00:00:00.000Z' }),
+      schedule({cardId: 'future', nextReviewAt: '2026-08-18T00:00:00.000Z'}),
     ];
 
     const due = selectDueReviewCards(cards, {

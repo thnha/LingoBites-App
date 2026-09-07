@@ -64,7 +64,9 @@ describe('HomeScreen daily review widget', () => {
     const tree = await renderHome(nav);
 
     expect(tree.root.findByProps({testID: 'daily-review-widget'})).toBeTruthy();
-    expect(tree.root.findAllByProps({children: '1 thẻ đến hạn hôm nay'}).length).toBeGreaterThan(0);
+    expect(
+      tree.root.findAllByProps({children: '1 thẻ đến hạn hôm nay'}).length,
+    ).toBeGreaterThan(0);
 
     await act(async () => {
       tree.root.findByProps({testID: 'daily-review-widget'}).props.onPress();
@@ -75,10 +77,14 @@ describe('HomeScreen daily review widget', () => {
 
   it('hides the widget when no cards are due or the flag is disabled', async () => {
     const noDueTree = await renderHome();
-    expect(noDueTree.root.findAllByProps({testID: 'daily-review-widget'})).toHaveLength(0);
+    expect(
+      noDueTree.root.findAllByProps({testID: 'daily-review-widget'}),
+    ).toHaveLength(0);
 
     seedDueCard();
     const flagOffTree = await renderHome(navigation(), 'close-beta-1');
-    expect(flagOffTree.root.findAllByProps({testID: 'daily-review-widget'})).toHaveLength(0);
+    expect(
+      flagOffTree.root.findAllByProps({testID: 'daily-review-widget'}),
+    ).toHaveLength(0);
   });
 });

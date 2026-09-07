@@ -104,7 +104,10 @@ describe('OCRReviewScreen', () => {
       tree = ReactTestRenderer.create(
         <FeatureFlagProvider>
           <AppThemeProvider>
-            <OCRReviewScreen navigation={navigation} route={routeWithUndefinedText} />
+            <OCRReviewScreen
+              navigation={navigation}
+              route={routeWithUndefinedText}
+            />
           </AppThemeProvider>
         </FeatureFlagProvider>,
       );

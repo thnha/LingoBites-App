@@ -25,7 +25,11 @@ function setup() {
 describe('classifySpeakingAttempt', () => {
   it('returns null for a strong attempt — no error is captured', () => {
     expect(
-      classifySpeakingAttempt({taskCompleted: true, keyPhraseUsed: true, responseTimeMs: 1000}),
+      classifySpeakingAttempt({
+        taskCompleted: true,
+        keyPhraseUsed: true,
+        responseTimeMs: 1000,
+      }),
     ).toBeNull();
   });
 

@@ -101,7 +101,9 @@ describe('simulateAnalysisJob', () => {
           expect(stage.status).toBe('completed');
         } else if (stageIndex === index) {
           const isFinalSnapshot = index === snapshots.length - 1;
-          expect(stage.status).toBe(isFinalSnapshot ? 'completed' : 'processing');
+          expect(stage.status).toBe(
+            isFinalSnapshot ? 'completed' : 'processing',
+          );
         } else {
           expect(stage.status).toBe('pending');
         }

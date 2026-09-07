@@ -24,7 +24,9 @@ describe('recordingService', () => {
     const result = await startRecording('shadowing', 'rec-1');
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.filePath).toContain('/mock/Documents/LingoBitesRecordings/shadowing/rec-1.m4a');
+      expect(result.filePath).toContain(
+        '/mock/Documents/LingoBitesRecordings/shadowing/rec-1.m4a',
+      );
     }
   });
 
@@ -32,7 +34,10 @@ describe('recordingService', () => {
     const start = await startRecording('shadowing', 'rec-1');
     expect(start.ok).toBe(true);
     const startedAtMs = Date.now() - 1500;
-    const stop = await stopRecording((start as {filePath: string}).filePath, startedAtMs);
+    const stop = await stopRecording(
+      (start as {filePath: string}).filePath,
+      startedAtMs,
+    );
     expect(stop.ok).toBe(true);
     if (stop.ok) {
       expect(stop.durationMs).toBeGreaterThanOrEqual(0);
@@ -41,13 +46,17 @@ describe('recordingService', () => {
 
   it('plays back an existing recording', async () => {
     (RNFS.exists as jest.Mock).mockResolvedValue(true);
-    const result = await playRecording('/mock/Documents/LingoBitesRecordings/shadowing/rec-1.m4a');
+    const result = await playRecording(
+      '/mock/Documents/LingoBitesRecordings/shadowing/rec-1.m4a',
+    );
     expect(result.ok).toBe(true);
   });
 
   it('reports NOT_FOUND when the file no longer exists on disk', async () => {
     (RNFS.exists as jest.Mock).mockResolvedValue(false);
-    const result = await playRecording('/mock/Documents/LingoBitesRecordings/shadowing/missing.m4a');
+    const result = await playRecording(
+      '/mock/Documents/LingoBitesRecordings/shadowing/missing.m4a',
+    );
     expect(result).toEqual({
       ok: false,
       errorCode: 'NOT_FOUND',
@@ -71,6 +80,8 @@ describe('recordingService', () => {
 
   it('stopPlayback and deleteRecordingFile never throw', async () => {
     await expect(stopPlayback()).resolves.toBeUndefined();
-    await expect(deleteRecordingFile('/mock/Documents/x.m4a')).resolves.toBeUndefined();
+    await expect(
+      deleteRecordingFile('/mock/Documents/x.m4a'),
+    ).resolves.toBeUndefined();
   });
 });

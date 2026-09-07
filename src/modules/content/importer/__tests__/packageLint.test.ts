@@ -12,7 +12,11 @@ import {
   validateManifestShape,
   RUNTIME_CONTENT_SCHEMA_VERSION,
 } from '../packageLint';
-import {lessonFileName, makeLesson, makeManifest} from '../_fixtures/testLesson';
+import {
+  lessonFileName,
+  makeLesson,
+  makeManifest,
+} from '../_fixtures/testLesson';
 
 describe('packageLint', () => {
   it('accepts a valid manifest + lesson pair', () => {
@@ -46,7 +50,10 @@ describe('packageLint', () => {
   });
 
   it('rejects grammar with no speaking/listening tie (LNT-004)', () => {
-    const lesson = makeLesson({includeGrammar: true, emptyGrammarActions: true});
+    const lesson = makeLesson({
+      includeGrammar: true,
+      emptyGrammarActions: true,
+    });
     const manifest = makeManifest(lesson);
     const result = lintContentPackage(manifest, [lesson]);
     expect(result.ok).toBe(false);

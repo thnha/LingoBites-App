@@ -12,7 +12,11 @@ import {getLessonAudioAssets} from '../../../shared/db/ContentRuntimeRepository'
 import {insertSpeakingRecording} from '../../../shared/db/SpeakingRepository';
 import {playContentAudio} from '../../content/runtime/contentAudioPlayer';
 import {captureSpeakingErrorIfNeeded} from '../errorNotebookService';
-import {playRecording, startRecording, stopRecording} from '../recordingService';
+import {
+  playRecording,
+  startRecording,
+  stopRecording,
+} from '../recordingService';
 import {getShadowingContent} from '../speakingModes';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'SpeakingShadowing'>;
@@ -113,9 +117,14 @@ export function SpeakingShadowingActivity({navigation}: Props) {
   if (!lesson || !line) {
     return (
       <AppScreen>
-        <ScreenHeader title="Lặp lại theo mẫu" onBack={() => navigation.goBack()} />
+        <ScreenHeader
+          title="Lặp lại theo mẫu"
+          onBack={() => navigation.goBack()}
+        />
         <View style={{padding: theme.gutter}}>
-          <AppText color="secondary">Chưa có nội dung lặp lại theo mẫu nào được cài đặt.</AppText>
+          <AppText color="secondary">
+            Chưa có nội dung lặp lại theo mẫu nào được cài đặt.
+          </AppText>
         </View>
       </AppScreen>
     );
@@ -123,7 +132,10 @@ export function SpeakingShadowingActivity({navigation}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader title="Lặp lại theo mẫu" onBack={() => navigation.goBack()} />
+      <ScreenHeader
+        title="Lặp lại theo mẫu"
+        onBack={() => navigation.goBack()}
+      />
       <ScrollView
         contentContainerStyle={{
           gap: theme.spacing.lg,
@@ -131,9 +143,16 @@ export function SpeakingShadowingActivity({navigation}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <AppCard style={{gap: theme.spacing.sm}}>
-          <View style={{alignItems: 'center', flexDirection: 'row', gap: theme.spacing.sm}}>
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: theme.spacing.sm,
+            }}
+          >
             <AppText variant="h3">{line.textEn}</AppText>
             <IconButton
               accessibilityLabel="Nghe câu mẫu"
@@ -147,7 +166,9 @@ export function SpeakingShadowingActivity({navigation}: Props) {
 
         <AppCard style={{alignItems: 'center', gap: theme.spacing.sm}}>
           <IconButton
-            accessibilityLabel={phase === 'recording' ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'}
+            accessibilityLabel={
+              phase === 'recording' ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'
+            }
             icon={phase === 'recording' ? 'circle' : 'mic'}
             onPress={handleToggleRecording}
             size={64}
@@ -198,8 +219,11 @@ export function SpeakingShadowingActivity({navigation}: Props) {
                 minHeight: 48,
                 justifyContent: 'center',
                 opacity: pressed ? theme.states.pressedOpacity : 1,
-              })}>
-              <AppText style={{color: theme.colors.accentInk, fontWeight: '700'}}>
+              })}
+            >
+              <AppText
+                style={{color: theme.colors.accentInk, fontWeight: '700'}}
+              >
                 Hoàn thành
               </AppText>
             </Pressable>
@@ -232,7 +256,12 @@ function ChecklistRow({
       accessibilityRole="checkbox"
       accessibilityState={{checked}}
       onPress={onToggle}
-      style={{alignItems: 'center', flexDirection: 'row', gap: theme.spacing.sm}}>
+      style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: theme.spacing.sm,
+      }}
+    >
       <IconButton
         accessibilityLabel={label}
         icon="check_circle"

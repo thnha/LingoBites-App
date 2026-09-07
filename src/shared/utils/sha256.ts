@@ -49,8 +49,14 @@ export function sha256HexBytes(bytes: Uint8Array): string {
       w[i] = chunk.getUint32(i * 4, false);
     }
     for (let i = 16; i < 64; i += 1) {
-      const s0 = rightRotate(w[i - 15], 7) ^ rightRotate(w[i - 15], 18) ^ (w[i - 15] >>> 3);
-      const s1 = rightRotate(w[i - 2], 17) ^ rightRotate(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+      const s0 =
+        rightRotate(w[i - 15], 7) ^
+        rightRotate(w[i - 15], 18) ^
+        (w[i - 15] >>> 3);
+      const s1 =
+        rightRotate(w[i - 2], 17) ^
+        rightRotate(w[i - 2], 19) ^
+        (w[i - 2] >>> 10);
       w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
     }
 

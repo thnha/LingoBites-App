@@ -79,7 +79,8 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
                 opacity: disabled ? theme.states.disabledOpacity : 1,
               },
             ]}
-            testID={`rating-${option.rating}`}>
+            testID={`rating-${option.rating}`}
+          >
             <MaterialIcon color={tone.ink} name={option.icon} size={22} />
             <AppText style={{color: tone.ink}} variant="label">
               {t(option.labelKey)}
@@ -101,9 +102,16 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
             opacity: disabled ? theme.states.disabledOpacity : 1,
           },
         ]}
-        testID="rating-skip">
-        <MaterialIcon color={theme.colors.text.secondary} name="chevron_right" size={22} />
-        <AppText color="secondary" variant="label">{t('rating.skip_label')}</AppText>
+        testID="rating-skip"
+      >
+        <MaterialIcon
+          color={theme.colors.text.secondary}
+          name="chevron_right"
+          size={22}
+        />
+        <AppText color="secondary" variant="label">
+          {t('rating.skip_label')}
+        </AppText>
       </Pressable>
     </View>
   );

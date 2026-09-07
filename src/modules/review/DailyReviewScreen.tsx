@@ -52,7 +52,9 @@ function FlashcardFace({
   if (side === 'back') {
     return (
       <View style={styles.cardFace}>
-        <AppText style={styles.word} variant="h2">{card.word}</AppText>
+        <AppText style={styles.word} variant="h2">
+          {card.word}
+        </AppText>
         <AppText color="primary" style={styles.meaning} variant="h3">
           {card.meaningVi}
         </AppText>
@@ -67,7 +69,9 @@ function FlashcardFace({
 
   return (
     <View style={styles.cardFace}>
-      <AppText style={styles.word} variant="h2">{card.word}</AppText>
+      <AppText style={styles.word} variant="h2">
+        {card.word}
+      </AppText>
       {card.wordType || card.ipa ? (
         <AppText color="secondary">
           {card.wordType ? `[${card.wordType}] ` : ''}
@@ -201,7 +205,8 @@ export function DailyReviewScreen({
             accessibilityRole="button"
             onPress={handleClose}
             style={styles.closeButton}
-            testID="review-close">
+            testID="review-close"
+          >
             <MaterialIcon name="close" size={22} />
           </Pressable>
         </View>
@@ -230,7 +235,8 @@ export function DailyReviewScreen({
             styles.content,
             {paddingHorizontal: theme.gutter},
           ]}
-          testID="review-summary">
+          testID="review-summary"
+        >
           <AppText variant="h1">{t('review.summary_title')}</AppText>
           {carryOverCount > 0 ? (
             <Banner
@@ -273,10 +279,12 @@ export function DailyReviewScreen({
                 style={[
                   styles.xpRow,
                   {backgroundColor: theme.colors.accentSoft},
-                ]}>
+                ]}
+              >
                 <AppText
                   style={[styles.xpText, {color: theme.colors.primary}]}
-                  testID="summary-xp-earned">
+                  testID="summary-xp-earned"
+                >
                   {t('review.summary_xp', {xp: sessionXpEarned})}
                 </AppText>
               </View>
@@ -296,7 +304,9 @@ export function DailyReviewScreen({
     <AppScreen>
       <View style={[styles.header, {paddingHorizontal: theme.gutter}]}>
         <View>
-          <AppText color="secondary" variant="label">{t('review.title')}</AppText>
+          <AppText color="secondary" variant="label">
+            {t('review.title')}
+          </AppText>
           <AppText testID="review-progress" variant="h2">
             {`${currentIndex + 1} / ${sessionCards.length}`}
           </AppText>
@@ -306,7 +316,8 @@ export function DailyReviewScreen({
           accessibilityRole="button"
           onPress={() => navigation?.goBack?.()}
           style={styles.closeButton}
-          testID="review-close">
+          testID="review-close"
+        >
           <MaterialIcon name="close" size={22} />
         </Pressable>
       </View>
@@ -315,7 +326,8 @@ export function DailyReviewScreen({
         contentContainerStyle={[
           styles.content,
           {paddingHorizontal: theme.gutter},
-        ]}>
+        ]}
+      >
         {carryOverCount > 0 ? (
           <Banner
             message={t('review.carry_over', {count: carryOverCount})}

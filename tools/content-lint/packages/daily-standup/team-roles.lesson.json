@@ -6,17 +6,12 @@
   "title_vi": "Thảo luận vai trò và trách nhiệm kỹ thuật",
   "blurb_vi": "Mô tả ai làm gì trong dự án (Dev, QA, DevOps, PO, Scrum Master) và phân chia công việc.",
   "level": "A2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Mô tả nhiệm vụ của các vai trò trong nhóm bằng tiếng Anh.",
   "situation_vi": "Họp phân công công việc đầu dự án.",
   "learner_role_vi": "Thành viên nhóm giải thích sự phân công công việc.",
-  "prerequisite_lesson_slugs": [
-    "confirming-requirements"
-  ],
+  "prerequisite_lesson_slugs": ["confirming-requirements"],
   "pronunciation_focus_vi": "Phát âm chuẩn tên các vai trò: Tech Lead, Product Owner, QA Engineer, DevOps.",
   "final_speaking_task_vi": "Giới thiệu phân công vai trò trong sprint mới.",
   "pass_conditions_vi": "Mô tả chính xác trách nhiệm của ít nhất 3 vai trò.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Đội QA đảm nhận kiểm thử toàn trình\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "0100385928077fd2"
-      ],
-      "srs_ref_ids": [
-        "905637f0f19aadd2"
-      ],
+      "audio_ref_ids": ["0100385928077fd2"],
+      "srs_ref_ids": ["905637f0f19aadd2"],
       "dialogue_turns": [
         {
           "id": "4e48935f3b0ab7a0",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "905637f0f19aadd2"
-        ],
+        "re_present_refs": ["905637f0f19aadd2"],
         "tip_vi": "Hãy nhớ cụm từ \"The QA team handles end-to-end testing\" nghĩa là \"Đội QA đảm nhận kiểm thử toàn trình\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"DevOps quản lý quy trình triển khai CI/CD\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "c03b94ec6614ae08"
-      ],
-      "srs_ref_ids": [
-        "bc024206534bd66e"
-      ],
+      "audio_ref_ids": ["c03b94ec6614ae08"],
+      "srs_ref_ids": ["bc024206534bd66e"],
       "dialogue_turns": [
         {
           "id": "26264dc8e39fe302",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "bc024206534bd66e"
-        ],
+        "re_present_refs": ["bc024206534bd66e"],
         "tip_vi": "Hãy nhớ cụm từ \"DevOps manages our CI/CD deployment pipeline\" nghĩa là \"DevOps quản lý quy trình triển khai CI/CD\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Product Owner sắp xếp thứ tự ưu tiên backlog\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "a6d23d4c387d3733"
-      ],
-      "srs_ref_ids": [
-        "9a7e97868d088d50"
-      ],
+      "audio_ref_ids": ["a6d23d4c387d3733"],
+      "srs_ref_ids": ["9a7e97868d088d50"],
       "dialogue_turns": [
         {
           "id": "297ac089bb296f4f",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "9a7e97868d088d50"
-        ],
+        "re_present_refs": ["9a7e97868d088d50"],
         "tip_vi": "Hãy nhớ cụm từ \"The Product Owner prioritizes the backlog\" nghĩa là \"Product Owner sắp xếp thứ tự ưu tiên backlog\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tech Lead của chúng tôi duyệt các quyết định kiến trúc\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "0758754c9d4896d0"
-      ],
-      "srs_ref_ids": [
-        "04bb9e5c4865140b"
-      ],
+      "audio_ref_ids": ["0758754c9d4896d0"],
+      "srs_ref_ids": ["04bb9e5c4865140b"],
       "dialogue_turns": [
         {
           "id": "436f97b27a599ffc",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "04bb9e5c4865140b"
-        ],
+        "re_present_refs": ["04bb9e5c4865140b"],
         "tip_vi": "Hãy nhớ cụm từ \"Our Tech Lead reviews architectural decisions\" nghĩa là \"Tech Lead của chúng tôi duyệt các quyết định kiến trúc\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Ai đang phụ trách thẻ tính năng này?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "af4e1b3e8518bd36"
-      ],
-      "srs_ref_ids": [
-        "8228e7f2b156e754"
-      ],
+      "audio_ref_ids": ["af4e1b3e8518bd36"],
+      "srs_ref_ids": ["8228e7f2b156e754"],
       "dialogue_turns": [
         {
           "id": "cf5fbc52ced1234a",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "8228e7f2b156e754"
-        ],
+        "re_present_refs": ["8228e7f2b156e754"],
         "tip_vi": "Hãy nhớ cụm từ \"Who is owning this feature ticket?\" nghĩa là \"Ai đang phụ trách thẻ tính năng này?\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi cần phối hợp với thiết kế UI/UX\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "652838cbb9097a25"
-      ],
-      "srs_ref_ids": [
-        "1a533d3fed218a49"
-      ],
+      "audio_ref_ids": ["652838cbb9097a25"],
+      "srs_ref_ids": ["1a533d3fed218a49"],
       "dialogue_turns": [
         {
           "id": "e6a697b880935180",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "1a533d3fed218a49"
-        ],
+        "re_present_refs": ["1a533d3fed218a49"],
         "tip_vi": "Hãy nhớ cụm từ \"I need to collaborate with the UI/UX designer\" nghĩa là \"Tôi cần phối hợp với thiết kế UI/UX\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ bàn giao cái này cho QA sau khi làm xong\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "d5035615fde26a30"
-      ],
-      "srs_ref_ids": [
-        "6a6d2097443b4671"
-      ],
+      "audio_ref_ids": ["d5035615fde26a30"],
+      "srs_ref_ids": ["6a6d2097443b4671"],
       "dialogue_turns": [
         {
           "id": "c2ce847dd1d5aafc",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "6a6d2097443b4671"
-        ],
+        "re_present_refs": ["6a6d2097443b4671"],
         "tip_vi": "Hãy nhớ cụm từ \"I will hand this over to QA once built\" nghĩa là \"Tôi sẽ bàn giao cái này cho QA sau khi làm xong\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi hoạt động như một nhóm đa chức năng\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "d7a285c92c1073ff"
-      ],
-      "srs_ref_ids": [
-        "be9cbba9e4e0ed4e"
-      ],
+      "audio_ref_ids": ["d7a285c92c1073ff"],
+      "srs_ref_ids": ["be9cbba9e4e0ed4e"],
       "dialogue_turns": [
         {
           "id": "2a7fd379f3128950",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "be9cbba9e4e0ed4e"
-        ],
+        "re_present_refs": ["be9cbba9e4e0ed4e"],
         "tip_vi": "Hãy nhớ cụm từ \"We operate as a cross-functional team\" nghĩa là \"Chúng tôi hoạt động như một nhóm đa chức năng\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Thảo luận vai trò và trách nhiệm kỹ thuật",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "The QA team handles end-to-end testing",

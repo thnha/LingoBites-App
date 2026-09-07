@@ -1,7 +1,7 @@
-import { featureDependencies } from '../feature-dependencies';
-import { featureRegistry } from '../feature-registry';
-import { getReleaseConfig } from '../release-manifest';
-import { validateReleaseConfig } from '../validate-release-config';
+import {featureDependencies} from '../feature-dependencies';
+import {featureRegistry} from '../feature-registry';
+import {getReleaseConfig} from '../release-manifest';
+import {validateReleaseConfig} from '../validate-release-config';
 
 describe('validateReleaseConfig', () => {
   it('accepts close-beta-1 preset', () => {

@@ -22,7 +22,8 @@ export function ListRow({label, value, onPress, accessibilityLabel}: Props) {
         justifyContent: 'space-between',
         minHeight: 48,
         paddingVertical: theme.spacing.sm,
-      }}>
+      }}
+    >
       <AppText variant="label">{label}</AppText>
       {value ? <AppText color="secondary">{value}</AppText> : null}
     </View>
@@ -36,7 +37,8 @@ export function ListRow({label, value, onPress, accessibilityLabel}: Props) {
     <Pressable
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityRole="button"
-      onPress={onPress}>
+      onPress={onPress}
+    >
       {content}
     </Pressable>
   );

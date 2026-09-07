@@ -26,7 +26,8 @@ export function QuizOption({label, selected = false, onPress}: Props) {
         justifyContent: 'center',
         paddingHorizontal: theme.spacing.lg,
         paddingVertical: theme.spacing.sm,
-      }}>
+      }}
+    >
       <AppText color={selected ? 'inverse' : 'primary'}>{label}</AppText>
     </Pressable>
   );

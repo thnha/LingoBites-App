@@ -16,15 +16,14 @@ describe('zipReader (sync / stored)', () => {
   it('extracts entries from a stored-method ZIP', () => {
     const zip = buildStoredZip([
       ['manifest.json', new TextEncoder().encode('{"hello":"world"}')],
-      [
-        'lessons/one.json',
-        new TextEncoder().encode('{"id":"one"}'),
-      ],
+      ['lessons/one.json', new TextEncoder().encode('{"id":"one"}')],
     ]);
     const {entries} = extractZipSync(zip);
     expect(entries).toHaveLength(2);
     const byName = new Map(entries.map(e => [e.name, e]));
-    expect(decode(byName.get('manifest.json')!.bytes)).toBe('{"hello":"world"}');
+    expect(decode(byName.get('manifest.json')!.bytes)).toBe(
+      '{"hello":"world"}',
+    );
     expect(decode(byName.get('lessons/one.json')!.bytes)).toBe('{"id":"one"}');
     expect(byName.get('manifest.json')!.method).toBe(0);
   });

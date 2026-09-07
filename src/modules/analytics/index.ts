@@ -13,8 +13,4 @@ export {
 } from './analyticsService';
 export {getTextLengthBucket, type TextLengthBucket} from './textLengthBucket';
 export {sanitizeAnalyticsPayload} from './sanitizeAnalyticsPayload';
-export type {
-  AnalyticsAdapter,
-  AnalyticsEventName,
-  InputMethod,
-} from './types';
+export type {AnalyticsAdapter, AnalyticsEventName, InputMethod} from './types';

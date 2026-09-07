@@ -1,9 +1,6 @@
-import { createRequestId } from '../api/requestId';
-import { getDatabase } from './database';
-import type {
-  GamificationEventInput,
-  GamificationEventRecord,
-} from './types';
+import {createRequestId} from '../api/requestId';
+import {getDatabase} from './database';
+import type {GamificationEventInput, GamificationEventRecord} from './types';
 
 type GamificationEventRow = {
   id: string;
@@ -26,7 +23,7 @@ function mapGamificationEventRow(
 }
 
 function rowsToRecords(result: {
-  rows?: { length: number; item: (index: number) => unknown };
+  rows?: {length: number; item: (index: number) => unknown};
 }): GamificationEventRecord[] {
   const rows = result.rows;
   const items: GamificationEventRecord[] = [];
@@ -34,7 +31,9 @@ function rowsToRecords(result: {
     return items;
   }
   for (let index = 0; index < rows.length; index += 1) {
-    items.push(mapGamificationEventRow(rows.item(index) as GamificationEventRow));
+    items.push(
+      mapGamificationEventRow(rows.item(index) as GamificationEventRow),
+    );
   }
   return items;
 }
@@ -60,7 +59,7 @@ export function insertGamificationEvent(
       input.createdAt,
     ],
   );
-  return { id, ...input };
+  return {id, ...input};
 }
 
 /** All stored gamification events, oldest first. Used for state derivation. */

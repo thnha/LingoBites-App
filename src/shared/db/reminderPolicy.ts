@@ -59,10 +59,7 @@ export function computeReminderPlan({
   const toSchedule: UpcomingReviewReminder[] = [];
   for (const reminder of upcoming) {
     const current = pendingByCard.get(reminder.cardId);
-    if (
-      current === undefined ||
-      current.dueAt !== reminder.dueAt
-    ) {
+    if (current === undefined || current.dueAt !== reminder.dueAt) {
       toSchedule.push(reminder);
     }
   }
@@ -74,7 +71,7 @@ export function computeReminderPlan({
     .filter(item => !upcomingByKey.has(matchingKey(item.cardId, item.dueAt)))
     .map(item => item.cardId);
 
-  return { toSchedule, toCancel };
+  return {toSchedule, toCancel};
 }
 
 /** Copy shown by the scheduled local notification. */

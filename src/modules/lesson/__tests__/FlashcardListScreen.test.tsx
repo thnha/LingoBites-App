@@ -16,7 +16,9 @@ const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
 
 async function renderScreen(
   ui: React.ReactElement,
-  releaseName: 'situation-learning-release' | 'close-beta-1' = 'situation-learning-release',
+  releaseName:
+    | 'situation-learning-release'
+    | 'close-beta-1' = 'situation-learning-release',
 ) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
@@ -49,10 +51,7 @@ describe('FlashcardListScreen', () => {
 
   it('renders disabled error card when reviewSystem feature flag is disabled', async () => {
     // 'close-beta-1' release config has reviewSystem = false
-    const tree = await renderScreen(
-      <FlashcardListScreen />,
-      'close-beta-1',
-    );
+    const tree = await renderScreen(<FlashcardListScreen />, 'close-beta-1');
 
     const errorCards = tree.root.findAllByProps({
       message: 'Tính năng ôn tập hiện chưa được bật.',
@@ -132,9 +131,7 @@ describe('FlashcardListScreen', () => {
       params: {lessonId: lesson2Res.lessonId},
     } as React.ComponentProps<typeof FlashcardListScreen>['route'];
 
-    const tree = await renderScreen(
-      <FlashcardListScreen route={route} />,
-    );
+    const tree = await renderScreen(<FlashcardListScreen route={route} />);
 
     const cardItem1 = tree.root.findAllByProps({
       accessibilityLabel: `Flashcard ${vocab1.word}`,

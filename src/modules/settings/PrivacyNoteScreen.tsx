@@ -19,7 +19,9 @@ import {
 export function PrivacyNoteScreen() {
   const {theme} = useAppTheme();
   const navigation =
-    useNavigation<NativeStackNavigationProp<ProfileStackParamList, 'PrivacyNote'>>();
+    useNavigation<
+      NativeStackNavigationProp<ProfileStackParamList, 'PrivacyNote'>
+    >();
 
   return (
     <AppScreen>
@@ -31,7 +33,8 @@ export function PrivacyNoteScreen() {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <AppCard style={{gap: theme.spacing.sm}}>
           <SectionTitle icon="shield" title="Dữ liệu bạn cung cấp" />
           <AppText color="secondary">{PRIVACY_NOTE_BODY}</AppText>

@@ -1,11 +1,11 @@
-import { createRequestId } from '../../shared/api/requestId';
-import { insertGamificationEvent } from '../../shared/db/GamificationRepository';
+import {createRequestId} from '../../shared/api/requestId';
+import {insertGamificationEvent} from '../../shared/db/GamificationRepository';
 import {
   ON_TIME_WATER_POINTS,
   isOnTimeReview,
   sessionXp,
 } from '../../shared/db/gamificationPolicy';
-import type { ReviewRating } from '../../shared/db/types';
+import type {ReviewRating} from '../../shared/db/types';
 
 /**
  * One completed review session as seen by the engagement layer (REQ-11, ADR-4).
@@ -78,7 +78,7 @@ export function startReviewSession(): ReviewSession {
     finished = true;
 
     try {
-      const counts = { remembered: 0, forgot: 0 };
+      const counts = {remembered: 0, forgot: 0};
       for (const outcome of outcomes) {
         counts[outcome.rating] += 1;
       }

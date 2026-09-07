@@ -72,14 +72,30 @@ export function ContentLessonListScreen({navigation}: Props) {
         keyExtractor={item => item.id}
         ListEmptyComponent={
           loading ? (
-            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 32}}>
+            <View
+              style={{
+                alignItems: 'center',
+                gap: theme.spacing.md,
+                paddingVertical: 32,
+              }}
+            >
               <ActivityIndicator color={theme.colors.primary} size="large" />
               <AppText color="secondary">Đang nạp gói bài học…</AppText>
             </View>
           ) : error ? (
-            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 32}}>
+            <View
+              style={{
+                alignItems: 'center',
+                gap: theme.spacing.md,
+                paddingVertical: 32,
+              }}
+            >
               <Medallion label="⚠️" />
-              <AppText color="danger" style={{textAlign: 'center'}} variant="h3">
+              <AppText
+                color="danger"
+                style={{textAlign: 'center'}}
+                variant="h3"
+              >
                 Không thể chuẩn bị nội dung bài học
               </AppText>
               <AppText color="secondary" style={{textAlign: 'center'}}>
@@ -89,11 +105,16 @@ export function ContentLessonListScreen({navigation}: Props) {
                 accessibilityLabel="Thử lại"
                 onPress={loadLessons}
                 title="Thử lại"
-                tone="primary"
               />
             </View>
           ) : (
-            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 32}}>
+            <View
+              style={{
+                alignItems: 'center',
+                gap: theme.spacing.md,
+                paddingVertical: 32,
+              }}
+            >
               <Medallion label="📦" />
               <AppText color="secondary" style={{textAlign: 'center'}}>
                 Chưa có bài học nào được nhập vào máy.
@@ -107,7 +128,8 @@ export function ContentLessonListScreen({navigation}: Props) {
             onPress={() =>
               navigation.navigate('ContentLessonDetail', {lessonId: item.id})
             }
-            testID={`content-lesson-${item.id}`}>
+            testID={`content-lesson-${item.id}`}
+          >
             <AppCard style={{gap: theme.spacing.xs}}>
               <AppText variant="h3">{item.titleVi}</AppText>
               <AppText color="secondary">{item.blurbVi}</AppText>
@@ -121,4 +143,3 @@ export function ContentLessonListScreen({navigation}: Props) {
     </AppScreen>
   );
 }
-

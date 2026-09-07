@@ -1,14 +1,14 @@
-import React, { createContext, useMemo } from 'react';
-import { featureDependencies } from './feature-dependencies';
-import { featureRegistry } from './feature-registry';
-import type { FeatureKey } from './feature-registry';
+import React, {createContext, useMemo} from 'react';
+import {featureDependencies} from './feature-dependencies';
+import {featureRegistry} from './feature-registry';
+import type {FeatureKey} from './feature-registry';
 import {
   DEFAULT_RELEASE_NAME,
   getReleaseConfig,
   type ReleaseConfigName,
 } from './release-manifest';
-import type { ReleaseConfig } from './types';
-import { validateReleaseConfig } from './validate-release-config';
+import type {ReleaseConfig} from './types';
+import {validateReleaseConfig} from './validate-release-config';
 
 export type FeatureFlagContextValue = {
   releaseName: string;
@@ -39,7 +39,9 @@ export function FeatureFlagProvider({
 
     if (!validation.valid) {
       throw new Error(
-        `Invalid release config "${releaseName}":\n${validation.errors.join('\n')}`,
+        `Invalid release config "${releaseName}":\n${validation.errors.join(
+          '\n',
+        )}`,
       );
     }
 

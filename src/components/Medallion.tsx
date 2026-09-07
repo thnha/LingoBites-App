@@ -21,7 +21,8 @@ export function Medallion({label, size = 72}: Props) {
         height: size,
         justifyContent: 'center',
         width: size,
-      }}>
+      }}
+    >
       <AppText variant="h3" style={{textAlign: 'center'}}>
         {label}
       </AppText>

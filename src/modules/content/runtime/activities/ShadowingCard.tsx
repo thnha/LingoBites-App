@@ -21,11 +21,21 @@ export function ShadowingCard({data, onPlayAudio, onComplete, onSkip}: Props) {
 
   return (
     <View style={{gap: theme.spacing.lg}}>
-      {data.instructionsVi ? <AppText color="secondary">{data.instructionsVi}</AppText> : null}
+      {data.instructionsVi ? (
+        <AppText color="secondary">{data.instructionsVi}</AppText>
+      ) : null}
       {data.lines.map((line, index) => (
-        <AppCard key={`${line.textEn}-${index}`} style={{gap: theme.spacing.sm}}>
+        <AppCard
+          key={`${line.textEn}-${index}`}
+          style={{gap: theme.spacing.sm}}
+        >
           <View
-            style={{alignItems: 'center', flexDirection: 'row', gap: theme.spacing.sm}}>
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: theme.spacing.sm,
+            }}
+          >
             <AppText variant="h3">{line.textEn}</AppText>
             <IconButton
               accessibilityLabel="Nghe phát âm"
@@ -40,7 +50,8 @@ export function ShadowingCard({data, onPlayAudio, onComplete, onSkip}: Props) {
       <AppText
         color={repeated ? 'primary' : 'secondary'}
         onPress={() => setRepeated(true)}
-        testID="shadowing-confirm">
+        testID="shadowing-confirm"
+      >
         {repeated ? '✓ Tôi đã lặp lại' : 'Tôi đã lặp lại'}
       </AppText>
       <StepActions onComplete={onComplete} onSkip={onSkip} />

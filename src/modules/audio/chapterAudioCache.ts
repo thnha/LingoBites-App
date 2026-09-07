@@ -7,8 +7,8 @@ import {
   selectStaleChapters,
   selectChaptersToEvict,
 } from '../../shared/db/audioCachePolicy';
-import type { ChapterAudioAsset } from '../../shared/db/types';
-import type { ChapterAudioManifestResult } from './audioManifestClient';
+import type {ChapterAudioAsset} from '../../shared/db/types';
+import type {ChapterAudioManifestResult} from './audioManifestClient';
 
 /**
  * Ports for the real download/file work, which is native (device file system)
@@ -22,7 +22,7 @@ export type ChapterAudioDownloader = {
   download: (params: {
     chapterId: string;
     asset: ChapterAudioAsset;
-  }) => Promise<{ data: unknown; bytes: number; checksum: string }>;
+  }) => Promise<{data: unknown; bytes: number; checksum: string}>;
 };
 
 export type ChapterAudioFileStore = {
@@ -48,13 +48,13 @@ export type ChapterAudioCacheOutcome = {
   chapterId: string;
   downloaded: string[];
   skipped: string[];
-  failed: { id: string; errorCode: string }[];
+  failed: {id: string; errorCode: string}[];
   evictedBytes: number;
 };
 
 export type EnsureChapterAudioResult =
-  | { ok: true; outcome: ChapterAudioCacheOutcome }
-  | { ok: false; errorCode: 'MANIFEST_FETCH_FAILED'; message: string };
+  | {ok: true; outcome: ChapterAudioCacheOutcome}
+  | {ok: false; errorCode: 'MANIFEST_FETCH_FAILED'; message: string};
 
 export type AudioCacheErrorCode =
   | 'DOWNLOAD_FAILED'
@@ -149,7 +149,7 @@ export async function ensureChapterAudio(
   for (const asset of manifestResult.manifest.assets) {
     const existing = rowsBeforeById.get(asset.id);
     if (!existing) {
-      audioRepository.insertPendingChapterAudioAsset({ chapterId, asset, now });
+      audioRepository.insertPendingChapterAudioAsset({chapterId, asset, now});
       continue;
     }
     if (existing.downloadStatus === 'ready') {
@@ -228,13 +228,13 @@ export async function ensureChapterAudio(
     const afterTotal = afterSummaries.reduce((sum, s) => sum + s.readyBytes, 0);
     if (afterTotal + asset.bytes > maxCacheBytes) {
       audioRepository.markChapterAudioAssetFailed(asset.id, now);
-      outcome.failed.push({ id: asset.id, errorCode: 'STORAGE_FULL' });
+      outcome.failed.push({id: asset.id, errorCode: 'STORAGE_FULL'});
       continue;
     }
 
     audioRepository.markChapterAudioAssetDownloading(asset.id, now);
     try {
-      const downloaded = await deps.downloader.download({ chapterId, asset });
+      const downloaded = await deps.downloader.download({chapterId, asset});
       if (downloaded.checksum !== asset.checksum) {
         throw new Error('CHECKSUM_MISMATCH');
       }
@@ -259,12 +259,12 @@ export async function ensureChapterAudio(
     }
   }
 
-  return { ok: true, outcome };
+  return {ok: true, outcome};
 }
 
 async function evictChapters(
   deps: ChapterAudioCacheDeps,
-  chapters: Array<{ chapterId: string; readyBytes: number }>,
+  chapters: Array<{chapterId: string; readyBytes: number}>,
 ): Promise<number> {
   let freedBytes = 0;
   for (const chapter of chapters) {

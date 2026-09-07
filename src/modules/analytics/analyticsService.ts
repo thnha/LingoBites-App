@@ -28,7 +28,9 @@ function resolveAnalyticsProvider(): AnalyticsProvider {
   return 'console';
 }
 
-let adapter: AnalyticsAdapter = createAnalyticsAdapter(resolveAnalyticsProvider());
+let adapter: AnalyticsAdapter = createAnalyticsAdapter(
+  resolveAnalyticsProvider(),
+);
 
 export function setAnalyticsAdapter(nextAdapter: AnalyticsAdapter): void {
   adapter = nextAdapter;

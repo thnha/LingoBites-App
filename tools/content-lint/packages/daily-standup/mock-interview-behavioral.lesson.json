@@ -6,17 +6,12 @@
   "title_vi": "Phỏng vấn kỹ thuật thử nghiệm: Trả lời tình huống (Behavioral)",
   "blurb_vi": "Luyện trả lời các câu hỏi tình huống khi bất đồng ý kiến với Tech Lead hoặc giải quyết mâu thuẫn.",
   "level": "B2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Trả lời trôi chảy các câu hỏi phỏng vấn ứng xử tình huống kỹ thuật.",
   "situation_vi": "Vòng phỏng vấn văn hóa và cách làm việc với Engineering Manager.",
   "learner_role_vi": "Ứng viên thể hiện kỹ năng giao tiếp và làm việc nhóm.",
-  "prerequisite_lesson_slugs": [
-    "mock-interview-system-design"
-  ],
+  "prerequisite_lesson_slugs": ["mock-interview-system-design"],
   "pronunciation_focus_vi": "Nhấn âm tự nhiên, thể hiện sự chuyên nghiệp và thiện chí hợp tác.",
   "final_speaking_task_vi": "Kể lại tình huống bạn bất đồng quan điểm kỹ thuật với đồng nghiệp và cách xử lý.",
   "pass_conditions_vi": "Cấu trúc câu trả lời mạch lạc, mang tính xây dựng cao.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "dd16cce7c2e25b26"
-      ],
-      "srs_ref_ids": [
-        "6b05f31f279cca84"
-      ],
+      "audio_ref_ids": ["dd16cce7c2e25b26"],
+      "srs_ref_ids": ["6b05f31f279cca84"],
       "dialogue_turns": [
         {
           "id": "63b88c900a8cb1ce",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "6b05f31f279cca84"
-        ],
+        "re_present_refs": ["6b05f31f279cca84"],
         "tip_vi": "Hãy nhớ cụm từ \"When we disagreed on technical approach\" nghĩa là \"Khi chúng tôi không thống nhất về hướng tiếp cận kỹ thuật\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "227a6c51ef65b914"
-      ],
-      "srs_ref_ids": [
-        "fa26c7218826fee6"
-      ],
+      "audio_ref_ids": ["227a6c51ef65b914"],
+      "srs_ref_ids": ["fa26c7218826fee6"],
       "dialogue_turns": [
         {
           "id": "acab1a576b7439f6",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "fa26c7218826fee6"
-        ],
+        "re_present_refs": ["fa26c7218826fee6"],
         "tip_vi": "Hãy nhớ cụm từ \"I first listened to their perspective carefully\" nghĩa là \"Đầu tiên tôi lắng nghe góc nhìn của họ một cách cẩn thận\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đề xuất làm một bản thử nghiệm PoC nhanh\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "27886191041f2c83"
-      ],
-      "srs_ref_ids": [
-        "8216b65bbd264a68"
-      ],
+      "audio_ref_ids": ["27886191041f2c83"],
+      "srs_ref_ids": ["8216b65bbd264a68"],
       "dialogue_turns": [
         {
           "id": "9bcd2164e729c925",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "8216b65bbd264a68"
-        ],
+        "re_present_refs": ["8216b65bbd264a68"],
         "tip_vi": "Hãy nhớ cụm từ \"I proposed building a quick Proof of Concept\" nghĩa là \"Tôi đề xuất làm một bản thử nghiệm PoC nhanh\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "835a8a71d5ed0fbd"
-      ],
-      "srs_ref_ids": [
-        "2bc0d6bc0b8525cc"
-      ],
+      "audio_ref_ids": ["835a8a71d5ed0fbd"],
+      "srs_ref_ids": ["2bc0d6bc0b8525cc"],
       "dialogue_turns": [
         {
           "id": "ceed2981f4eecb3e",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "2bc0d6bc0b8525cc"
-        ],
+        "re_present_refs": ["2bc0d6bc0b8525cc"],
         "tip_vi": "Hãy nhớ cụm từ \"We made a data-driven decision based on benchmarks\" nghĩa là \"Chúng tôi đưa ra quyết định dựa trên dữ liệu chuẩn đo kiểm\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Cách tôi xử lý áp lực thời hạn gấp\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "468ca6ff5274b4c4"
-      ],
-      "srs_ref_ids": [
-        "ae1886badc957888"
-      ],
+      "audio_ref_ids": ["468ca6ff5274b4c4"],
+      "srs_ref_ids": ["ae1886badc957888"],
       "dialogue_turns": [
         {
           "id": "5f73f5871a946212",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "ae1886badc957888"
-        ],
+        "re_present_refs": ["ae1886badc957888"],
         "tip_vi": "Hãy nhớ cụm từ \"How I handled a tight deadline under pressure\" nghĩa là \"Cách tôi xử lý áp lực thời hạn gấp\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã chủ động giao tiếp với các bên liên quan\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "1e17512753c246f3"
-      ],
-      "srs_ref_ids": [
-        "d9c5dd429dfb8abe"
-      ],
+      "audio_ref_ids": ["1e17512753c246f3"],
+      "srs_ref_ids": ["d9c5dd429dfb8abe"],
       "dialogue_turns": [
         {
           "id": "e6414bfaea93b2e7",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "d9c5dd429dfb8abe"
-        ],
+        "re_present_refs": ["d9c5dd429dfb8abe"],
         "tip_vi": "Hãy nhớ cụm từ \"I communicated proactively with stakeholders\" nghĩa là \"Tôi đã chủ động giao tiếp với các bên liên quan\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Những gì tôi đã rút ra được từ sai lầm dự án đó\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "0e4c183dfdbcd937"
-      ],
-      "srs_ref_ids": [
-        "672b1ba44a3c96bf"
-      ],
+      "audio_ref_ids": ["0e4c183dfdbcd937"],
+      "srs_ref_ids": ["672b1ba44a3c96bf"],
       "dialogue_turns": [
         {
           "id": "41c5990983e4be77",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "672b1ba44a3c96bf"
-        ],
+        "re_present_refs": ["672b1ba44a3c96bf"],
         "tip_vi": "Hãy nhớ cụm từ \"What I learned from that project mistake\" nghĩa là \"Những gì tôi đã rút ra được từ sai lầm dự án đó\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "cfd83777ea0e76c0"
-      ],
-      "srs_ref_ids": [
-        "08f949c20fc6b2f2"
-      ],
+      "audio_ref_ids": ["cfd83777ea0e76c0"],
+      "srs_ref_ids": ["08f949c20fc6b2f2"],
       "dialogue_turns": [
         {
           "id": "aeb5446582857d66",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "08f949c20fc6b2f2"
-        ],
+        "re_present_refs": ["08f949c20fc6b2f2"],
         "tip_vi": "Hãy nhớ cụm từ \"In the end, we achieved a very positive outcome\" nghĩa là \"Cuối cùng, chúng tôi đã đạt được kết quả rất tích cực\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Phỏng vấn kỹ thuật thử nghiệm: Trả lời tình huống (Behavioral)",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "When we disagreed on technical approach",

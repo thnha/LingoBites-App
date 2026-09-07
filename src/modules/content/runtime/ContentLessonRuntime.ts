@@ -27,7 +27,9 @@ import type {
   RuntimeStep,
 } from './types';
 
-export function loadLessonRuntimeData(lessonId: string): LessonRuntimeData | null {
+export function loadLessonRuntimeData(
+  lessonId: string,
+): LessonRuntimeData | null {
   const lesson = getContentLessonById(lessonId);
   if (!lesson) {
     return null;
@@ -50,7 +52,9 @@ export class LessonRuntimeSession {
   constructor(data: LessonRuntimeData) {
     this.data = data;
     this.steps = buildLessonSteps(data);
-    this.attempts = new Map(this.steps.map(step => [step.id, 'pending' as const]));
+    this.attempts = new Map(
+      this.steps.map(step => [step.id, 'pending' as const]),
+    );
   }
 
   getCurrentStep(): RuntimeStep | null {

@@ -8,6 +8,7 @@ import glyphmap from 'react-native-vector-icons/glyphmaps/MaterialIcons.json';
 /** Handoff Material Symbols names used in the app (snake_case). */
 export const HANDOFF_ICONS = [
   'add_photo_alternate',
+  'analytics',
   'arrow_back',
   'article',
   'auto_awesome',
@@ -26,10 +27,12 @@ export const HANDOFF_ICONS = [
   'document_scanner',
   'edit',
   'emoji_events',
+  'event_note',
   'fitness_center',
   'flag',
   'format_quote',
   'function',
+  'hearing',
   'help',
   'history_edu',
   'home',
@@ -45,6 +48,7 @@ export const HANDOFF_ICONS = [
   'play_circle',
   'psychology',
   'refresh',
+  'record_voice_over',
   'restaurant_menu',
   'rule',
   'schedule',
@@ -57,11 +61,14 @@ export const HANDOFF_ICONS = [
   'smartphone',
   'style',
   'subtitles',
+  'timer',
   'tips_and_updates',
   'translate',
   'upload_file',
   'visibility',
   'volume_up',
+  'warning',
+  'compare',
 ] as const;
 
 export type HandoffIconName = (typeof HANDOFF_ICONS)[number];
@@ -88,6 +95,7 @@ const ICON_ALIASES: Partial<Record<HandoffIconName, string>> = {
   menu_book: 'menu-book',
   photo_camera: 'photo-camera',
   play_circle: 'play-circle',
+  record_voice_over: 'record-voice-over',
   restaurant_menu: 'restaurant-menu',
   tips_and_updates: 'tips-and-updates',
   upload_file: 'upload-file',

@@ -1,4 +1,7 @@
-import {bootstrapContentPackage, getBundledPackageZipBytes} from '../contentBootstrap';
+import {
+  bootstrapContentPackage,
+  getBundledPackageZipBytes,
+} from '../contentBootstrap';
 import {buildStoredZip} from '../../importer/_fixtures/testZip';
 import {makeManifest, makeLesson} from '../../importer/_fixtures/testLesson';
 import {
@@ -62,12 +65,17 @@ describe('contentBootstrap (SETE-114 / M9)', () => {
     const srsItem = {
       id: 'srs-seed-1',
       slug: 'srs-seed-1',
-      item_type: 'vocabulary',
+      item_type: 'vocabulary' as const,
       source_ref_id: 'chunk-1',
       front: 'Hi',
       back: 'Xin chào',
     };
-    insertContentReviewItems(lessonsV1[0].id, activeV1.id, [srsItem], new Date().toISOString());
+    insertContentReviewItems(
+      lessonsV1[0].id,
+      activeV1.id,
+      [srsItem],
+      new Date().toISOString(),
+    );
     const progressBefore = listContentReviewItems();
     expect(progressBefore.length).toBe(1);
 
@@ -80,7 +88,10 @@ describe('contentBootstrap (SETE-114 / M9)', () => {
     });
     const v2Zip = buildStoredZip([
       ['manifest.json', new TextEncoder().encode(JSON.stringify(manifestV2))],
-      ['self-introduction.lesson.json', new TextEncoder().encode(JSON.stringify(lessonV2))],
+      [
+        'self-introduction.lesson.json',
+        new TextEncoder().encode(JSON.stringify(lessonV2)),
+      ],
     ]);
     const v2Sha = sha256Hex(v2Zip);
 
@@ -118,7 +129,9 @@ describe('contentBootstrap (SETE-114 / M9)', () => {
     const activeV1 = getActivePackage()!;
 
     // 2. Run bootstrap with corrupt zip bytes
-    const corruptBytes = new TextEncoder().encode('not a valid zip file at all');
+    const corruptBytes = new TextEncoder().encode(
+      'not a valid zip file at all',
+    );
     const corruptSha = sha256Hex(corruptBytes);
 
     const failRes = await bootstrapContentPackage({

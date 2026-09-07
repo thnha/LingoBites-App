@@ -11,7 +11,9 @@ type Props = {
 
 export function HandoffProgressTrack({progress, label}: Props) {
   const {theme} = useAppTheme();
-  const width = `${Math.round(Math.min(Math.max(progress, 0), 1) * 100)}%` as DimensionValue;
+  const width = `${Math.round(
+    Math.min(Math.max(progress, 0), 1) * 100,
+  )}%` as DimensionValue;
 
   return (
     <View style={{alignItems: 'center', flexDirection: 'row', gap: 12}}>
@@ -22,7 +24,8 @@ export function HandoffProgressTrack({progress, label}: Props) {
           flex: 1,
           height: 12,
           overflow: 'hidden',
-        }}>
+        }}
+      >
         <View
           style={{
             backgroundColor: theme.colors.primary,

@@ -1,4 +1,4 @@
-import { getDatabase } from './database';
+import {getDatabase} from './database';
 import type {
   AudioAssetRecord,
   AudioCacheStats,
@@ -37,7 +37,7 @@ function mapAudioAssetRow(row: AudioAssetRow): AudioAssetRecord {
 }
 
 function rowsToRecords(result: {
-  rows?: { length: number; item: (index: number) => unknown };
+  rows?: {length: number; item: (index: number) => unknown};
 }): AudioAssetRecord[] {
   const rows = result.rows;
   const items: AudioAssetRecord[] = [];

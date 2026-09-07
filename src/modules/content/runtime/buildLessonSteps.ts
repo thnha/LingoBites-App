@@ -54,7 +54,9 @@ function findQaItems(chunks: ContentChunkRow[], qaIds: string[]): QAItem[] {
       byId.set(qa.id, qa);
     }
   }
-  return qaIds.map(id => byId.get(id)).filter((qa): qa is QAItem => Boolean(qa));
+  return qaIds
+    .map(id => byId.get(id))
+    .filter((qa): qa is QAItem => Boolean(qa));
 }
 
 function chunksForActivity(

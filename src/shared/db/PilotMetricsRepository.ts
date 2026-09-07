@@ -18,8 +18,20 @@ export type CapabilityProgressReport = {
   retention30DayRate: number | null; // 0..100 percentage or null if no data
   passedSituationsCount: number;
   beforeAfterRecordings: {
-    earliest: {id: string; mode: string; createdAt: string; durationMs: number; filePath: string} | null;
-    latest: {id: string; mode: string; createdAt: string; durationMs: number; filePath: string} | null;
+    earliest: {
+      id: string;
+      mode: string;
+      createdAt: string;
+      durationMs: number;
+      filePath: string;
+    } | null;
+    latest: {
+      id: string;
+      mode: string;
+      createdAt: string;
+      durationMs: number;
+      filePath: string;
+    } | null;
   };
 };
 
@@ -62,7 +74,9 @@ export {formatDurationMs, formatPercentage};
  * Calculates capability progress metrics (REQ-39) using SQLite data from
  * review_sessions, speaking_recordings, error_events, and app_settings.
  */
-export function getCapabilityProgressReport(nowIso?: string): CapabilityProgressReport {
+export function getCapabilityProgressReport(
+  nowIso?: string,
+): CapabilityProgressReport {
   const db = getDatabase();
   const now = nowIso ? new Date(nowIso) : new Date();
 
@@ -72,7 +86,10 @@ export function getCapabilityProgressReport(nowIso?: string): CapabilityProgress
     const recordings = listSpeakingRecordings();
     // Shadowing and standup / quick answer modes where learner speaks without looking at prompt
     sentencesSpokenWithoutLookingCount = recordings.filter(
-      r => r.mode === 'shadowing' || r.mode === 'quick_answer' || r.mode === 'standup',
+      r =>
+        r.mode === 'shadowing' ||
+        r.mode === 'quick_answer' ||
+        r.mode === 'standup',
     ).length;
   } catch (_e) {
     sentencesSpokenWithoutLookingCount = 0;
@@ -84,7 +101,10 @@ export function getCapabilityProgressReport(nowIso?: string): CapabilityProgress
     const recordings = listSpeakingRecordings();
     if (recordings.length > 0) {
       // Approximate start-to-answer / response duration in speaking attempts
-      const totalDuration = recordings.reduce((acc, r) => acc + r.durationMs, 0);
+      const totalDuration = recordings.reduce(
+        (acc, r) => acc + r.durationMs,
+        0,
+      );
       averageStartToAnswerMs = Math.round(totalDuration / recordings.length);
     }
   } catch (_e) {
@@ -101,7 +121,9 @@ export function getCapabilityProgressReport(nowIso?: string): CapabilityProgress
     if (row && row.value) {
       const parsed = JSON.parse(row.value) as {total: number; correct: number};
       if (parsed.total > 0) {
-        firstListenComprehensionRate = Math.round((parsed.correct / parsed.total) * 100);
+        firstListenComprehensionRate = Math.round(
+          (parsed.correct / parsed.total) * 100,
+        );
       }
     }
   } catch (_e) {
@@ -169,7 +191,8 @@ export function getCapabilityProgressReport(nowIso?: string): CapabilityProgress
       const passRes = db.execute(
         "SELECT COUNT(*) as cnt FROM review_sessions WHERE rating = 'pass';",
       );
-      passedSituationsCount = (passRes.rows?.item(0) as {cnt: number} | undefined)?.cnt || 0;
+      passedSituationsCount =
+        (passRes.rows?.item(0) as {cnt: number} | undefined)?.cnt || 0;
     }
   } catch (_e) {
     passedSituationsCount = 0;
@@ -182,7 +205,8 @@ export function getCapabilityProgressReport(nowIso?: string): CapabilityProgress
     const recordings = listSpeakingRecordings();
     if (recordings.length > 0) {
       const sorted = [...recordings].sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       );
       earliest = sorted[0];
       if (sorted.length > 1) {
@@ -229,24 +253,31 @@ export function getCapabilityProgressReport(nowIso?: string): CapabilityProgress
  * Generates privacy-safe metrics export object excluding raw learner text,
  * audio bytes, recognized speech, and local file paths (CON-6).
  */
-export function exportPrivacySafeMetrics(nowIso?: string): PrivacySafeMetricsExport {
+export function exportPrivacySafeMetrics(
+  nowIso?: string,
+): PrivacySafeMetricsExport {
   const report = getCapabilityProgressReport(nowIso);
   const recordings = listSpeakingRecordings();
   const errors = listErrorEvents();
 
   const totalRecordingsCount = recordings.length;
-  const totalSpeakingDurationMs = recordings.reduce((acc, r) => acc + r.durationMs, 0);
+  const totalSpeakingDurationMs = recordings.reduce(
+    (acc, r) => acc + r.durationMs,
+    0,
+  );
 
   const errorEventsByCategory: Record<string, number> = {};
   for (const err of errors) {
-    errorEventsByCategory[err.category] = (errorEventsByCategory[err.category] || 0) + 1;
+    errorEventsByCategory[err.category] =
+      (errorEventsByCategory[err.category] || 0) + 1;
   }
 
   let totalReviewSessionsCount = 0;
   try {
     const db = getDatabase();
     const res = db.execute('SELECT COUNT(*) as cnt FROM review_sessions;');
-    totalReviewSessionsCount = (res.rows?.item(0) as {cnt: number} | undefined)?.cnt || 0;
+    totalReviewSessionsCount =
+      (res.rows?.item(0) as {cnt: number} | undefined)?.cnt || 0;
   } catch (_e) {
     totalReviewSessionsCount = 0;
   }
@@ -256,7 +287,8 @@ export function exportPrivacySafeMetrics(nowIso?: string): PrivacySafeMetricsExp
     exported_at: nowIso ?? new Date().toISOString(),
     app_version: '0.0.1',
     aggregate_metrics: {
-      sentences_spoken_without_looking: report.sentencesSpokenWithoutLookingCount,
+      sentences_spoken_without_looking:
+        report.sentencesSpokenWithoutLookingCount,
       avg_start_to_answer_ms: report.averageStartToAnswerMs,
       first_listen_comprehension_rate: report.firstListenComprehensionRate,
       retention_7d_rate: report.retention7DayRate,

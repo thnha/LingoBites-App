@@ -163,7 +163,10 @@ export type SelectDueContentReviewItemsOptions = {
 /** Generalizes `selectDueReviewCards` for the `content_review_items` shape. */
 export function selectDueContentReviewItems<T extends {nextReviewAt: string}>(
   items: T[],
-  {now = new Date().toISOString(), limit}: SelectDueContentReviewItemsOptions = {},
+  {
+    now = new Date().toISOString(),
+    limit,
+  }: SelectDueContentReviewItemsOptions = {},
 ): T[] {
   const dueBy = new Date(now).getTime();
   const due = items

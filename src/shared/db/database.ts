@@ -18,7 +18,9 @@ export function getDatabase(): QuickSQLiteConnection {
   return dbInstance;
 }
 
-export function resetDatabaseForTests(connection: QuickSQLiteConnection | null): void {
+export function resetDatabaseForTests(
+  connection: QuickSQLiteConnection | null,
+): void {
   dbInstance = connection;
   migrationsApplied = false;
 }
@@ -31,10 +33,7 @@ export function resetDatabaseForTests(connection: QuickSQLiteConnection | null):
  * synchronous (the current codebase contract) while still giving the atomicity
  * the outbox design (ADR-2) relies on for the review write + outbox insert.
  */
-export function withTransaction<T>(
-  db: QuickSQLiteConnection,
-  run: () => T,
-): T {
+export function withTransaction<T>(db: QuickSQLiteConnection, run: () => T): T {
   db.execute('BEGIN');
   try {
     const result = run();

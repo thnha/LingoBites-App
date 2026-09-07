@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  View,
-  type ViewStyle,
-} from 'react-native';
+import {Pressable, StyleSheet, View, type ViewStyle} from 'react-native';
 import {AppCard} from './AppCard';
 import {AppText} from './AppText';
 import {useAppTheme} from '../theme';
@@ -31,12 +26,11 @@ export function FlipCard({
   return (
     <Pressable
       accessibilityHint="Chạm để lật thẻ"
-      accessibilityLabel={
-        flipped ? 'Mặt sau flashcard' : 'Mặt trước flashcard'
-      }
+      accessibilityLabel={flipped ? 'Mặt sau flashcard' : 'Mặt trước flashcard'}
       accessibilityRole="button"
       onPress={onFlip}
-      testID={testID}>
+      testID={testID}
+    >
       <AppCard
         style={StyleSheet.flatten([
           {
@@ -45,19 +39,14 @@ export function FlipCard({
             alignItems: 'center',
             padding: theme.spacing.lg,
             borderWidth: 1.5,
-            borderColor: flipped
-              ? theme.colors.primary
-              : theme.colors.border,
+            borderColor: flipped ? theme.colors.primary : theme.colors.border,
             backgroundColor: theme.components.card.background,
           },
           style,
-        ])}>
-        <View style={styles.contentContainer}>
-          {flipped ? back : front}
-        </View>
-        <AppText
-          color="muted"
-          style={styles.hintText}>
+        ])}
+      >
+        <View style={styles.contentContainer}>{flipped ? back : front}</View>
+        <AppText color="muted" style={styles.hintText}>
           {flipped ? '🔄 Nhấn để xem mặt trước' : '🔄 Nhấn để xem mặt sau'}
         </AppText>
       </AppCard>

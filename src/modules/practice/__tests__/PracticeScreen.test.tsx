@@ -32,10 +32,14 @@ function renderWith(params: HomeStackParamList['Practice']) {
   return tree;
 }
 
-function findText(tree: ReactTestRenderer.ReactTestRenderer, text: string): boolean {
+function findText(
+  tree: ReactTestRenderer.ReactTestRenderer,
+  text: string,
+): boolean {
   return (
     tree.root.findAll(
-      node => typeof node.props.children === 'string' && node.props.children === text,
+      node =>
+        typeof node.props.children === 'string' && node.props.children === text,
     ).length > 0
   );
 }

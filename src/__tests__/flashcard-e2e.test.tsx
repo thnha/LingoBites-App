@@ -148,7 +148,9 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     expect(progress.props.children).toBe('1 / 1');
 
     // === STEP 5: Rate the card as "remembered" ===
-    const rememberedButton = reviewTree.root.findByProps({testID: 'rating-remembered'});
+    const rememberedButton = reviewTree.root.findByProps({
+      testID: 'rating-remembered',
+    });
     await revealCard(reviewTree);
     await act(async () => {
       rememberedButton.props.onPress();
@@ -159,9 +161,15 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     expect(summary).toBeTruthy();
 
     // Verify summary stats
-    const reviewedCount = reviewTree.root.findByProps({testID: 'summary-reviewed-count'});
-    const rememberedCount = reviewTree.root.findByProps({testID: 'summary-remembered-count'});
-    const forgotCount = reviewTree.root.findByProps({testID: 'summary-forgot-count'});
+    const reviewedCount = reviewTree.root.findByProps({
+      testID: 'summary-reviewed-count',
+    });
+    const rememberedCount = reviewTree.root.findByProps({
+      testID: 'summary-remembered-count',
+    });
+    const forgotCount = reviewTree.root.findByProps({
+      testID: 'summary-forgot-count',
+    });
 
     expect(reviewedCount.props.children).toBe(1);
     expect(rememberedCount.props.children).toBe(1);
@@ -224,7 +232,9 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
 
     // Start review session
     const nav = createMockNavigation();
-    const tree = await renderScreen(<DailyReviewScreen navigation={nav as never} />);
+    const tree = await renderScreen(
+      <DailyReviewScreen navigation={nav as never} />,
+    );
 
     // Verify progress shows "1 / 3"
     let progress = tree.root.findByProps({testID: 'review-progress'});
@@ -260,8 +270,12 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
     const summary = tree.root.findByProps({testID: 'review-summary'});
     expect(summary).toBeTruthy();
 
-    const reviewedCount = tree.root.findByProps({testID: 'summary-reviewed-count'});
-    const rememberedCount = tree.root.findByProps({testID: 'summary-remembered-count'});
+    const reviewedCount = tree.root.findByProps({
+      testID: 'summary-reviewed-count',
+    });
+    const rememberedCount = tree.root.findByProps({
+      testID: 'summary-remembered-count',
+    });
     const forgotCount = tree.root.findByProps({testID: 'summary-forgot-count'});
 
     expect(reviewedCount.props.children).toBe(3);

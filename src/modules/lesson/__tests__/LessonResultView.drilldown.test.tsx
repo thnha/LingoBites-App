@@ -22,11 +22,17 @@ describe('LessonResultView drill-down entry points', () => {
     const onOpenWord = jest.fn();
     const word = validFullOutput.vocabulary[0];
     const tree = render(
-      <LessonResultView lesson={validFullOutput} showSaveButton={false} onOpenWord={onOpenWord} />,
+      <LessonResultView
+        lesson={validFullOutput}
+        showSaveButton={false}
+        onOpenWord={onOpenWord}
+      />,
     );
 
     const wordButton = tree.root.find(
-      node => node.props.accessibilityRole === 'button' && node.props.accessibilityLabel === word.word,
+      node =>
+        node.props.accessibilityRole === 'button' &&
+        node.props.accessibilityLabel === word.word,
     );
     ReactTestRenderer.act(() => wordButton.props.onPress());
 
@@ -54,10 +60,14 @@ describe('LessonResultView drill-down entry points', () => {
 
   it('does not make items tappable when no callbacks are passed', () => {
     const word = validFullOutput.vocabulary[0];
-    const tree = render(<LessonResultView lesson={validFullOutput} showSaveButton={false} />);
+    const tree = render(
+      <LessonResultView lesson={validFullOutput} showSaveButton={false} />,
+    );
 
     const wordButtons = tree.root.findAll(
-      node => node.props.accessibilityRole === 'button' && node.props.accessibilityLabel === word.word,
+      node =>
+        node.props.accessibilityRole === 'button' &&
+        node.props.accessibilityLabel === word.word,
     );
     expect(wordButtons).toHaveLength(0);
   });

@@ -97,10 +97,14 @@ export function insertSpeakingRecording(
   };
 }
 
-export function listSpeakingRecordings(lessonId?: string): SpeakingRecordingRecord[] {
+export function listSpeakingRecordings(
+  lessonId?: string,
+): SpeakingRecordingRecord[] {
   const db = getDatabase();
   const result = lessonId
-    ? db.execute('SELECT * FROM speaking_recordings WHERE lesson_id = ?;', [lessonId])
+    ? db.execute('SELECT * FROM speaking_recordings WHERE lesson_id = ?;', [
+        lessonId,
+      ])
     : db.execute('SELECT * FROM speaking_recordings;');
   const rows = result.rows;
   const items: SpeakingRecordingRecord[] = [];
@@ -116,7 +120,9 @@ export function listSpeakingRecordings(lessonId?: string): SpeakingRecordingReco
 /** Deletes the DB row and returns the file path so the caller can unlink it. */
 export function deleteSpeakingRecording(id: string): {filePath: string} | null {
   const db = getDatabase();
-  const result = db.execute('SELECT * FROM speaking_recordings WHERE id = ?;', [id]);
+  const result = db.execute('SELECT * FROM speaking_recordings WHERE id = ?;', [
+    id,
+  ]);
   const row = result.rows?.item(0) as SpeakingRecordingDbRow | undefined;
   if (!row) {
     return null;
@@ -206,7 +212,9 @@ export function captureErrorEvent(input: CaptureErrorEventInput): {
   };
 }
 
-function errorCategoryLabel(category: CaptureErrorEventInput['category']): string {
+function errorCategoryLabel(
+  category: CaptureErrorEventInput['category'],
+): string {
   switch (category) {
     case 'vocabulary':
       return 'Từ vựng cần ôn lại';

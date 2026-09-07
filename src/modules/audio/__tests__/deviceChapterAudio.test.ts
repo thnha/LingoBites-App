@@ -1,14 +1,14 @@
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../../../shared/db/constants';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../../../shared/db/constants';
 import {
   insertPendingChapterAudioAsset,
   markChapterAudioAssetReady,
 } from '../../../shared/db/AudioAssetRepository';
-import type { ChapterAudioAsset } from '../../../shared/db/types';
-import { sha256Hex } from '../../../shared/utils/sha256';
-import { bytesToBase64 } from '../bytesToBase64';
+import type {ChapterAudioAsset} from '../../../shared/db/types';
+import {sha256Hex} from '../../../shared/utils/sha256';
+import {bytesToBase64} from '../bytesToBase64';
 
 jest.mock('@dr.pogodin/react-native-fs', () => ({
   DocumentDirectoryPath: '/mock/Documents',
@@ -128,23 +128,21 @@ describe('deviceChapterAudioDownloader', () => {
 
   it('downloads, hashes and reports bytes for a manifest asset', async () => {
     const payload = new Uint8Array([104, 101, 108, 108, 111]);
-    const fetchSpy = jest
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValue({
-        ok: true,
-        arrayBuffer: async () =>
-          payload.buffer.slice(
-            payload.byteOffset,
-            payload.byteOffset + payload.byteLength,
-          ),
-      } as unknown as Response);
+    const fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      arrayBuffer: async () =>
+        payload.buffer.slice(
+          payload.byteOffset,
+          payload.byteOffset + payload.byteLength,
+        ),
+    } as unknown as Response);
 
     const result = await deviceChapterAudioDownloader.download({
       chapterId: 'ch1',
-      asset: { ...ASSET, checksum: sha256Hex('hello') },
+      asset: {...ASSET, checksum: sha256Hex('hello')},
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith(ASSET.url, { method: 'GET' });
+    expect(fetchSpy).toHaveBeenCalledWith(ASSET.url, {method: 'GET'});
     expect(result.bytes).toBe(5);
     expect(result.checksum).toBe(sha256Hex('hello'));
     expect(result.data).toBeInstanceOf(Uint8Array);
@@ -157,7 +155,7 @@ describe('deviceChapterAudioDownloader', () => {
     } as unknown as Response);
 
     await expect(
-      deviceChapterAudioDownloader.download({ chapterId: 'ch1', asset: ASSET }),
+      deviceChapterAudioDownloader.download({chapterId: 'ch1', asset: ASSET}),
     ).rejects.toThrow('HTTP_ERROR:404');
   });
 
@@ -165,7 +163,7 @@ describe('deviceChapterAudioDownloader', () => {
     jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));
 
     await expect(
-      deviceChapterAudioDownloader.download({ chapterId: 'ch1', asset: ASSET }),
+      deviceChapterAudioDownloader.download({chapterId: 'ch1', asset: ASSET}),
     ).rejects.toThrow('FETCH_FAILED');
   });
 });
@@ -200,7 +198,7 @@ describe('deviceChapterAudioFileStore', () => {
 describe('offline playback', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
     mockSoundInstances.length = 0;
   });
 
@@ -231,13 +229,16 @@ describe('offline playback', () => {
   });
 
   it('plays a ready asset from its cached file path (offline)', async () => {
-    await seedReadyAsset(ASSET, '/mock/Documents/LingoBitesAudio/ch1/asset-1.mp3');
+    await seedReadyAsset(
+      ASSET,
+      '/mock/Documents/LingoBitesAudio/ch1/asset-1.mp3',
+    );
 
     const resultPromise = playReadyChapterAudio('asset-1');
     expect(mockSoundInstances).toHaveLength(1);
     mockSoundInstances[0].cb?.(null);
 
-    await expect(resultPromise).resolves.toEqual({ ok: true });
+    await expect(resultPromise).resolves.toEqual({ok: true});
     expect(mockSoundInstances[0].filename).toBe(
       '/mock/Documents/LingoBitesAudio/ch1/asset-1.mp3',
     );
@@ -245,7 +246,10 @@ describe('offline playback', () => {
   });
 
   it('resolves UNAVAILABLE when the native player cannot load the file', async () => {
-    await seedReadyAsset(ASSET, '/mock/Documents/LingoBitesAudio/ch1/asset-1.mp3');
+    await seedReadyAsset(
+      ASSET,
+      '/mock/Documents/LingoBitesAudio/ch1/asset-1.mp3',
+    );
 
     const resultPromise = playReadyChapterAudio('asset-1');
     expect(mockSoundInstances).toHaveLength(1);
@@ -261,7 +265,10 @@ describe('offline playback', () => {
 
   it('returns the cached path only when the file still exists on disk', async () => {
     RNFSMock.exists.mockResolvedValueOnce(false);
-    await seedReadyAsset(ASSET, '/mock/Documents/LingoBitesAudio/ch1/asset-1.mp3');
+    await seedReadyAsset(
+      ASSET,
+      '/mock/Documents/LingoBitesAudio/ch1/asset-1.mp3',
+    );
 
     await expect(readyAudioPathOnDevice('asset-1')).resolves.toBeNull();
 
@@ -293,9 +300,8 @@ describe('offline playback', () => {
       };
     });
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { playReadyChapterAudio: playWithBrokenSound } = require(
-      '../deviceChapterAudio',
-    ) as typeof import('../deviceChapterAudio');
+    const {playReadyChapterAudio: playWithBrokenSound} =
+      require('../deviceChapterAudio') as typeof import('../deviceChapterAudio');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const repository = require('../../../shared/db/AudioAssetRepository') as {
       insertPendingChapterAudioAsset: (input: {
@@ -339,9 +345,8 @@ describe('offline playback', () => {
       exists: jest.fn(async () => true),
     }));
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { deviceChapterAudioFileStore: storeWithoutFs } = require(
-      '../deviceChapterAudio',
-    ) as typeof import('../deviceChapterAudio');
+    const {deviceChapterAudioFileStore: storeWithoutFs} =
+      require('../deviceChapterAudio') as typeof import('../deviceChapterAudio');
 
     await expect(
       storeWithoutFs.writeAsset({

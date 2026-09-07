@@ -72,10 +72,7 @@ export function LessonResultView({
     vocabExpanded || vocabulary.length <= VISIBLE_VOCAB_LIMIT
       ? vocabulary
       : vocabulary.slice(0, VISIBLE_VOCAB_LIMIT);
-  const hiddenVocabCount = Math.max(
-    vocabulary.length - VISIBLE_VOCAB_LIMIT,
-    0,
-  );
+  const hiddenVocabCount = Math.max(vocabulary.length - VISIBLE_VOCAB_LIMIT, 0);
   const visibleGrammar = grammarPoints.slice(0, VISIBLE_GRAMMAR_LIMIT);
   const pronunciation = lesson.pronunciation ?? {
     sentence_audio_texts: [],
@@ -94,8 +91,8 @@ export function LessonResultView({
     saveState === 'saved'
       ? theme.colors.border
       : saveState === 'error'
-        ? theme.colors.danger
-        : theme.components.button.primary.background;
+      ? theme.colors.danger
+      : theme.components.button.primary.background;
 
   const saveTextColor =
     saveState === 'saved'
@@ -108,7 +105,8 @@ export function LessonResultView({
         padding: theme.spacing.xl,
         gap: theme.spacing.lg,
         paddingBottom: theme.spacing.xxl,
-      }}>
+      }}
+    >
       <AppText variant="title">{lesson.title}</AppText>
       <AppText color="muted">
         {lesson.detected_language} · {lesson.level}
@@ -123,9 +121,7 @@ export function LessonResultView({
       </Section>
 
       <Section title="Tóm tắt">
-        <AppText>
-          {lesson.summary || 'Chưa có tóm tắt cho đoạn này.'}
-        </AppText>
+        <AppText>{lesson.summary || 'Chưa có tóm tắt cho đoạn này.'}</AppText>
       </Section>
 
       <Section title="Tách câu">
@@ -138,9 +134,11 @@ export function LessonResultView({
               accessibilityLabel={sentence.original}
               onPress={
                 onOpenSentence
-                  ? () => onOpenSentence(sentence, sentenceIndex, sentences.length)
+                  ? () =>
+                      onOpenSentence(sentence, sentenceIndex, sentences.length)
                   : undefined
-              }>
+              }
+            >
               <AppCard>
                 <ChunkRow
                   original={sentence.original}
@@ -162,7 +160,8 @@ export function LessonResultView({
               <Tappable
                 key={item.id}
                 accessibilityLabel={item.word}
-                onPress={onOpenWord ? () => onOpenWord(item) : undefined}>
+                onPress={onOpenWord ? () => onOpenWord(item) : undefined}
+              >
                 <WordCard
                   word={item.word}
                   meaning={item.meaning_vi}
@@ -180,12 +179,17 @@ export function LessonResultView({
             {!vocabExpanded && hiddenVocabCount > 0 ? (
               <Pressable
                 onPress={() => setVocabExpanded(true)}
-                style={{alignSelf: 'flex-start', paddingVertical: theme.spacing.xs}}>
+                style={{
+                  alignSelf: 'flex-start',
+                  paddingVertical: theme.spacing.xs,
+                }}
+              >
                 <AppText
                   style={{
                     color: theme.colors.primary,
                     fontWeight: theme.typography.weight.bold,
-                  }}>
+                  }}
+                >
                   xem thêm ({hiddenVocabCount})
                 </AppText>
               </Pressable>
@@ -202,7 +206,8 @@ export function LessonResultView({
             <Tappable
               key={item.id}
               accessibilityLabel={item.vietnamese_name || item.name}
-              onPress={onOpenGrammar ? () => onOpenGrammar(item) : undefined}>
+              onPress={onOpenGrammar ? () => onOpenGrammar(item) : undefined}
+            >
               <AppCard style={{gap: theme.spacing.xs}}>
                 <AppText style={{fontWeight: theme.typography.weight.bold}}>
                   {item.vietnamese_name || item.name}
@@ -285,16 +290,19 @@ export function LessonResultView({
                   minHeight: theme.components.button.primary.height,
                   opacity: saveDisabled ? theme.states.disabledOpacity : 1,
                 },
-                pressed && !saveDisabled && {opacity: theme.states.pressedOpacity},
+                pressed &&
+                  !saveDisabled && {opacity: theme.states.pressedOpacity},
               ]}
               testID={
                 saveDisabled ? 'save-lesson-disabled' : 'save-lesson-enabled'
-              }>
+              }
+            >
               <AppText
                 style={{
                   color: saveTextColor,
                   fontWeight: theme.typography.weight.bold,
-                }}>
+                }}
+              >
                 {saveLabel}
               </AppText>
             </Pressable>
@@ -314,7 +322,10 @@ function Section({title, children}: React.PropsWithChildren<{title: string}>) {
   const {theme} = useAppTheme();
   return (
     <View style={{gap: theme.spacing.sm}}>
-      <AppText variant="subtitle" style={{fontWeight: theme.typography.weight.bold}}>
+      <AppText
+        variant="subtitle"
+        style={{fontWeight: theme.typography.weight.bold}}
+      >
         {title}
       </AppText>
       {children}
@@ -334,7 +345,10 @@ function Tappable({
   onPress,
   accessibilityLabel,
   children,
-}: React.PropsWithChildren<{onPress?: () => void; accessibilityLabel?: string}>) {
+}: React.PropsWithChildren<{
+  onPress?: () => void;
+  accessibilityLabel?: string;
+}>) {
   const {theme} = useAppTheme();
   if (!onPress) {
     return <>{children}</>;
@@ -344,7 +358,10 @@ function Tappable({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
-      style={({pressed}) => (pressed ? {opacity: theme.states.pressedOpacity} : null)}>
+      style={({pressed}) =>
+        pressed ? {opacity: theme.states.pressedOpacity} : null
+      }
+    >
       {children}
     </Pressable>
   );

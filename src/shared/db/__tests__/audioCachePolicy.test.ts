@@ -8,7 +8,7 @@ import {
   selectStaleChapters,
   summarizeReadyAssets,
 } from '../audioCachePolicy';
-import type { AudioAssetRecord, ChapterAudioSummary } from '../types';
+import type {AudioAssetRecord, ChapterAudioSummary} from '../types';
 
 const NOW = '2026-09-01T00:00:00.000Z';
 
@@ -17,7 +17,7 @@ function summary(
   readyBytes: number,
   lastOpenedAt: string | null,
 ): ChapterAudioSummary {
-  return { chapterId, readyBytes, assetCount: 1, lastOpenedAt };
+  return {chapterId, readyBytes, assetCount: 1, lastOpenedAt};
 }
 
 function readyRow(

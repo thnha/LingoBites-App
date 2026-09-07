@@ -2,19 +2,27 @@ import {create} from 'zustand';
 import {listLessons} from '../shared/db/LessonRepository';
 import type {LessonListItem} from '../shared/db/types';
 import type {ChipTone} from '../components/Chip';
-import type {LessonCardView, LessonSubjectKey, LibraryLessonCardView} from '../types/lesson';
+import type {
+  LessonCardView,
+  LessonSubjectKey,
+  LibraryLessonCardView,
+} from '../types/lesson';
 
-const CATEGORY_META: Record<LessonSubjectKey, {label: string; tone: ChipTone}> = {
-  grammar: {label: 'Ngữ pháp', tone: 'accentSoft'},
-  vocabulary: {label: 'Từ vựng', tone: 'gold'},
-  idioms: {label: 'Thành ngữ', tone: 'coralSoft'},
-  conversation: {label: 'Hội thoại', tone: 'accentSoft'},
-};
+const CATEGORY_META: Record<LessonSubjectKey, {label: string; tone: ChipTone}> =
+  {
+    grammar: {label: 'Ngữ pháp', tone: 'accentSoft'},
+    vocabulary: {label: 'Từ vựng', tone: 'gold'},
+    idioms: {label: 'Thành ngữ', tone: 'coralSoft'},
+    conversation: {label: 'Hội thoại', tone: 'accentSoft'},
+  };
 
 export type LibrarySubjectFilter = 'all' | LessonSubjectKey;
 
 function formatLessonDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('vi-VN', {day: 'numeric', month: 'short'});
+  return new Date(iso).toLocaleDateString('vi-VN', {
+    day: 'numeric',
+    month: 'short',
+  });
 }
 
 function estimateDurationMin(vocabularyCount: number): number {
@@ -55,7 +63,10 @@ type LibraryStore = {
   getSummary: () => {lessonCount: number; wordCount: number};
 };
 
-function listFilteredItems(query: string, subjectFilter: LibrarySubjectFilter): LessonListItem[] {
+function listFilteredItems(
+  query: string,
+  subjectFilter: LibrarySubjectFilter,
+): LessonListItem[] {
   const q = query.trim().toLowerCase();
   const items = listLessons();
   return items.filter(item => {

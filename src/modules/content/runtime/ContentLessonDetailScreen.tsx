@@ -12,7 +12,10 @@ import {getContentLessonById} from '../../../shared/db/ContentRuntimeRepository'
 import type {ContentLessonRow} from '../../../shared/db/ContentRuntimeRepository';
 import {useAppTheme} from '../../../theme';
 
-type Props = NativeStackScreenProps<LessonsStackParamList, 'ContentLessonDetail'>;
+type Props = NativeStackScreenProps<
+  LessonsStackParamList,
+  'ContentLessonDetail'
+>;
 
 export function ContentLessonDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
@@ -28,7 +31,14 @@ export function ContentLessonDetailScreen({navigation, route}: Props) {
     return (
       <AppScreen>
         <ScreenHeader onBack={() => navigation.goBack()} title="Bài học" />
-        <View style={{alignItems: 'center', flex: 1, justifyContent: 'center', padding: theme.spacing.xl}}>
+        <View
+          style={{
+            alignItems: 'center',
+            flex: 1,
+            justifyContent: 'center',
+            padding: theme.spacing.xl,
+          }}
+        >
           <AppText color="danger">Không tìm thấy bài học.</AppText>
         </View>
       </AppScreen>

@@ -28,7 +28,8 @@ export function HandoffDualActionBar({
         backgroundColor: theme.colors.background,
         borderTopColor: theme.colors.outlineVariant,
         paddingBottom: theme.spacing.lg,
-      }}>
+      }}
+    >
       <View style={{flexDirection: 'row', gap: theme.spacing.sm}}>
         <Pressable
           accessibilityLabel={backLabel}
@@ -46,9 +47,16 @@ export function HandoffDualActionBar({
               minHeight: 52,
               opacity: pressed ? theme.states.pressedOpacity : 1,
             },
-          ]}>
-          <MaterialIcon color={theme.colors.primary} name="chevron_left" size={22} />
-          <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>{backLabel}</AppText>
+          ]}
+        >
+          <MaterialIcon
+            color={theme.colors.primary}
+            name="chevron_left"
+            size={22}
+          />
+          <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
+            {backLabel}
+          </AppText>
         </Pressable>
         {onContinue ? (
           <Pressable
@@ -69,11 +77,18 @@ export function HandoffDualActionBar({
                 opacity:
                   continueDisabled || pressed ? theme.states.pressedOpacity : 1,
               },
-            ]}>
-            <AppText style={{color: theme.colors.text.inverse, fontWeight: '600'}}>
+            ]}
+          >
+            <AppText
+              style={{color: theme.colors.text.inverse, fontWeight: '600'}}
+            >
               {continueLabel}
             </AppText>
-            <MaterialIcon color={theme.colors.text.inverse} name="chevron_right" size={22} />
+            <MaterialIcon
+              color={theme.colors.text.inverse}
+              name="chevron_right"
+              size={22}
+            />
           </Pressable>
         ) : null}
       </View>

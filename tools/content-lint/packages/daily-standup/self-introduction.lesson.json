@@ -6,10 +6,7 @@
   "title_vi": "Giới thiệu bản thân và Công nghệ sử dụng",
   "blurb_vi": "Học cách giới thiệu tên, vai trò và các công nghệ lập trình bạn đang làm việc trong môi trường quốc tế.",
   "level": "A1",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Trình bày thành thạo 8 cụm từ giới thiệu bản thân và công nghệ trong 2 phút.",
   "situation_vi": "Buổi gặp mặt thành viên mới trong dự án phần mềm.",
@@ -47,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Xin chào, tôi là lập trình viên full-stack\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "e0e0db48a80ba1be"
-      ],
-      "srs_ref_ids": [
-        "543d992de182663d"
-      ],
+      "audio_ref_ids": ["e0e0db48a80ba1be"],
+      "srs_ref_ids": ["543d992de182663d"],
       "dialogue_turns": [
         {
           "id": "754046a3cdc4f4be",
@@ -85,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "543d992de182663d"
-        ],
+        "re_present_refs": ["543d992de182663d"],
         "tip_vi": "Hãy nhớ cụm từ \"Hi, I'm a full-stack developer\" nghĩa là \"Xin chào, tôi là lập trình viên full-stack\"."
       }
     },
@@ -102,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã làm việc với React và Node.js\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "59307ab9056c749f"
-      ],
-      "srs_ref_ids": [
-        "2b754d745c227e19"
-      ],
+      "audio_ref_ids": ["59307ab9056c749f"],
+      "srs_ref_ids": ["2b754d745c227e19"],
       "dialogue_turns": [
         {
           "id": "9215f22816876824",
@@ -140,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "2b754d745c227e19"
-        ],
+        "re_present_refs": ["2b754d745c227e19"],
         "tip_vi": "Hãy nhớ cụm từ \"I've been working with React and Node.js\" nghĩa là \"Tôi đã làm việc với React và Node.js\"."
       }
     },
@@ -157,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Trọng tâm chính của tôi là phát triển giao diện (frontend)\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "cc9b48457cf95aa8"
-      ],
-      "srs_ref_ids": [
-        "ac36ea6704c8af57"
-      ],
+      "audio_ref_ids": ["cc9b48457cf95aa8"],
+      "srs_ref_ids": ["ac36ea6704c8af57"],
       "dialogue_turns": [
         {
           "id": "fe30ee93926b93c6",
@@ -195,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "ac36ea6704c8af57"
-        ],
+        "re_present_refs": ["ac36ea6704c8af57"],
         "tip_vi": "Hãy nhớ cụm từ \"My main focus is frontend development\" nghĩa là \"Trọng tâm chính của tôi là phát triển giao diện (frontend)\"."
       }
     },
@@ -212,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi rất vui được gia nhập nhóm\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "8398845e37d0c8d6"
-      ],
-      "srs_ref_ids": [
-        "4a7b65659b97ae87"
-      ],
+      "audio_ref_ids": ["8398845e37d0c8d6"],
+      "srs_ref_ids": ["4a7b65659b97ae87"],
       "dialogue_turns": [
         {
           "id": "9060c5411508945c",
@@ -250,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "4a7b65659b97ae87"
-        ],
+        "re_present_refs": ["4a7b65659b97ae87"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm glad to join the team\" nghĩa là \"Tôi rất vui được gia nhập nhóm\"."
       }
     },
@@ -267,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi chịu trách nhiệm xây dựng các REST API\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7736ccace97af8e7"
-      ],
-      "srs_ref_ids": [
-        "05afb37195be2070"
-      ],
+      "audio_ref_ids": ["7736ccace97af8e7"],
+      "srs_ref_ids": ["05afb37195be2070"],
       "dialogue_turns": [
         {
           "id": "e962afccc23d6127",
@@ -305,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "05afb37195be2070"
-        ],
+        "re_present_refs": ["05afb37195be2070"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm responsible for building REST APIs\" nghĩa là \"Tôi chịu trách nhiệm xây dựng các REST API\"."
       }
     },
@@ -322,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sử dụng thành thạo TypeScript\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7c1afec2b1d1f4d4"
-      ],
-      "srs_ref_ids": [
-        "392ed2d4a5c42ad7"
-      ],
+      "audio_ref_ids": ["7c1afec2b1d1f4d4"],
+      "srs_ref_ids": ["392ed2d4a5c42ad7"],
       "dialogue_turns": [
         {
           "id": "5d1e69fd7695e35d",
@@ -360,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "392ed2d4a5c42ad7"
-        ],
+        "re_present_refs": ["392ed2d4a5c42ad7"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm comfortable working with TypeScript\" nghĩa là \"Tôi sử dụng thành thạo TypeScript\"."
       }
     },
@@ -377,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi rất hào hứng với dự án này\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "a26a8e14ac9802cf"
-      ],
-      "srs_ref_ids": [
-        "1a07bd4d4880bafd"
-      ],
+      "audio_ref_ids": ["a26a8e14ac9802cf"],
+      "srs_ref_ids": ["1a07bd4d4880bafd"],
       "dialogue_turns": [
         {
           "id": "5637607ea5971a3f",
@@ -415,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "1a07bd4d4880bafd"
-        ],
+        "re_present_refs": ["1a07bd4d4880bafd"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm excited about this project\" nghĩa là \"Tôi rất hào hứng với dự án này\"."
       }
     },
@@ -432,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi rất mong được làm việc cùng mọi người\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "3d9d0134c4fcee67"
-      ],
-      "srs_ref_ids": [
-        "ffbf52f25e56eada"
-      ],
+      "audio_ref_ids": ["3d9d0134c4fcee67"],
+      "srs_ref_ids": ["ffbf52f25e56eada"],
       "dialogue_turns": [
         {
           "id": "6ca5807c8129e226",
@@ -470,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "ffbf52f25e56eada"
-        ],
+        "re_present_refs": ["ffbf52f25e56eada"],
         "tip_vi": "Hãy nhớ cụm từ \"I look forward to working with everyone\" nghĩa là \"Tôi rất mong được làm việc cùng mọi người\"."
       }
     }
@@ -485,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Giới thiệu bản thân và Công nghệ sử dụng",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "Hi, I'm a full-stack developer",

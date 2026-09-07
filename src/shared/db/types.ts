@@ -1,9 +1,9 @@
-import type { AIOutput } from '../schemas/ai-output-v1';
-import type { VocabularyItem } from '../schemas/ai-output-v1';
-import type { LessonSubjectKey } from '../../types/lesson';
-import type { ContentMasteryState } from '../../modules/content/srs/contentScheduler';
+import type {AIOutput} from '../schemas/ai-output-v1';
+import type {VocabularyItem} from '../schemas/ai-output-v1';
+import type {LessonSubjectKey} from '../../types/lesson';
+import type {ContentMasteryState} from '../../modules/content/srs/contentScheduler';
 
-export type { ContentMasteryState };
+export type {ContentMasteryState};
 
 export type LessonSourceType = 'camera' | 'gallery' | 'paste_text';
 
@@ -44,7 +44,7 @@ export type SaveLessonInput = {
 };
 
 export type SaveLessonResult =
-  | { ok: true; lessonId: string; duplicate: boolean }
+  | {ok: true; lessonId: string; duplicate: boolean}
   | {
       ok: false;
       errorCode: 'LOCAL_DB_ERROR' | 'AI_INVALID_OUTPUT';
@@ -89,8 +89,8 @@ export type SaveFlashcardInput = {
 };
 
 export type SaveFlashcardResult =
-  | { ok: true; flashcardId: string; duplicate: boolean }
-  | { ok: false; errorCode: 'LOCAL_DB_ERROR'; message: string };
+  | {ok: true; flashcardId: string; duplicate: boolean}
+  | {ok: false; errorCode: 'LOCAL_DB_ERROR'; message: string};
 
 export type ListFlashcardsOptions = {
   lessonId?: string;
@@ -109,7 +109,7 @@ export type RecordFlashcardRatingInput = {
 };
 
 export type RecordFlashcardRatingResult =
-  | { ok: true; intervalDays: number; nextReviewAt: string }
+  | {ok: true; intervalDays: number; nextReviewAt: string}
   | {
       ok: false;
       errorCode: 'FLASHCARD_NOT_FOUND' | 'LOCAL_DB_ERROR';
@@ -311,7 +311,7 @@ export type ErrorEventCategory =
   | 'slow_response'
   | 'context_mismatch';
 
-export type ErrorEventSource = 'lesson_runtime' | 'speaking_room';
+export type ErrorEventSource = 'lesson_runtime' | 'speaking' | 'speaking_room';
 
 /** A row of the `error_events` table (SETE-110 / M5, REQ-28/29). */
 export type ErrorEventRecord = {

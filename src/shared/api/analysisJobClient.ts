@@ -118,7 +118,11 @@ function buildRequestBody(
   sourceType: AnalyzeTextRequestBody['source_type'],
 ): AnalyzeTextRequestBody {
   const platform =
-    Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : undefined;
+    Platform.OS === 'ios'
+      ? 'ios'
+      : Platform.OS === 'android'
+      ? 'android'
+      : undefined;
 
   return {
     request_id: createRequestId(),
@@ -178,7 +182,9 @@ function isErrorEnvelope(body: unknown): body is ApiErrorBody {
   );
 }
 
-function isCreateSuccessBody(body: unknown): body is CreateAnalysisJobSuccessBody {
+function isCreateSuccessBody(
+  body: unknown,
+): body is CreateAnalysisJobSuccessBody {
   return (
     isObject(body) &&
     typeof body.analysis_id === 'string' &&
@@ -213,7 +219,9 @@ type InProgressBody = Extract<
 function isInProgressBody(body: unknown): body is InProgressBody {
   return (
     isObject(body) &&
-    (body.status === 'queued' || body.status === 'processing' || body.status === 'paused') &&
+    (body.status === 'queued' ||
+      body.status === 'processing' ||
+      body.status === 'paused') &&
     isProgressBody(body.progress)
   );
 }
@@ -273,7 +281,11 @@ export async function runAnalysisJob(
     }
   } catch {
     if (isAborted(signal)) return cancelledResult();
-    return {ok: false, errorCode: 'NETWORK_ERROR', message: NETWORK_LOST_MESSAGE};
+    return {
+      ok: false,
+      errorCode: 'NETWORK_ERROR',
+      message: NETWORK_LOST_MESSAGE,
+    };
   }
   if (isAborted(signal)) return cancelledResult();
 
@@ -282,7 +294,11 @@ export async function runAnalysisJob(
     createBody = await createResponse.json();
   } catch {
     if (isAborted(signal)) return cancelledResult();
-    return {ok: false, errorCode: 'NETWORK_ERROR', message: NETWORK_LOST_MESSAGE};
+    return {
+      ok: false,
+      errorCode: 'NETWORK_ERROR',
+      message: NETWORK_LOST_MESSAGE,
+    };
   }
   if (isAborted(signal)) return cancelledResult();
 
@@ -293,13 +309,23 @@ export async function runAnalysisJob(
   }
 
   if (!isCreateSuccessBody(createBody)) {
-    return {ok: false, errorCode: 'AI_INVALID_OUTPUT', message: AI_ANALYSIS_FAILED_MESSAGE};
+    return {
+      ok: false,
+      errorCode: 'AI_INVALID_OUTPUT',
+      message: AI_ANALYSIS_FAILED_MESSAGE,
+    };
   }
 
   const statusUrl = resolveStatusUrl(apiBaseUrl, createBody.status_url);
-  const retryAfterMs = parseRetryAfter(createResponse.headers.get('Retry-After'));
+  const retryAfterMs = parseRetryAfter(
+    createResponse.headers.get('Retry-After'),
+  );
 
-  const initialWait = await waitBeforeNextAttempt(retryAfterMs, deadline, signal);
+  const initialWait = await waitBeforeNextAttempt(
+    retryAfterMs,
+    deadline,
+    signal,
+  );
   if (initialWait === 'cancelled') return cancelledResult();
 
   while (Date.now() < deadline) {
@@ -322,7 +348,11 @@ export async function runAnalysisJob(
       }
     } catch {
       if (isAborted(signal)) return cancelledResult();
-      const outcome = await waitBeforeNextAttempt(POLL_INTERVAL_MS, deadline, signal);
+      const outcome = await waitBeforeNextAttempt(
+        POLL_INTERVAL_MS,
+        deadline,
+        signal,
+      );
       if (outcome === 'cancelled') return cancelledResult();
       if (outcome === 'timeout') break;
       continue;
@@ -330,7 +360,11 @@ export async function runAnalysisJob(
     if (isAborted(signal)) return cancelledResult();
 
     if (!pollResponse.ok && isTransientStatus(pollResponse.status)) {
-      const outcome = await waitBeforeNextAttempt(POLL_INTERVAL_MS, deadline, signal);
+      const outcome = await waitBeforeNextAttempt(
+        POLL_INTERVAL_MS,
+        deadline,
+        signal,
+      );
       if (outcome === 'cancelled') return cancelledResult();
       if (outcome === 'timeout') break;
       continue;
@@ -341,7 +375,11 @@ export async function runAnalysisJob(
       pollBody = await pollResponse.json();
     } catch {
       if (isAborted(signal)) return cancelledResult();
-      const outcome = await waitBeforeNextAttempt(POLL_INTERVAL_MS, deadline, signal);
+      const outcome = await waitBeforeNextAttempt(
+        POLL_INTERVAL_MS,
+        deadline,
+        signal,
+      );
       if (outcome === 'cancelled') return cancelledResult();
       if (outcome === 'timeout') break;
       continue;
@@ -359,17 +397,29 @@ export async function runAnalysisJob(
     } else if (isCompletedBody(pollBody)) {
       const validation = validateAIOutput(pollBody.data);
       if (!validation.valid) {
-        return {ok: false, errorCode: 'AI_INVALID_OUTPUT', message: AI_ANALYSIS_FAILED_MESSAGE};
+        return {
+          ok: false,
+          errorCode: 'AI_INVALID_OUTPUT',
+          message: AI_ANALYSIS_FAILED_MESSAGE,
+        };
       }
       return {ok: true, lesson: validation.data};
     } else if (isErrorEnvelope(pollBody)) {
       const code = pollBody.error.code;
       return {ok: false, errorCode: code, message: mapApiErrorToMessage(code)};
     } else {
-      return {ok: false, errorCode: 'AI_INVALID_OUTPUT', message: AI_ANALYSIS_FAILED_MESSAGE};
+      return {
+        ok: false,
+        errorCode: 'AI_INVALID_OUTPUT',
+        message: AI_ANALYSIS_FAILED_MESSAGE,
+      };
     }
 
-    const outcome = await waitBeforeNextAttempt(POLL_INTERVAL_MS, deadline, signal);
+    const outcome = await waitBeforeNextAttempt(
+      POLL_INTERVAL_MS,
+      deadline,
+      signal,
+    );
     if (outcome === 'cancelled') return cancelledResult();
     if (outcome === 'timeout') break;
   }

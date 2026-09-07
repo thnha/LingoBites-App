@@ -6,17 +6,12 @@
   "title_vi": "Đánh giá mã nguồn & Bàn giao nhiệm vụ",
   "blurb_vi": "Học các mẫu câu khi tạo Pull Request, yêu cầu Review Code và phản hồi góp ý từ đồng nghiệp.",
   "level": "B1",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Gửi yêu cầu review PR và giải thích các thay đổi mã nguồn.",
   "situation_vi": "Hoàn thành tính năng và mở Pull Request trên GitHub/GitLab.",
   "learner_role_vi": "Developer yêu cầu đồng nghiệp duyệt PR.",
-  "prerequisite_lesson_slugs": [
-    "team-roles"
-  ],
+  "prerequisite_lesson_slugs": ["team-roles"],
   "pronunciation_focus_vi": "Nhấn âm các thuật ngữ Git: pull request, merge conflict, code review, approval.",
   "final_speaking_task_vi": "Yêu cầu đồng nghiệp review PR và nêu ngắn gọn những gì đã thay đổi.",
   "pass_conditions_vi": "Nói rõ ràng lý do tạo PR và cách thử nghiệm.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã mở một PR cho tính năng đăng nhập\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2e27d18b2a4ceedf"
-      ],
-      "srs_ref_ids": [
-        "2180fd461579c49d"
-      ],
+      "audio_ref_ids": ["2e27d18b2a4ceedf"],
+      "srs_ref_ids": ["2180fd461579c49d"],
       "dialogue_turns": [
         {
           "id": "97e2c480bac424bc",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "2180fd461579c49d"
-        ],
+        "re_present_refs": ["2180fd461579c49d"],
         "tip_vi": "Hãy nhớ cụm từ \"I have opened a PR for the login feature\" nghĩa là \"Tôi đã mở một PR cho tính năng đăng nhập\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Ai đó có thể duyệt mã giúp tôi khi rảnh được không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "1996425cbe14021a"
-      ],
-      "srs_ref_ids": [
-        "e4a3b90792d7d664"
-      ],
+      "audio_ref_ids": ["1996425cbe14021a"],
+      "srs_ref_ids": ["e4a3b90792d7d664"],
       "dialogue_turns": [
         {
           "id": "c05e7779613691bf",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "e4a3b90792d7d664"
-        ],
+        "re_present_refs": ["e4a3b90792d7d664"],
         "tip_vi": "Hãy nhớ cụm từ \"Could someone review my code when free?\" nghĩa là \"Ai đó có thể duyệt mã giúp tôi khi rảnh được không?\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã xử lý tất cả các góp ý của bạn\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "ea7682462db5c6ab"
-      ],
-      "srs_ref_ids": [
-        "a4f9c02151fef4fd"
-      ],
+      "audio_ref_ids": ["ea7682462db5c6ab"],
+      "srs_ref_ids": ["a4f9c02151fef4fd"],
       "dialogue_turns": [
         {
           "id": "f95efc1aa55abe2f",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "a4f9c02151fef4fd"
-        ],
+        "re_present_refs": ["a4f9c02151fef4fd"],
         "tip_vi": "Hãy nhớ cụm từ \"I have addressed all your review comments\" nghĩa là \"Tôi đã xử lý tất cả các góp ý của bạn\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"PR đã qua kiểm tra CI và sẵn sàng gộp mã\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "9d8aaf80603dc435"
-      ],
-      "srs_ref_ids": [
-        "8b76981e9e1d3be4"
-      ],
+      "audio_ref_ids": ["9d8aaf80603dc435"],
+      "srs_ref_ids": ["8b76981e9e1d3be4"],
       "dialogue_turns": [
         {
           "id": "1d7c58e9792e239d",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "8b76981e9e1d3be4"
-        ],
+        "re_present_refs": ["8b76981e9e1d3be4"],
         "tip_vi": "Hãy nhớ cụm từ \"The PR has passed CI and is ready to merge\" nghĩa là \"PR đã qua kiểm tra CI và sẵn sàng gộp mã\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang giải quyết xung đột mã với nhánh main\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "3cc9378832b46853"
-      ],
-      "srs_ref_ids": [
-        "8650b47b572cd0de"
-      ],
+      "audio_ref_ids": ["3cc9378832b46853"],
+      "srs_ref_ids": ["8650b47b572cd0de"],
       "dialogue_turns": [
         {
           "id": "a714e87c0eab10fb",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "8650b47b572cd0de"
-        ],
+        "re_present_refs": ["8650b47b572cd0de"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm resolving a merge conflict with main branch\" nghĩa là \"Tôi đang giải quyết xung đột mã với nhánh main\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã để lại một số ghi chú trong phần mô tả PR\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "3e8169f62a962d3c"
-      ],
-      "srs_ref_ids": [
-        "c72b84a0575f4cde"
-      ],
+      "audio_ref_ids": ["3e8169f62a962d3c"],
+      "srs_ref_ids": ["c72b84a0575f4cde"],
       "dialogue_turns": [
         {
           "id": "27e7ab2e87862681",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "c72b84a0575f4cde"
-        ],
+        "re_present_refs": ["c72b84a0575f4cde"],
         "tip_vi": "Hãy nhớ cụm từ \"I left some inline notes on the PR description\" nghĩa là \"Tôi đã để lại một số ghi chú trong phần mô tả PR\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Vui lòng nhấn approve PR nếu bạn thấy ổn\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "42063632776bcdec"
-      ],
-      "srs_ref_ids": [
-        "690a23fc1faa6270"
-      ],
+      "audio_ref_ids": ["42063632776bcdec"],
+      "srs_ref_ids": ["690a23fc1faa6270"],
       "dialogue_turns": [
         {
           "id": "5f2eebd43edcb4da",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "690a23fc1faa6270"
-        ],
+        "re_present_refs": ["690a23fc1faa6270"],
         "tip_vi": "Hãy nhớ cụm từ \"Please approve the PR if it looks good to you\" nghĩa là \"Vui lòng nhấn approve PR nếu bạn thấy ổn\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Nó đã được tự động triển khai lên môi trường staging\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "74d27b18b0b9dfab"
-      ],
-      "srs_ref_ids": [
-        "02dab2904187c78d"
-      ],
+      "audio_ref_ids": ["74d27b18b0b9dfab"],
+      "srs_ref_ids": ["02dab2904187c78d"],
       "dialogue_turns": [
         {
           "id": "f651431340bd5f79",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "02dab2904187c78d"
-        ],
+        "re_present_refs": ["02dab2904187c78d"],
         "tip_vi": "Hãy nhớ cụm từ \"It's automatically deployed to staging environment\" nghĩa là \"Nó đã được tự động triển khai lên môi trường staging\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Đánh giá mã nguồn & Bàn giao nhiệm vụ",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "I have opened a PR for the login feature",

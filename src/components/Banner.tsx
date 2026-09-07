@@ -20,20 +20,20 @@ export function Banner({message, variant = 'info'}: Props) {
       style={[
         styles.container,
         {
-          backgroundColor: isNeutral ? theme.colors.surfaceMuted : theme.colors.accentSoft,
+          backgroundColor: isNeutral
+            ? theme.colors.surfaceMuted
+            : theme.colors.accentSoft,
           borderColor: isNeutral ? theme.colors.border : theme.colors.accent,
         },
       ]}
-      testID="review-banner">
+      testID="review-banner"
+    >
       <MaterialIcon
         color={isNeutral ? theme.colors.text.secondary : theme.colors.primary}
         name="info"
         size={18}
       />
-      <AppText
-        color="secondary"
-        variant="label"
-        style={styles.message}>
+      <AppText color="secondary" variant="label" style={styles.message}>
         {message}
       </AppText>
     </View>

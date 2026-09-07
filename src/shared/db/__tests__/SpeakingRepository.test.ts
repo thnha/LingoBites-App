@@ -126,7 +126,15 @@ describe('SpeakingRepository error notebook', () => {
     const serialized = JSON.stringify(event);
     expect(serialized).not.toMatch(/spoken|transcript|audio/i);
     expect(Object.keys(event).sort()).toEqual(
-      ['activityId', 'category', 'createdAt', 'id', 'lessonId', 'reviewItemId', 'source'].sort(),
+      [
+        'activityId',
+        'category',
+        'createdAt',
+        'id',
+        'lessonId',
+        'reviewItemId',
+        'source',
+      ].sort(),
     );
   });
 });

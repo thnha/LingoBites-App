@@ -4,7 +4,6 @@ import {getActivePackage} from '../../../shared/db/ContentPackageRepository';
 import {constantTimeEqualHex} from '../importer/packageChecksum';
 import {
   BUNDLED_PACKAGE_SLUG,
-  BUNDLED_PACKAGE_VERSION,
   BUNDLED_PACKAGE_SHA256,
   BUNDLED_PACKAGE_ZIP_BASE64,
 } from './bundledPackageData';
@@ -37,7 +36,9 @@ export type ContentBootstrapDeps = {
 /**
  * Returns the decoded Uint8Array of the bundled ZIP package.
  */
-export function getBundledPackageZipBytes(overrideBytes?: Uint8Array): Uint8Array {
+export function getBundledPackageZipBytes(
+  overrideBytes?: Uint8Array,
+): Uint8Array {
   if (overrideBytes) {
     return overrideBytes;
   }
@@ -59,7 +60,11 @@ export async function bootstrapContentPackage(
   const sha256 = deps.bundledSha256 ?? BUNDLED_PACKAGE_SHA256;
   const zipBytes = getBundledPackageZipBytes(deps.bundledZipBytes);
 
-  if (active && active.slug === slug && constantTimeEqualHex(active.sha256, sha256)) {
+  if (
+    active &&
+    active.slug === slug &&
+    constantTimeEqualHex(active.sha256, sha256)
+  ) {
     return {
       ok: true,
       status: 'already_active',

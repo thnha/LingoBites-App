@@ -26,7 +26,9 @@ export function ActiveRecallCard({data, onComplete, onSkip}: Props) {
 
   return (
     <View style={{gap: theme.spacing.lg}}>
-      {data.instructionsVi ? <AppText color="secondary">{data.instructionsVi}</AppText> : null}
+      {data.instructionsVi ? (
+        <AppText color="secondary">{data.instructionsVi}</AppText>
+      ) : null}
       {data.items.map(item => {
         const isRevealed = revealed.has(item.id);
         return (
@@ -45,7 +47,11 @@ export function ActiveRecallCard({data, onComplete, onSkip}: Props) {
                         setRatings(prev => ({...prev, [item.id]: option.key}))
                       }
                       title={option.label}
-                      variant={ratings[item.id] === option.key ? 'primary' : 'secondary'}
+                      variant={
+                        ratings[item.id] === option.key
+                          ? 'primary'
+                          : 'secondary'
+                      }
                     />
                   ))}
                 </View>

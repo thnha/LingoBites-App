@@ -6,17 +6,12 @@
   "title_vi": "Báo cáo khó khăn & Nêu yêu cầu hỗ trợ",
   "blurb_vi": "Nâng cao khả năng trình bày rào cản kỹ thuật (blockers) trong họp stand-up và tìm sự giúp đỡ từ đồng nghiệp.",
   "level": "A2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Trình bày rõ ràng rào cản công việc và nhờ đồng nghiệp hỗ trợ trong 1 phút.",
   "situation_vi": "Buổi họp stand-up khi bạn đang gặp sự cố kỹ thuật chưa giải quyết được.",
   "learner_role_vi": "Developer báo cáo tiến độ và nêu rào cản.",
-  "prerequisite_lesson_slugs": [
-    "daily-standup"
-  ],
+  "prerequisite_lesson_slugs": ["daily-standup"],
   "pronunciation_focus_vi": "Phát âm đúng từ blocker, issue, dependency, stuck.",
   "final_speaking_task_vi": "Nói báo cáo stand-up gồm 3 phần: Đã làm gì, Đang gặp blocker gì, Cần ai giúp.",
   "pass_conditions_vi": "Nêu rõ ràng vấn đề kỹ thuật và lời đề nghị trợ giúp.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi hiện đang bị nghẽn bởi API xác thực\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7ae40c0a2999f64d"
-      ],
-      "srs_ref_ids": [
-        "bf8d93cd90f24f60"
-      ],
+      "audio_ref_ids": ["7ae40c0a2999f64d"],
+      "srs_ref_ids": ["bf8d93cd90f24f60"],
       "dialogue_turns": [
         {
           "id": "923cf16c2071579b",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "bf8d93cd90f24f60"
-        ],
+        "re_present_refs": ["bf8d93cd90f24f60"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm currently blocked by the authentication API\" nghĩa là \"Tôi hiện đang bị nghẽn bởi API xác thực\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "ad5c7c86cc9aa894"
-      ],
-      "srs_ref_ids": [
-        "0b221ce9a0c4eec2"
-      ],
+      "audio_ref_ids": ["ad5c7c86cc9aa894"],
+      "srs_ref_ids": ["0b221ce9a0c4eec2"],
       "dialogue_turns": [
         {
           "id": "82947416a99e6970",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "0b221ce9a0c4eec2"
-        ],
+        "re_present_refs": ["0b221ce9a0c4eec2"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm stuck on a memory leak issue\" nghĩa là \"Tôi đang bị kẹt ở sự cố rò rỉ bộ nhớ\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Có thể tôi cần sự trợ giúp từ đội backend\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "9f501e76b922b04c"
-      ],
-      "srs_ref_ids": [
-        "e07d5e2460c76927"
-      ],
+      "audio_ref_ids": ["9f501e76b922b04c"],
+      "srs_ref_ids": ["e07d5e2460c76927"],
       "dialogue_turns": [
         {
           "id": "fe797f154c311f55",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "e07d5e2460c76927"
-        ],
+        "re_present_refs": ["e07d5e2460c76927"],
         "tip_vi": "Hãy nhớ cụm từ \"I might need some help from the backend team\" nghĩa là \"Có thể tôi cần sự trợ giúp từ đội backend\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang chờ thiết kế UI chính thức\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "51b2174f35b32621"
-      ],
-      "srs_ref_ids": [
-        "fc0d9973ee2ccbe5"
-      ],
+      "audio_ref_ids": ["51b2174f35b32621"],
+      "srs_ref_ids": ["fc0d9973ee2ccbe5"],
       "dialogue_turns": [
         {
           "id": "7f1054ba2ef7dcd9",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "fc0d9973ee2ccbe5"
-        ],
+        "re_present_refs": ["fc0d9973ee2ccbe5"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm waiting for final UI designs\" nghĩa là \"Tôi đang chờ thiết kế UI chính thức\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta hãy trao đổi riêng việc này sau cuộc họp\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "f30f29ee29d46954"
-      ],
-      "srs_ref_ids": [
-        "3fb7bb7c80d6039c"
-      ],
+      "audio_ref_ids": ["f30f29ee29d46954"],
+      "srs_ref_ids": ["3fb7bb7c80d6039c"],
       "dialogue_turns": [
         {
           "id": "3dc58572906a3f81",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "3fb7bb7c80d6039c"
-        ],
+        "re_present_refs": ["3fb7bb7c80d6039c"],
         "tip_vi": "Hãy nhớ cụm từ \"Let us take this discussion offline\" nghĩa là \"Chúng ta hãy trao đổi riêng việc này sau cuộc họp\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta có thể lập trình đôi trong 15 phút không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2d5a07c59f18a32a"
-      ],
-      "srs_ref_ids": [
-        "228ccd0cba39d854"
-      ],
+      "audio_ref_ids": ["2d5a07c59f18a32a"],
+      "srs_ref_ids": ["228ccd0cba39d854"],
       "dialogue_turns": [
         {
           "id": "e1d0d1ecd80dd680",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "228ccd0cba39d854"
-        ],
+        "re_present_refs": ["228ccd0cba39d854"],
         "tip_vi": "Hãy nhớ cụm từ \"Can we pair program on this for 15 minutes?\" nghĩa là \"Chúng ta có thể lập trình đôi trong 15 phút không?\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Rào cản này ảnh hưởng tới tiến độ sprint\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "b7667a8a67f272e1"
-      ],
-      "srs_ref_ids": [
-        "42b85130662de147"
-      ],
+      "audio_ref_ids": ["b7667a8a67f272e1"],
+      "srs_ref_ids": ["42b85130662de147"],
       "dialogue_turns": [
         {
           "id": "10ebe95400301dc0",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "42b85130662de147"
-        ],
+        "re_present_refs": ["42b85130662de147"],
         "tip_vi": "Hãy nhớ cụm từ \"This blocker impacts our sprint timeline\" nghĩa là \"Rào cản này ảnh hưởng tới tiến độ sprint\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi hy vọng sẽ xử lý xong việc này trong hôm nay\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7072d09a297d1c2b"
-      ],
-      "srs_ref_ids": [
-        "3085d9d56f80bc01"
-      ],
+      "audio_ref_ids": ["7072d09a297d1c2b"],
+      "srs_ref_ids": ["3085d9d56f80bc01"],
       "dialogue_turns": [
         {
           "id": "5b5eea6a7946e61d",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "3085d9d56f80bc01"
-        ],
+        "re_present_refs": ["3085d9d56f80bc01"],
         "tip_vi": "Hãy nhớ cụm từ \"I hope to resolve this by the end of today\" nghĩa là \"Tôi hy vọng sẽ xử lý xong việc này trong hôm nay\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Báo cáo khó khăn & Nêu yêu cầu hỗ trợ",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "I'm currently blocked by the authentication API",

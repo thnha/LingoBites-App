@@ -29,7 +29,13 @@ export function WordCard({
 
   return (
     <AppCard style={{gap: theme.spacing.xs}}>
-      <View style={{alignItems: 'center', flexDirection: 'row', gap: theme.spacing.sm}}>
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: theme.spacing.sm,
+        }}
+      >
         <View style={{flex: 1}}>
           <AppText variant="h3">{word}</AppText>
         </View>

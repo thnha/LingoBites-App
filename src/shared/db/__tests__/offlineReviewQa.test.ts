@@ -1,9 +1,9 @@
-import { validFullOutput } from '../../fixtures';
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { getDatabase, resetDatabaseForTests } from '../database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../constants';
-import { saveLesson } from '../LessonRepository';
+import {validFullOutput} from '../../fixtures';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {getDatabase, resetDatabaseForTests} from '../database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../constants';
+import {saveLesson} from '../LessonRepository';
 import {
   getCardDueAt,
   getDueFlashcards,
@@ -15,7 +15,7 @@ import {
 describe('Offline review QA (SETE-101)', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
   });
 
   it('save flashcard -> offline session -> restart keeps schedule and review_sessions', () => {
@@ -41,9 +41,9 @@ describe('Offline review QA (SETE-101)', () => {
     }
 
     // The new card is immediately due for review today.
-    expect(
-      getDueFlashcards({ today: '2026-08-17T12:00:00.000Z' }),
-    ).toHaveLength(1);
+    expect(getDueFlashcards({today: '2026-08-17T12:00:00.000Z'})).toHaveLength(
+      1,
+    );
 
     // 2. Complete one review session while offline: rate the due card.
     const rating = recordFlashcardRating({
@@ -59,9 +59,9 @@ describe('Offline review QA (SETE-101)', () => {
     expect(rating.intervalDays).toBe(3);
 
     // The card leaves today's due queue after the session.
-    expect(
-      getDueFlashcards({ today: '2026-08-17T23:59:59.000Z' }),
-    ).toHaveLength(0);
+    expect(getDueFlashcards({today: '2026-08-17T23:59:59.000Z'})).toHaveLength(
+      0,
+    );
 
     // 3. Simulate an app restart: drop the module DB handle + migration flag,
     //    then reopen the same (file/name-keyed) database.
@@ -72,9 +72,9 @@ describe('Offline review QA (SETE-101)', () => {
     // 4. Schedule persisted: the card is still saved and due in 3 days.
     expect(listFlashcards()).toHaveLength(1);
     expect(getCardDueAt(saved.flashcardId)).toBe('2026-08-20T12:00:00.000Z');
-    expect(
-      getDueFlashcards({ today: '2026-08-20T12:00:00.000Z' }),
-    ).toHaveLength(1);
+    expect(getDueFlashcards({today: '2026-08-20T12:00:00.000Z'})).toHaveLength(
+      1,
+    );
 
     // 5. The review_sessions row written during the offline session persisted.
     const sessionRows = reopened.execute(

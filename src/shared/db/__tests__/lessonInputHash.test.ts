@@ -1,8 +1,13 @@
-import {computeLessonInputHash, normalizeConfirmedTextForHash} from '../lessonInputHash';
+import {
+  computeLessonInputHash,
+  normalizeConfirmedTextForHash,
+} from '../lessonInputHash';
 
 describe('lessonInputHash', () => {
   it('normalizes whitespace before hashing', () => {
-    expect(normalizeConfirmedTextForHash('  Hello   world \n')).toBe('Hello world');
+    expect(normalizeConfirmedTextForHash('  Hello   world \n')).toBe(
+      'Hello world',
+    );
   });
 
   it('returns stable hash for same normalized input', () => {

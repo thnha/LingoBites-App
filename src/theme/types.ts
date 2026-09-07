@@ -100,7 +100,12 @@ export type AppTheme = {
   shadow: ShadowScale;
   components: {
     button: {
-      primary: {background: string; text: string; height: number; radius: number};
+      primary: {
+        background: string;
+        text: string;
+        height: number;
+        radius: number;
+      };
       secondary: {
         background: string;
         text: string;

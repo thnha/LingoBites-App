@@ -79,10 +79,14 @@ describe('Feature Flag: reviewSystem', () => {
       expect(errorMessages.length).toBeGreaterThan(0);
 
       // Should NOT show review UI elements
-      const flipCards = tree.root.findAll(node => node.props.testID === 'daily-review-flip-card');
+      const flipCards = tree.root.findAll(
+        node => node.props.testID === 'daily-review-flip-card',
+      );
       expect(flipCards.length).toBe(0);
 
-      const ratingButtons = tree.root.findAll(node => node.props.testID === 'rating-remembered');
+      const ratingButtons = tree.root.findAll(
+        node => node.props.testID === 'rating-remembered',
+      );
       expect(ratingButtons.length).toBe(0);
     });
 
@@ -110,10 +114,14 @@ describe('Feature Flag: reviewSystem', () => {
       );
 
       // Should show review UI
-      const flipCards = tree.root.findAll(node => node.props.testID === 'daily-review-flip-card');
+      const flipCards = tree.root.findAll(
+        node => node.props.testID === 'daily-review-flip-card',
+      );
       expect(flipCards.length).toBeGreaterThan(0);
 
-      const ratingButtons = tree.root.findAll(node => node.props.testID === 'rating-remembered');
+      const ratingButtons = tree.root.findAll(
+        node => node.props.testID === 'rating-remembered',
+      );
       expect(ratingButtons.length).toBeGreaterThan(0);
 
       // Should NOT show disabled message
@@ -169,7 +177,9 @@ describe('Feature Flag: reviewSystem', () => {
 
       // Should show flashcard list or empty state
       // (either the card or an empty state message)
-      const allText = tree.root.findAll(node => typeof node.props.children === 'string');
+      const allText = tree.root.findAll(
+        node => typeof node.props.children === 'string',
+      );
       expect(allText.length).toBeGreaterThan(0);
     });
   });

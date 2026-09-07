@@ -1,10 +1,10 @@
-import { listUpcomingReviewReminders } from '../../shared/db/FlashcardRepository';
+import {listUpcomingReviewReminders} from '../../shared/db/FlashcardRepository';
 import {
   computeReminderPlan,
   REVIEW_REMINDER_BODY,
   REVIEW_REMINDER_TITLE,
 } from '../../shared/db/reminderPolicy';
-import type { PendingReminder } from '../../shared/db/reminderPolicy';
+import type {PendingReminder} from '../../shared/db/reminderPolicy';
 
 /**
  * Golden-hour reminders (REQ-10 / SETE-89).
@@ -29,7 +29,7 @@ export type ReminderScheduler = {
   /** What the OS currently has pending, one entry per card. */
   listPending: () => PendingReminder[];
   /** Schedules a notification that fires at the card's due time. */
-  schedule: (params: { cardId: string; word: string; dueAt: string }) => void;
+  schedule: (params: {cardId: string; word: string; dueAt: string}) => void;
   /** Cancels any pending notification for the card. */
   cancel: (cardId: string) => void;
 };
@@ -85,14 +85,14 @@ export function syncReviewReminders(
     });
   }
 
-  return { scheduled: plan.toSchedule.length, cancelled: plan.toCancel.length };
+  return {scheduled: plan.toSchedule.length, cancelled: plan.toCancel.length};
 }
 
 /** Copy for the notification that fires when a card reaches its due time. */
 export function buildReminderNotification(card: {
   word: string;
   dueAt: string;
-}): { title: string; body: string; fireAt: string } {
+}): {title: string; body: string; fireAt: string} {
   return {
     title: REVIEW_REMINDER_TITLE,
     body: REVIEW_REMINDER_BODY(card.word),

@@ -34,7 +34,18 @@ function seedActivePackageWithShadowingContent(db: ReturnType<typeof open>) {
       id, package_id, slug, schema_version, title_en, title_vi, blurb_vi,
       level, target_skills_json, estimated_duration_minutes
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-    ['lesson-1', 'pkg-1', 'lesson-1', '0.1.0', 'Title', 'Bài học 1', 'blurb', 'A2', '[]', 10],
+    [
+      'lesson-1',
+      'pkg-1',
+      'lesson-1',
+      '0.1.0',
+      'Title',
+      'Bài học 1',
+      'blurb',
+      'A2',
+      '[]',
+      10,
+    ],
   );
   db.execute(
     `INSERT INTO content_items (

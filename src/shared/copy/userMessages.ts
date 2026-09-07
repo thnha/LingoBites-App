@@ -8,8 +8,7 @@ export const EMPTY_GRAMMAR_MESSAGE =
 
 export const EMPTY_SECTION_MESSAGE = 'Chưa có nội dung cho phần này.';
 
-export const EMPTY_INPUT_MESSAGE =
-  'Vui lòng nhập hoặc dán đoạn tiếng Anh.';
+export const EMPTY_INPUT_MESSAGE = 'Vui lòng nhập hoặc dán đoạn tiếng Anh.';
 
 export const TEXT_TOO_LONG_MESSAGE = `Đoạn văn quá dài. Vui lòng rút ngắn còn tối đa ${MAX_INPUT_TEXT_LENGTH} ký tự.`;
 

@@ -115,7 +115,9 @@ export function getPackageById(
   id: ContentPackageId,
 ): ContentPackageSummary | null {
   const db = getDatabase();
-  const result = db.execute('SELECT * FROM content_packages WHERE id = ?;', [id]);
+  const result = db.execute('SELECT * FROM content_packages WHERE id = ?;', [
+    id,
+  ]);
   const row = result.rows?.item(0) as PackageRow | undefined;
   if (!row) {
     return null;
@@ -179,7 +181,9 @@ export function deletePackageContent(packageId: ContentPackageId): void {
   db.execute('DELETE FROM content_audio_assets WHERE package_id = ?;', [
     packageId,
   ]);
-  db.execute('DELETE FROM content_activities WHERE package_id = ?;', [packageId]);
+  db.execute('DELETE FROM content_activities WHERE package_id = ?;', [
+    packageId,
+  ]);
   db.execute('DELETE FROM content_units WHERE package_id = ?;', [packageId]);
   db.execute('DELETE FROM content_items WHERE package_id = ?;', [packageId]);
   db.execute('DELETE FROM content_lessons WHERE package_id = ?;', [packageId]);

@@ -33,8 +33,14 @@ describe('analyzeText', () => {
   });
 
   it('uses mock path when USE_MOCK_AI is true', async () => {
-    mockGetAppConfig.mockReturnValue({useMockAi: true, apiBaseUrl: 'http://localhost:3001'});
-    mockSimulateAnalysisJob.mockResolvedValue({ok: true, lesson: {title: 'Mock lesson'}});
+    mockGetAppConfig.mockReturnValue({
+      useMockAi: true,
+      apiBaseUrl: 'http://localhost:3001',
+    });
+    mockSimulateAnalysisJob.mockResolvedValue({
+      ok: true,
+      lesson: {title: 'Mock lesson'},
+    });
 
     const result = await analyzeText('Sample text.', {fixture: 'minimal'});
 
@@ -49,7 +55,10 @@ describe('analyzeText', () => {
   });
 
   it('uses API path when USE_MOCK_AI is false', async () => {
-    mockGetAppConfig.mockReturnValue({useMockAi: false, apiBaseUrl: 'http://localhost:3001'});
+    mockGetAppConfig.mockReturnValue({
+      useMockAi: false,
+      apiBaseUrl: 'http://localhost:3001',
+    });
     mockRunAnalysisJob.mockResolvedValue({
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',
@@ -73,8 +82,14 @@ describe('analyzeText', () => {
   });
 
   it('forwards the progress callback and abort signal to the real client on the API path', async () => {
-    mockGetAppConfig.mockReturnValue({useMockAi: false, apiBaseUrl: 'http://localhost:3001'});
-    mockRunAnalysisJob.mockResolvedValue({ok: true, lesson: {title: 'Real lesson'}});
+    mockGetAppConfig.mockReturnValue({
+      useMockAi: false,
+      apiBaseUrl: 'http://localhost:3001',
+    });
+    mockRunAnalysisJob.mockResolvedValue({
+      ok: true,
+      lesson: {title: 'Real lesson'},
+    });
     const onProgress = jest.fn();
     const controller = new AbortController();
 
@@ -94,8 +109,14 @@ describe('analyzeText', () => {
   });
 
   it('forwards the progress callback and abort signal to the mock simulator on the mock path', async () => {
-    mockGetAppConfig.mockReturnValue({useMockAi: true, apiBaseUrl: 'http://localhost:3001'});
-    mockSimulateAnalysisJob.mockResolvedValue({ok: true, lesson: {title: 'Mock lesson'}});
+    mockGetAppConfig.mockReturnValue({
+      useMockAi: true,
+      apiBaseUrl: 'http://localhost:3001',
+    });
+    mockSimulateAnalysisJob.mockResolvedValue({
+      ok: true,
+      lesson: {title: 'Mock lesson'},
+    });
     const onProgress = jest.fn();
     const controller = new AbortController();
 
@@ -115,7 +136,10 @@ describe('analyzeText', () => {
   });
 
   it('returns cancelled result without emitting a completion analytics event', async () => {
-    mockGetAppConfig.mockReturnValue({useMockAi: false, apiBaseUrl: 'http://localhost:3001'});
+    mockGetAppConfig.mockReturnValue({
+      useMockAi: false,
+      apiBaseUrl: 'http://localhost:3001',
+    });
     mockRunAnalysisJob.mockResolvedValue({ok: false, cancelled: true});
     const controller = new AbortController();
 
@@ -139,7 +163,10 @@ describe('analyzeText', () => {
   });
 
   it('still emits one ai_analysis_completed event with success payload shape on success', async () => {
-    mockGetAppConfig.mockReturnValue({useMockAi: false, apiBaseUrl: 'http://localhost:3001'});
+    mockGetAppConfig.mockReturnValue({
+      useMockAi: false,
+      apiBaseUrl: 'http://localhost:3001',
+    });
     mockRunAnalysisJob.mockResolvedValue({
       ok: true,
       lesson: {
@@ -166,7 +193,10 @@ describe('analyzeText', () => {
   });
 
   it('still emits one ai_analysis_completed event with failure payload shape on ordinary failure', async () => {
-    mockGetAppConfig.mockReturnValue({useMockAi: false, apiBaseUrl: 'http://localhost:3001'});
+    mockGetAppConfig.mockReturnValue({
+      useMockAi: false,
+      apiBaseUrl: 'http://localhost:3001',
+    });
     mockRunAnalysisJob.mockResolvedValue({
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',

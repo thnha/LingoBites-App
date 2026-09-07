@@ -21,7 +21,8 @@ export function ImagePlaceholder({label = 'Ảnh', height = 180}: Props) {
         borderWidth: 1,
         height,
         justifyContent: 'center',
-      }}>
+      }}
+    >
       <AppText color="muted">{label}</AppText>
     </View>
   );

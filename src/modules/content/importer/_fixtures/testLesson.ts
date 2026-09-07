@@ -48,27 +48,33 @@ export function makeLesson(options: MakeLessonOptions = {}): ContentLesson {
       `makeLesson: chunkCount ${chunkCount} outside the 8-12 lint range; pick a different value`,
     );
   }
-  const chunks: ContentLesson['chunks'] = Array.from({length: chunkCount}, (_, i) => {
-    const chunkSlug = `chunk-${i}`;
-    const chunkId = sha256Hex(`chunk:${slug}:${chunkSlug}`);
-    return {
-      id: chunkId,
-      slug: chunkSlug,
-      order: i,
-      phrase_en: `Phrase ${i}`,
-      phrase_vi: `Cụm ${i}`,
-      explanation_vi: options.missingExplanationVi && i === 0 ? '' : `Giải thích ${i}`,
-      context_sentence_en: `Context ${i}`,
-      context_sentence_vi: `Ngữ cảnh ${i}`,
-      grammar_ref_ids: [],
-      vocab_ref_ids: options.brokenVocabRef && i === 0 ? ['not-a-vocab-id'] : [],
-      dialogue_turns: [],
-      qa_items: [],
-      audio_ref_ids: options.brokenAudioRef && i === 0 ? ['not-an-audio-id'] : [],
-      srs_ref_ids: [],
-      remediation: undefined,
-    };
-  });
+  const chunks: ContentLesson['chunks'] = Array.from(
+    {length: chunkCount},
+    (_, i) => {
+      const chunkSlug = `chunk-${i}`;
+      const chunkId = sha256Hex(`chunk:${slug}:${chunkSlug}`);
+      return {
+        id: chunkId,
+        slug: chunkSlug,
+        order: i,
+        phrase_en: `Phrase ${i}`,
+        phrase_vi: `Cụm ${i}`,
+        explanation_vi:
+          options.missingExplanationVi && i === 0 ? '' : `Giải thích ${i}`,
+        context_sentence_en: `Context ${i}`,
+        context_sentence_vi: `Ngữ cảnh ${i}`,
+        grammar_ref_ids: [],
+        vocab_ref_ids:
+          options.brokenVocabRef && i === 0 ? ['not-a-vocab-id'] : [],
+        dialogue_turns: [],
+        qa_items: [],
+        audio_ref_ids:
+          options.brokenAudioRef && i === 0 ? ['not-an-audio-id'] : [],
+        srs_ref_ids: [],
+        remediation: undefined,
+      };
+    },
+  );
   const grammar = options.includeGrammar
     ? [
         {
@@ -81,9 +87,7 @@ export function makeLesson(options: MakeLessonOptions = {}): ContentLesson {
           tied_to_actions: options.emptyGrammarActions
             ? (['reading', 'writing'] as Array<'reading' | 'writing'>)
             : (['speaking', 'listening'] as Array<'speaking' | 'listening'>),
-          examples: [
-            {en: "I'm working.", vi: 'Tôi đang làm việc.'},
-          ],
+          examples: [{en: "I'm working.", vi: 'Tôi đang làm việc.'}],
         },
       ]
     : [];
@@ -149,15 +153,17 @@ export function makeLesson(options: MakeLessonOptions = {}): ContentLesson {
     target_skills: options.invalidTargetSkills
       ? (['yodelling'] as unknown as ContentLesson['target_skills'])
       : options.invalidSkill
-        ? (['reading', 'writing'] as unknown as ContentLesson['target_skills'])
-        : (['speaking', 'listening'] as ContentLesson['target_skills']),
+      ? (['reading', 'writing'] as unknown as ContentLesson['target_skills'])
+      : (['speaking', 'listening'] as ContentLesson['target_skills']),
     estimated_duration_minutes: 20,
+    prerequisite_lesson_slugs: [],
     chunks,
     grammar_patterns: grammar,
     vocabulary: vocab,
     activities,
     audio_assets: [],
     srs_items: srs,
+    expected_errors: [],
   };
 }
 

@@ -1,13 +1,13 @@
 import React from 'react';
-import { Text } from 'react-native';
-import ReactTestRenderer, { act } from 'react-test-renderer';
-import { open } from 'react-native-quick-sqlite';
-import { FeatureFlagProvider, type ReleaseConfigName } from '../../../release';
-import { DB_NAME } from '../../../shared/db/constants';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { AppThemeProvider } from '../../../theme';
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { HomeScreen } from '../HomeScreen';
+import {Text} from 'react-native';
+import ReactTestRenderer, {act} from 'react-test-renderer';
+import {open} from 'react-native-quick-sqlite';
+import {FeatureFlagProvider, type ReleaseConfigName} from '../../../release';
+import {DB_NAME} from '../../../shared/db/constants';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {AppThemeProvider} from '../../../theme';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {HomeScreen} from '../HomeScreen';
 
 const MVP = 'lingobites-mvp';
 const STANDARD = 'situation-learning-release';
@@ -15,7 +15,7 @@ const STANDARD = 'situation-learning-release';
 function navigation(tabNavigate = jest.fn()) {
   return {
     navigate: jest.fn(),
-    getParent: () => ({ navigate: tabNavigate }),
+    getParent: () => ({navigate: tabNavigate}),
   };
 }
 
@@ -47,14 +47,14 @@ async function renderHome(
 describe('HomeScreen legacy ingestion CTAs', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
   });
 
   it('shows capture/upload/paste CTAs in standard mode', async () => {
     const tree = await renderHome();
 
     expect(
-      tree.root.findAllByProps({ testID: 'mvp-no-content-card' }),
+      tree.root.findAllByProps({testID: 'mvp-no-content-card'}),
     ).toHaveLength(0);
     const texts = textContents(tree.root);
     expect(texts).toContain('Chụp ảnh học ngay');

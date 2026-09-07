@@ -48,10 +48,7 @@ function resolveApiBaseUrl(appEnv: AppEnvLabel): string {
   return normalized;
 }
 
-function assertProductionSafety(
-  appEnv: AppEnvLabel,
-  useMockAi: boolean,
-): void {
+function assertProductionSafety(appEnv: AppEnvLabel, useMockAi: boolean): void {
   if (appEnv === 'production' && useMockAi) {
     throw new Error('USE_MOCK_AI must be false when APP_ENV=production');
   }

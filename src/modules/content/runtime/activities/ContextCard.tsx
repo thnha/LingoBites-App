@@ -21,7 +21,12 @@ export function ContextCard({data, onPlayAudio, onComplete, onSkip}: Props) {
     <View style={{gap: theme.spacing.lg}}>
       <AppCard style={{gap: theme.spacing.md}}>
         <View
-          style={{alignItems: 'center', flexDirection: 'row', gap: theme.spacing.sm}}>
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            gap: theme.spacing.sm,
+          }}
+        >
           <AppText variant="h2">{data.phraseEn}</AppText>
           <IconButton
             accessibilityLabel="Nghe phát âm"

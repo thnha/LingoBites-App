@@ -1,6 +1,6 @@
-export { FeatureFlagProvider } from './FeatureFlagContext';
-export { useFeatureEnabled, useFeatureFlags } from './useFeatureFlags';
-export { featureDependencies } from './feature-dependencies';
+export {FeatureFlagProvider} from './FeatureFlagContext';
+export {useFeatureEnabled, useFeatureFlags} from './useFeatureFlags';
+export {featureDependencies} from './feature-dependencies';
 export {
   featureKeys,
   featureRegistry,
@@ -18,4 +18,4 @@ export type {
   ReleaseConfig,
   ReleaseValidationResult,
 } from './types';
-export { validateReleaseConfig } from './validate-release-config';
+export {validateReleaseConfig} from './validate-release-config';

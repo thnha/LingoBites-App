@@ -16,7 +16,11 @@ export type PickedImage = {
 
 export type ImagePickResult =
   | {ok: true; image: PickedImage}
-  | {ok: false; reason: 'cancelled' | 'permission_denied' | 'error'; message?: string};
+  | {
+      ok: false;
+      reason: 'cancelled' | 'permission_denied' | 'error';
+      message?: string;
+    };
 
 const baseOptions: CameraOptions & ImageLibraryOptions = {
   mediaType: 'photo',

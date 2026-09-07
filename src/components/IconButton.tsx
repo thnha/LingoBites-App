@@ -35,13 +35,19 @@ function resolveTone(
     case 'accent':
       return {background: theme.colors.accent, icon: theme.colors.accentInk};
     case 'coral':
-      return {background: theme.colors.secondaryContainer, icon: theme.colors.text.inverse};
+      return {
+        background: theme.colors.secondaryContainer,
+        icon: theme.colors.text.inverse,
+      };
     case 'ghost':
       return {background: theme.colors.surfaceHigh, icon: theme.colors.primary};
     case 'danger':
       return {background: theme.colors.surfaceHigh, icon: theme.colors.danger};
     case 'tertiary':
-      return {background: theme.colors.tertiaryFixed, icon: theme.colors.onTertiaryContainer};
+      return {
+        background: theme.colors.tertiaryFixed,
+        icon: theme.colors.onTertiaryContainer,
+      };
     case 'bare':
       return {background: 'transparent', icon: theme.colors.primary};
     default:
@@ -77,7 +83,12 @@ export function IconButton({
   };
 
   const iconNode = (
-    <MaterialIcon color={colors.icon} filled={filled} name={icon} size={iconSize} />
+    <MaterialIcon
+      color={colors.icon}
+      filled={filled}
+      name={icon}
+      size={iconSize}
+    />
   );
 
   if (!isInteractive) {
@@ -95,7 +106,8 @@ export function IconButton({
       style={({pressed}) => [
         buttonStyle,
         pressed && !disabled && {opacity: theme.states.pressedOpacity},
-      ]}>
+      ]}
+    >
       {iconNode}
     </Pressable>
   );

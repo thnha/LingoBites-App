@@ -10,7 +10,10 @@ import {validFullOutput} from '../../../shared/fixtures';
 import {AppThemeProvider} from '../../../theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {DailyReviewScreen} from '../DailyReviewScreen';
-import {hasAccessibilityLabel, hasAccessibilityRole} from '../../../../test-utils/a11yTestUtils';
+import {
+  hasAccessibilityLabel,
+  hasAccessibilityRole,
+} from '../../../../test-utils/a11yTestUtils';
 
 const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
 
@@ -193,9 +196,15 @@ describe('DailyReviewScreen - Accessibility', () => {
       const summary = tree.root.findByProps({testID: 'review-summary'});
       expect(summary).toBeTruthy();
 
-      const reviewedCount = tree.root.findByProps({testID: 'summary-reviewed-count'});
-      const rememberedCount = tree.root.findByProps({testID: 'summary-remembered-count'});
-      const forgotCount = tree.root.findByProps({testID: 'summary-forgot-count'});
+      const reviewedCount = tree.root.findByProps({
+        testID: 'summary-reviewed-count',
+      });
+      const rememberedCount = tree.root.findByProps({
+        testID: 'summary-remembered-count',
+      });
+      const forgotCount = tree.root.findByProps({
+        testID: 'summary-forgot-count',
+      });
 
       expect(reviewedCount).toBeTruthy();
       expect(rememberedCount).toBeTruthy();
@@ -237,7 +246,9 @@ describe('DailyReviewScreen - Accessibility', () => {
       );
 
       const emptyMessages = tree.root.findAll(
-        node => node.props.children === 'Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.',
+        node =>
+          node.props.children ===
+          'Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.',
       );
 
       expect(emptyMessages.length).toBeGreaterThan(0);
@@ -259,7 +270,8 @@ describe('DailyReviewScreen - Accessibility', () => {
       );
 
       const doneMessages = secondTree.root.findAll(
-        node => node.props.children === 'Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.',
+        node =>
+          node.props.children === 'Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.',
       );
 
       expect(doneMessages.length).toBeGreaterThan(0);

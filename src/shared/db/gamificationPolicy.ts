@@ -1,7 +1,4 @@
-import type {
-  GamificationEventRecord,
-  ReviewRating,
-} from './types';
+import type {GamificationEventRecord, ReviewRating} from './types';
 
 /**
  * Event-driven engagement derivation (REQ-11 / ADR-4, SETE-89).
@@ -35,11 +32,11 @@ export type ReviewSessionCounts = {
   forgot: number;
 };
 
-const EMPTY_COUNTS: ReviewSessionCounts = { remembered: 0, forgot: 0 };
+const EMPTY_COUNTS: ReviewSessionCounts = {remembered: 0, forgot: 0};
 
 /** XP for a whole session = sum of per-rating XP over its rated cards. */
 export function sessionXp(counts: Partial<ReviewSessionCounts>): number {
-  const merged = { ...EMPTY_COUNTS, ...counts };
+  const merged = {...EMPTY_COUNTS, ...counts};
   return (
     merged.remembered * XP_PER_RATING.remembered +
     merged.forgot * XP_PER_RATING.forgot
@@ -84,7 +81,9 @@ function pad(value: number): string {
 
 /** Local calendar-day key (`YYYY-MM-DD`) for a timestamp. */
 export function toLocalDayKey(date: Date): string {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate(),
+  )}`;
 }
 
 /** Adds `delta` local calendar days to a `YYYY-MM-DD` key. */
@@ -173,11 +172,11 @@ export type PetStage = {
 
 /** Virtual plant growth milestones (SETE-89 product rule, MochiMochi-style). */
 export const PET_STAGES: readonly PetStage[] = [
-  { id: 'seed', label: 'Hạt mầm', minWater: 0 },
-  { id: 'sprout', label: 'Mầm non', minWater: 5 },
-  { id: 'sapling', label: 'Cây con', minWater: 15 },
-  { id: 'tree', label: 'Cây trưởng thành', minWater: 30 },
-  { id: 'bloom', label: 'Cây nở hoa', minWater: 60 },
+  {id: 'seed', label: 'Hạt mầm', minWater: 0},
+  {id: 'sprout', label: 'Mầm non', minWater: 5},
+  {id: 'sapling', label: 'Cây con', minWater: 15},
+  {id: 'tree', label: 'Cây trưởng thành', minWater: 30},
+  {id: 'bloom', label: 'Cây nở hoa', minWater: 60},
 ];
 
 export type PetState = {
@@ -334,10 +333,10 @@ export function deriveGamificationSnapshot(
 
   const days = completedReviewSessionDays([...events]);
   const bestStreak = computeBestStreak(days);
-  const counters = { totalSessions, bestStreak, totalXp, waterUnits };
+  const counters = {totalSessions, bestStreak, totalXp, waterUnits};
   const badges = BADGE_DEFINITIONS.filter(definition =>
     definition.earned(counters),
-  ).map(({ id, label, description }) => ({ id, label, description }));
+  ).map(({id, label, description}) => ({id, label, description}));
 
   return {
     totalSessions,

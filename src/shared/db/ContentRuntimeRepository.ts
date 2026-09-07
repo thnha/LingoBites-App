@@ -223,7 +223,9 @@ function mapAudioAssetRow(row: ContentAudioAssetDbRow): AudioAsset {
   };
 }
 
-function mapReviewItemRow(row: ContentReviewItemDbRow): ContentReviewItemRecord {
+function mapReviewItemRow(
+  row: ContentReviewItemDbRow,
+): ContentReviewItemRecord {
   return {
     id: row.id,
     srsItemId: row.srs_item_id,
@@ -272,9 +274,13 @@ export function listActivePackageLessons(): ContentLessonListItem[] {
   return items;
 }
 
-export function getContentLessonById(lessonId: string): ContentLessonRow | null {
+export function getContentLessonById(
+  lessonId: string,
+): ContentLessonRow | null {
   const db = getDatabase();
-  const result = db.execute('SELECT * FROM content_lessons WHERE id = ?;', [lessonId]);
+  const result = db.execute('SELECT * FROM content_lessons WHERE id = ?;', [
+    lessonId,
+  ]);
   const row = result.rows?.item(0) as ContentLessonDbRow | undefined;
   return row ? mapLessonRow(row) : null;
 }
@@ -314,7 +320,9 @@ export function getLessonActivities(lessonId: string): ContentActivityRow[] {
 }
 
 /** Audio asset metadata for a lesson, keyed by id for O(1) renderer lookup. */
-export function getLessonAudioAssets(lessonId: string): Map<string, AudioAsset> {
+export function getLessonAudioAssets(
+  lessonId: string,
+): Map<string, AudioAsset> {
   const db = getDatabase();
   const result = db.execute(
     'SELECT * FROM content_audio_assets WHERE lesson_id = ?;',
@@ -401,10 +409,14 @@ function addDaysIso(iso: string, days: number): string {
   return date.toISOString();
 }
 
-export function listContentReviewItems(lessonId?: string): ContentReviewItemRecord[] {
+export function listContentReviewItems(
+  lessonId?: string,
+): ContentReviewItemRecord[] {
   const db = getDatabase();
   const result = lessonId
-    ? db.execute('SELECT * FROM content_review_items WHERE lesson_id = ?;', [lessonId])
+    ? db.execute('SELECT * FROM content_review_items WHERE lesson_id = ?;', [
+        lessonId,
+      ])
     : db.execute('SELECT * FROM content_review_items;');
   const rows = result.rows;
   const items: ContentReviewItemRecord[] = [];
@@ -454,9 +466,10 @@ export function recordContentReviewEvent(
   input: RecordContentReviewEventInput,
 ): RecordContentReviewEventResult {
   const db = getDatabase();
-  const result = db.execute('SELECT * FROM content_review_items WHERE id = ?;', [
-    input.reviewItemId,
-  ]);
+  const result = db.execute(
+    'SELECT * FROM content_review_items WHERE id = ?;',
+    [input.reviewItemId],
+  );
   const row = result.rows?.item(0) as ContentReviewItemDbRow | undefined;
   if (!row) {
     return {

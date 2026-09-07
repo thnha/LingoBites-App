@@ -73,14 +73,16 @@ export function LessonHubView({
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View
           style={{
             borderRadius: theme.radius.lg,
             height: 170,
             overflow: 'hidden',
             position: 'relative',
-          }}>
+          }}
+        >
           <ImagePlaceholder height={170} label={imageLabel ?? lesson.title} />
           <View
             style={{
@@ -90,12 +92,29 @@ export function LessonHubView({
               padding: 16,
               position: 'absolute',
               right: 0,
-            }}>
-            <AppText style={{color: theme.colors.onOverlay, fontSize: 22, fontWeight: '600'}}>
+            }}
+          >
+            <AppText
+              style={{
+                color: theme.colors.onOverlay,
+                fontSize: 22,
+                fontWeight: '600',
+              }}
+            >
               {lesson.title}
             </AppText>
-            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8}}>
-              <Chip label={lesson.detected_language || 'English'} tone="accent" />
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 8,
+                marginTop: 8,
+              }}
+            >
+              <Chip
+                label={lesson.detected_language || 'English'}
+                tone="accent"
+              />
               <Chip label={lesson.level} tone="gold" />
             </View>
           </View>
@@ -106,10 +125,18 @@ export function LessonHubView({
             borderBottomColor: theme.colors.accentSoft,
             borderBottomWidth: 4,
             gap: theme.spacing.sm,
-          }}>
+          }}
+        >
           <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
-            <MaterialIcon color={theme.colors.primary} name="description" size={22} />
-            <AppText style={{color: theme.colors.primary, fontWeight: '600'}} variant="h3">
+            <MaterialIcon
+              color={theme.colors.primary}
+              name="description"
+              size={22}
+            />
+            <AppText
+              style={{color: theme.colors.primary, fontWeight: '600'}}
+              variant="h3"
+            >
               Bản gốc
             </AppText>
           </View>
@@ -123,10 +150,18 @@ export function LessonHubView({
             borderBottomColor: theme.colors.secondarySoft,
             borderBottomWidth: 4,
             gap: theme.spacing.sm,
-          }}>
+          }}
+        >
           <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
-            <MaterialIcon color={theme.colors.secondary} name="translate" size={22} />
-            <AppText style={{color: theme.colors.secondary, fontWeight: '600'}} variant="h3">
+            <MaterialIcon
+              color={theme.colors.secondary}
+              name="translate"
+              size={22}
+            />
+            <AppText
+              style={{color: theme.colors.secondary, fontWeight: '600'}}
+              variant="h3"
+            >
               Bản dịch
             </AppText>
           </View>
@@ -206,7 +241,8 @@ export function LessonHubView({
           borderTopColor: theme.colors.outlineVariant,
           gap: theme.spacing.sm,
           paddingBottom: theme.spacing.lg,
-        }}>
+        }}
+      >
         <View style={{flexDirection: 'row', gap: theme.spacing.sm}}>
           <Pressable
             accessibilityLabel="Bắt đầu học"
@@ -226,9 +262,21 @@ export function LessonHubView({
                 opacity:
                   !onStartLearning || pressed ? theme.states.pressedOpacity : 1,
               },
-            ]}>
-            <MaterialIcon color={theme.colors.text.inverse} filled name="school" size={22} />
-            <AppText style={{color: theme.colors.text.inverse, fontSize: 18, fontWeight: '600'}}>
+            ]}
+          >
+            <MaterialIcon
+              color={theme.colors.text.inverse}
+              filled
+              name="school"
+              size={22}
+            />
+            <AppText
+              style={{
+                color: theme.colors.text.inverse,
+                fontSize: 18,
+                fontWeight: '600',
+              }}
+            >
               Bắt đầu học
             </AppText>
           </Pressable>
@@ -245,8 +293,13 @@ export function LessonHubView({
                 opacity: pressed ? theme.states.pressedOpacity : 1,
                 width: 56,
               },
-            ]}>
-            <MaterialIcon color={theme.colors.text.inverse} name="share" size={22} />
+            ]}
+          >
+            <MaterialIcon
+              color={theme.colors.text.inverse}
+              name="share"
+              size={22}
+            />
           </Pressable>
         </View>
         {showSaveButton && onSave ? (
@@ -269,12 +322,23 @@ export function LessonHubView({
                 opacity: saveDisabled
                   ? theme.states.disabledOpacity
                   : pressed
-                    ? theme.states.pressedOpacity
-                    : 1,
+                  ? theme.states.pressedOpacity
+                  : 1,
               },
-            ]}>
-            <MaterialIcon color={theme.colors.primary} name="bookmark_add" size={22} />
-            <AppText style={{color: theme.colors.primary, fontSize: 18, fontWeight: '600'}}>
+            ]}
+          >
+            <MaterialIcon
+              color={theme.colors.primary}
+              name="bookmark_add"
+              size={22}
+            />
+            <AppText
+              style={{
+                color: theme.colors.primary,
+                fontSize: 18,
+                fontWeight: '600',
+              }}
+            >
               {saveState === 'saving' ? 'Đang lưu...' : saveLabel}
             </AppText>
           </Pressable>

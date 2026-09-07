@@ -6,7 +6,11 @@ import {MaterialIcon} from './MaterialIcon';
 import {useAppTheme} from '../theme';
 import type {LessonCardView} from '../types/lesson';
 
-const THUMB_ICONS: readonly HandoffIconName[] = ['sell', 'restaurant_menu', 'menu_book'];
+const THUMB_ICONS: readonly HandoffIconName[] = [
+  'sell',
+  'restaurant_menu',
+  'menu_book',
+];
 
 type Props = {
   lesson: LessonCardView;
@@ -19,7 +23,8 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
   const thumbTone = index % 2 === 0 ? 'teal' : 'coral';
   const thumbBg =
     thumbTone === 'teal' ? theme.colors.accentSoft : theme.colors.secondarySoft;
-  const thumbColor = thumbTone === 'teal' ? theme.colors.primary : theme.colors.secondary;
+  const thumbColor =
+    thumbTone === 'teal' ? theme.colors.primary : theme.colors.secondary;
   const iconName = THUMB_ICONS[index % THUMB_ICONS.length];
 
   const row = (
@@ -33,7 +38,8 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
         paddingHorizontal: 16,
         paddingVertical: 14,
         ...theme.shadow.soft,
-      }}>
+      }}
+    >
       <View
         style={{
           alignItems: 'center',
@@ -42,7 +48,8 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
           height: 48,
           justifyContent: 'center',
           width: 48,
-        }}>
+        }}
+      >
         <MaterialIcon color={thumbColor} name={iconName} size={22} />
       </View>
       <View style={{flex: 1, gap: 2, minWidth: 0}}>
@@ -53,7 +60,11 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
           {lesson.meta}
         </AppText>
       </View>
-      <MaterialIcon color={theme.colors.text.secondary} name="chevron_right" size={22} />
+      <MaterialIcon
+        color={theme.colors.text.secondary}
+        name="chevron_right"
+        size={22}
+      />
     </View>
   );
 
@@ -65,7 +76,10 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({pressed}) => [{opacity: pressed ? theme.states.pressedOpacity : 1}]}>
+      style={({pressed}) => [
+        {opacity: pressed ? theme.states.pressedOpacity : 1},
+      ]}
+    >
       {row}
     </Pressable>
   );

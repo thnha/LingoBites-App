@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useFeatureEnabled } from '../../release';
-import { bootstrapGoldenHourReminders } from './nativeReminderScheduler';
+import {useEffect} from 'react';
+import {useFeatureEnabled} from '../../release';
+import {bootstrapGoldenHourReminders} from './nativeReminderScheduler';
 
 /**
  * App-start engagement bootstrap: recomputes reminder state from the local

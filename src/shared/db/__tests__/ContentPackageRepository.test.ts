@@ -171,19 +171,7 @@ describe('ContentPackageRepository', () => {
         id, lesson_id, package_id, slug, chunk_order, phrase_en, phrase_vi,
         explanation_vi, context_sentence_en, context_sentence_vi, payload_json
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-      [
-        'i-1',
-        'l-1',
-        'pkg-1',
-        's',
-        0,
-        'p',
-        'pv',
-        'e',
-        null,
-        null,
-        '{}',
-      ],
+      ['i-1', 'l-1', 'pkg-1', 's', 0, 'p', 'pv', 'e', null, null, '{}'],
     );
     db.execute(
       `INSERT INTO content_units (

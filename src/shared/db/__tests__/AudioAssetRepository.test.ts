@@ -1,8 +1,8 @@
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { resetDatabaseForTests } from '../database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../constants';
-import { AUDIO_STATUS } from '../AudioAssetRepository';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {resetDatabaseForTests} from '../database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../constants';
+import {AUDIO_STATUS} from '../AudioAssetRepository';
 import {
   deleteChapterAudioAsset,
   deleteChapterAudioAssets,
@@ -17,7 +17,7 @@ import {
   touchChapterAudioOpened,
   updateChapterAudioAssetMetadata,
 } from '../AudioAssetRepository';
-import type { ChapterAudioAsset } from '../types';
+import type {ChapterAudioAsset} from '../types';
 
 const NOW = '2026-09-01T00:00:00.000Z';
 
@@ -37,7 +37,7 @@ function asset(
 describe('AudioAssetRepository', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
   });
 
   it('inserts a pending row and lists it under the chapter', () => {
@@ -105,7 +105,7 @@ describe('AudioAssetRepository', () => {
     });
     updateChapterAudioAssetMetadata(
       'a1',
-      { url: 'https://cdn.example.com/new.mp3', checksum: 'sha256-new' },
+      {url: 'https://cdn.example.com/new.mp3', checksum: 'sha256-new'},
       NOW,
     );
 

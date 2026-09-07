@@ -1,22 +1,23 @@
-import { getDatabase } from '../../shared/db/database';
+import {getDatabase} from '../../shared/db/database';
 import {
-  getContentLessonById,
   getDueContentReviewItems,
   listActivePackageLessons,
   listContentReviewItems,
 } from '../../shared/db/ContentRuntimeRepository';
-import { getDueFlashcards } from '../../shared/db/FlashcardRepository';
-import { listErrorEvents, listSpeakingRecordings } from '../../shared/db/SpeakingRepository';
-import type { LearnerProfileData, LearnerStateSnapshot } from './types';
+import {getDueFlashcards} from '../../shared/db/FlashcardRepository';
+import {
+  listErrorEvents,
+  listSpeakingRecordings,
+} from '../../shared/db/SpeakingRepository';
+import type {LearnerProfileData, LearnerStateSnapshot} from './types';
 
 export function getLearnerProfileData(): LearnerProfileData | null {
   try {
     const db = getDatabase();
-    const result = db.execute(
-      'SELECT value FROM app_settings WHERE key = ?;',
-      ['learner_profile'],
-    );
-    const row = result.rows?.item(0) as { value: string } | undefined;
+    const result = db.execute('SELECT value FROM app_settings WHERE key = ?;', [
+      'learner_profile',
+    ]);
+    const row = result.rows?.item(0) as {value: string} | undefined;
     if (row && row.value) {
       return JSON.parse(row.value) as LearnerProfileData;
     }
@@ -42,8 +43,8 @@ export function saveLearnerProfileData(profile: LearnerProfileData): void {
 }
 
 export function getLearnerStateSnapshot(nowIso?: string): LearnerStateSnapshot {
-  const dueContentItems = getDueContentReviewItems(nowIso ? { now: nowIso } : {});
-  const dueFlashcards = getDueFlashcards(nowIso ? { today: nowIso } : {});
+  const dueContentItems = getDueContentReviewItems(nowIso ? {now: nowIso} : {});
+  const dueFlashcards = getDueFlashcards(nowIso ? {today: nowIso} : {});
 
   const dueReviewCount = dueContentItems.length + dueFlashcards.length;
   // Estimated review minutes: ~0.5 minutes per due item (rounded up)

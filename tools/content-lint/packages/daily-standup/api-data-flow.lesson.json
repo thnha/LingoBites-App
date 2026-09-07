@@ -6,17 +6,12 @@
   "title_vi": "Mô tả luồng dữ liệu API & Cơ sở dữ liệu",
   "blurb_vi": "Giải thích chi tiết luồng xử lý từ Client request -> API -> Database -> Response.",
   "level": "B1",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Diễn tả từng bước luồng dữ liệu khi một tính năng được kích hoạt.",
   "situation_vi": "Thảo luận với đồng nghiệp về cách tối ưu hoá luồng xử lý dữ liệu.",
   "learner_role_vi": "Backend Developer giải thích luồng xử lý request.",
-  "prerequisite_lesson_slugs": [
-    "app-architecture-overview"
-  ],
+  "prerequisite_lesson_slugs": ["app-architecture-overview"],
   "pronunciation_focus_vi": "Nhấn âm rõ ràng các hành động: sends, receives, fetches, transforms, returns.",
   "final_speaking_task_vi": "Giải thích luồng dữ liệu tính năng đăng nhập từ giao diện xuống CSDL.",
   "pass_conditions_vi": "Sử dụng đúng các từ nối thứ tự (first, then, after that, finally).",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Khi người dùng nhấp chuột, client sẽ gửi một HTTP request\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "85fbfb07d6ccc311"
-      ],
-      "srs_ref_ids": [
-        "de7d43194f2bb58d"
-      ],
+      "audio_ref_ids": ["85fbfb07d6ccc311"],
+      "srs_ref_ids": ["de7d43194f2bb58d"],
       "dialogue_turns": [
         {
           "id": "a33666aa43e5f734",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "de7d43194f2bb58d"
-        ],
+        "re_present_refs": ["de7d43194f2bb58d"],
         "tip_vi": "Hãy nhớ cụm từ \"When the user clicks, the client sends an HTTP request\" nghĩa là \"Khi người dùng nhấp chuột, client sẽ gửi một HTTP request\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Middleware của API sẽ xác thực mã token JWT\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "669181f90fec501e"
-      ],
-      "srs_ref_ids": [
-        "84d00bd3b506d94c"
-      ],
+      "audio_ref_ids": ["669181f90fec501e"],
+      "srs_ref_ids": ["84d00bd3b506d94c"],
       "dialogue_turns": [
         {
           "id": "c1d599511343aaee",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "84d00bd3b506d94c"
-        ],
+        "re_present_refs": ["84d00bd3b506d94c"],
         "tip_vi": "Hãy nhớ cụm từ \"The API middleware validates the JWT token\" nghĩa là \"Middleware của API sẽ xác thực mã token JWT\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "58a4c9be062a6ecf"
-      ],
-      "srs_ref_ids": [
-        "ebee79f8906da68b"
-      ],
+      "audio_ref_ids": ["58a4c9be062a6ecf"],
+      "srs_ref_ids": ["ebee79f8906da68b"],
       "dialogue_turns": [
         {
           "id": "8baffa4d06926889",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "ebee79f8906da68b"
-        ],
+        "re_present_refs": ["ebee79f8906da68b"],
         "tip_vi": "Hãy nhớ cụm từ \"Then it fetches the user profile from database\" nghĩa là \"Sau đó nó sẽ lấy hồ sơ người dùng từ cơ sở dữ liệu\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Kết quả truy vấn thường xuyên được lưu đệm trong Redis\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "f226034be800a602"
-      ],
-      "srs_ref_ids": [
-        "af9bcf95423d7e07"
-      ],
+      "audio_ref_ids": ["f226034be800a602"],
+      "srs_ref_ids": ["af9bcf95423d7e07"],
       "dialogue_turns": [
         {
           "id": "9faf9fa9dba17397",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "af9bcf95423d7e07"
-        ],
+        "re_present_refs": ["af9bcf95423d7e07"],
         "tip_vi": "Hãy nhớ cụm từ \"Frequent query results are cached in Redis\" nghĩa là \"Kết quả truy vấn thường xuyên được lưu đệm trong Redis\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Máy chủ chuyển đổi dữ liệu thành định dạng JSON\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "e063629b3fdf5ff2"
-      ],
-      "srs_ref_ids": [
-        "0e15435bb03a4322"
-      ],
+      "audio_ref_ids": ["e063629b3fdf5ff2"],
+      "srs_ref_ids": ["0e15435bb03a4322"],
       "dialogue_turns": [
         {
           "id": "7d38a270d0bd9765",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "0e15435bb03a4322"
-        ],
+        "re_present_refs": ["0e15435bb03a4322"],
         "tip_vi": "Hãy nhớ cụm từ \"The server transforms the data payload into JSON\" nghĩa là \"Máy chủ chuyển đổi dữ liệu thành định dạng JSON\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "6f08104cf5f3ba65"
-      ],
-      "srs_ref_ids": [
-        "79ff4e9b6ea2ed1e"
-      ],
+      "audio_ref_ids": ["6f08104cf5f3ba65"],
+      "srs_ref_ids": ["79ff4e9b6ea2ed1e"],
       "dialogue_turns": [
         {
           "id": "6df47aa0e3fb31b3",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "79ff4e9b6ea2ed1e"
-        ],
+        "re_present_refs": ["79ff4e9b6ea2ed1e"],
         "tip_vi": "Hãy nhớ cụm từ \"It returns a 200 OK status code with response\" nghĩa là \"Nó trả về mã trạng thái 200 OK cùng dữ liệu phản hồi\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "ade9df8a724d0c52"
-      ],
-      "srs_ref_ids": [
-        "c27413ef4e7b5d3a"
-      ],
+      "audio_ref_ids": ["ade9df8a724d0c52"],
+      "srs_ref_ids": ["c27413ef4e7b5d3a"],
       "dialogue_turns": [
         {
           "id": "1fd90ec0545f004b",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "c27413ef4e7b5d3a"
-        ],
+        "re_present_refs": ["c27413ef4e7b5d3a"],
         "tip_vi": "Hãy nhớ cụm từ \"If validation fails, it handles the error gracefully\" nghĩa là \"Nếu xác thực thất bại, nó xử lý lỗi một cách êm đẹp\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2f7325eaf4a92c51"
-      ],
-      "srs_ref_ids": [
-        "d9df0a80117d6f96"
-      ],
+      "audio_ref_ids": ["2f7325eaf4a92c51"],
+      "srs_ref_ids": ["d9df0a80117d6f96"],
       "dialogue_turns": [
         {
           "id": "f0eb98f439681eef",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "d9df0a80117d6f96"
-        ],
+        "re_present_refs": ["d9df0a80117d6f96"],
         "tip_vi": "Hãy nhớ cụm từ \"Heavy tasks use background asynchronous processing\" nghĩa là \"Tác vụ nặng sử dụng xử lý bất đồng bộ trong nền\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Mô tả luồng dữ liệu API & Cơ sở dữ liệu",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "When the user clicks, the client sends an HTTP request",

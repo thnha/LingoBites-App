@@ -13,7 +13,9 @@ type Props = {
 };
 
 function formatWordCount(count: number): string {
-  return count >= 1000 ? `${(count / 1000).toFixed(1).replace('.0', '')}k` : String(count);
+  return count >= 1000
+    ? `${(count / 1000).toFixed(1).replace('.0', '')}k`
+    : String(count);
 }
 
 export function LibraryLessonCard({lesson, onPress}: Props) {
@@ -27,7 +29,8 @@ export function LibraryLessonCard({lesson, onPress}: Props) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginBottom: 10,
-        }}>
+        }}
+      >
         <Chip label={lesson.subjectLabel} tone={lesson.subjectTone} />
         <AppText color="muted" variant="caption">
           {lesson.dateLabel}
@@ -36,18 +39,31 @@ export function LibraryLessonCard({lesson, onPress}: Props) {
       <AppText style={{marginBottom: 4}} variant="h3">
         {lesson.title}
       </AppText>
-      <AppText color="secondary" numberOfLines={2} style={{marginBottom: 12}} variant="body">
+      <AppText
+        color="secondary"
+        numberOfLines={2}
+        style={{marginBottom: 12}}
+        variant="body"
+      >
         {lesson.blurb}
       </AppText>
       <View style={{flexDirection: 'row', gap: 16}}>
         <View style={{alignItems: 'center', flexDirection: 'row', gap: 5}}>
-          <MaterialIcon color={theme.colors.tertiary} name="menu_book" size={18} />
+          <MaterialIcon
+            color={theme.colors.tertiary}
+            name="menu_book"
+            size={18}
+          />
           <AppText color="muted" variant="caption">
             {formatWordCount(lesson.vocabularyCount)} từ
           </AppText>
         </View>
         <View style={{alignItems: 'center', flexDirection: 'row', gap: 5}}>
-          <MaterialIcon color={theme.colors.secondary} name="schedule" size={18} />
+          <MaterialIcon
+            color={theme.colors.secondary}
+            name="schedule"
+            size={18}
+          />
           <AppText color="muted" variant="caption">
             {lesson.durationMin} phút
           </AppText>
@@ -64,7 +80,10 @@ export function LibraryLessonCard({lesson, onPress}: Props) {
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({pressed}) => [{opacity: pressed ? theme.states.pressedOpacity : 1}]}>
+      style={({pressed}) => [
+        {opacity: pressed ? theme.states.pressedOpacity : 1},
+      ]}
+    >
       {card}
     </Pressable>
   );

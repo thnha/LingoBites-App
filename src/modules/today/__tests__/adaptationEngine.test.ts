@@ -1,5 +1,5 @@
-import { generateStudyBlock } from '../adaptationEngine';
-import type { LearnerStateSnapshot, ReasonCode, TodayMode } from '../types';
+import {generateStudyBlock} from '../adaptationEngine';
+import type {LearnerStateSnapshot, TodayMode} from '../types';
 
 function createMockSnapshot(
   overrides: Partial<LearnerStateSnapshot> = {},
@@ -36,28 +36,31 @@ describe('adaptationEngine', () => {
       ['5-minute', 5],
       ['normal', 20],
       ['deep-practice', 45],
-    ])('respects time budget for mode %s (target <= %dp)', (mode, maxBudget) => {
-      const snapshot = createMockSnapshot({
-        dueReviewCount: 5,
-        estimatedReviewMinutes: 3,
-        lessonProgression: {
-          completedLessonIds: ['lesson-0'],
-          nextLessonId: 'lesson-1',
-          nextLessonTitle: 'Bài 1',
-          nextLessonEstimatedMinutes: 15,
-          oldLessonId: 'lesson-0',
-          oldLessonTitle: 'Bài 0',
-          prerequisiteGapLessonId: null,
-          prerequisiteGapTitle: null,
-        },
-      });
+    ])(
+      'respects time budget for mode %s (target <= %dp)',
+      (mode, maxBudget) => {
+        const snapshot = createMockSnapshot({
+          dueReviewCount: 5,
+          estimatedReviewMinutes: 3,
+          lessonProgression: {
+            completedLessonIds: ['lesson-0'],
+            nextLessonId: 'lesson-1',
+            nextLessonTitle: 'Bài 1',
+            nextLessonEstimatedMinutes: 15,
+            oldLessonId: 'lesson-0',
+            oldLessonTitle: 'Bài 0',
+            prerequisiteGapLessonId: null,
+            prerequisiteGapTitle: null,
+          },
+        });
 
-      const plan = generateStudyBlock(snapshot, mode, mockNow);
+        const plan = generateStudyBlock(snapshot, mode, mockNow);
 
-      expect(plan.mode).toBe(mode);
-      expect(plan.activities.length).toBeGreaterThan(0);
-      expect(plan.totalEstimatedMinutes).toBeLessThanOrEqual(maxBudget + 5);
-    });
+        expect(plan.mode).toBe(mode);
+        expect(plan.activities.length).toBeGreaterThan(0);
+        expect(plan.totalEstimatedMinutes).toBeLessThanOrEqual(maxBudget + 5);
+      },
+    );
   });
 
   describe('Backlog Control Threshold Boundaries (REQ-14)', () => {
@@ -83,7 +86,9 @@ describe('adaptationEngine', () => {
           expect(plan.reasonCodes).toContain('BACKLOG_CONSOLIDATION');
           expect(plan.explanationVi).toContain('Lượng bài cần ôn tập đang cao');
           // New content should be stopped/reduced during consolidation
-          expect(plan.activities.some(a => a.type === 'next_lesson')).toBe(false);
+          expect(plan.activities.some(a => a.type === 'next_lesson')).toBe(
+            false,
+          );
         } else {
           expect(plan.reasonCodes).not.toContain('BACKLOG_CONSOLIDATION');
         }
@@ -110,7 +115,9 @@ describe('adaptationEngine', () => {
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
 
       expect(plan.reasonCodes).toContain('REMEDIATE_RECENT_ERRORS');
-      expect(plan.activities.some(a => a.type === 'error_remediation')).toBe(true);
+      expect(plan.activities.some(a => a.type === 'error_remediation')).toBe(
+        true,
+      );
       expect(plan.explanationVi).toContain('lỗi sai');
     });
 
@@ -132,7 +139,9 @@ describe('adaptationEngine', () => {
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
 
       expect(plan.reasonCodes).toContain('LISTENING_REMEDIATION');
-      expect(plan.activities.some(a => a.type === 'listening_remediation')).toBe(true);
+      expect(
+        plan.activities.some(a => a.type === 'listening_remediation'),
+      ).toBe(true);
       expect(plan.explanationVi).toContain('luyện nghe không kịch bản');
     });
 
@@ -162,7 +171,9 @@ describe('adaptationEngine', () => {
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
 
       expect(plan.reasonCodes).toContain('PREREQUISITE_NEEDED');
-      expect(plan.activities.some(a => a.type === 'prerequisite_lesson')).toBe(true);
+      expect(plan.activities.some(a => a.type === 'prerequisite_lesson')).toBe(
+        true,
+      );
       expect(plan.explanationVi).toContain('tiền đề');
     });
 
@@ -181,7 +192,9 @@ describe('adaptationEngine', () => {
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
 
       expect(plan.reasonCodes).toContain('FAST_MASTERY_VARIATION');
-      expect(plan.activities.some(a => a.type === 'old_situation_practice')).toBe(true);
+      expect(
+        plan.activities.some(a => a.type === 'old_situation_practice'),
+      ).toBe(true);
     });
 
     it('activates SPEAKING_GAP_PRIORITY when speaking history is empty or old', () => {
@@ -193,7 +206,9 @@ describe('adaptationEngine', () => {
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
 
       expect(plan.reasonCodes).toContain('SPEAKING_GAP_PRIORITY');
-      expect(plan.activities.some(a => a.type === 'speaking_practice')).toBe(true);
+      expect(plan.activities.some(a => a.type === 'speaking_practice')).toBe(
+        true,
+      );
       expect(plan.explanationVi).toContain('luyện phát âm');
     });
 
@@ -208,7 +223,9 @@ describe('adaptationEngine', () => {
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
 
       expect(plan.reasonCodes).toContain('INTERVIEW_PORTFOLIO_PRIORITY');
-      expect(plan.activities.some(a => a.type === 'interview_practice')).toBe(true);
+      expect(plan.activities.some(a => a.type === 'interview_practice')).toBe(
+        true,
+      );
     });
 
     it('degrades safely without activating interview rule when profileData is null/missing', () => {
@@ -219,7 +236,9 @@ describe('adaptationEngine', () => {
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
 
       expect(plan.reasonCodes).not.toContain('INTERVIEW_PORTFOLIO_PRIORITY');
-      expect(plan.activities.some(a => a.type === 'interview_practice')).toBe(false);
+      expect(plan.activities.some(a => a.type === 'interview_practice')).toBe(
+        false,
+      );
     });
   });
 
@@ -263,6 +282,8 @@ describe('adaptationEngine', () => {
         speakingRecordings: [
           {
             id: 'rec-1',
+            activityId: 'act-1',
+            lessonId: 'lesson-1',
             mode: 'shadowing',
             filePath: '/docs/rec.m4a',
             durationMs: 100,
@@ -281,7 +302,7 @@ describe('adaptationEngine', () => {
             createdAt: mockNow,
           },
         ],
-        profileData: { hasInterviewTarget: true },
+        profileData: {hasInterviewTarget: true},
       });
 
       const plan = generateStudyBlock(snapshot, 'normal', mockNow);
@@ -289,8 +310,12 @@ describe('adaptationEngine', () => {
       expect(plan.isConsolidation).toBe(false);
       expect(plan.reasonCodes).toContain('LISTENING_REMEDIATION');
       expect(plan.reasonCodes).toContain('INTERVIEW_PORTFOLIO_PRIORITY');
-      expect(plan.activities.some(a => a.type === 'listening_remediation')).toBe(true);
-      expect(plan.activities.some(a => a.type === 'interview_practice')).toBe(true);
+      expect(
+        plan.activities.some(a => a.type === 'listening_remediation'),
+      ).toBe(true);
+      expect(plan.activities.some(a => a.type === 'interview_practice')).toBe(
+        true,
+      );
     });
 
     it('Case 3: Prerequisite Gap + Fast Mastery + Normal Backlog => Prerequisite before next lesson', () => {
@@ -316,8 +341,12 @@ describe('adaptationEngine', () => {
       expect(plan.reasonCodes).toContain('PREREQUISITE_NEEDED');
       expect(plan.reasonCodes).toContain('FAST_MASTERY_VARIATION');
 
-      const prereqIndex = plan.activities.findIndex(a => a.type === 'prerequisite_lesson');
-      const nextIndex = plan.activities.findIndex(a => a.type === 'next_lesson');
+      const prereqIndex = plan.activities.findIndex(
+        a => a.type === 'prerequisite_lesson',
+      );
+      const nextIndex = plan.activities.findIndex(
+        a => a.type === 'next_lesson',
+      );
 
       expect(prereqIndex).toBeGreaterThan(-1);
       if (nextIndex > -1) {

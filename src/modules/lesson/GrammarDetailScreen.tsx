@@ -24,7 +24,10 @@ type Props =
 
 export function GrammarDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
-  const nav = navigation as NativeStackScreenProps<HomeStackParamList, 'GrammarDetail'>['navigation'];
+  const nav = navigation as NativeStackScreenProps<
+    HomeStackParamList,
+    'GrammarDetail'
+  >['navigation'];
   const {grammar, related, practice} = route.params;
   const hasPractice = practice.length > 0;
   const examples = grammar.examples ?? [];
@@ -59,10 +62,21 @@ export function GrammarDetailScreen({navigation, route}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
-        <AppCard style={{gap: theme.spacing.md, overflow: 'hidden', position: 'relative'}}>
+        showsVerticalScrollIndicator={false}
+      >
+        <AppCard
+          style={{
+            gap: theme.spacing.md,
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
           <View style={{position: 'absolute', right: -22, top: -30}}>
-            <MaterialIcon color={theme.colors.accentSoft} name="language" size={150} />
+            <MaterialIcon
+              color={theme.colors.accentSoft}
+              name="language"
+              size={150}
+            />
           </View>
           <View style={{gap: 4, zIndex: 1}}>
             <Chip label="Ngữ pháp" tone="accent" />
@@ -84,9 +98,16 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                   borderColor: theme.colors.accentSoft,
                   borderWidth: 2,
                   gap: theme.spacing.sm,
-                }}>
-                <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
-                  <MaterialIcon color={theme.colors.primary} name="function" size={20} />
+                }}
+              >
+                <View
+                  style={{alignItems: 'center', flexDirection: 'row', gap: 8}}
+                >
+                  <MaterialIcon
+                    color={theme.colors.primary}
+                    name="function"
+                    size={20}
+                  />
                   <AppText color="muted" variant="caption">
                     CÔNG THỨC
                   </AppText>
@@ -99,13 +120,15 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                     borderRadius: 8,
                     paddingHorizontal: 12,
                     paddingVertical: 10,
-                  }}>
+                  }}
+                >
                   <AppText
                     style={{
                       color: theme.colors.primary,
                       fontWeight: '700',
                       textAlign: 'center',
-                    }}>
+                    }}
+                  >
                     {grammar.pattern}
                   </AppText>
                 </View>
@@ -118,9 +141,16 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                 borderColor: theme.colors.tertiarySoft,
                 borderWidth: 2,
                 gap: theme.spacing.sm,
-              }}>
-              <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
-                <MaterialIcon color={theme.colors.tertiary} name="info" size={20} />
+              }}
+            >
+              <View
+                style={{alignItems: 'center', flexDirection: 'row', gap: 8}}
+              >
+                <MaterialIcon
+                  color={theme.colors.tertiary}
+                  name="info"
+                  size={20}
+                />
                 <AppText color="muted" variant="caption">
                   GIẢI THÍCH
                 </AppText>
@@ -135,9 +165,16 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                   borderColor: theme.colors.secondarySoft,
                   borderWidth: 2,
                   gap: theme.spacing.sm,
-                }}>
-                <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
-                  <MaterialIcon color={theme.colors.secondary} name="history_edu" size={20} />
+                }}
+              >
+                <View
+                  style={{alignItems: 'center', flexDirection: 'row', gap: 8}}
+                >
+                  <MaterialIcon
+                    color={theme.colors.secondary}
+                    name="history_edu"
+                    size={20}
+                  />
                   <AppText color="muted" variant="caption">
                     TRONG VĂN BẢN CỦA BẠN
                   </AppText>
@@ -150,7 +187,8 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                     borderWidth: 1,
                     paddingHorizontal: 14,
                     paddingVertical: 12,
-                  }}>
+                  }}
+                >
                   <AppText style={{fontStyle: 'italic'}} variant="bodyLg">
                     {grammar.found_in}
                   </AppText>
@@ -169,7 +207,8 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                   flexDirection: 'row',
                   gap: 12,
                   padding: 16,
-                }}>
+                }}
+              >
                 <View
                   style={{
                     alignItems: 'center',
@@ -178,7 +217,8 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                     height: 42,
                     justifyContent: 'center',
                     width: 42,
-                  }}>
+                  }}
+                >
                   <MaterialIcon
                     color={theme.colors.onTertiaryContainer}
                     filled
@@ -187,7 +227,10 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                   />
                 </View>
                 <View style={{flex: 1, gap: 4}}>
-                  <AppText style={{color: theme.colors.tertiary, fontWeight: '600'}} variant="h3">
+                  <AppText
+                    style={{color: theme.colors.tertiary, fontWeight: '600'}}
+                    variant="h3"
+                  >
                     Mẹo nhỏ
                   </AppText>
                   <AppText style={{color: theme.colors.onTertiaryContainer}}>
@@ -203,7 +246,10 @@ export function GrammarDetailScreen({navigation, route}: Props) {
           <View style={{gap: theme.spacing.sm}}>
             <SectionHeader title="Ví dụ thêm" />
             {examples.map((example, exampleIndex) => (
-              <AppCard key={`${exampleIndex}-${example.en}`} style={{gap: theme.spacing.xs}}>
+              <AppCard
+                key={`${exampleIndex}-${example.en}`}
+                style={{gap: theme.spacing.xs}}
+              >
                 <AppText style={{fontWeight: '700'}} variant="bodyLg">
                   {example.en}
                 </AppText>
@@ -236,7 +282,8 @@ export function GrammarDetailScreen({navigation, route}: Props) {
             borderTopColor: theme.colors.outlineVariant,
             gap: theme.spacing.sm,
             paddingBottom: theme.spacing.lg,
-          }}>
+          }}
+        >
           <View style={{flexDirection: 'row', gap: theme.spacing.sm}}>
             <Pressable
               accessibilityLabel="Luyện ngay"
@@ -254,9 +301,17 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                   minHeight: 52,
                   opacity: pressed ? theme.states.pressedOpacity : 1,
                 },
-              ]}>
-              <MaterialIcon color={theme.colors.text.inverse} filled name="play_circle" size={22} />
-              <AppText style={{color: theme.colors.text.inverse, fontWeight: '600'}}>
+              ]}
+            >
+              <MaterialIcon
+                color={theme.colors.text.inverse}
+                filled
+                name="play_circle"
+                size={22}
+              />
+              <AppText
+                style={{color: theme.colors.text.inverse, fontWeight: '600'}}
+              >
                 Luyện ngay
               </AppText>
             </Pressable>

@@ -298,6 +298,8 @@ export type ExpectedError = z.infer<typeof ExpectedErrorSchema>;
 export const CheckTypeSchema = z.enum(['weekly_check', 'stage_check']);
 export type CheckType = z.infer<typeof CheckTypeSchema>;
 
+export type CheckOutcome = 'pass' | 'conditional_pass' | 'not_yet';
+
 export const CheckItemSchema = z.object({
   id: z.string().min(1),
   slug: z.string().min(1),

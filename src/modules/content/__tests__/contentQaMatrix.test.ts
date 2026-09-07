@@ -38,14 +38,20 @@ import {
   getMockInterviewContent,
 } from '../../speaking/speakingModes';
 import {evaluateCheck, evaluateCheckOutcome} from '../checks/checkEvaluator';
+import type {ContentLesson, ContentPackageManifest} from '../importer/types';
 
-const PKG_DIR = path.resolve(__dirname, '../../../../tools/content-lint/packages/daily-standup');
+const PKG_DIR = path.resolve(
+  __dirname,
+  '../../../../tools/content-lint/packages/daily-standup',
+);
 
 function loadPackageFiles() {
-  const manifest = JSON.parse(fs.readFileSync(path.join(PKG_DIR, 'manifest.json'), 'utf8'));
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(PKG_DIR, 'manifest.json'), 'utf8'),
+  ) as ContentPackageManifest;
   const lessons = manifest.lessons.map(entry =>
     JSON.parse(fs.readFileSync(path.join(PKG_DIR, entry.file), 'utf8')),
-  );
+  ) as ContentLesson[];
   return {manifest, lessons};
 }
 
@@ -64,8 +70,8 @@ describe('M7 Content Package & QA Matrix Verification', () => {
     expect(lessons.length).toBeGreaterThanOrEqual(15);
     expect(lessons.length).toBeLessThanOrEqual(20);
 
-    const chunkIds = new Set();
-    const unitSlugs = new Set();
+    const chunkIds = new Set<string>();
+    const unitSlugs = new Set<string>();
 
     for (const lesson of lessons) {
       if (lesson.unit_slug) {
@@ -104,6 +110,9 @@ describe('M7 Content Package & QA Matrix Verification', () => {
   it('preserves stable IDs and original Daily Stand-up IDs unchanged', () => {
     const dailyStandup = lessons.find(l => l.slug === 'daily-standup');
     expect(dailyStandup).toBeDefined();
+    if (!dailyStandup) {
+      throw new Error('daily-standup lesson missing from package fixture');
+    }
     expect(dailyStandup.id).toBe('3fdc3340c228cfac');
   });
 
@@ -135,13 +144,31 @@ describe('M7 Content Package & QA Matrix Verification', () => {
     expect(evaluateCheckOutcome(70)).toBe('conditional_pass');
     expect(evaluateCheckOutcome(50)).toBe('not_yet');
 
-    const passResult = evaluateCheck([{correct: true}, {correct: true}, {correct: true}, {correct: true}, {correct: true}]);
+    const passResult = evaluateCheck([
+      {correct: true},
+      {correct: true},
+      {correct: true},
+      {correct: true},
+      {correct: true},
+    ]);
     expect(passResult.outcome).toBe('pass');
 
-    const condResult = evaluateCheck([{correct: true}, {correct: true}, {correct: true}, {correct: false}, {correct: false}]);
+    const condResult = evaluateCheck([
+      {correct: true},
+      {correct: true},
+      {correct: true},
+      {correct: false},
+      {correct: false},
+    ]);
     expect(condResult.outcome).toBe('conditional_pass');
 
-    const failResult = evaluateCheck([{correct: false}, {correct: false}, {correct: false}, {correct: false}, {correct: false}]);
+    const failResult = evaluateCheck([
+      {correct: false},
+      {correct: false},
+      {correct: false},
+      {correct: false},
+      {correct: false},
+    ]);
     expect(failResult.outcome).toBe('not_yet');
   });
 
@@ -151,21 +178,34 @@ describe('M7 Content Package & QA Matrix Verification', () => {
 
       // Create dummy ZIP entries for importer
       const zipMap = new Map<string, Uint8Array>();
-      zipMap.set('manifest.json', Buffer.from(JSON.stringify(manifest), 'utf8'));
+      zipMap.set(
+        'manifest.json',
+        Buffer.from(JSON.stringify(manifest), 'utf8'),
+      );
       for (const entry of manifest.lessons) {
         const lesson = lessons.find(l => l.slug === entry.lesson_slug);
         zipMap.set(entry.file, Buffer.from(JSON.stringify(lesson), 'utf8'));
       }
 
       const mockExtract = async () => ({
-        entries: Array.from(zipMap.entries()).map(([name, bytes]) => ({name, bytes})),
+        entries: Array.from(zipMap.entries()).map(([name, bytes]) => ({
+          name,
+          bytes,
+        })),
       });
 
-      const res = await importContentPackage('https://example.com/mvp-package.zip', {
-        getDb: () => db,
-        extractZip: mockExtract as any,
-        fetcher: async () => ({ok: true, status: 200, body: new Uint8Array([1, 2, 3])}),
-      });
+      const res = await importContentPackage(
+        'https://example.com/mvp-package.zip',
+        {
+          getDb: () => db,
+          extractZip: mockExtract as any,
+          fetcher: async () => ({
+            ok: true,
+            status: 200,
+            body: new Uint8Array([1, 2, 3]),
+          }),
+        },
+      );
 
       expect(res.ok).toBe(true);
     });
@@ -175,7 +215,7 @@ describe('M7 Content Package & QA Matrix Verification', () => {
       expect(activeLessons.length).toBe(16);
 
       const firstLesson = getContentLessonById(activeLessons[0].id);
-      expect(firstLesson).not.null;
+      expect(firstLesson).not.toBeNull();
 
       const chunks = getLessonChunks(activeLessons[0].id);
       expect(chunks.length).toBeGreaterThanOrEqual(8);

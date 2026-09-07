@@ -6,17 +6,12 @@
   "title_vi": "Phân loại lỗi & Phân tích nguyên nhân gốc rễ",
   "blurb_vi": "Giải thích nguyên nhân sâu xa (root cause) gây ra sự cố và phương án khắc phục triệt để.",
   "level": "B2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Trình bày kết quả phân tích nguyên nhân gốc rễ của sự cố hệ thống.",
   "situation_vi": "Buổi họp post-mortem sau khi đã xử lý xong sự cố kỹ thuật.",
   "learner_role_vi": "Senior Developer báo cáo nguyên nhân sự cố cho nhóm.",
-  "prerequisite_lesson_slugs": [
-    "reporting-production-bug"
-  ],
+  "prerequisite_lesson_slugs": ["reporting-production-bug"],
   "pronunciation_focus_vi": "Phát âm chuẩn từ root cause, investigation, memory leak, patch, preventive measure.",
   "final_speaking_task_vi": "Giải thích nguyên nhân rò rỉ bộ nhớ và biện pháp ngăn ngừa.",
   "pass_conditions_vi": "Nêu chính xác nguyên nhân gốc rễ và kế hoạch phòng ngừa.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "b47f4febd5c6e979"
-      ],
-      "srs_ref_ids": [
-        "519a81481aa387dd"
-      ],
+      "audio_ref_ids": ["b47f4febd5c6e979"],
+      "srs_ref_ids": ["519a81481aa387dd"],
       "dialogue_turns": [
         {
           "id": "e7eabe28d42f4838",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "519a81481aa387dd"
-        ],
+        "re_present_refs": ["519a81481aa387dd"],
         "tip_vi": "Hãy nhớ cụm từ \"The root cause was an unindexed database query\" nghĩa là \"Nguyên nhân gốc rễ là một truy vấn cơ sở dữ liệu chưa được đánh chỉ mục\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "d15153d0c28dd565"
-      ],
-      "srs_ref_ids": [
-        "334b4d4b4cada9ca"
-      ],
+      "audio_ref_ids": ["d15153d0c28dd565"],
+      "srs_ref_ids": ["334b4d4b4cada9ca"],
       "dialogue_turns": [
         {
           "id": "1ff4a432a760b42b",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "334b4d4b4cada9ca"
-        ],
+        "re_present_refs": ["334b4d4b4cada9ca"],
         "tip_vi": "Hãy nhớ cụm từ \"We investigated server logs and trace metrics\" nghĩa là \"Chúng tôi đã điều tra nhật ký máy chủ và các chỉ số theo vết\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "fe88c5a5f1625ac0"
-      ],
-      "srs_ref_ids": [
-        "c7d0fba5e5ef066e"
-      ],
+      "audio_ref_ids": ["fe88c5a5f1625ac0"],
+      "srs_ref_ids": ["c7d0fba5e5ef066e"],
       "dialogue_turns": [
         {
           "id": "0460ca8ddbe1c8ee",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "c7d0fba5e5ef066e"
-        ],
+        "re_present_refs": ["c7d0fba5e5ef066e"],
         "tip_vi": "Hãy nhớ cụm từ \"The issue was triggered by a race condition\" nghĩa là \"Sự cố bị kích hoạt bởi tình trạng tranh chấp (race condition)\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "460547f8dae7c576"
-      ],
-      "srs_ref_ids": [
-        "bc4b105462911fff"
-      ],
+      "audio_ref_ids": ["460547f8dae7c576"],
+      "srs_ref_ids": ["bc4b105462911fff"],
       "dialogue_turns": [
         {
           "id": "abfcda659c14ff53",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "bc4b105462911fff"
-        ],
+        "re_present_refs": ["bc4b105462911fff"],
         "tip_vi": "Hãy nhớ cụm từ \"A memory leak was identified in event listener\" nghĩa là \"Sự cố rò rỉ bộ nhớ được phát hiện ở trình lắng nghe sự kiện\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "69809c95c64995d9"
-      ],
-      "srs_ref_ids": [
-        "18efe4dbb2421460"
-      ],
+      "audio_ref_ids": ["69809c95c64995d9"],
+      "srs_ref_ids": ["18efe4dbb2421460"],
       "dialogue_turns": [
         {
           "id": "83d72220913166e0",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "18efe4dbb2421460"
-        ],
+        "re_present_refs": ["18efe4dbb2421460"],
         "tip_vi": "Hãy nhớ cụm từ \"We applied a temporary patch to stabilize system\" nghĩa là \"Chúng tôi đã áp dụng bản vá tạm thời để ổn định hệ thống\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "a045328b414c62a7"
-      ],
-      "srs_ref_ids": [
-        "40cc36141415670f"
-      ],
+      "audio_ref_ids": ["a045328b414c62a7"],
+      "srs_ref_ids": ["40cc36141415670f"],
       "dialogue_turns": [
         {
           "id": "64312c2eac5aaeab",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "40cc36141415670f"
-        ],
+        "re_present_refs": ["40cc36141415670f"],
         "tip_vi": "Hãy nhớ cụm từ \"We added preventive measures including automated tests\" nghĩa là \"Chúng tôi đã thêm các biện pháp phòng ngừa gồm kiểm thử tự động\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "c46cb839e03b6c3b"
-      ],
-      "srs_ref_ids": [
-        "244818ce0751678e"
-      ],
+      "audio_ref_ids": ["c46cb839e03b6c3b"],
+      "srs_ref_ids": ["244818ce0751678e"],
       "dialogue_turns": [
         {
           "id": "5c9af7bbe30cb22e",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "244818ce0751678e"
-        ],
+        "re_present_refs": ["244818ce0751678e"],
         "tip_vi": "Hãy nhớ cụm từ \"I will publish the post-mortem report today\" nghĩa là \"Tôi sẽ xuất bản báo cáo phân tích sau sự cố trong hôm nay\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Hệ thống hiện đã phục hồi hoàn toàn và ổn định\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "e65ccb3500835ef5"
-      ],
-      "srs_ref_ids": [
-        "c7301e31a40ef8a8"
-      ],
+      "audio_ref_ids": ["e65ccb3500835ef5"],
+      "srs_ref_ids": ["c7301e31a40ef8a8"],
       "dialogue_turns": [
         {
           "id": "c86343af5681029e",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "c7301e31a40ef8a8"
-        ],
+        "re_present_refs": ["c7301e31a40ef8a8"],
         "tip_vi": "Hãy nhớ cụm từ \"The system is now fully recovered and stable\" nghĩa là \"Hệ thống hiện đã phục hồi hoàn toàn và ổn định\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Phân loại lỗi & Phân tích nguyên nhân gốc rễ",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "The root cause was an unindexed database query",

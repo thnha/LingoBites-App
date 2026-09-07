@@ -27,7 +27,10 @@ jest.mock('../../ai-analysis/AIAnalysisService', () => ({
 const navigation = {
   goBack: jest.fn(),
   navigate: jest.fn(),
-} as unknown as NativeStackNavigationProp<LessonsStackParamList, 'SavedLessonDetail'>;
+} as unknown as NativeStackNavigationProp<
+  LessonsStackParamList,
+  'SavedLessonDetail'
+>;
 
 describe('SavedLessonDetailScreen', () => {
   beforeEach(async () => {
@@ -42,7 +45,6 @@ describe('SavedLessonDetailScreen', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
-
 
   it('opens saved lesson from DB without calling AI', async () => {
     const saved = saveLesson({
@@ -110,7 +112,9 @@ describe('SavedLessonDetailScreen', () => {
     });
 
     await ReactTestRenderer.act(async () => {
-      tree.root.findByProps({accessibilityLabel: 'Xóa bài học'}).props.onPress();
+      tree.root
+        .findByProps({accessibilityLabel: 'Xóa bài học'})
+        .props.onPress();
       await Promise.resolve();
     });
 
@@ -165,7 +169,9 @@ describe('SavedLessonDetailScreen', () => {
     });
 
     await ReactTestRenderer.act(async () => {
-      tree.root.findByProps({accessibilityLabel: 'Xóa bài học'}).props.onPress();
+      tree.root
+        .findByProps({accessibilityLabel: 'Xóa bài học'})
+        .props.onPress();
       await Promise.resolve();
     });
 

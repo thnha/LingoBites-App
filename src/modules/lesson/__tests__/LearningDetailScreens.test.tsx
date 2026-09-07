@@ -44,10 +44,14 @@ function render(
   return tree;
 }
 
-function hasText(tree: ReactTestRenderer.ReactTestRenderer, text: string): boolean {
+function hasText(
+  tree: ReactTestRenderer.ReactTestRenderer,
+  text: string,
+): boolean {
   return (
     tree.root.findAll(
-      node => typeof node.props.children === 'string' && node.props.children === text,
+      node =>
+        typeof node.props.children === 'string' && node.props.children === text,
     ).length > 0
   );
 }
@@ -70,7 +74,11 @@ describe('learning detail screens', () => {
     const route = {
       key: 'SentenceDetail',
       name: 'SentenceDetail',
-      params: {sentences: validFullOutput.sentences, index: 0, practice: validFullOutput.practice},
+      params: {
+        sentences: validFullOutput.sentences,
+        index: 0,
+        practice: validFullOutput.practice,
+      },
     } as React.ComponentProps<typeof SentenceDetailScreen>['route'];
 
     const tree = render(
@@ -116,7 +124,11 @@ describe('learning detail screens', () => {
     const route = {
       key: 'WordDetail',
       name: 'WordDetail',
-      params: {word, practice: validFullOutput.practice, lessonId: savedLesson.lessonId},
+      params: {
+        word,
+        practice: validFullOutput.practice,
+        lessonId: savedLesson.lessonId,
+      },
     } as React.ComponentProps<typeof WordDetailScreen>['route'];
 
     const tree = render(
@@ -151,7 +163,9 @@ describe('learning detail screens', () => {
 
     expect(listFlashcards({lessonId: savedLesson.lessonId})).toHaveLength(1);
 
-    const unsaveButton = tree.root.findByProps({accessibilityLabel: 'Bỏ lưu từ'});
+    const unsaveButton = tree.root.findByProps({
+      accessibilityLabel: 'Bỏ lưu từ',
+    });
     await ReactTestRenderer.act(async () => {
       unsaveButton.props.onPress();
       await Promise.resolve();
@@ -175,7 +189,11 @@ describe('learning detail screens', () => {
     const route = {
       key: 'WordDetail',
       name: 'WordDetail',
-      params: {word, practice: validFullOutput.practice, lessonId: savedLesson.lessonId},
+      params: {
+        word,
+        practice: validFullOutput.practice,
+        lessonId: savedLesson.lessonId,
+      },
     } as React.ComponentProps<typeof WordDetailScreen>['route'];
 
     const firstTree = render(
@@ -187,7 +205,9 @@ describe('learning detail screens', () => {
     );
 
     await ReactTestRenderer.act(async () => {
-      firstTree.root.findByProps({accessibilityLabel: 'Lưu từ'}).props.onPress();
+      firstTree.root
+        .findByProps({accessibilityLabel: 'Lưu từ'})
+        .props.onPress();
       await Promise.resolve();
     });
 
@@ -223,7 +243,9 @@ describe('learning detail screens', () => {
     );
 
     await ReactTestRenderer.act(async () => {
-      secondTree.root.findByProps({accessibilityLabel: 'Lưu từ'}).props.onPress();
+      secondTree.root
+        .findByProps({accessibilityLabel: 'Lưu từ'})
+        .props.onPress();
       await Promise.resolve();
     });
 
@@ -246,7 +268,9 @@ describe('learning detail screens', () => {
       />,
     );
 
-    expect(tree.root.findAllByProps({accessibilityLabel: 'Lưu từ'})).toHaveLength(0);
+    expect(
+      tree.root.findAllByProps({accessibilityLabel: 'Lưu từ'}),
+    ).toHaveLength(0);
   });
 
   it('GrammarDetailScreen renders the grammar name and explanation', () => {
@@ -254,7 +278,11 @@ describe('learning detail screens', () => {
     const route = {
       key: 'GrammarDetail',
       name: 'GrammarDetail',
-      params: {grammar, related: validFullOutput.grammar_points, practice: validFullOutput.practice},
+      params: {
+        grammar,
+        related: validFullOutput.grammar_points,
+        practice: validFullOutput.practice,
+      },
     } as React.ComponentProps<typeof GrammarDetailScreen>['route'];
 
     const tree = render(

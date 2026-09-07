@@ -21,7 +21,9 @@ type Props = NativeStackScreenProps<LessonsStackParamList, 'SpeakingRoom'>;
  */
 export function SpeakingRoomScreen({navigation}: Props) {
   const {theme} = useAppTheme();
-  const [modes, setModes] = React.useState<SpeakingModeInfo[]>(() => listSpeakingRoomModes());
+  const [modes, setModes] = React.useState<SpeakingModeInfo[]>(() =>
+    listSpeakingRoomModes(),
+  );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -40,7 +42,10 @@ export function SpeakingRoomScreen({navigation}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader title="Phòng luyện nói" onBack={() => navigation.goBack()} />
+      <ScreenHeader
+        title="Phòng luyện nói"
+        onBack={() => navigation.goBack()}
+      />
       <ScrollView
         contentContainerStyle={{
           gap: theme.spacing.md,
@@ -48,7 +53,8 @@ export function SpeakingRoomScreen({navigation}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         {modes.map(mode => (
           <Pressable
             key={mode.mode}
@@ -57,17 +63,25 @@ export function SpeakingRoomScreen({navigation}: Props) {
             disabled={!mode.available}
             onPress={() => handlePressMode(mode)}
             style={({pressed}) => ({
-              opacity: !mode.available ? 0.6 : pressed ? theme.states.pressedOpacity : 1,
-            })}>
+              opacity: !mode.available
+                ? 0.6
+                : pressed
+                ? theme.states.pressedOpacity
+                : 1,
+            })}
+          >
             <AppCard style={{gap: theme.spacing.xs}}>
               <View
                 style={{
                   alignItems: 'center',
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                }}>
+                }}
+              >
                 <AppText variant="h3">{mode.titleVi}</AppText>
-                {mode.available ? null : <Chip label="Chưa có sẵn" tone="neutral" />}
+                {mode.available ? null : (
+                  <Chip label="Chưa có sẵn" tone="neutral" />
+                )}
               </View>
               <AppText color="secondary">{mode.descriptionVi}</AppText>
             </AppCard>

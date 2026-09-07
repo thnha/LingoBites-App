@@ -79,10 +79,11 @@ export function PasteTextScreen({navigation, route}: Props) {
           paddingTop: theme.spacing.sm,
         }}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <AppText color="secondary" variant="body">
-          Dán hoặc nhập đoạn tiếng Anh — bài viết, thực đơn, tin nhắn — app sẽ biến
-          thành bài học.
+          Dán hoặc nhập đoạn tiếng Anh — bài viết, thực đơn, tin nhắn — app sẽ
+          biến thành bài học.
         </AppText>
 
         <TextField
@@ -104,11 +105,15 @@ export function PasteTextScreen({navigation, route}: Props) {
           value={text}
         />
 
-        <View style={{alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
-          <Chip
-            label="Phát hiện: Tiếng Anh"
-            tone="accentSoft"
-          />
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 8,
+          }}
+        >
+          <Chip label="Phát hiện: Tiếng Anh" tone="accentSoft" />
           <Chip label={`${wordCount} từ`} tone="neutral" />
         </View>
 
@@ -126,7 +131,8 @@ export function PasteTextScreen({navigation, route}: Props) {
           backgroundColor: theme.colors.background,
           borderTopColor: theme.colors.outlineVariant,
           paddingBottom: theme.spacing.lg,
-        }}>
+        }}
+      >
         <Pressable
           accessibilityLabel="Trích xuất từ vựng"
           accessibilityRole="button"
@@ -142,9 +148,20 @@ export function PasteTextScreen({navigation, route}: Props) {
               minHeight: 52,
               opacity: pressed ? theme.states.pressedOpacity : 1,
             },
-          ]}>
-          <MaterialIcon color={theme.colors.text.inverse} name="auto_stories" size={22} />
-          <AppText style={{color: theme.colors.text.inverse, fontSize: 18, fontWeight: '600'}}>
+          ]}
+        >
+          <MaterialIcon
+            color={theme.colors.text.inverse}
+            name="auto_stories"
+            size={22}
+          />
+          <AppText
+            style={{
+              color: theme.colors.text.inverse,
+              fontSize: 18,
+              fontWeight: '600',
+            }}
+          >
             Trích xuất từ vựng
           </AppText>
         </Pressable>

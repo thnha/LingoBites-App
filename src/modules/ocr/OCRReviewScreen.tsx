@@ -129,7 +129,8 @@ export function OCRReviewScreen({navigation, route}: Props) {
           paddingTop: theme.spacing.sm,
         }}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View
           style={{
             alignItems: 'center',
@@ -138,7 +139,8 @@ export function OCRReviewScreen({navigation, route}: Props) {
             borderRadius: 20,
             borderWidth: 2,
             overflow: 'hidden',
-          }}>
+          }}
+        >
           <Image
             resizeMode="cover"
             source={{uri: imageUri}}
@@ -147,7 +149,8 @@ export function OCRReviewScreen({navigation, route}: Props) {
         </View>
 
         <AppText color="secondary" variant="body">
-          Kiểm tra và chỉnh sửa trước khi phân tích. App chỉ gửi text bạn xác nhận cho AI.
+          Kiểm tra và chỉnh sửa trước khi phân tích. App chỉ gửi text bạn xác
+          nhận cho AI.
         </AppText>
 
         <TextField
@@ -169,10 +172,20 @@ export function OCRReviewScreen({navigation, route}: Props) {
           value={text}
         />
 
-        <View style={{alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 8,
+          }}
+        >
           <Chip label="Text từ ảnh" tone="accentSoft" />
           <Chip label={`${wordCount} từ`} tone="neutral" />
-          <Chip label={`${text.trim().length}/${MAX_INPUT_TEXT_LENGTH}`} tone="neutral" />
+          <Chip
+            label={`${text.trim().length}/${MAX_INPUT_TEXT_LENGTH}`}
+            tone="neutral"
+          />
         </View>
 
         {advisoryMessages.map(message => (
@@ -203,8 +216,13 @@ export function OCRReviewScreen({navigation, route}: Props) {
               opacity: busy || pressed ? theme.states.pressedOpacity : 1,
               paddingVertical: theme.spacing.sm,
             },
-          ]}>
-          <MaterialIcon color={theme.colors.primary} name="document_scanner" size={20} />
+          ]}
+        >
+          <MaterialIcon
+            color={theme.colors.primary}
+            name="document_scanner"
+            size={20}
+          />
           <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
             {isRetryingOcr ? 'Đang nhận diện lại...' : 'Thử OCR lại'}
           </AppText>
@@ -216,7 +234,8 @@ export function OCRReviewScreen({navigation, route}: Props) {
           backgroundColor: theme.colors.background,
           borderTopColor: theme.colors.outlineVariant,
           paddingBottom: theme.spacing.lg,
-        }}>
+        }}
+      >
         <Pressable
           accessibilityLabel="Phân tích & học ngay"
           accessibilityRole="button"
@@ -233,9 +252,20 @@ export function OCRReviewScreen({navigation, route}: Props) {
               minHeight: 52,
               opacity: busy || pressed ? theme.states.pressedOpacity : 1,
             },
-          ]}>
-          <MaterialIcon color={theme.colors.text.inverse} name="auto_stories" size={22} />
-          <AppText style={{color: theme.colors.text.inverse, fontSize: 18, fontWeight: '600'}}>
+          ]}
+        >
+          <MaterialIcon
+            color={theme.colors.text.inverse}
+            name="auto_stories"
+            size={22}
+          />
+          <AppText
+            style={{
+              color: theme.colors.text.inverse,
+              fontSize: 18,
+              fontWeight: '600',
+            }}
+          >
             Phân tích & học ngay
           </AppText>
         </Pressable>

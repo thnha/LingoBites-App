@@ -17,7 +17,8 @@ export function BottomActionBar({style, children, ...rest}: ViewProps) {
         },
         style,
       ]}
-      {...rest}>
+      {...rest}
+    >
       {children}
     </View>
   );

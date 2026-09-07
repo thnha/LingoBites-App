@@ -31,8 +31,8 @@ const METHOD_DEFLATE = 8;
 const EOCD_MIN_SIZE = 22;
 const EOCD_MAX_COMMENT = 0xffff;
 const ZIP_MAX_BYTES = 512 * 1024 * 1024; // 512 MB — hard cap so a hostile
-                                        // ZIP cannot exhaust memory during
-                                        // EOCD scanning.
+// ZIP cannot exhaust memory during
+// EOCD scanning.
 
 export class ZipReadError extends Error {
   constructor(message: string) {
@@ -105,11 +105,12 @@ function readUInt16LE(bytes: Uint8Array, offset: number): number {
 
 function readUInt32LE(bytes: Uint8Array, offset: number): number {
   return (
-    (bytes[offset] ?? 0) |
-    ((bytes[offset + 1] ?? 0) << 8) |
-    ((bytes[offset + 2] ?? 0) << 16) |
-    ((bytes[offset + 3] ?? 0) << 24)
-  ) >>> 0;
+    ((bytes[offset] ?? 0) |
+      ((bytes[offset + 1] ?? 0) << 8) |
+      ((bytes[offset + 2] ?? 0) << 16) |
+      ((bytes[offset + 3] ?? 0) << 24)) >>>
+    0
+  );
 }
 
 function findEocd(bytes: Uint8Array): {
@@ -122,7 +123,10 @@ function findEocd(bytes: Uint8Array): {
   if (bytes.length < EOCD_MIN_SIZE) {
     throw new ZipReadError('ZIP too short to contain an EOCD record');
   }
-  const scanStart = Math.max(0, bytes.length - EOCD_MAX_COMMENT - EOCD_MIN_SIZE);
+  const scanStart = Math.max(
+    0,
+    bytes.length - EOCD_MAX_COMMENT - EOCD_MIN_SIZE,
+  );
   for (let i = bytes.length - EOCD_MIN_SIZE; i >= scanStart; i -= 1) {
     if (readUInt32LE(bytes, i) === SIG_EOCD) {
       const commentLength = readUInt16LE(bytes, i + 20);
@@ -237,7 +241,9 @@ async function readLocalEntry(
  *   - entries whose data extends past the end of the buffer
  *   - duplicate entry names (we keep first and warn via `duplicates`)
  */
-export async function extractZip(input: Uint8Array | Buffer): Promise<ExtractedZip> {
+export async function extractZip(
+  input: Uint8Array | Buffer,
+): Promise<ExtractedZip> {
   const bytes = toUint8(input);
   if (bytes.length > ZIP_MAX_BYTES) {
     throw new ZipReadError(

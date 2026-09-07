@@ -7,7 +7,11 @@ export type LessonCardView = {
   blurb?: string;
 };
 
-export type LessonSubjectKey = 'grammar' | 'vocabulary' | 'idioms' | 'conversation';
+export type LessonSubjectKey =
+  | 'grammar'
+  | 'vocabulary'
+  | 'idioms'
+  | 'conversation';
 
 export type LibraryLessonCardView = {
   id: string;

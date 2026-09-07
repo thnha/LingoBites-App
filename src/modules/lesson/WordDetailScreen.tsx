@@ -30,7 +30,10 @@ type Props =
 export function WordDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
-  const nav = navigation as NativeStackScreenProps<HomeStackParamList, 'WordDetail'>['navigation'];
+  const nav = navigation as NativeStackScreenProps<
+    HomeStackParamList,
+    'WordDetail'
+  >['navigation'];
   const {word, practice, lessonId} = route.params;
   const hasPractice = practice.length > 0;
   const metaParts = [word.word_type, word.ipa].filter(Boolean);
@@ -98,24 +101,37 @@ export function WordDetailScreen({navigation, route}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
-        <AppCard style={{alignItems: 'center', gap: theme.spacing.sm, paddingTop: 30}}>
+        showsVerticalScrollIndicator={false}
+      >
+        <AppCard
+          style={{alignItems: 'center', gap: theme.spacing.sm, paddingTop: 30}}
+        >
           {word.cefr_level ? (
             <View style={{position: 'absolute', right: 16, top: 16}}>
               <Chip label={word.cefr_level} tone="gold" />
             </View>
           ) : null}
-          <AppText style={{color: theme.colors.primary, fontSize: 44, lineHeight: 48}}>
+          <AppText
+            style={{color: theme.colors.primary, fontSize: 44, lineHeight: 48}}
+          >
             {word.word}
           </AppText>
           {metaParts.length > 0 ? (
-            <View style={{alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 8,
+              }}
+            >
               {metaParts.map((part, partIndex) => (
                 <React.Fragment key={part}>
-                  {partIndex > 0 ? (
-                    <AppText color="muted">•</AppText>
-                  ) : null}
-                  <AppText color="secondary" style={{fontStyle: part === word.ipa ? 'normal' : 'italic'}}>
+                  {partIndex > 0 ? <AppText color="muted">•</AppText> : null}
+                  <AppText
+                    color="secondary"
+                    style={{fontStyle: part === word.ipa ? 'normal' : 'italic'}}
+                  >
                     {part}
                   </AppText>
                 </React.Fragment>
@@ -130,11 +146,16 @@ export function WordDetailScreen({navigation, route}: Props) {
               marginVertical: theme.spacing.sm,
             }}
           />
-          <AppText style={{color: theme.colors.secondary, fontWeight: '700'}} variant="h3">
+          <AppText
+            style={{color: theme.colors.secondary, fontWeight: '700'}}
+            variant="h3"
+          >
             {word.meaning_vi}
           </AppText>
           {word.phrase_from_text ? (
-            <AppText color="muted">Trong văn bản: “{word.phrase_from_text}”</AppText>
+            <AppText color="muted">
+              Trong văn bản: “{word.phrase_from_text}”
+            </AppText>
           ) : null}
         </AppCard>
 
@@ -144,10 +165,19 @@ export function WordDetailScreen({navigation, route}: Props) {
               borderLeftColor: theme.colors.accent,
               borderLeftWidth: 4,
               gap: theme.spacing.sm,
-            }}>
+            }}
+          >
             <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
-              <MaterialIcon color={theme.colors.primary} filled name="lightbulb" size={22} />
-              <AppText style={{color: theme.colors.primary, fontWeight: '600'}} variant="h3">
+              <MaterialIcon
+                color={theme.colors.primary}
+                filled
+                name="lightbulb"
+                size={22}
+              />
+              <AppText
+                style={{color: theme.colors.primary, fontWeight: '600'}}
+                variant="h3"
+              >
                 Vì sao nên học
               </AppText>
             </View>
@@ -161,10 +191,19 @@ export function WordDetailScreen({navigation, route}: Props) {
               borderLeftColor: theme.colors.secondaryContainer,
               borderLeftWidth: 4,
               gap: theme.spacing.sm,
-            }}>
+            }}
+          >
             <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
-              <MaterialIcon color={theme.colors.secondary} filled name="format_quote" size={22} />
-              <AppText style={{color: theme.colors.secondary, fontWeight: '600'}} variant="h3">
+              <MaterialIcon
+                color={theme.colors.secondary}
+                filled
+                name="format_quote"
+                size={22}
+              />
+              <AppText
+                style={{color: theme.colors.secondary, fontWeight: '600'}}
+                variant="h3"
+              >
                 Ví dụ
               </AppText>
             </View>
@@ -176,7 +215,8 @@ export function WordDetailScreen({navigation, route}: Props) {
                 borderRadius: 10,
                 paddingHorizontal: 14,
                 paddingVertical: 12,
-              }}>
+              }}
+            >
               <AppText style={{fontWeight: '700'}} variant="bodyLg">
                 {word.example}
               </AppText>
@@ -195,7 +235,8 @@ export function WordDetailScreen({navigation, route}: Props) {
             backgroundColor: theme.colors.background,
             borderTopColor: theme.colors.outlineVariant,
             paddingBottom: theme.spacing.lg,
-          }}>
+          }}
+        >
           <Pressable
             accessibilityLabel="Luyện từ này"
             accessibilityRole="button"
@@ -211,9 +252,20 @@ export function WordDetailScreen({navigation, route}: Props) {
                 minHeight: 52,
                 opacity: pressed ? theme.states.pressedOpacity : 1,
               },
-            ]}>
-            <MaterialIcon color={theme.colors.text.inverse} name="fitness_center" size={22} />
-            <AppText style={{color: theme.colors.text.inverse, fontSize: 18, fontWeight: '600'}}>
+            ]}
+          >
+            <MaterialIcon
+              color={theme.colors.text.inverse}
+              name="fitness_center"
+              size={22}
+            />
+            <AppText
+              style={{
+                color: theme.colors.text.inverse,
+                fontSize: 18,
+                fontWeight: '600',
+              }}
+            >
               Luyện từ này
             </AppText>
           </Pressable>

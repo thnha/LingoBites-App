@@ -12,7 +12,10 @@ import {ProfileSettingsRow} from '../../components/ProfileSettingsRow';
 import {SectionHeader} from '../../components/SectionHeader';
 import {ThemePicker} from '../../components/ThemePicker';
 import {getSupportEmail} from '../../shared/api/appConfig';
-import {getAudioCacheStats, listReadyAudioAssets} from '../../shared/db/AudioAssetRepository';
+import {
+  getAudioCacheStats,
+  listReadyAudioAssets,
+} from '../../shared/db/AudioAssetRepository';
 import {formatCacheBytes} from '../../shared/db/audioCachePolicy';
 import {playReadyChapterAudio} from '../audio/deviceChapterAudio';
 import {getGamificationSnapshot} from '../engagement/gamification';
@@ -55,7 +58,8 @@ export function ProfileScreen({navigation}: Props) {
     }, []),
   );
   const streak = gamification.currentStreak;
-  const streakTitle = streak > 0 ? `Chuỗi ${streak} ngày` : 'Chưa có chuỗi ngày';
+  const streakTitle =
+    streak > 0 ? `Chuỗi ${streak} ngày` : 'Chưa có chuỗi ngày';
   const streakSubtitle =
     streak > 0
       ? 'Tiếp tục duy trì — học gì đó hôm nay nhé!'
@@ -85,8 +89,12 @@ export function ProfileScreen({navigation}: Props) {
           text: 'Xóa',
           style: 'destructive',
           onPress: async () => {
-            const {clearSpeakingData} = require('../../shared/db/SpeakingRepository');
-            const {deleteRecordingFile} = require('../speaking/recordingService');
+            const {
+              clearSpeakingData,
+            } = require('../../shared/db/SpeakingRepository');
+            const {
+              deleteRecordingFile,
+            } = require('../speaking/recordingService');
             const {deletedFilePaths} = clearSpeakingData();
             for (const path of deletedFilePaths) {
               await deleteRecordingFile(path);
@@ -128,17 +136,23 @@ export function ProfileScreen({navigation}: Props) {
           height: 56,
           justifyContent: 'space-between',
           paddingHorizontal: theme.gutter,
-        }}>
+        }}
+      >
         <AppText
           style={{
             color: theme.colors.primary,
             fontSize: 20,
             fontWeight: '600',
             marginLeft: 4,
-          }}>
+          }}
+        >
           Hồ sơ
         </AppText>
-        <IconButton accessibilityLabel="Chỉnh sửa hồ sơ" icon="edit" tone="surface" />
+        <IconButton
+          accessibilityLabel="Chỉnh sửa hồ sơ"
+          icon="edit"
+          tone="surface"
+        />
       </View>
 
       <ScrollView
@@ -148,7 +162,8 @@ export function ProfileScreen({navigation}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <AppCard style={{alignItems: 'center', flexDirection: 'row', gap: 16}}>
           <View
             style={{
@@ -158,8 +173,15 @@ export function ProfileScreen({navigation}: Props) {
               height: 64,
               justifyContent: 'center',
               width: 64,
-            }}>
-            <AppText style={{color: theme.colors.accentInk, fontSize: 24, fontWeight: '700'}}>
+            }}
+          >
+            <AppText
+              style={{
+                color: theme.colors.accentInk,
+                fontSize: 24,
+                fontWeight: '700',
+              }}
+            >
               {PROFILE_PLACEHOLDER.initials}
             </AppText>
           </View>
@@ -180,7 +202,8 @@ export function ProfileScreen({navigation}: Props) {
             gap: 14,
             padding: theme.spacing.lg,
             ...theme.shadow.medium,
-          }}>
+          }}
+        >
           <MaterialIcon
             color={theme.colors.accentInk}
             filled
@@ -188,10 +211,22 @@ export function ProfileScreen({navigation}: Props) {
             size={42}
           />
           <View style={{flex: 1, gap: 4}}>
-            <AppText style={{color: theme.colors.accentInk, fontSize: 22, fontWeight: '600'}}>
+            <AppText
+              style={{
+                color: theme.colors.accentInk,
+                fontSize: 22,
+                fontWeight: '600',
+              }}
+            >
               {streakTitle}
             </AppText>
-            <AppText style={{color: theme.colors.accentInk, fontSize: 12, opacity: 0.85}}>
+            <AppText
+              style={{
+                color: theme.colors.accentInk,
+                fontSize: 12,
+                opacity: 0.85,
+              }}
+            >
               {streakSubtitle}
             </AppText>
           </View>
@@ -206,11 +241,24 @@ export function ProfileScreen({navigation}: Props) {
               flex: 1,
               paddingHorizontal: 12,
               paddingVertical: 16,
-            }}>
-            <AppText style={{color: theme.colors.tertiary, fontSize: 26, fontWeight: '700'}}>
+            }}
+          >
+            <AppText
+              style={{
+                color: theme.colors.tertiary,
+                fontSize: 26,
+                fontWeight: '700',
+              }}
+            >
               {gamification.totalXp}
             </AppText>
-            <AppText style={{color: theme.colors.tertiary, fontSize: 12, fontWeight: '600'}}>
+            <AppText
+              style={{
+                color: theme.colors.tertiary,
+                fontSize: 12,
+                fontWeight: '600',
+              }}
+            >
               XP đã đạt
             </AppText>
           </View>
@@ -222,11 +270,24 @@ export function ProfileScreen({navigation}: Props) {
               flex: 1,
               paddingHorizontal: 12,
               paddingVertical: 16,
-            }}>
-            <AppText style={{color: theme.colors.secondary, fontSize: 26, fontWeight: '700'}}>
+            }}
+          >
+            <AppText
+              style={{
+                color: theme.colors.secondary,
+                fontSize: 26,
+                fontWeight: '700',
+              }}
+            >
               {gamification.badges.length}
             </AppText>
-            <AppText style={{color: theme.colors.secondary, fontSize: 12, fontWeight: '600'}}>
+            <AppText
+              style={{
+                color: theme.colors.secondary,
+                fontSize: 12,
+                fontWeight: '600',
+              }}
+            >
               Huy hiệu
             </AppText>
           </View>
@@ -238,11 +299,24 @@ export function ProfileScreen({navigation}: Props) {
               flex: 1,
               paddingHorizontal: 12,
               paddingVertical: 16,
-            }}>
-            <AppText style={{color: theme.colors.primary, fontSize: 18, fontWeight: '700'}}>
+            }}
+          >
+            <AppText
+              style={{
+                color: theme.colors.primary,
+                fontSize: 18,
+                fontWeight: '700',
+              }}
+            >
               {gamification.pet.stageLabel}
             </AppText>
-            <AppText style={{color: theme.colors.primary, fontSize: 12, fontWeight: '600'}}>
+            <AppText
+              style={{
+                color: theme.colors.primary,
+                fontSize: 12,
+                fontWeight: '600',
+              }}
+            >
               Cây ảo
             </AppText>
           </View>
@@ -257,11 +331,24 @@ export function ProfileScreen({navigation}: Props) {
               flex: 1,
               paddingHorizontal: 12,
               paddingVertical: 16,
-            }}>
-            <AppText style={{color: theme.colors.tertiary, fontSize: 26, fontWeight: '700'}}>
+            }}
+          >
+            <AppText
+              style={{
+                color: theme.colors.tertiary,
+                fontSize: 26,
+                fontWeight: '700',
+              }}
+            >
               {PROFILE_PLACEHOLDER.wordsKnown}
             </AppText>
-            <AppText style={{color: theme.colors.tertiary, fontSize: 12, fontWeight: '600'}}>
+            <AppText
+              style={{
+                color: theme.colors.tertiary,
+                fontSize: 12,
+                fontWeight: '600',
+              }}
+            >
               Từ đã biết
             </AppText>
           </View>
@@ -273,11 +360,24 @@ export function ProfileScreen({navigation}: Props) {
               flex: 1,
               paddingHorizontal: 12,
               paddingVertical: 16,
-            }}>
-            <AppText style={{color: theme.colors.secondary, fontSize: 26, fontWeight: '700'}}>
+            }}
+          >
+            <AppText
+              style={{
+                color: theme.colors.secondary,
+                fontSize: 26,
+                fontWeight: '700',
+              }}
+            >
               {PROFILE_PLACEHOLDER.accuracy}
             </AppText>
-            <AppText style={{color: theme.colors.secondary, fontSize: 12, fontWeight: '600'}}>
+            <AppText
+              style={{
+                color: theme.colors.secondary,
+                fontSize: 12,
+                fontWeight: '600',
+              }}
+            >
               Độ chính xác
             </AppText>
           </View>
@@ -367,8 +467,12 @@ export function ProfileScreen({navigation}: Props) {
               opacity: pressed ? theme.states.pressedOpacity : 1,
               paddingHorizontal: theme.spacing.lg,
             },
-          ]}>
-          <AppText color="danger" style={{fontWeight: theme.typography.weight.bold}}>
+          ]}
+        >
+          <AppText
+            color="danger"
+            style={{fontWeight: theme.typography.weight.bold}}
+          >
             Xóa dữ liệu luyện nói & ghi âm
           </AppText>
         </Pressable>
@@ -389,8 +493,12 @@ export function ProfileScreen({navigation}: Props) {
               opacity: pressed ? theme.states.pressedOpacity : 1,
               paddingHorizontal: theme.spacing.lg,
             },
-          ]}>
-          <AppText color="danger" style={{fontWeight: theme.typography.weight.bold}}>
+          ]}
+        >
+          <AppText
+            color="danger"
+            style={{fontWeight: theme.typography.weight.bold}}
+          >
             Xóa dữ liệu học trên máy
           </AppText>
         </Pressable>

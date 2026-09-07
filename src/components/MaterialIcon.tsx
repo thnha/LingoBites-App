@@ -19,7 +19,9 @@ export function MaterialIcon({name, size = 24, color, filled = false}: Props) {
   const glyph = resolveHandoffIconName(name);
 
   if (__DEV__ && !isValidMaterialIconGlyph(glyph)) {
-    console.warn(`[MaterialIcon] Missing glyph "${glyph}" for handoff icon "${name}".`);
+    console.warn(
+      `[MaterialIcon] Missing glyph "${glyph}" for handoff icon "${name}".`,
+    );
   }
 
   return (

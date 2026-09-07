@@ -41,12 +41,18 @@ export function AppText({
 
   const variantStyle = presetVariants.has(variant)
     ? {
-        fontSize: theme.typography.presets[variant as keyof typeof theme.typography.presets]
-          .fontSize,
+        fontSize:
+          theme.typography.presets[
+            variant as keyof typeof theme.typography.presets
+          ].fontSize,
         lineHeight:
-          theme.typography.presets[variant as keyof typeof theme.typography.presets].lineHeight,
+          theme.typography.presets[
+            variant as keyof typeof theme.typography.presets
+          ].lineHeight,
         fontWeight:
-          theme.typography.presets[variant as keyof typeof theme.typography.presets].fontWeight,
+          theme.typography.presets[
+            variant as keyof typeof theme.typography.presets
+          ].fontWeight,
       }
     : {
         title: {

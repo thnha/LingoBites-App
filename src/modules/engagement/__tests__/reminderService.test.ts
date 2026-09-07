@@ -1,23 +1,26 @@
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../../../shared/db/constants';
-import { saveFlashcard, recordFlashcardRating } from '../../../shared/db/FlashcardRepository';
-import { validFullOutput } from '../../../shared/fixtures';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../../../shared/db/constants';
+import {
+  saveFlashcard,
+  recordFlashcardRating,
+} from '../../../shared/db/FlashcardRepository';
+import {validFullOutput} from '../../../shared/fixtures';
 import {
   configureReminderScheduler,
   noopReminderScheduler,
   reconcileReminders,
   syncReviewReminders,
 } from '../reminderService';
-import type { PendingReminder } from '../../../shared/db/reminderPolicy';
+import type {PendingReminder} from '../../../shared/db/reminderPolicy';
 
 const NOW = '2026-09-01T00:00:00.000Z';
 
 function createFakeScheduler() {
   const pending = new Map<string, string>();
   const calls = {
-    scheduled: [] as Array<{ cardId: string; word: string; dueAt: string }>,
+    scheduled: [] as Array<{cardId: string; word: string; dueAt: string}>,
     cancelled: [] as string[],
   };
   return {
@@ -25,11 +28,11 @@ function createFakeScheduler() {
       listPending: () => {
         const items: PendingReminder[] = [];
         for (const [cardId, dueAt] of pending.entries()) {
-          items.push({ cardId, dueAt });
+          items.push({cardId, dueAt});
         }
         return items;
       },
-      schedule: (params: { cardId: string; word: string; dueAt: string }) => {
+      schedule: (params: {cardId: string; word: string; dueAt: string}) => {
         pending.set(params.cardId, params.dueAt);
         calls.scheduled.push(params);
       },
@@ -59,7 +62,7 @@ function seedFlashcard(): string {
 describe('reminderService', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
     configureReminderScheduler(noopReminderScheduler);
   });
 
@@ -72,9 +75,12 @@ describe('reminderService', () => {
     });
     const fake = createFakeScheduler();
 
-    const result = syncReviewReminders(fake.scheduler, '2026-09-02T09:00:00.000Z');
+    const result = syncReviewReminders(
+      fake.scheduler,
+      '2026-09-02T09:00:00.000Z',
+    );
 
-    expect(result).toEqual({ scheduled: 1, cancelled: 0 });
+    expect(result).toEqual({scheduled: 1, cancelled: 0});
     expect(fake.calls.scheduled).toHaveLength(1);
     expect(fake.calls.scheduled[0]).toMatchObject({
       cardId,
@@ -94,9 +100,12 @@ describe('reminderService', () => {
 
     syncReviewReminders(fake.scheduler, '2026-09-02T09:00:00.000Z');
     // Second launch: OS still holds the same pending notification.
-    const again = syncReviewReminders(fake.scheduler, '2026-09-02T10:00:00.000Z');
+    const again = syncReviewReminders(
+      fake.scheduler,
+      '2026-09-02T10:00:00.000Z',
+    );
 
-    expect(again).toEqual({ scheduled: 0, cancelled: 0 });
+    expect(again).toEqual({scheduled: 0, cancelled: 0});
     expect(fake.calls.scheduled).toHaveLength(1);
     expect(fake.calls.cancelled).toHaveLength(0);
   });
@@ -118,9 +127,12 @@ describe('reminderService', () => {
       rating: 'remembered',
       reviewedAt: '2026-09-03T09:00:00.000Z',
     });
-    const result = syncReviewReminders(fake.scheduler, '2026-09-03T10:00:00.000Z');
+    const result = syncReviewReminders(
+      fake.scheduler,
+      '2026-09-03T10:00:00.000Z',
+    );
 
-    expect(result).toEqual({ scheduled: 1, cancelled: 1 });
+    expect(result).toEqual({scheduled: 1, cancelled: 1});
     expect(fake.calls.cancelled).toEqual([cardId]);
     expect(fake.calls.scheduled).toHaveLength(2);
     expect(fake.calls.scheduled[1].dueAt).toBe('2026-09-10T09:00:00.000Z');
@@ -137,14 +149,17 @@ describe('reminderService', () => {
     syncReviewReminders(fake.scheduler, '2026-09-02T09:00:00.000Z');
 
     // App reopened after the due instant passed without a new future due.
-    const result = syncReviewReminders(fake.scheduler, '2026-09-05T00:00:00.000Z');
-    expect(result).toEqual({ scheduled: 0, cancelled: 1 });
+    const result = syncReviewReminders(
+      fake.scheduler,
+      '2026-09-05T00:00:00.000Z',
+    );
+    expect(result).toEqual({scheduled: 0, cancelled: 1});
     expect(fake.calls.cancelled).toEqual([cardId]);
   });
 
   it('noop scheduler never throws and schedules nothing', () => {
     const result = syncReviewReminders(noopReminderScheduler, NOW);
-    expect(result).toEqual({ scheduled: 0, cancelled: 0 });
+    expect(result).toEqual({scheduled: 0, cancelled: 0});
   });
 
   it('reconciles through the installed scheduler adapter', () => {
@@ -158,7 +173,7 @@ describe('reminderService', () => {
     configureReminderScheduler(fake.scheduler);
 
     const result = reconcileReminders('2026-09-02T09:00:00.000Z');
-    expect(result).toEqual({ scheduled: 1, cancelled: 0 });
+    expect(result).toEqual({scheduled: 1, cancelled: 0});
     expect(fake.pending.get(cardId)).toBe('2026-09-05T08:00:00.000Z');
   });
 });

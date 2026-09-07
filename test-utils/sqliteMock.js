@@ -40,7 +40,7 @@ function createMockDatabase() {
       normalized.startsWith('create table') ||
       normalized.startsWith('create index')
     ) {
-      return { rowsAffected: 0 };
+      return {rowsAffected: 0};
     }
 
     if (normalized.startsWith('insert into lessons')) {
@@ -61,7 +61,7 @@ function createMockDatabase() {
         updated_at: params[13],
         category: params[14],
       });
-      return { rowsAffected: 1, insertId: lessons.length };
+      return {rowsAffected: 1, insertId: lessons.length};
     }
 
     if (normalized.startsWith('insert into app_settings')) {
@@ -70,7 +70,7 @@ function createMockDatabase() {
         value: params[1],
         updated_at: params[2],
       });
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (normalized.startsWith('insert into flashcards')) {
@@ -92,7 +92,7 @@ function createMockDatabase() {
         created_at: params[14],
         updated_at: params[15],
       });
-      return { rowsAffected: 1, insertId: flashcards.length };
+      return {rowsAffected: 1, insertId: flashcards.length};
     }
 
     if (normalized.startsWith('insert into review_schedule')) {
@@ -105,7 +105,7 @@ function createMockDatabase() {
         created_at: params[5],
         updated_at: params[6],
       });
-      return { rowsAffected: 1, insertId: reviewSchedule.length };
+      return {rowsAffected: 1, insertId: reviewSchedule.length};
     }
 
     if (normalized.startsWith('insert into review_sessions')) {
@@ -119,7 +119,7 @@ function createMockDatabase() {
         next_review_at: params[6],
         created_at: params[7],
       });
-      return { rowsAffected: 1, insertId: reviewSessions.length };
+      return {rowsAffected: 1, insertId: reviewSessions.length};
     }
 
     if (normalized.startsWith('insert into gamification_events')) {
@@ -130,7 +130,7 @@ function createMockDatabase() {
         points: params[3],
         created_at: params[4],
       });
-      return { rowsAffected: 1, insertId: gamificationEvents.length };
+      return {rowsAffected: 1, insertId: gamificationEvents.length};
     }
 
     if (normalized.includes('delete from lessons where id')) {
@@ -139,7 +139,7 @@ function createMockDatabase() {
       const remaining = lessons.filter(row => row.id !== id);
       lessons.length = 0;
       lessons.push(...remaining);
-      return { rowsAffected: before - lessons.length };
+      return {rowsAffected: before - lessons.length};
     }
 
     if (normalized.startsWith('update flashcards set is_saved = 1')) {
@@ -147,11 +147,11 @@ function createMockDatabase() {
       const id = params[1];
       const row = flashcards.find(card => card.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.is_saved = 1;
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (normalized.startsWith('update flashcards set is_saved = 0')) {
@@ -159,11 +159,11 @@ function createMockDatabase() {
       const id = params[1];
       const row = flashcards.find(card => card.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.is_saved = 0;
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (normalized.startsWith('insert into sync_outbox')) {
@@ -177,7 +177,7 @@ function createMockDatabase() {
         last_error: null,
         synced_at: null,
       });
-      return { rowsAffected: 1, insertId: syncOutbox.length };
+      return {rowsAffected: 1, insertId: syncOutbox.length};
     }
 
     if (normalized.startsWith('update sync_outbox set synced_at')) {
@@ -187,11 +187,11 @@ function createMockDatabase() {
         item => item.id === id && item.synced_at === null,
       );
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.synced_at = syncedAt;
       row.last_error = null;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (normalized.startsWith('update sync_outbox set attempt_count')) {
@@ -201,11 +201,11 @@ function createMockDatabase() {
         item => item.id === id && item.synced_at === null,
       );
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.attempt_count += 1;
       row.last_error = errorMessage;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (
@@ -214,7 +214,7 @@ function createMockDatabase() {
       normalized.includes('from sync_outbox')
     ) {
       const pending = syncOutbox.filter(row => row.synced_at === null);
-      return toRows([{ count: pending.length }]);
+      return toRows([{count: pending.length}]);
     }
 
     if (
@@ -241,10 +241,10 @@ function createMockDatabase() {
         const remaining = syncOutbox.filter(row => row.id !== id);
         syncOutbox.length = 0;
         syncOutbox.push(...remaining);
-        return { rowsAffected: before - remaining.length };
+        return {rowsAffected: before - remaining.length};
       }
       syncOutbox.length = 0;
-      return { rowsAffected: before };
+      return {rowsAffected: before};
     }
 
     if (normalized.startsWith('update review_schedule')) {
@@ -255,13 +255,13 @@ function createMockDatabase() {
       const cardId = params[4];
       const row = reviewSchedule.find(schedule => schedule.card_id === cardId);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.interval_days = intervalDays;
       row.next_review_at = nextReviewAt;
       row.last_reviewed_at = lastReviewedAt;
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (normalized.includes('from lessons where lesson_input_hash')) {
@@ -349,37 +349,37 @@ function createMockDatabase() {
     if (normalized === 'delete from lessons;') {
       const count = lessons.length;
       lessons.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     if (normalized === 'delete from app_settings;') {
       const count = appSettings.length;
       appSettings.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     if (normalized === 'delete from flashcards;') {
       const count = flashcards.length;
       flashcards.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     if (normalized === 'delete from review_schedule;') {
       const count = reviewSchedule.length;
       reviewSchedule.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     if (normalized === 'delete from review_sessions;') {
       const count = reviewSessions.length;
       reviewSessions.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     if (normalized === 'delete from audio_assets;') {
       const count = audioAssets.length;
       audioAssets.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     if (normalized.startsWith('insert into audio_assets')) {
@@ -393,7 +393,7 @@ function createMockDatabase() {
         download_status: params[6],
         updated_at: params[7],
       });
-      return { rowsAffected: 1, insertId: audioAssets.length };
+      return {rowsAffected: 1, insertId: audioAssets.length};
     }
 
     if (
@@ -406,13 +406,13 @@ function createMockDatabase() {
       const id = params[3];
       const row = audioAssets.find(asset => asset.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.download_status = 'ready';
       row.local_path = localPath;
       row.bytes = bytes;
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (
@@ -423,11 +423,11 @@ function createMockDatabase() {
       const id = params[1];
       const row = audioAssets.find(asset => asset.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.download_status = 'failed';
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (
@@ -438,11 +438,11 @@ function createMockDatabase() {
       const id = params[1];
       const row = audioAssets.find(asset => asset.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.download_status = 'downloading';
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (
@@ -453,13 +453,13 @@ function createMockDatabase() {
       const id = params[1];
       const row = audioAssets.find(asset => asset.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.download_status = 'pending';
       row.local_path = null;
       row.bytes = 0;
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (
@@ -472,12 +472,12 @@ function createMockDatabase() {
       const id = params[3];
       const row = audioAssets.find(asset => asset.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.url = url;
       row.checksum = checksum;
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (
@@ -493,7 +493,7 @@ function createMockDatabase() {
           affected += 1;
         }
       }
-      return { rowsAffected: affected };
+      return {rowsAffected: affected};
     }
 
     if (normalized.includes('delete from audio_assets where id')) {
@@ -502,7 +502,7 @@ function createMockDatabase() {
       const remaining = audioAssets.filter(row => row.id !== id);
       audioAssets.length = 0;
       audioAssets.push(...remaining);
-      return { rowsAffected: before - audioAssets.length };
+      return {rowsAffected: before - audioAssets.length};
     }
 
     if (normalized.includes('delete from audio_assets where chapter_id')) {
@@ -511,7 +511,7 @@ function createMockDatabase() {
       const remaining = audioAssets.filter(row => row.chapter_id !== chapterId);
       audioAssets.length = 0;
       audioAssets.push(...remaining);
-      return { rowsAffected: before - audioAssets.length };
+      return {rowsAffected: before - audioAssets.length};
     }
 
     if (
@@ -549,9 +549,7 @@ function createMockDatabase() {
       const rows = reviewSchedule
         .filter(row => row.next_review_at > now)
         .map(row => {
-          const matched = flashcards.find(
-            item => item.id === row.card_id,
-          );
+          const matched = flashcards.find(item => item.id === row.card_id);
           return {
             card_id: row.card_id,
             word: matched && matched.is_saved === 1 ? matched.word : '',
@@ -579,7 +577,7 @@ function createMockDatabase() {
     if (normalized === 'delete from gamification_events;') {
       const count = gamificationEvents.length;
       gamificationEvents.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     if (normalized.includes('from app_settings where key')) {
@@ -599,7 +597,7 @@ function createMockDatabase() {
         imported_at: params[6],
         deactivated_at: params[7],
       });
-      return { rowsAffected: 1, insertId: contentPackages.length };
+      return {rowsAffected: 1, insertId: contentPackages.length};
     }
 
     if (normalized.startsWith('insert into content_lessons')) {
@@ -615,7 +613,7 @@ function createMockDatabase() {
         target_skills_json: params[8],
         estimated_duration_minutes: params[9],
       });
-      return { rowsAffected: 1, insertId: contentLessons.length };
+      return {rowsAffected: 1, insertId: contentLessons.length};
     }
 
     if (normalized.startsWith('insert into content_items')) {
@@ -632,7 +630,7 @@ function createMockDatabase() {
         context_sentence_vi: params[9],
         payload_json: params[10],
       });
-      return { rowsAffected: 1, insertId: contentItems.length };
+      return {rowsAffected: 1, insertId: contentItems.length};
     }
 
     if (normalized.startsWith('insert into content_units')) {
@@ -644,7 +642,7 @@ function createMockDatabase() {
         slug: params[4],
         payload_json: params[5],
       });
-      return { rowsAffected: 1, insertId: contentUnits.length };
+      return {rowsAffected: 1, insertId: contentUnits.length};
     }
 
     if (normalized.startsWith('insert into content_activities')) {
@@ -659,7 +657,7 @@ function createMockDatabase() {
         qa_ref_ids_json: params[7],
         instructions_vi: params[8],
       });
-      return { rowsAffected: 1, insertId: contentActivities.length };
+      return {rowsAffected: 1, insertId: contentActivities.length};
     }
 
     if (normalized.startsWith('insert into content_audio_assets')) {
@@ -674,7 +672,7 @@ function createMockDatabase() {
         locale: params[7],
         transcript: params[8],
       });
-      return { rowsAffected: 1, insertId: contentAudioAssets.length };
+      return {rowsAffected: 1, insertId: contentAudioAssets.length};
     }
 
     if (
@@ -684,10 +682,10 @@ function createMockDatabase() {
       const deactivatedAt = params[0];
       const id = params[1];
       const row = contentPackages.find(p => p.id === id);
-      if (!row) return { rowsAffected: 0 };
+      if (!row) return {rowsAffected: 0};
       row.is_active = 0;
       row.deactivated_at = deactivatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (
@@ -696,10 +694,10 @@ function createMockDatabase() {
     ) {
       const id = params[0];
       const row = contentPackages.find(p => p.id === id);
-      if (!row) return { rowsAffected: 0 };
+      if (!row) return {rowsAffected: 0};
       row.is_active = 1;
       row.deactivated_at = null;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (normalized.includes('from content_packages where is_active = 1')) {
@@ -735,22 +733,31 @@ function createMockDatabase() {
       return toRows(sorted.slice(0, 1));
     }
 
-    if (normalized.startsWith('select count(*)') && normalized.includes('from content_lessons')) {
+    if (
+      normalized.startsWith('select count(*)') &&
+      normalized.includes('from content_lessons')
+    ) {
       const packageId = params[0];
       const n = contentLessons.filter(l => l.package_id === packageId).length;
-      return toRows([{ n }]);
+      return toRows([{n}]);
     }
 
-    if (normalized.startsWith('select count(*)') && normalized.includes('from content_items')) {
+    if (
+      normalized.startsWith('select count(*)') &&
+      normalized.includes('from content_items')
+    ) {
       let rows = contentItems;
       if (normalized.includes('where lesson_id')) {
         const lessonId = params[0];
         rows = contentItems.filter(i => i.lesson_id === lessonId);
       }
-      return toRows([{ n: rows.length }]);
+      return toRows([{n: rows.length}]);
     }
 
-    if (normalized.startsWith('select') && normalized.includes('from content_items')) {
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from content_items')
+    ) {
       let rows = [...contentItems];
       if (normalized.includes('where lesson_id = ?')) {
         const lessonId = params[params.length - 1];
@@ -762,7 +769,10 @@ function createMockDatabase() {
       return toRows(rows);
     }
 
-    if (normalized.startsWith('select') && normalized.includes('from content_lessons')) {
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from content_lessons')
+    ) {
       let rows = [...contentLessons];
       if (normalized.includes('where package_id = ?')) {
         const packageId = params[0];
@@ -775,27 +785,38 @@ function createMockDatabase() {
       return toRows(rows);
     }
 
-    if (normalized.startsWith('select count(*)') && normalized.includes('from content_packages')) {
+    if (
+      normalized.startsWith('select count(*)') &&
+      normalized.includes('from content_packages')
+    ) {
       const id = params[0];
       const n = contentPackages.filter(p => p.id === id).length;
-      return toRows([{ n }]);
+      return toRows([{n}]);
     }
 
-    if (normalized.startsWith('delete from content_audio_assets where package_id')) {
+    if (
+      normalized.startsWith('delete from content_audio_assets where package_id')
+    ) {
       const packageId = params[0];
       const before = contentAudioAssets.length;
-      const remaining = contentAudioAssets.filter(a => a.package_id !== packageId);
+      const remaining = contentAudioAssets.filter(
+        a => a.package_id !== packageId,
+      );
       contentAudioAssets.length = 0;
       contentAudioAssets.push(...remaining);
-      return { rowsAffected: before - remaining.length };
+      return {rowsAffected: before - remaining.length};
     }
-    if (normalized.startsWith('delete from content_activities where package_id')) {
+    if (
+      normalized.startsWith('delete from content_activities where package_id')
+    ) {
       const packageId = params[0];
       const before = contentActivities.length;
-      const remaining = contentActivities.filter(a => a.package_id !== packageId);
+      const remaining = contentActivities.filter(
+        a => a.package_id !== packageId,
+      );
       contentActivities.length = 0;
       contentActivities.push(...remaining);
-      return { rowsAffected: before - remaining.length };
+      return {rowsAffected: before - remaining.length};
     }
     if (normalized.startsWith('delete from content_units where package_id')) {
       const packageId = params[0];
@@ -803,7 +824,7 @@ function createMockDatabase() {
       const remaining = contentUnits.filter(a => a.package_id !== packageId);
       contentUnits.length = 0;
       contentUnits.push(...remaining);
-      return { rowsAffected: before - remaining.length };
+      return {rowsAffected: before - remaining.length};
     }
     if (normalized.startsWith('delete from content_items where package_id')) {
       const packageId = params[0];
@@ -811,7 +832,7 @@ function createMockDatabase() {
       const remaining = contentItems.filter(a => a.package_id !== packageId);
       contentItems.length = 0;
       contentItems.push(...remaining);
-      return { rowsAffected: before - remaining.length };
+      return {rowsAffected: before - remaining.length};
     }
     if (normalized.startsWith('delete from content_lessons where package_id')) {
       const packageId = params[0];
@@ -819,7 +840,7 @@ function createMockDatabase() {
       const remaining = contentLessons.filter(a => a.package_id !== packageId);
       contentLessons.length = 0;
       contentLessons.push(...remaining);
-      return { rowsAffected: before - remaining.length };
+      return {rowsAffected: before - remaining.length};
     }
     if (normalized.startsWith('delete from content_packages where id')) {
       const id = params[0];
@@ -827,7 +848,7 @@ function createMockDatabase() {
       const remaining = contentPackages.filter(p => p.id !== id);
       contentPackages.length = 0;
       contentPackages.push(...remaining);
-      return { rowsAffected: before - remaining.length };
+      return {rowsAffected: before - remaining.length};
     }
 
     if (
@@ -875,17 +896,21 @@ function createMockDatabase() {
         created_at: params[10],
         updated_at: params[11],
       });
-      return { rowsAffected: 1, insertId: contentReviewItems.length };
+      return {rowsAffected: 1, insertId: contentReviewItems.length};
     }
 
-    if (normalized.startsWith('delete from content_review_items where item_type = ?')) {
+    if (
+      normalized.startsWith(
+        'delete from content_review_items where item_type = ?',
+      )
+    ) {
       const itemType = params[0];
       for (let i = contentReviewItems.length - 1; i >= 0; i -= 1) {
         if (contentReviewItems[i].item_type === itemType) {
           contentReviewItems.splice(i, 1);
         }
       }
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     // ---- SETE-110 / M5 speaking recordings ----
@@ -899,7 +924,7 @@ function createMockDatabase() {
         duration_ms: params[5],
         created_at: params[6],
       });
-      return { rowsAffected: 1, insertId: speakingRecordings.length };
+      return {rowsAffected: 1, insertId: speakingRecordings.length};
     }
 
     if (
@@ -921,16 +946,16 @@ function createMockDatabase() {
       const id = params[0];
       const index = speakingRecordings.findIndex(r => r.id === id);
       if (index === -1) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       speakingRecordings.splice(index, 1);
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
     if (normalized.startsWith('delete from speaking_recordings')) {
       const count = speakingRecordings.length;
       speakingRecordings.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     // ---- SETE-110 / M5 error events ----
@@ -944,7 +969,7 @@ function createMockDatabase() {
         review_item_id: params[5],
         created_at: params[6],
       });
-      return { rowsAffected: 1, insertId: errorEvents.length };
+      return {rowsAffected: 1, insertId: errorEvents.length};
     }
 
     if (
@@ -961,14 +986,14 @@ function createMockDatabase() {
     if (normalized.startsWith('delete from error_events')) {
       const count = errorEvents.length;
       errorEvents.length = 0;
-      return { rowsAffected: count };
+      return {rowsAffected: count};
     }
 
     // ---- SETE-108 / M3 lesson runtime review items ----
     if (normalized.startsWith('insert or ignore into content_review_items')) {
       const srsItemId = params[1];
       if (contentReviewItems.some(r => r.srs_item_id === srsItemId)) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       contentReviewItems.push({
         id: params[0],
@@ -985,7 +1010,7 @@ function createMockDatabase() {
         created_at: params[10],
         updated_at: params[11],
       });
-      return { rowsAffected: 1, insertId: contentReviewItems.length };
+      return {rowsAffected: 1, insertId: contentReviewItems.length};
     }
 
     if (
@@ -1011,21 +1036,21 @@ function createMockDatabase() {
       const id = params[3];
       const row = contentReviewItems.find(r => r.id === id);
       if (!row) {
-        return { rowsAffected: 0 };
+        return {rowsAffected: 0};
       }
       row.mastery_state = masteryState;
       row.next_review_at = nextReviewAt;
       row.updated_at = updatedAt;
-      return { rowsAffected: 1 };
+      return {rowsAffected: 1};
     }
 
-    return { rowsAffected: 0 };
+    return {rowsAffected: 0};
   };
 
-  return { execute };
+  return {execute};
 }
 
-function open({ name }) {
+function open({name}) {
   if (!databases.has(name)) {
     databases.set(name, createMockDatabase());
   }

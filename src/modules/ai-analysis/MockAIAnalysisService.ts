@@ -15,10 +15,22 @@ import type {
 
 const MOCK_STAGE_INTERVAL_MS = 450;
 const MOCK_STAGES = [
-  {name: 'source_analysis', weight: 15, message: 'Đang dịch và sắp xếp nội dung'},
+  {
+    name: 'source_analysis',
+    weight: 15,
+    message: 'Đang dịch và sắp xếp nội dung',
+  },
   {name: 'sentence_analysis', weight: 35, message: 'Đang phân tích từng câu'},
-  {name: 'learning_points', weight: 25, message: 'Đang tìm ngữ pháp và từ vựng'},
-  {name: 'pronunciation', weight: 10, message: 'Đang chuẩn bị hướng dẫn phát âm'},
+  {
+    name: 'learning_points',
+    weight: 25,
+    message: 'Đang tìm ngữ pháp và từ vựng',
+  },
+  {
+    name: 'pronunciation',
+    weight: 10,
+    message: 'Đang chuẩn bị hướng dẫn phát âm',
+  },
   {name: 'practice', weight: 10, message: 'Đang tạo bài luyện tập'},
   {name: 'finalizing', weight: 5, message: 'Đang kiểm tra bài học'},
 ] as const;
@@ -54,8 +66,8 @@ function buildStages(completedThroughIndex: number): AnalysisJobStage[] {
       index < completedThroughIndex
         ? 'completed'
         : index === completedThroughIndex
-          ? 'processing'
-          : 'pending',
+        ? 'processing'
+        : 'pending',
     attempts: 1,
   }));
 }

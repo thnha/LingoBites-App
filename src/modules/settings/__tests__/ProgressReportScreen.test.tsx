@@ -84,7 +84,10 @@ describe('ProgressReportScreen (REQ-39)', () => {
       tree = renderScreen();
     });
 
-    const exportBtn = findPressableByText(tree!.root, 'Xuất Metrics Privacy-Safe (JSON)');
+    const exportBtn = findPressableByText(
+      tree!.root,
+      'Xuất Metrics Privacy-Safe (JSON)',
+    );
     expect(exportBtn).toBeTruthy();
 
     await ReactTestRenderer.act(async () => {

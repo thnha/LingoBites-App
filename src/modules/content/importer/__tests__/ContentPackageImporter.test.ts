@@ -10,7 +10,10 @@
 import {__resetMockDatabases} from '../../../../../test-utils/sqliteMock';
 import {open} from 'react-native-quick-sqlite';
 import {DB_NAME} from '../../../../shared/db/constants';
-import {resetDatabaseForTests, withTransaction} from '../../../../shared/db/database';
+import {
+  resetDatabaseForTests,
+  withTransaction,
+} from '../../../../shared/db/database';
 import {
   downgradeContentPackageMigrations,
   runMigrations,
@@ -32,7 +35,11 @@ import {
 import {sha256Hex} from '../packageChecksum';
 import type {ContentLesson, ContentPackageManifest} from '../types';
 import {buildStoredZip, sha256HexTest} from '../_fixtures/testZip';
-import {lessonFileName, makeLesson, makeManifest} from '../_fixtures/testLesson';
+import {
+  lessonFileName,
+  makeLesson,
+  makeManifest,
+} from '../_fixtures/testLesson';
 
 const NOW = '2026-09-06T12:00:00.000Z';
 
@@ -71,7 +78,10 @@ function setupDb() {
   return db;
 }
 
-function makeFetcher(bytes: Uint8Array, options: {status?: number; ok?: boolean} = {}) {
+function makeFetcher(
+  bytes: Uint8Array,
+  options: {status?: number; ok?: boolean} = {},
+) {
   return jest.fn(async () => ({
     ok: options.ok ?? true,
     status: options.status ?? 200,
@@ -135,7 +145,9 @@ describe('ContentPackageImporter', () => {
       'SELECT id, title_en FROM content_lessons WHERE id = ?;',
       [lesson.id],
     );
-    const lessonRecord = lessonRow.rows?.item(0) as {id: string; title_en: string} | undefined;
+    const lessonRecord = lessonRow.rows?.item(0) as
+      | {id: string; title_en: string}
+      | undefined;
     expect(lessonRecord).toBeDefined();
     expect(lessonRecord?.title_en).toBe('Daily Stand-up');
 
@@ -229,10 +241,13 @@ describe('ContentPackageImporter', () => {
     const seedLesson = makeLesson();
     const seedManifest = makeManifest(seedLesson);
     const seedBytes = makePackageBytes(seedManifest, seedLesson);
-    const seedResult = await importContentPackage('https://example.com/seed.zip', {
-      fetcher: makeFetcher(seedBytes),
-      now: () => NOW,
-    });
+    const seedResult = await importContentPackage(
+      'https://example.com/seed.zip',
+      {
+        fetcher: makeFetcher(seedBytes),
+        now: () => NOW,
+      },
+    );
     expect(seedResult.ok).toBe(true);
     const seedActive = getActivePackage();
     expect(seedActive).not.toBeNull();
@@ -250,7 +265,9 @@ describe('ContentPackageImporter', () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.error.code).toBe('CONTENT_LINT_FAILED');
-    expect(result.error.lintErrors?.some(e => e.includes('LNT-005'))).toBe(true);
+    expect(result.error.lintErrors?.some(e => e.includes('LNT-005'))).toBe(
+      true,
+    );
     expect(result.previousActivePackageId).toBe(seedActive?.id ?? null);
 
     // The active package is still the seed one.
@@ -344,9 +361,11 @@ describe('ContentPackageImporter', () => {
     ) => {
       if (
         !failed &&
-        sql.replace(/\s+/g, ' ').trim().toLowerCase().startsWith(
-          'insert into content_items',
-        )
+        sql
+          .replace(/\s+/g, ' ')
+          .trim()
+          .toLowerCase()
+          .startsWith('insert into content_items')
       ) {
         failed = true;
         throw new Error('synthetic mid-transaction failure');
@@ -355,7 +374,10 @@ describe('ContentPackageImporter', () => {
     }) as typeof realExecute;
 
     const v2 = makeLesson({slug: 'standup-v2'});
-    const v2Bytes = makePackageBytes(makeManifest(v2, {packageSlug: 'standup-v2'}), v2);
+    const v2Bytes = makePackageBytes(
+      makeManifest(v2, {packageSlug: 'standup-v2'}),
+      v2,
+    );
     const result = await importContentPackage('https://example.com/v2.zip', {
       fetcher: makeFetcher(v2Bytes),
       now: () => NOW,
@@ -402,10 +424,13 @@ describe('ContentPackageImporter', () => {
   });
 
   it('records the failure on the import state when a network error occurs', async () => {
-    const result = await importContentPackage('https://example.com/nowhere.zip', {
-      fetcher: makeFailingFetcher('ENOTFOUND'),
-      now: () => NOW,
-    });
+    const result = await importContentPackage(
+      'https://example.com/nowhere.zip',
+      {
+        fetcher: makeFailingFetcher('ENOTFOUND'),
+        now: () => NOW,
+      },
+    );
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.error.code).toBe('NETWORK_ERROR');
@@ -427,7 +452,10 @@ describe('ContentPackageImporter', () => {
   it('rejects a ZIP that does not contain a manifest.json', async () => {
     const lesson = makeLesson();
     const bytes = buildStoredZip([
-      [lessonFileName(lesson), new TextEncoder().encode(JSON.stringify(lesson))],
+      [
+        lessonFileName(lesson),
+        new TextEncoder().encode(JSON.stringify(lesson)),
+      ],
     ]);
     const result = await importContentPackage('https://example.com/pkg.zip', {
       fetcher: makeFetcher(bytes),
@@ -479,19 +507,28 @@ describe('ContentPackageImporter', () => {
     };
     await importContentPackage('https://example.com/a.zip', {
       fetcher: makeFetcher(
-        makePackageBytes(makeManifest(lessonA, {packageSlug: 'lesson-a'}), lessonA),
+        makePackageBytes(
+          makeManifest(lessonA, {packageSlug: 'lesson-a'}),
+          lessonA,
+        ),
       ),
       now: tick,
     });
     await importContentPackage('https://example.com/b.zip', {
       fetcher: makeFetcher(
-        makePackageBytes(makeManifest(lessonB, {packageSlug: 'lesson-b'}), lessonB),
+        makePackageBytes(
+          makeManifest(lessonB, {packageSlug: 'lesson-b'}),
+          lessonB,
+        ),
       ),
       now: tick,
     });
     await importContentPackage('https://example.com/c.zip', {
       fetcher: makeFetcher(
-        makePackageBytes(makeManifest(lessonC, {packageSlug: 'lesson-c'}), lessonC),
+        makePackageBytes(
+          makeManifest(lessonC, {packageSlug: 'lesson-c'}),
+          lessonC,
+        ),
       ),
       now: tick,
     });

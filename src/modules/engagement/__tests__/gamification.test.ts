@@ -1,13 +1,13 @@
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../../../shared/db/constants';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../../../shared/db/constants';
 import {
   addLocalDays,
   toLocalDayKey,
 } from '../../../shared/db/gamificationPolicy';
-import { getGamificationSnapshot } from '../gamification';
-import { startReviewSession } from '../reviewSession';
+import {getGamificationSnapshot} from '../gamification';
+import {startReviewSession} from '../reviewSession';
 
 function isoOnDayKey(key: string, hour: number): string {
   const [year, month, day] = key.split('-').map(Number);
@@ -22,7 +22,7 @@ const REVIEWED_AT = '2026-09-05T20:00:00.000Z';
 describe('gamification snapshot service (VC-6)', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
   });
 
   it('reproduces the same streak/XP/pet state purely from persisted events', () => {

@@ -51,7 +51,8 @@ export function PracticeScreen({navigation, route}: Props) {
             flex: 1,
             justifyContent: 'center',
             padding: theme.spacing.xl,
-          }}>
+          }}
+        >
           <AppText color="muted" style={{textAlign: 'center'}}>
             {EMPTY_SECTION_MESSAGE}
           </AppText>
@@ -85,7 +86,8 @@ export function PracticeScreen({navigation, route}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <HandoffProgressTrack
           label={`${Math.min(state.index + 1, total)} / ${total}`}
           progress={progress}
@@ -141,12 +143,19 @@ function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
               <AppText color="muted" variant="caption">
                 Đáp án
               </AppText>
-              <AppText style={{fontWeight: theme.typography.weight.bold}} variant="bodyLg">
+              <AppText
+                style={{fontWeight: theme.typography.weight.bold}}
+                variant="bodyLg"
+              >
                 {current.answer}
               </AppText>
             </>
           ) : (
-            <AppButton title="Hiện đáp án" variant="secondary" onPress={() => quiz.reveal()} />
+            <AppButton
+              title="Hiện đáp án"
+              variant="secondary"
+              onPress={() => quiz.reveal()}
+            />
           )}
         </AppCard>
       )}
@@ -155,9 +164,16 @@ function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
         <View style={{gap: theme.spacing.sm}}>
           {state.isCorrect !== null ? (
             <AppText
-              style={{color: state.isCorrect ? theme.colors.primary : theme.colors.danger}}
-              variant="label">
-              {state.isCorrect ? 'Chính xác!' : 'Chưa đúng — xem đáp án được tô sáng.'}
+              style={{
+                color: state.isCorrect
+                  ? theme.colors.primary
+                  : theme.colors.danger,
+              }}
+              variant="label"
+            >
+              {state.isCorrect
+                ? 'Chính xác!'
+                : 'Chưa đúng — xem đáp án được tô sáng.'}
             </AppText>
           ) : null}
           {current.explanation_vi ? (
@@ -220,7 +236,8 @@ function OptionButton({
           paddingVertical: theme.spacing.sm,
         },
         pressed && !answered && {opacity: theme.states.pressedOpacity},
-      ]}>
+      ]}
+    >
       <AppText style={{color: textColor, fontWeight: '600'}}>{label}</AppText>
     </Pressable>
   );
@@ -247,8 +264,14 @@ function ResultCard({
           alignItems: 'center',
           gap: theme.spacing.sm,
           paddingVertical: theme.spacing.xl,
-        }}>
-        <MaterialIcon color={theme.colors.accent} filled name="emoji_events" size={40} />
+        }}
+      >
+        <MaterialIcon
+          color={theme.colors.accent}
+          filled
+          name="emoji_events"
+          size={40}
+        />
         <AppText color="muted" variant="caption">
           Kết quả
         </AppText>

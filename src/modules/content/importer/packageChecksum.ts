@@ -44,7 +44,9 @@ function toHex(n: number): string {
 
 export function sha256Hex(input: Uint8Array | string): string {
   const bytes =
-    typeof input === 'string' ? utf8Bytes(new TextEncoder().encode(input)) : input;
+    typeof input === 'string'
+      ? utf8Bytes(new TextEncoder().encode(input))
+      : input;
 
   // Initial hash values (FIPS 180-4 §5.3.3)
   let h0 = 0x6a09e667;
@@ -86,7 +88,8 @@ export function sha256Hex(input: Uint8Array | string): string {
       w[i] = w[i]! >>> 0;
     }
     for (let i = 16; i < 64; i += 1) {
-      const s0 = rotr(w[i - 15]!, 7) ^ rotr(w[i - 15]!, 18) ^ (w[i - 15]! >>> 3);
+      const s0 =
+        rotr(w[i - 15]!, 7) ^ rotr(w[i - 15]!, 18) ^ (w[i - 15]! >>> 3);
       const s1 = rotr(w[i - 2]!, 17) ^ rotr(w[i - 2]!, 19) ^ (w[i - 2]! >>> 10);
       w[i] = (w[i - 16]! + s0 + w[i - 7]! + s1) >>> 0;
     }

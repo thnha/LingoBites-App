@@ -52,7 +52,14 @@ function StepIndicator({state, theme}: {state: StepState; theme: AppTheme}) {
 
   if (state === 'active') {
     return (
-      <View style={{alignItems: 'center', height: size, justifyContent: 'center', width: size}}>
+      <View
+        style={{
+          alignItems: 'center',
+          height: size,
+          justifyContent: 'center',
+          width: size,
+        }}
+      >
         <ActivityIndicator color={theme.colors.primary} size="small" />
       </View>
     );
@@ -70,9 +77,16 @@ function StepIndicator({state, theme}: {state: StepState; theme: AppTheme}) {
         height: size,
         justifyContent: 'center',
         width: size,
-      }}>
+      }}
+    >
       {filled ? (
-        <AppText style={{color: theme.colors.text.inverse, fontSize: 14, fontWeight: '800'}}>
+        <AppText
+          style={{
+            color: theme.colors.text.inverse,
+            fontSize: 14,
+            fontWeight: '800',
+          }}
+        >
           ✓
         </AppText>
       ) : null}
@@ -167,12 +181,17 @@ export function AnalyzingScreen({navigation, route}: Props) {
           justifyContent: 'center',
           paddingBottom: theme.spacing.xxl,
           paddingHorizontal: theme.gutter,
-        }}>
+        }}
+      >
         <View style={{alignItems: 'center', gap: theme.spacing.sm}}>
           <AppText style={{textAlign: 'center'}} variant="title">
             Đang tạo bài học…
           </AppText>
-          <AppText color="secondary" style={{textAlign: 'center'}} variant="body">
+          <AppText
+            color="secondary"
+            style={{textAlign: 'center'}}
+            variant="body"
+          >
             {subtitle}
           </AppText>
         </View>
@@ -183,7 +202,8 @@ export function AnalyzingScreen({navigation, route}: Props) {
             return (
               <View
                 key={step.key}
-                style={{alignItems: 'center', flexDirection: 'row', gap: 12}}>
+                style={{alignItems: 'center', flexDirection: 'row', gap: 12}}
+              >
                 <StepIndicator state={stepState} theme={theme} />
                 <AppText
                   style={{
@@ -192,7 +212,8 @@ export function AnalyzingScreen({navigation, route}: Props) {
                         ? theme.colors.text.muted
                         : theme.colors.text.primary,
                     fontWeight: stepState === 'active' ? '700' : '500',
-                  }}>
+                  }}
+                >
                   {step.label}
                 </AppText>
               </View>
@@ -200,7 +221,10 @@ export function AnalyzingScreen({navigation, route}: Props) {
           })}
         </View>
 
-        <HandoffProgressTrack label={percentLabel} progress={normalizedProgress} />
+        <HandoffProgressTrack
+          label={percentLabel}
+          progress={normalizedProgress}
+        />
       </View>
     </AppScreen>
   );

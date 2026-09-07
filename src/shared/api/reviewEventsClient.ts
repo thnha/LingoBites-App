@@ -96,8 +96,7 @@ export async function pushReviewEvents(
     return {
       ok: false,
       errorCode: errorBody?.error.code ?? 'REVIEW_EVENTS_REJECTED',
-      message:
-        errorBody?.error.message?.trim() || SYNC_FAILED_MESSAGE,
+      message: errorBody?.error.message?.trim() || SYNC_FAILED_MESSAGE,
       retryable: response.status >= 500 || response.status === 429,
     };
   }

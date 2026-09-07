@@ -11,9 +11,16 @@ type Props = {
   accentBar?: boolean;
 };
 
-export function SentenceChunkCard({text, meaning, roleLabel, accentBar = true}: Props) {
+export function SentenceChunkCard({
+  text,
+  meaning,
+  roleLabel,
+  accentBar = true,
+}: Props) {
   const {theme} = useAppTheme();
-  const barColor = accentBar ? theme.colors.accent : theme.colors.secondaryContainer;
+  const barColor = accentBar
+    ? theme.colors.accent
+    : theme.colors.secondaryContainer;
 
   return (
     <View
@@ -28,9 +35,17 @@ export function SentenceChunkCard({text, meaning, roleLabel, accentBar = true}: 
         paddingHorizontal: 16,
         paddingVertical: 14,
         ...theme.shadow.soft,
-      }}>
+      }}
+    >
       <View style={{flex: 1, gap: 3}}>
-        <View style={{alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 8,
+          }}
+        >
           <AppText style={{fontSize: 18, fontWeight: '700'}}>{text}</AppText>
           {roleLabel ? (
             <Chip label={roleLabel} tone={accentBar ? 'gold' : 'coralSoft'} />

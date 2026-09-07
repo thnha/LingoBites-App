@@ -99,9 +99,12 @@ describe('DailyReviewScreen', () => {
       <DailyReviewScreen navigation={nav as never} softCap={5} />,
     );
 
-    expect(tree.root.findByProps({testID: 'review-progress'}).props.children).toBe('1 / 5');
     expect(
-      tree.root.findAllByProps({children: 'còn 2 thẻ để dành lần ôn sau'}).length,
+      tree.root.findByProps({testID: 'review-progress'}).props.children,
+    ).toBe('1 / 5');
+    expect(
+      tree.root.findAllByProps({children: 'còn 2 thẻ để dành lần ôn sau'})
+        .length,
     ).toBeGreaterThan(0);
   });
 
@@ -122,9 +125,16 @@ describe('DailyReviewScreen', () => {
     });
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children).toBe(2);
-    expect(tree.root.findByProps({testID: 'summary-remembered-count'}).props.children).toBe(1);
-    expect(tree.root.findByProps({testID: 'summary-forgot-count'}).props.children).toBe(0);
+    expect(
+      tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children,
+    ).toBe(2);
+    expect(
+      tree.root.findByProps({testID: 'summary-remembered-count'}).props
+        .children,
+    ).toBe(1);
+    expect(
+      tree.root.findByProps({testID: 'summary-forgot-count'}).props.children,
+    ).toBe(0);
   });
 
   it('shows distinct empty copy when no flashcards have ever been saved', async () => {
@@ -133,7 +143,9 @@ describe('DailyReviewScreen', () => {
     );
 
     expect(
-      tree.root.findAllByProps({children: 'Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.'}).length,
+      tree.root.findAllByProps({
+        children: 'Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.',
+      }).length,
     ).toBeGreaterThan(0);
   });
 
@@ -155,7 +167,9 @@ describe('DailyReviewScreen', () => {
     );
 
     expect(
-      secondTree.root.findAllByProps({children: 'Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.'}).length,
+      secondTree.root.findAllByProps({
+        children: 'Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.',
+      }).length,
     ).toBeGreaterThan(0);
   });
 
@@ -176,7 +190,8 @@ describe('DailyReviewScreen', () => {
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
     expect(
-      tree.root.findAllByProps({children: 'còn 1 thẻ để dành lần ôn sau'}).length,
+      tree.root.findAllByProps({children: 'còn 1 thẻ để dành lần ôn sau'})
+        .length,
     ).toBeGreaterThan(0);
   });
 
@@ -200,13 +215,21 @@ describe('DailyReviewScreen', () => {
       <DailyReviewScreen navigation={navigation() as never} />,
     );
 
-    expect(tree.root.findByProps({testID: 'rating-remembered'}).props.disabled).toBe(true);
-    expect(tree.root.findByProps({testID: 'rating-forgot'}).props.disabled).toBe(true);
+    expect(
+      tree.root.findByProps({testID: 'rating-remembered'}).props.disabled,
+    ).toBe(true);
+    expect(
+      tree.root.findByProps({testID: 'rating-forgot'}).props.disabled,
+    ).toBe(true);
 
     await revealCard(tree);
 
-    expect(tree.root.findByProps({testID: 'rating-remembered'}).props.disabled).toBe(false);
-    expect(tree.root.findByProps({testID: 'rating-forgot'}).props.disabled).toBe(false);
+    expect(
+      tree.root.findByProps({testID: 'rating-remembered'}).props.disabled,
+    ).toBe(false);
+    expect(
+      tree.root.findByProps({testID: 'rating-forgot'}).props.disabled,
+    ).toBe(false);
   });
 
   it('shows the translated error and does not advance when rating persistence fails', async () => {
@@ -235,11 +258,16 @@ describe('DailyReviewScreen', () => {
     });
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(tree.root.findByProps({testID: 'review-progress'}).props.children).toBe('1 / 1');
-    expect(tree.root.findAllByProps({testID: 'review-summary'})).toHaveLength(0);
     expect(
-      tree.root.findAllByProps({children: 'Không thể lưu kết quả ôn tập. Vui lòng thử lại.'})
-        .length,
+      tree.root.findByProps({testID: 'review-progress'}).props.children,
+    ).toBe('1 / 1');
+    expect(tree.root.findAllByProps({testID: 'review-summary'})).toHaveLength(
+      0,
+    );
+    expect(
+      tree.root.findAllByProps({
+        children: 'Không thể lưu kết quả ôn tập. Vui lòng thử lại.',
+      }).length,
     ).toBeGreaterThan(0);
 
     spy.mockRestore();
@@ -249,6 +277,8 @@ describe('DailyReviewScreen', () => {
     });
 
     expect(tree.root.findByProps({testID: 'review-summary'})).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children).toBe(1);
+    expect(
+      tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children,
+    ).toBe(1);
   });
 });

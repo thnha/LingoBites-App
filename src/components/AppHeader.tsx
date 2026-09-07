@@ -28,13 +28,15 @@ export function AppHeader({
         minHeight: 52,
         paddingHorizontal: theme.gutter,
         paddingVertical: theme.spacing.sm,
-      }}>
+      }}
+    >
       {onBack ? (
         <Pressable
           accessibilityLabel={backLabel}
           accessibilityRole="button"
           onPress={onBack}
-          style={{minHeight: 44, justifyContent: 'center'}}>
+          style={{minHeight: 44, justifyContent: 'center'}}
+        >
           <AppText variant="label" style={{color: theme.colors.primary}}>
             {backLabel}
           </AppText>

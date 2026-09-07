@@ -6,17 +6,12 @@
   "title_vi": "Nổi bật kỹ năng kỹ thuật và kinh nghiệm",
   "blurb_vi": "Tự tin trình bày hồ sơ năng lực cá nhân, điểm mạnh công nghệ và số năm kinh nghiệm.",
   "level": "B1",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Trình bày hồ sơ kỹ năng lập trình trong bài phỏng vấn hoặc giới thiệu chuyên môn.",
   "situation_vi": "Giới thiệu hồ sơ với nhà tuyển dụng hoặc đối tác nước ngoài.",
   "learner_role_vi": "Ứng viên lập trình viên giới thiệu bản thân.",
-  "prerequisite_lesson_slugs": [
-    "bug-triage-root-cause"
-  ],
+  "prerequisite_lesson_slugs": ["bug-triage-root-cause"],
   "pronunciation_focus_vi": "Phát âm tự nhiên các từ chỉ kỹ năng: specialized in, proficient in, experience, stack.",
   "final_speaking_task_vi": "Trình bày tóm tắt 2 phút về kinh nghiệm và điểm mạnh công nghệ của bạn.",
   "pass_conditions_vi": "Trình bày tự tin, mạch lạc với đầy đủ từ vựng chuyên môn.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi chuyên về phát triển web full-stack\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "31c04c3ea0d76995"
-      ],
-      "srs_ref_ids": [
-        "1985d0e22f9099a7"
-      ],
+      "audio_ref_ids": ["31c04c3ea0d76995"],
+      "srs_ref_ids": ["1985d0e22f9099a7"],
       "dialogue_turns": [
         {
           "id": "8b42140ea1bdecd9",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "1985d0e22f9099a7"
-        ],
+        "re_present_refs": ["1985d0e22f9099a7"],
         "tip_vi": "Hãy nhớ cụm từ \"I specialize in full-stack web development\" nghĩa là \"Tôi chuyên về phát triển web full-stack\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi có hơn ba năm kinh nghiệm làm dự án thương mại\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "153aaf7481763295"
-      ],
-      "srs_ref_ids": [
-        "3a478deeae4548ab"
-      ],
+      "audio_ref_ids": ["153aaf7481763295"],
+      "srs_ref_ids": ["3a478deeae4548ab"],
       "dialogue_turns": [
         {
           "id": "5a420e374fd98dde",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "3a478deeae4548ab"
-        ],
+        "re_present_refs": ["3a478deeae4548ab"],
         "tip_vi": "Hãy nhớ cụm từ \"I have over three years of commercial experience\" nghĩa là \"Tôi có hơn ba năm kinh nghiệm làm dự án thương mại\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi thành thạo TypeScript và React Native\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7b153a7c589121a1"
-      ],
-      "srs_ref_ids": [
-        "7cb61c91cee04a56"
-      ],
+      "audio_ref_ids": ["7b153a7c589121a1"],
+      "srs_ref_ids": ["7cb61c91cee04a56"],
       "dialogue_turns": [
         {
           "id": "9cbe7108217aec22",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "7cb61c91cee04a56"
-        ],
+        "re_present_refs": ["7cb61c91cee04a56"],
         "tip_vi": "Hãy nhớ cụm từ \"I am proficient in TypeScript and React Native\" nghĩa là \"Tôi thành thạo TypeScript và React Native\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi có kinh nghiệm thực chiến với Docker và CI\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "42fbc9f96090fd3a"
-      ],
-      "srs_ref_ids": [
-        "3e4b026ac6f6c9fd"
-      ],
+      "audio_ref_ids": ["42fbc9f96090fd3a"],
+      "srs_ref_ids": ["3e4b026ac6f6c9fd"],
       "dialogue_turns": [
         {
           "id": "0442b75e538ead64",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "3e4b026ac6f6c9fd"
-        ],
+        "re_present_refs": ["3e4b026ac6f6c9fd"],
         "tip_vi": "Hãy nhớ cụm từ \"I have hands-on experience with Docker and CI\" nghĩa là \"Tôi có kinh nghiệm thực chiến với Docker và CI\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "64771af8a93391b5"
-      ],
-      "srs_ref_ids": [
-        "725c137613ffbb83"
-      ],
+      "audio_ref_ids": ["64771af8a93391b5"],
+      "srs_ref_ids": ["725c137613ffbb83"],
       "dialogue_turns": [
         {
           "id": "7e00001d98e51d7f",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "725c137613ffbb83"
-        ],
+        "re_present_refs": ["725c137613ffbb83"],
         "tip_vi": "Hãy nhớ cụm từ \"My core strength is building scalable applications\" nghĩa là \"Điểm mạnh cốt lõi của tôi là xây dựng ứng dụng có khả năng mở rộng\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã làm việc nhiều trong môi trường Agile Scrum\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "674b48c45896ea8e"
-      ],
-      "srs_ref_ids": [
-        "f04d130f29631ec5"
-      ],
+      "audio_ref_ids": ["674b48c45896ea8e"],
+      "srs_ref_ids": ["f04d130f29631ec5"],
       "dialogue_turns": [
         {
           "id": "a57ee1d6c9e3b09b",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "f04d130f29631ec5"
-        ],
+        "re_present_refs": ["f04d130f29631ec5"],
         "tip_vi": "Hãy nhớ cụm từ \"I have worked extensively in Agile Scrum environments\" nghĩa là \"Tôi đã làm việc nhiều trong môi trường Agile Scrum\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đam mê học hỏi kỹ thuật liên tục\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "bdeb630fd77c7cac"
-      ],
-      "srs_ref_ids": [
-        "0295f043dadc8adc"
-      ],
+      "audio_ref_ids": ["bdeb630fd77c7cac"],
+      "srs_ref_ids": ["0295f043dadc8adc"],
       "dialogue_turns": [
         {
           "id": "3779b23a5cf43025",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "0295f043dadc8adc"
-        ],
+        "re_present_refs": ["0295f043dadc8adc"],
         "tip_vi": "Hãy nhớ cụm từ \"I am passionate about continuous technical learning\" nghĩa là \"Tôi đam mê học hỏi kỹ thuật liên tục\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sở hữu khả năng giải quyết vấn đề tốt\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "39cb91a6ce62852b"
-      ],
-      "srs_ref_ids": [
-        "6c219039ece61251"
-      ],
+      "audio_ref_ids": ["39cb91a6ce62852b"],
+      "srs_ref_ids": ["6c219039ece61251"],
       "dialogue_turns": [
         {
           "id": "5d6a35d778fd48e7",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "6c219039ece61251"
-        ],
+        "re_present_refs": ["6c219039ece61251"],
         "tip_vi": "Hãy nhớ cụm từ \"I possess strong problem-solving capabilities\" nghĩa là \"Tôi sở hữu khả năng giải quyết vấn đề tốt\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Nổi bật kỹ năng kỹ thuật và kinh nghiệm",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "I specialize in full-stack web development",

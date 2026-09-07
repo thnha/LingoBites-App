@@ -1,16 +1,23 @@
-import { open } from 'react-native-quick-sqlite';
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { DB_NAME } from '../../../shared/db/constants';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { runMigrations } from '../../../shared/db/migrations';
-import { captureErrorEvent, insertSpeakingRecording } from '../../../shared/db/SpeakingRepository';
-import { getLearnerProfileData, getLearnerStateSnapshot, saveLearnerProfileData } from '../todayAdapter';
+import {open} from 'react-native-quick-sqlite';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {DB_NAME} from '../../../shared/db/constants';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {runMigrations} from '../../../shared/db/migrations';
+import {
+  captureErrorEvent,
+  insertSpeakingRecording,
+} from '../../../shared/db/SpeakingRepository';
+import {
+  getLearnerProfileData,
+  getLearnerStateSnapshot,
+  saveLearnerProfileData,
+} from '../todayAdapter';
 
 const NOW = '2026-09-06T12:00:00.000Z';
 
 function setupDb() {
   __resetMockDatabases();
-  const db = open({ name: DB_NAME });
+  const db = open({name: DB_NAME});
   resetDatabaseForTests(db);
   runMigrations(db);
   return db;

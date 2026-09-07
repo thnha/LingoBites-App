@@ -1,14 +1,14 @@
 import React from 'react';
-import ReactTestRenderer, { act } from 'react-test-renderer';
-import { open } from 'react-native-quick-sqlite';
-import { FeatureFlagProvider } from '../../../release';
-import { DB_NAME } from '../../../shared/db/constants';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { runMigrations } from '../../../shared/db/migrations';
-import { AppThemeProvider } from '../../../theme';
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { TodayScreen } from '../TodayScreen';
-import { captureErrorEvent } from '../../../shared/db/SpeakingRepository';
+import ReactTestRenderer, {act} from 'react-test-renderer';
+import {open} from 'react-native-quick-sqlite';
+import {FeatureFlagProvider} from '../../../release';
+import {DB_NAME} from '../../../shared/db/constants';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {runMigrations} from '../../../shared/db/migrations';
+import {AppThemeProvider} from '../../../theme';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {TodayScreen} from '../TodayScreen';
+import {captureErrorEvent} from '../../../shared/db/SpeakingRepository';
 
 const mockNavigate = jest.fn();
 
@@ -29,7 +29,7 @@ jest.mock('@react-navigation/native', () => {
 
 function setupDb() {
   __resetMockDatabases();
-  const db = open({ name: DB_NAME });
+  const db = open({name: DB_NAME});
   resetDatabaseForTests(db);
   runMigrations(db);
   return db;
@@ -59,27 +59,29 @@ describe('TodayScreen UI', () => {
   it('renders Today Study Center screen with mode selector and explainability card', async () => {
     const tree = await renderTodayScreen();
 
-    const screen = tree.root.findByProps({ testID: 'today-screen' });
+    const screen = tree.root.findByProps({testID: 'today-screen'});
     expect(screen).toBeTruthy();
 
-    const modeSelector = tree.root.findByProps({ testID: 'mode-selector' });
+    const modeSelector = tree.root.findByProps({testID: 'mode-selector'});
     expect(modeSelector).toBeTruthy();
 
-    const explainabilityCard = tree.root.findByProps({ testID: 'explainability-card' });
+    const explainabilityCard = tree.root.findByProps({
+      testID: 'explainability-card',
+    });
     expect(explainabilityCard).toBeTruthy();
   });
 
   it('allows changing Today mode and updates plan display', async () => {
     const tree = await renderTodayScreen();
 
-    const modeChip5Min = tree.root.findByProps({ testID: 'mode-5-minute' });
+    const modeChip5Min = tree.root.findByProps({testID: 'mode-5-minute'});
     expect(modeChip5Min).toBeTruthy();
 
     await act(async () => {
       modeChip5Min.props.onPress();
     });
 
-    const modeChipDeep = tree.root.findByProps({ testID: 'mode-deep-practice' });
+    const modeChipDeep = tree.root.findByProps({testID: 'mode-deep-practice'});
     expect(modeChipDeep).toBeTruthy();
 
     await act(async () => {
@@ -100,7 +102,9 @@ describe('TodayScreen UI', () => {
 
     const tree = await renderTodayScreen();
 
-    const banner = tree.root.findAllByProps({ testID: 'backlog-consolidation-banner' });
+    const banner = tree.root.findAllByProps({
+      testID: 'backlog-consolidation-banner',
+    });
     expect(banner.length).toBeGreaterThan(0);
   });
 });

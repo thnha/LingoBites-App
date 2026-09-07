@@ -5,7 +5,10 @@ import {
   formatDurationMs,
   formatPercentage,
 } from '../PilotMetricsRepository';
-import {insertSpeakingRecording, captureErrorEvent} from '../SpeakingRepository';
+import {
+  insertSpeakingRecording,
+  captureErrorEvent,
+} from '../SpeakingRepository';
 import {clearAllLocalData} from '../LessonRepository';
 
 describe('PilotMetricsRepository (REQ-39 & CON-6)', () => {
@@ -53,12 +56,30 @@ describe('PilotMetricsRepository (REQ-39 & CON-6)', () => {
     db.execute(
       `INSERT INTO review_sessions (id, card_id, lesson_id, rating, reviewed_at, interval_days, next_review_at, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
-      ['rev-1', 'card-1', 'lesson-1', 'good', '2026-09-05T10:00:00.000Z', 1, '2026-09-06T10:00:00.000Z', '2026-09-05T10:00:00.000Z'],
+      [
+        'rev-1',
+        'card-1',
+        'lesson-1',
+        'good',
+        '2026-09-05T10:00:00.000Z',
+        1,
+        '2026-09-06T10:00:00.000Z',
+        '2026-09-05T10:00:00.000Z',
+      ],
     );
     db.execute(
       `INSERT INTO review_sessions (id, card_id, lesson_id, rating, reviewed_at, interval_days, next_review_at, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
-      ['rev-2', 'card-2', 'lesson-1', 'again', '2026-09-06T10:00:00.000Z', 1, '2026-09-07T10:00:00.000Z', '2026-09-06T10:00:00.000Z'],
+      [
+        'rev-2',
+        'card-2',
+        'lesson-1',
+        'again',
+        '2026-09-06T10:00:00.000Z',
+        1,
+        '2026-09-07T10:00:00.000Z',
+        '2026-09-06T10:00:00.000Z',
+      ],
     );
 
     // Seed error event

@@ -1,4 +1,4 @@
-import type { FeatureRegistryEntry } from './types';
+import type {FeatureRegistryEntry} from './types';
 
 export const featureRegistry: FeatureRegistryEntry[] = [
   {

@@ -12,7 +12,10 @@ import {
   saveFlashcard,
   unsaveFlashcard,
 } from '../../shared/db/FlashcardRepository';
-import {findLessonByInputHash, saveLesson} from '../../shared/db/LessonRepository';
+import {
+  findLessonByInputHash,
+  saveLesson,
+} from '../../shared/db/LessonRepository';
 import {computeLessonInputHash} from '../../shared/db/lessonInputHash';
 import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {trackEvent} from '../analytics';
@@ -30,7 +33,9 @@ export function LessonResultScreen({navigation, route}: Props) {
   const sentences = lesson.sentences ?? [];
   const vocabulary = lesson.vocabulary ?? [];
   const [saveState, setSaveState] = useState<LessonSaveState>('unsaved');
-  const [saveErrorMessage, setSaveErrorMessage] = useState<string | undefined>();
+  const [saveErrorMessage, setSaveErrorMessage] = useState<
+    string | undefined
+  >();
   const [lessonId, setLessonId] = useState<string | undefined>();
   const [savedVocabularyIds, setSavedVocabularyIds] = useState<Set<string>>(
     () => new Set(),
@@ -44,7 +49,13 @@ export function LessonResultScreen({navigation, route}: Props) {
       vocabulary_count: vocabulary.length,
       grammar_count: grammarPoints.length,
     });
-  }, [grammarPoints.length, lesson, sentences.length, sourceType, vocabulary.length]);
+  }, [
+    grammarPoints.length,
+    lesson,
+    sentences.length,
+    sourceType,
+    vocabulary.length,
+  ]);
 
   useEffect(() => {
     const hash = computeLessonInputHash({

@@ -22,7 +22,9 @@ describe('RatingControl', () => {
   it('calls both rating callbacks plus skip from icon-labeled controls', async () => {
     const onRate = jest.fn();
     const onSkip = jest.fn();
-    const tree = await render(<RatingControl onRate={onRate} onSkip={onSkip} />);
+    const tree = await render(
+      <RatingControl onRate={onRate} onSkip={onSkip} />,
+    );
 
     const ratings = ['remembered', 'forgot'];
     for (const rating of ratings) {
@@ -38,13 +40,21 @@ describe('RatingControl', () => {
     expect(onRate).toHaveBeenNthCalledWith(2, 'forgot');
     expect(onSkip).toHaveBeenCalledTimes(1);
 
-    expect(tree.root.findAllByProps({children: 'Nhớ'}).length).toBeGreaterThan(0);
-    expect(tree.root.findAllByProps({children: 'Quên'}).length).toBeGreaterThan(0);
-    expect(tree.root.findAllByProps({children: 'Bỏ qua'}).length).toBeGreaterThan(0);
+    expect(tree.root.findAllByProps({children: 'Nhớ'}).length).toBeGreaterThan(
+      0,
+    );
+    expect(tree.root.findAllByProps({children: 'Quên'}).length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      tree.root.findAllByProps({children: 'Bỏ qua'}).length,
+    ).toBeGreaterThan(0);
   });
 
   it('uses neutral styling for the forgot outcome', async () => {
-    const tree = await render(<RatingControl onRate={jest.fn()} onSkip={jest.fn()} />);
+    const tree = await render(
+      <RatingControl onRate={jest.fn()} onSkip={jest.fn()} />,
+    );
     const forgot = tree.root.findByProps({testID: 'rating-forgot'});
     const flattenedStyle = StyleSheet.flatten(forgot.props.style);
 
@@ -61,7 +71,8 @@ describe('Banner', () => {
     );
 
     expect(
-      tree.root.findAllByProps({children: 'còn 4 thẻ để dành lần ôn sau'}).length,
+      tree.root.findAllByProps({children: 'còn 4 thẻ để dành lần ôn sau'})
+        .length,
     ).toBeGreaterThan(0);
     expect(tree.root.findByProps({testID: 'review-banner'})).toBeTruthy();
   });

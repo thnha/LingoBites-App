@@ -1,21 +1,21 @@
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../../../shared/db/constants';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../../../shared/db/constants';
 import {
   AUDIO_STATUS,
   insertPendingChapterAudioAsset,
   listChapterAudioAssets,
   markChapterAudioAssetReady,
 } from '../../../shared/db/AudioAssetRepository';
-import type { ChapterAudioAsset } from '../../../shared/db/types';
-import { ensureChapterAudio } from '../chapterAudioCache';
+import type {ChapterAudioAsset} from '../../../shared/db/types';
+import {ensureChapterAudio} from '../chapterAudioCache';
 import type {
   ChapterAudioCacheDeps,
   ChapterAudioDownloader,
   ChapterAudioFileStore,
 } from '../chapterAudioCache';
-import type { ChapterAudioManifestResult } from '../audioManifestClient';
+import type {ChapterAudioManifestResult} from '../audioManifestClient';
 
 const NOW = '2026-09-01T00:00:00.000Z';
 
@@ -36,14 +36,14 @@ function makeManifest(
   chapterId: string,
   assets: ChapterAudioAsset[],
 ): ChapterAudioManifestResult {
-  return { ok: true, manifest: { chapterId, assets } };
+  return {ok: true, manifest: {chapterId, assets}};
 }
 
 function makeFileStore() {
   const removedPaths: string[] = [];
   const written: string[] = [];
   const store: ChapterAudioFileStore = {
-    writeAsset: async ({ chapterId, asset: fileAsset }) => {
+    writeAsset: async ({chapterId, asset: fileAsset}) => {
       written.push(fileAsset.id);
       return `/audio/${chapterId}/${fileAsset.id}.mp3`;
     },
@@ -51,14 +51,14 @@ function makeFileStore() {
       removedPaths.push(localPath);
     },
   };
-  return { store, removedPaths, written };
+  return {store, removedPaths, written};
 }
 
 function makeHarness(overrides: Partial<ChapterAudioCacheDeps> = {}) {
   const downloadCalls: string[] = [];
-  const { store, removedPaths } = makeFileStore();
+  const {store, removedPaths} = makeFileStore();
   const downloader: ChapterAudioDownloader = {
-    download: async ({ asset: fileAsset }) => {
+    download: async ({asset: fileAsset}) => {
       downloadCalls.push(fileAsset.id);
       return {
         data: `bytes-${fileAsset.id}`,
@@ -74,7 +74,7 @@ function makeHarness(overrides: Partial<ChapterAudioCacheDeps> = {}) {
     now: () => NOW,
     ...overrides,
   };
-  return { deps, downloadCalls, removedPaths };
+  return {deps, downloadCalls, removedPaths};
 }
 
 function seedReadyChapter(
@@ -85,7 +85,7 @@ function seedReadyChapter(
 ) {
   insertPendingChapterAudioAsset({
     chapterId,
-    asset: asset(assetId, { bytes }),
+    asset: asset(assetId, {bytes}),
     now: openedAt,
   });
   markChapterAudioAssetReady(
@@ -99,11 +99,11 @@ function seedReadyChapter(
 describe('ensureChapterAudio', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
   });
 
   it('downloads a new chapter and marks its assets ready with local paths', async () => {
-    const { deps, downloadCalls } = makeHarness({
+    const {deps, downloadCalls} = makeHarness({
       fetchManifest: async () =>
         makeManifest('ch1', [asset('a1'), asset('a2')]),
     });
@@ -132,7 +132,7 @@ describe('ensureChapterAudio', () => {
   });
 
   it('skips re-download when a ready asset already matches the manifest checksum', async () => {
-    const { deps, downloadCalls } = makeHarness({
+    const {deps, downloadCalls} = makeHarness({
       fetchManifest: async () => makeManifest('ch1', [asset('a1')]),
     });
 
@@ -158,7 +158,7 @@ describe('ensureChapterAudio', () => {
 
     const second = makeHarness({
       fetchManifest: async () =>
-        makeManifest('ch1', [asset('a1', { checksum: 'sha256-changed' })]),
+        makeManifest('ch1', [asset('a1', {checksum: 'sha256-changed'})]),
     });
     const result = await ensureChapterAudio('ch1', second.deps);
 
@@ -175,7 +175,7 @@ describe('ensureChapterAudio', () => {
   });
 
   it('marks a failed download and retries it on the next open without crashing', async () => {
-    const { deps, downloadCalls } = makeHarness({
+    const {deps, downloadCalls} = makeHarness({
       fetchManifest: async () => makeManifest('ch1', [asset('a1')]),
     });
     const originalDownload = deps.downloader.download;
@@ -190,7 +190,7 @@ describe('ensureChapterAudio', () => {
       return;
     }
     expect(first.outcome.failed).toEqual([
-      { id: 'a1', errorCode: 'DOWNLOAD_FAILED' },
+      {id: 'a1', errorCode: 'DOWNLOAD_FAILED'},
     ]);
     expect(listChapterAudioAssets('ch1')[0].downloadStatus).toBe(
       AUDIO_STATUS.FAILED,
@@ -208,7 +208,7 @@ describe('ensureChapterAudio', () => {
   });
 
   it('marks CHECKSUM_MISMATCH when the downloader returns different bytes', async () => {
-    const { deps } = makeHarness({
+    const {deps} = makeHarness({
       fetchManifest: async () => makeManifest('ch1', [asset('a1')]),
     });
     deps.downloader.download = async () => ({
@@ -224,7 +224,7 @@ describe('ensureChapterAudio', () => {
       return;
     }
     expect(result.outcome.failed).toEqual([
-      { id: 'a1', errorCode: 'CHECKSUM_MISMATCH' },
+      {id: 'a1', errorCode: 'CHECKSUM_MISMATCH'},
     ]);
     expect(listChapterAudioAssets('ch1')[0].downloadStatus).toBe(
       AUDIO_STATUS.FAILED,
@@ -232,7 +232,7 @@ describe('ensureChapterAudio', () => {
   });
 
   it('keeps the chapter usable in text mode when the manifest fetch fails', async () => {
-    const { deps } = makeHarness({
+    const {deps} = makeHarness({
       fetchManifest: async () => ({
         ok: false,
         errorCode: 'NETWORK_ERROR' as const,
@@ -250,10 +250,10 @@ describe('ensureChapterAudio', () => {
   });
 
   it('respects the per-chapter cap and reports a failed asset', async () => {
-    const { deps } = makeHarness({
+    const {deps} = makeHarness({
       maxBytesPerChapter: 50,
       fetchManifest: async () =>
-        makeManifest('ch1', [asset('a1', { bytes: 100 })]),
+        makeManifest('ch1', [asset('a1', {bytes: 100})]),
     });
 
     const result = await ensureChapterAudio('ch1', deps);
@@ -263,7 +263,7 @@ describe('ensureChapterAudio', () => {
       return;
     }
     expect(result.outcome.failed).toEqual([
-      { id: 'a1', errorCode: 'PER_CHAPTER_STORAGE_LIMIT' },
+      {id: 'a1', errorCode: 'PER_CHAPTER_STORAGE_LIMIT'},
     ]);
     expect(listChapterAudioAssets('ch1')[0].downloadStatus).toBe(
       AUDIO_STATUS.FAILED,
@@ -273,7 +273,7 @@ describe('ensureChapterAudio', () => {
   it('prunes chapters not opened in N days when a new chapter is opened', async () => {
     seedReadyChapter('stale', 's1', 200, '2026-07-01T00:00:00.000Z');
     seedReadyChapter('recent', 'r1', 200, '2026-08-25T00:00:00.000Z');
-    const { deps, removedPaths } = makeHarness({
+    const {deps, removedPaths} = makeHarness({
       fetchManifest: async () => makeManifest('active', [asset('a1')]),
     });
 
@@ -293,10 +293,10 @@ describe('ensureChapterAudio', () => {
   it('evicts recently opened chapters too when stale ones do not free enough space', async () => {
     seedReadyChapter('stale', 's1', 200, '2026-07-01T00:00:00.000Z');
     seedReadyChapter('recent', 'r1', 400, '2026-08-25T00:00:00.000Z');
-    const { deps, removedPaths } = makeHarness({
+    const {deps, removedPaths} = makeHarness({
       maxCacheBytes: 1000,
       fetchManifest: async () =>
-        makeManifest('active', [asset('a1', { bytes: 700 })]),
+        makeManifest('active', [asset('a1', {bytes: 700})]),
     });
 
     const result = await ensureChapterAudio('active', deps);
@@ -317,10 +317,10 @@ describe('ensureChapterAudio', () => {
   it('never evicts the chapter currently being opened', async () => {
     seedReadyChapter('active', 'a1', 500, '2026-08-25T00:00:00.000Z');
     seedReadyChapter('other', 'o1', 500, '2026-08-20T00:00:00.000Z');
-    const { deps, removedPaths } = makeHarness({
+    const {deps, removedPaths} = makeHarness({
       maxCacheBytes: 800,
       fetchManifest: async () =>
-        makeManifest('active', [asset('a1'), asset('a2', { bytes: 500 })]),
+        makeManifest('active', [asset('a1'), asset('a2', {bytes: 500})]),
     });
 
     const result = await ensureChapterAudio('active', deps);

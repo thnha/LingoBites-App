@@ -6,17 +6,12 @@
   "title_vi": "Xác nhận yêu cầu kỹ thuật",
   "blurb_vi": "Học cách chốt lại yêu cầu kỹ thuật với nhóm sản xuất để đảm bảo không làm sai tính năng.",
   "level": "A2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Tóm tắt và xác nhận lại thông số kỹ thuật với khách hàng hoặc nhóm trưởng.",
   "situation_vi": "Chốt tài liệu kỹ thuật trước khi bắt đầu lập trình.",
   "learner_role_vi": "Developer xác nhận lại các ràng buộc hệ thống.",
-  "prerequisite_lesson_slugs": [
-    "asking-clarification"
-  ],
+  "prerequisite_lesson_slugs": ["asking-clarification"],
   "pronunciation_focus_vi": "Nhấn giọng vào các từ quan trọng: confirm, requirement, expectation, scope.",
   "final_speaking_task_vi": "Tóm tắt 3 điểm yêu cầu kỹ thuật vừa thảo luận để chốt với PO.",
   "pass_conditions_vi": "Tóm tắt rõ ràng và dùng đúng mẫu câu xác nhận.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "b81a1ff0e5efd58e"
-      ],
-      "srs_ref_ids": [
-        "c825e6c53a03386e"
-      ],
+      "audio_ref_ids": ["b81a1ff0e5efd58e"],
+      "srs_ref_ids": ["c825e6c53a03386e"],
       "dialogue_turns": [
         {
           "id": "c1628ad6555fa80e",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "c825e6c53a03386e"
-        ],
+        "re_present_refs": ["c825e6c53a03386e"],
         "tip_vi": "Hãy nhớ cụm từ \"Just to confirm, the deadline is Thursday?\" nghĩa là \"Chỉ để xác nhận lại, hạn chót là thứ Năm đúng không?\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Hành vi mong đợi là gì khi mã token hết hạn?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "657c350557b93e77"
-      ],
-      "srs_ref_ids": [
-        "72e7eb3b081edf32"
-      ],
+      "audio_ref_ids": ["657c350557b93e77"],
+      "srs_ref_ids": ["72e7eb3b081edf32"],
       "dialogue_turns": [
         {
           "id": "90e711621a1cc0f5",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "72e7eb3b081edf32"
-        ],
+        "re_present_refs": ["72e7eb3b081edf32"],
         "tip_vi": "Hãy nhớ cụm từ \"What is the expected behavior when token expires?\" nghĩa là \"Hành vi mong đợi là gì khi mã token hết hạn?\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Xét về phạm vi, thông báo đẩy có bao gồm không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "dd1c53a3614d8b7d"
-      ],
-      "srs_ref_ids": [
-        "4e0c4d27f753fa06"
-      ],
+      "audio_ref_ids": ["dd1c53a3614d8b7d"],
+      "srs_ref_ids": ["4e0c4d27f753fa06"],
       "dialogue_turns": [
         {
           "id": "e78fdc87ff70ae84",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "4e0c4d27f753fa06"
-        ],
+        "re_present_refs": ["4e0c4d27f753fa06"],
         "tip_vi": "Hãy nhớ cụm từ \"In terms of scope, is push notification included?\" nghĩa là \"Xét về phạm vi, thông báo đẩy có bao gồm không?\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Để tôi kiểm tra kỹ lại định dạng phản hồi API\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "b980880402723458"
-      ],
-      "srs_ref_ids": [
-        "ac0d589a6b2e934e"
-      ],
+      "audio_ref_ids": ["b980880402723458"],
+      "srs_ref_ids": ["ac0d589a6b2e934e"],
       "dialogue_turns": [
         {
           "id": "757ab4c8946be8b9",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "ac0d589a6b2e934e"
-        ],
+        "re_present_refs": ["ac0d589a6b2e934e"],
         "tip_vi": "Hãy nhớ cụm từ \"Let me double-check the API response format\" nghĩa là \"Để tôi kiểm tra kỹ lại định dạng phản hồi API\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "67d8a441dc95669e"
-      ],
-      "srs_ref_ids": [
-        "4ef91e480e381351"
-      ],
+      "audio_ref_ids": ["67d8a441dc95669e"],
+      "srs_ref_ids": ["4ef91e480e381351"],
       "dialogue_turns": [
         {
           "id": "5902a08929f085e3",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "4ef91e480e381351"
-        ],
+        "re_present_refs": ["4ef91e480e381351"],
         "tip_vi": "Hãy nhớ cụm từ \"Correct me if I am wrong, but we need auth first\" nghĩa là \"Sửa cho tôi nếu tôi sai, nhưng chúng ta cần xác thực trước\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tất cả chúng ta đã thống nhất về hướng đi này chưa?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "883f8e964ba5a9ca"
-      ],
-      "srs_ref_ids": [
-        "699e072492dca044"
-      ],
+      "audio_ref_ids": ["883f8e964ba5a9ca"],
+      "srs_ref_ids": ["699e072492dca044"],
       "dialogue_turns": [
         {
           "id": "add38a960cd29306",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "699e072492dca044"
-        ],
+        "re_present_refs": ["699e072492dca044"],
         "tip_vi": "Hãy nhớ cụm từ \"Are we all aligned on this approach?\" nghĩa là \"Tất cả chúng ta đã thống nhất về hướng đi này chưa?\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ đưa các chi tiết này vào thẻ Jira\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "31a1bc2ab473a327"
-      ],
-      "srs_ref_ids": [
-        "e7e024943f564d80"
-      ],
+      "audio_ref_ids": ["31a1bc2ab473a327"],
+      "srs_ref_ids": ["e7e024943f564d80"],
       "dialogue_turns": [
         {
           "id": "69386f2102b3a5a0",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "e7e024943f564d80"
-        ],
+        "re_present_refs": ["e7e024943f564d80"],
         "tip_vi": "Hãy nhớ cụm từ \"I will put these details in the Jira ticket\" nghĩa là \"Tôi sẽ đưa các chi tiết này vào thẻ Jira\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "32b6119a4216176c"
-      ],
-      "srs_ref_ids": [
-        "9b90960c2dc5e61b"
-      ],
+      "audio_ref_ids": ["32b6119a4216176c"],
+      "srs_ref_ids": ["9b90960c2dc5e61b"],
       "dialogue_turns": [
         {
           "id": "aa7ea467d3388d7b",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "9b90960c2dc5e61b"
-        ],
+        "re_present_refs": ["9b90960c2dc5e61b"],
         "tip_vi": "Hãy nhớ cụm từ \"Everything is clear, I can proceed now\" nghĩa là \"Mọi thứ đã rõ ràng, tôi có thể bắt đầu làm\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Xác nhận yêu cầu kỹ thuật",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "Just to confirm, the deadline is Thursday?",

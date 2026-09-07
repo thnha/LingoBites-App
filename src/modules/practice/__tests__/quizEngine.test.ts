@@ -10,7 +10,11 @@ import {
   selectAnswer,
 } from '../quizEngine';
 
-const mc = (id: string, answer: string, options: string[]): PracticeQuestion => ({
+const mc = (
+  id: string,
+  answer: string,
+  options: string[],
+): PracticeQuestion => ({
   id,
   type: 'multiple_choice',
   question: `q-${id}`,

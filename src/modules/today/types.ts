@@ -1,4 +1,8 @@
-import type { ContentReviewItemRecord, ErrorEventRecord, SpeakingRecordingRecord } from '../../shared/db/types';
+import type {
+  ContentReviewItemRecord,
+  ErrorEventRecord,
+  SpeakingRecordingRecord,
+} from '../../shared/db/types';
 
 export type TodayMode = '5-minute' | 'normal' | 'deep-practice';
 
@@ -25,7 +29,13 @@ export type StudyActivityType =
   | 'interview_practice';
 
 export type TodayNavigationTarget = {
-  screen: 'DailyReview' | 'ContentLessonRuntime' | 'ContentLessonDetail' | 'SpeakingRoom' | 'SpeakingShadowing' | 'FlashcardList';
+  screen:
+    | 'DailyReview'
+    | 'ContentLessonRuntime'
+    | 'ContentLessonDetail'
+    | 'SpeakingRoom'
+    | 'SpeakingShadowing'
+    | 'FlashcardList';
   params?: Record<string, any>;
 };
 
@@ -40,6 +50,9 @@ export type StudyActivityItem = {
 };
 
 export type LearnerProfileData = {
+  level?: string;
+  primaryGoal?: string;
+  dailyGoalMinutes?: number;
   hasInterviewTarget?: boolean;
   careerGoal?: string;
   portfolioProjects?: string[];

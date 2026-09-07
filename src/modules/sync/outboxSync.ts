@@ -9,10 +9,7 @@ import {
   pushReviewEvents,
   type SyncReviewEvent,
 } from '../../shared/api/reviewEventsClient';
-import {
-  SYNC_BATCH_LIMIT,
-  isSyncStuck,
-} from './syncPolicy';
+import {SYNC_BATCH_LIMIT, isSyncStuck} from './syncPolicy';
 
 export type SyncDrainOutcome =
   | {status: 'idle'}
@@ -67,10 +64,7 @@ export async function drainOutboxOnce(
     return {status: 'stuck'};
   }
 
-  const result = await pushReviewEvents(
-    eligible.map(toWireEvent),
-    deps,
-  );
+  const result = await pushReviewEvents(eligible.map(toWireEvent), deps);
 
   if (result.ok) {
     const syncedIds = [...result.acceptedIds, ...result.duplicateIds];

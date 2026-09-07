@@ -48,7 +48,10 @@ describe('LessonsHistoryScreen Bootstrap Integration (SETE-114)', () => {
       tree = ReactTestRenderer.create(
         <FeatureFlagProvider>
           <AppThemeProvider>
-            <LessonsHistoryScreen navigation={mockNavigation} route={{key: '1', name: 'LessonsList'}} />
+            <LessonsHistoryScreen
+              navigation={mockNavigation}
+              route={{key: '1', name: 'LessonsList'}}
+            />
           </AppThemeProvider>
         </FeatureFlagProvider>,
       );
@@ -56,16 +59,21 @@ describe('LessonsHistoryScreen Bootstrap Integration (SETE-114)', () => {
 
     expect(bootstrapContentPackage).toHaveBeenCalled();
 
-    const packagedCard = tree!.root.findByProps({testID: 'packaged-lesson-lesson-1'});
+    const packagedCard = tree!.root.findByProps({
+      testID: 'packaged-lesson-lesson-1',
+    });
     expect(packagedCard).toBeTruthy();
 
     await act(async () => {
       packagedCard.props.onPress();
     });
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('ContentLessonDetail', {
-      lessonId: 'lesson-1',
-    });
+    expect(mockNavigation.navigate).toHaveBeenCalledWith(
+      'ContentLessonDetail',
+      {
+        lessonId: 'lesson-1',
+      },
+    );
   });
 
   it('renders recoverable error state with Thử lại button when bootstrap fails', async () => {
@@ -82,13 +90,18 @@ describe('LessonsHistoryScreen Bootstrap Integration (SETE-114)', () => {
       tree = ReactTestRenderer.create(
         <FeatureFlagProvider>
           <AppThemeProvider>
-            <LessonsHistoryScreen navigation={mockNavigation} route={{key: '1', name: 'LessonsList'}} />
+            <LessonsHistoryScreen
+              navigation={mockNavigation}
+              route={{key: '1', name: 'LessonsList'}}
+            />
           </AppThemeProvider>
         </FeatureFlagProvider>,
       );
     });
 
-    const retryBtn = tree!.root.findByProps({testID: 'content-bootstrap-retry'});
+    const retryBtn = tree!.root.findByProps({
+      testID: 'content-bootstrap-retry',
+    });
     expect(retryBtn).toBeTruthy();
 
     (bootstrapContentPackage as jest.Mock).mockResolvedValueOnce({

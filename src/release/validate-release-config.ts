@@ -1,4 +1,4 @@
-import { featureKeys } from './feature-registry';
+import {featureKeys} from './feature-registry';
 import type {
   FeatureRegistryEntry,
   ReleaseConfig,
@@ -44,9 +44,11 @@ export function validateReleaseConfig(
   const missingRegistryKeys = featureKeys.filter(key => !(key in enabled));
   if (missingRegistryKeys.length > 0) {
     errors.push(
-      `Release config is missing feature keys: ${missingRegistryKeys.join(', ')}.`,
+      `Release config is missing feature keys: ${missingRegistryKeys.join(
+        ', ',
+      )}.`,
     );
   }
 
-  return { valid: errors.length === 0, errors };
+  return {valid: errors.length === 0, errors};
 }

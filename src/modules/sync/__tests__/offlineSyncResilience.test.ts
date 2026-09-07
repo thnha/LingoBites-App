@@ -2,7 +2,10 @@ import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {open} from 'react-native-quick-sqlite';
 import {getDatabase, resetDatabaseForTests} from '../../../shared/db/database';
 import {DB_NAME} from '../../../shared/db/constants';
-import {enqueueSyncOutboxEvent, listPendingSyncEvents} from '../../../shared/db/SyncOutboxRepository';
+import {
+  enqueueSyncOutboxEvent,
+  listPendingSyncEvents,
+} from '../../../shared/db/SyncOutboxRepository';
 import {drainOutboxOnce} from '../outboxSync';
 import {getCapabilityProgressReport} from '../../../shared/db/PilotMetricsRepository';
 
@@ -38,7 +41,9 @@ describe('Offline / Sync Resilience (REQ-45 / VC-23)', () => {
     });
 
     // 3. Local progress report and state are immediately updated and available offline
-    const reportBeforeSync = getCapabilityProgressReport('2026-09-07T10:05:00.000Z');
+    const reportBeforeSync = getCapabilityProgressReport(
+      '2026-09-07T10:05:00.000Z',
+    );
     expect(reportBeforeSync).toBeDefined();
 
     // 4. Attempting to drain outbox while network is offline fails gracefully with retryable outcome

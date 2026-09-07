@@ -76,7 +76,9 @@ const rules: LintRule[] = [
         );
       }
       if (!Array.isArray(manifest.lessons) || manifest.lessons.length === 0) {
-        errors.push('[LNT-001] manifest.json: lessons[] must have at least one entry');
+        errors.push(
+          '[LNT-001] manifest.json: lessons[] must have at least one entry',
+        );
       }
       return errors;
     },
@@ -105,7 +107,9 @@ const rules: LintRule[] = [
             (lesson as unknown as Record<string, unknown>)[f] === null ||
             (lesson as unknown as Record<string, unknown>)[f] === ''
           ) {
-            errors.push(`[LNT-002] lesson "${lesson.id}": missing required field "${f}"`);
+            errors.push(
+              `[LNT-002] lesson "${lesson.id}": missing required field "${f}"`,
+            );
           }
         }
         if (lesson.schema_version !== RUNTIME_CONTENT_SCHEMA_VERSION) {
@@ -149,7 +153,9 @@ const rules: LintRule[] = [
           const actions = gp.tied_to_actions ?? [];
           if (!actions.includes('speaking') && !actions.includes('listening')) {
             errors.push(
-              `[LNT-004] lesson "${lesson.id}": grammar_pattern "${gp.id ?? gp.slug}" tied_to_actions must include "speaking" or "listening"`,
+              `[LNT-004] lesson "${lesson.id}": grammar_pattern "${
+                gp.id ?? gp.slug
+              }" tied_to_actions must include "speaking" or "listening"`,
             );
           }
         }
@@ -166,7 +172,9 @@ const rules: LintRule[] = [
         for (const chunk of lesson.chunks ?? []) {
           if (!chunk.explanation_vi || chunk.explanation_vi.trim() === '') {
             errors.push(
-              `[LNT-005] lesson "${lesson.id}": chunk "${chunk.id ?? chunk.slug ?? chunk.order}" is missing explanation_vi`,
+              `[LNT-005] lesson "${lesson.id}": chunk "${
+                chunk.id ?? chunk.slug ?? chunk.order
+              }" is missing explanation_vi`,
             );
           }
         }
@@ -183,7 +191,9 @@ const rules: LintRule[] = [
         for (const srs of lesson.srs_items ?? ([] as SrsItem[])) {
           if (!VALID_SRS_TYPES.includes(srs.item_type)) {
             errors.push(
-              `[LNT-006] lesson "${lesson.id}": srs_item "${srs.id ?? srs.slug}" has invalid item_type "${srs.item_type}"`,
+              `[LNT-006] lesson "${lesson.id}": srs_item "${
+                srs.id ?? srs.slug
+              }" has invalid item_type "${srs.item_type}"`,
             );
           }
         }
@@ -197,8 +207,7 @@ const rules: LintRule[] = [
     run: (_manifest, lessons) => {
       const errors: string[] = [];
       for (const lesson of lessons) {
-        for (const audio of lesson.audio_assets ??
-          ([] as AudioAsset[])) {
+        for (const audio of lesson.audio_assets ?? ([] as AudioAsset[])) {
           if (!audio.id) {
             errors.push(
               `[LNT-007] lesson "${lesson.id}": audio asset missing "id"`,
@@ -206,16 +215,24 @@ const rules: LintRule[] = [
           }
           if (!audio.url) {
             errors.push(
-              `[LNT-007] lesson "${lesson.id}": audio asset "${audio.id ?? '?'}" missing "url"`,
+              `[LNT-007] lesson "${lesson.id}": audio asset "${
+                audio.id ?? '?'
+              }" missing "url"`,
             );
           }
           if (!audio.checksum) {
             errors.push(
-              `[LNT-007] lesson "${lesson.id}": audio asset "${audio.id ?? '?'}" missing "checksum"`,
+              `[LNT-007] lesson "${lesson.id}": audio asset "${
+                audio.id ?? '?'
+              }" missing "checksum"`,
             );
           } else if (!CHECKSUM_RE.test(audio.checksum)) {
             errors.push(
-              `[LNT-007] lesson "${lesson.id}": audio asset "${audio.id ?? '?'}" checksum must match sha256:<hex64> or sha256:placeholder, got "${audio.checksum}"`,
+              `[LNT-007] lesson "${lesson.id}": audio asset "${
+                audio.id ?? '?'
+              }" checksum must match sha256:<hex64> or sha256:placeholder, got "${
+                audio.checksum
+              }"`,
             );
           }
         }
@@ -262,7 +279,9 @@ const rules: LintRule[] = [
             const v = (srs as unknown as Record<string, unknown>)[f];
             if (!v || (typeof v === 'string' && v.trim() === '')) {
               errors.push(
-                `[LNT-011] lesson "${lesson.id}": srs_item "${srs.slug ?? srs.id ?? '?'}" missing required field "${f}"`,
+                `[LNT-011] lesson "${lesson.id}": srs_item "${
+                  srs.slug ?? srs.id ?? '?'
+                }" missing required field "${f}"`,
               );
             }
           }
@@ -283,15 +302,16 @@ const rules: LintRule[] = [
             activity.chunk_ref_ids.length === 0
           ) {
             errors.push(
-              `[LNT-012] lesson "${lesson.id}": activity "${activity.id ?? activity.slug}" must reference at least one chunk`,
+              `[LNT-012] lesson "${lesson.id}": activity "${
+                activity.id ?? activity.slug
+              }" must reference at least one chunk`,
             );
           }
-          if (
-            activity.type &&
-            !VALID_ACTIVITY_TYPES.includes(activity.type)
-          ) {
+          if (activity.type && !VALID_ACTIVITY_TYPES.includes(activity.type)) {
             errors.push(
-              `[LNT-012] lesson "${lesson.id}": activity "${activity.id ?? activity.slug}" has invalid type "${activity.type}"`,
+              `[LNT-012] lesson "${lesson.id}": activity "${
+                activity.id ?? activity.slug
+              }" has invalid type "${activity.type}"`,
             );
           }
         }
@@ -301,7 +321,8 @@ const rules: LintRule[] = [
   },
   {
     id: 'LNT-013',
-    description: 'Vocab/audio/grammar/srs cross-refs in chunks point to declared ids',
+    description:
+      'Vocab/audio/grammar/srs cross-refs in chunks point to declared ids',
     run: (_manifest, lessons) => {
       const errors: string[] = [];
       for (const lesson of lessons) {
@@ -315,14 +336,18 @@ const rules: LintRule[] = [
           for (const ref of chunk.vocab_ref_ids ?? []) {
             if (!vocabIds.has(ref)) {
               errors.push(
-                `[LNT-013] lesson "${lesson.id}": chunk "${chunk.id ?? chunk.slug}" vocab_ref_id "${ref}" not declared in vocabulary[]`,
+                `[LNT-013] lesson "${lesson.id}": chunk "${
+                  chunk.id ?? chunk.slug
+                }" vocab_ref_id "${ref}" not declared in vocabulary[]`,
               );
             }
           }
           for (const ref of chunk.audio_ref_ids ?? []) {
             if (!audioIds.has(ref)) {
               errors.push(
-                `[LNT-013] lesson "${lesson.id}": chunk "${chunk.id ?? chunk.slug}" audio_ref_id "${ref}" not declared in audio_assets[]`,
+                `[LNT-013] lesson "${lesson.id}": chunk "${
+                  chunk.id ?? chunk.slug
+                }" audio_ref_id "${ref}" not declared in audio_assets[]`,
               );
             }
           }
@@ -496,12 +521,19 @@ export function validateLessonShape(raw: unknown): {
   const lesson = raw as Record<string, unknown>;
   const errors: string[] = [];
   const requireStr = (field: string) => {
-    if (typeof lesson[field] !== 'string' || (lesson[field] as string).length < 1) {
+    if (
+      typeof lesson[field] !== 'string' ||
+      (lesson[field] as string).length < 1
+    ) {
       errors.push(`lesson.${field} must be a non-empty string`);
     }
   };
   const requireInt = (field: string, min = 1) => {
-    if (typeof lesson[field] !== 'number' || !Number.isFinite(lesson[field] as number) || (lesson[field] as number) < min) {
+    if (
+      typeof lesson[field] !== 'number' ||
+      !Number.isFinite(lesson[field] as number) ||
+      (lesson[field] as number) < min
+    ) {
       errors.push(`lesson.${field} must be a number >= ${min}`);
     }
   };
@@ -520,7 +552,9 @@ export function validateLessonShape(raw: unknown): {
     !VALID_LEVELS.includes(lesson.level)
   ) {
     errors.push(
-      `lesson.level must be one of ${VALID_LEVELS.join(', ')}, got "${lesson.level as string}"`,
+      `lesson.level must be one of ${VALID_LEVELS.join(', ')}, got "${
+        lesson.level as string
+      }"`,
     );
   }
   if (
@@ -532,7 +566,9 @@ export function validateLessonShape(raw: unknown): {
     for (const [i, s] of lesson.target_skills.entries()) {
       if (typeof s !== 'string' || !VALID_SKILLS.includes(s)) {
         errors.push(
-          `lesson.target_skills[${i}] must be one of ${VALID_SKILLS.join(', ')}`,
+          `lesson.target_skills[${i}] must be one of ${VALID_SKILLS.join(
+            ', ',
+          )}`,
         );
       }
     }

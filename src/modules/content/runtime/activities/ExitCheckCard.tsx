@@ -42,7 +42,11 @@ export function ExitCheckCard({data, onComplete, onSkip}: Props) {
           </AppCard>
         );
       })}
-      <StepActions completeLabel="Hoàn thành bài kiểm tra" onComplete={onComplete} onSkip={onSkip} />
+      <StepActions
+        completeLabel="Hoàn thành bài kiểm tra"
+        onComplete={onComplete}
+        onSkip={onSkip}
+      />
     </View>
   );
 }

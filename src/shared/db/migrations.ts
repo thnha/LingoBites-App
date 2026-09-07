@@ -1,4 +1,4 @@
-import type { QuickSQLiteConnection } from 'react-native-quick-sqlite';
+import type {QuickSQLiteConnection} from 'react-native-quick-sqlite';
 
 const MIGRATIONS = [
   `CREATE TABLE IF NOT EXISTS lessons (

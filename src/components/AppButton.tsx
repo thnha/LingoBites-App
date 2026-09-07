@@ -49,7 +49,8 @@ export function AppButton({
         (disabled || loading) && {opacity: theme.states.disabledOpacity},
         style,
       ]}
-      {...rest}>
+      {...rest}
+    >
       {loading ? (
         <ActivityIndicator color={spec.text} />
       ) : (
@@ -59,7 +60,8 @@ export function AppButton({
             fontSize: theme.typography.size.md,
             fontWeight: theme.typography.weight.bold,
             fontFamily: theme.typography.fontFamily.primary,
-          }}>
+          }}
+        >
           {title}
         </Text>
       )}

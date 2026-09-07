@@ -19,9 +19,12 @@
       "explanation_vi": "Thì hiện tại tiếp diễn (am/is/are + V-ing) được dùng để nói về việc mình đang làm hoặc đang tiến hành. Trong buổi họp đứng, chúng ta thường dùng mẫu này để cập nhật tiến độ công việc.",
       "tied_to_actions": ["speaking", "listening"],
       "examples": [
-        { "en": "I'm working on the report.", "vi": "Tôi đang làm báo cáo." },
-        { "en": "She is fixing the bug.", "vi": "Cô ấy đang sửa lỗi." },
-        { "en": "We are meeting a deadline.", "vi": "Chúng tôi đang chạy deadline." }
+        {"en": "I'm working on the report.", "vi": "Tôi đang làm báo cáo."},
+        {"en": "She is fixing the bug.", "vi": "Cô ấy đang sửa lỗi."},
+        {
+          "en": "We are meeting a deadline.",
+          "vi": "Chúng tôi đang chạy deadline."
+        }
       ]
     },
     {
@@ -33,8 +36,14 @@
       "explanation_vi": "Dùng \"How about you?\" hoặc \"What about you?\" sau khi bạn chia sẻ cập nhật của mình để hỏi người khác. Đây là cách lịch sự và tự nhiên trong văn phòng.",
       "tied_to_actions": ["speaking", "listening"],
       "examples": [
-        { "en": "I'm done with my tasks. How about you?", "vi": "Tôi đã xong việc rồi. Còn bạn thì sao?" },
-        { "en": "Not much on my end. What about you?", "vi": "Phía tôi không có gì nhiều. Còn bạn?" }
+        {
+          "en": "I'm done with my tasks. How about you?",
+          "vi": "Tôi đã xong việc rồi. Còn bạn thì sao?"
+        },
+        {
+          "en": "Not much on my end. What about you?",
+          "vi": "Phía tôi không có gì nhiều. Còn bạn?"
+        }
       ]
     },
     {
@@ -46,8 +55,14 @@
       "explanation_vi": "\"Swamped\" là thành ngữ tiếng Anh có nghĩa là \"bận quá, không có thời gian\". Bạn có thể nói \"I'm swamped\" hoặc \"I'm swamped with work/emails/tasks\". Rất phổ biến trong môi trường văn phòng.",
       "tied_to_actions": ["speaking", "listening"],
       "examples": [
-        { "en": "I'm swamped with emails today.", "vi": "Hôm nay tôi ngập trong email." },
-        { "en": "Sorry, I'm swamped — can we talk later?", "vi": "Xin lỗi, tôi đang bận lắm — nói chuyện sau được không?" }
+        {
+          "en": "I'm swamped with emails today.",
+          "vi": "Hôm nay tôi ngập trong email."
+        },
+        {
+          "en": "Sorry, I'm swamped — can we talk later?",
+          "vi": "Xin lỗi, tôi đang bận lắm — nói chuyện sau được không?"
+        }
       ]
     }
   ],
@@ -214,7 +229,11 @@
           "slug": "how-are-you-qa-1",
           "type": "multiple_choice",
           "question": "\"How are you doing?\" nghĩa là gì?",
-          "options": ["Bạn đang làm gì vậy?", "Bạn có khỏe không?", "Bạn đã ăn chưa?"],
+          "options": [
+            "Bạn đang làm gì vậy?",
+            "Bạn có khỏe không?",
+            "Bạn đã ăn chưa?"
+          ],
           "answer": "Bạn có khỏe không?",
           "explanation_vi": "\"How are you doing?\" là cách hỏi thăm sức khỏe/trạng thái, không phải hỏi về hành động.",
           "skill": "vocabulary"
@@ -246,7 +265,11 @@
           "slug": "not-bad-thanks-qa-1",
           "type": "multiple_choice",
           "question": "Khi ai đó nói \"Not bad, thanks!\", họ muốn nói điều gì?",
-          "options": ["Họ đang gặp khó khăn", "Mọi thứ ổn, cũng tốt", "Họ không muốn nói chuyện"],
+          "options": [
+            "Họ đang gặp khó khăn",
+            "Mọi thứ ổn, cũng tốt",
+            "Họ không muốn nói chuyện"
+          ],
           "answer": "Mọi thứ ổn, cũng tốt",
           "explanation_vi": "\"Not bad\" trong tiếng Anh mang nghĩa tích cực: ổn, thậm chí tốt — không phải nghĩa tiêu cực như dịch đen.",
           "skill": "vocabulary"
@@ -380,7 +403,11 @@
           "slug": "swamped-qa-1",
           "type": "multiple_choice",
           "question": "\"I'm swamped\" có nghĩa là gì?",
-          "options": ["Tôi đang bơi", "Tôi đang rất bận rộn", "Tôi đang bị ướt"],
+          "options": [
+            "Tôi đang bơi",
+            "Tôi đang rất bận rộn",
+            "Tôi đang bị ướt"
+          ],
           "answer": "Tôi đang rất bận rộn",
           "explanation_vi": "\"Swamped\" là thành ngữ có nghĩa \"ngập đầu\" trong công việc = rất bận.",
           "skill": "vocabulary"

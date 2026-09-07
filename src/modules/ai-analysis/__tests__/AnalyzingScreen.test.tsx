@@ -73,7 +73,10 @@ function textContent(root: ReactTestRenderer.ReactTestInstance): string {
     .join(' ');
 }
 
-function stage(name: string, status: AnalysisJobStage['status']): AnalysisJobStage {
+function stage(
+  name: string,
+  status: AnalysisJobStage['status'],
+): AnalysisJobStage {
   return {name, status, attempts: status === 'pending' ? 0 : 1};
 }
 
@@ -202,7 +205,10 @@ describe('AnalyzingScreen', () => {
           percent: 10,
           stage: 'source_analysis',
           message: null,
-          stages: [stage('finalizing', 'processing'), stage('source_analysis', 'processing')],
+          stages: [
+            stage('finalizing', 'processing'),
+            stage('source_analysis', 'processing'),
+          ],
         });
       });
 
@@ -220,7 +226,10 @@ describe('AnalyzingScreen', () => {
           percent: 40,
           stage: 'sentence_analysis',
           message: 'Đang phân tích từng câu',
-          stages: [stage('source_analysis', 'completed'), stage('sentence_analysis', 'processing')],
+          stages: [
+            stage('source_analysis', 'completed'),
+            stage('sentence_analysis', 'processing'),
+          ],
         });
       });
 
@@ -338,7 +347,10 @@ describe('AnalyzingScreen', () => {
           percent: 10,
           stage: 'source_analysis',
           message: null,
-          stages: [stage('source_analysis', 'processing'), stage('sentence_analysis', 'pending')],
+          stages: [
+            stage('source_analysis', 'processing'),
+            stage('sentence_analysis', 'pending'),
+          ],
         });
       });
 
@@ -370,7 +382,10 @@ describe('AnalyzingScreen', () => {
         percent: 40,
         stage: 'sentence_analysis',
         message: 'Đang phân tích từng câu',
-        stages: [stage('source_analysis', 'completed'), stage('sentence_analysis', 'processing')],
+        stages: [
+          stage('source_analysis', 'completed'),
+          stage('sentence_analysis', 'processing'),
+        ],
       });
     });
 

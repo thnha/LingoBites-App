@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 import notifee, {
   AndroidImportance,
   AuthorizationStatus,
@@ -11,14 +11,14 @@ import type {
   TimestampTrigger,
   TriggerNotification,
 } from '@notifee/react-native';
-import { listUpcomingReviewReminders } from '../../shared/db/FlashcardRepository';
-import type { PendingReminder } from '../../shared/db/reminderPolicy';
+import {listUpcomingReviewReminders} from '../../shared/db/FlashcardRepository';
+import type {PendingReminder} from '../../shared/db/reminderPolicy';
 import {
   buildReminderNotification,
   configureReminderScheduler,
   reconcileReminders,
 } from './reminderService';
-import type { ReminderScheduler } from './reminderService';
+import type {ReminderScheduler} from './reminderService';
 
 /**
  * Real on-device Golden Hour notifications (REQ-10 / VC-5 / SETE-90).
@@ -96,7 +96,7 @@ export function permissionStatusFromSettings(
 export function shouldRequestReminderPermission(
   status: ReminderPermissionStatus,
   hasUpcomingReminder: boolean,
-  opts: { requestAfterDenied?: boolean } = {},
+  opts: {requestAfterDenied?: boolean} = {},
 ): boolean {
   if (status === 'granted' || status === 'unavailable') {
     return false;
@@ -114,8 +114,7 @@ function androidChannel(): AndroidChannel {
   return {
     id: GOLDEN_HOUR_CHANNEL_ID,
     name: GOLDEN_HOUR_CHANNEL_NAME,
-    description:
-      'Nhắc mở LingoBites đúng "giờ vàng" để ôn từ đúng lịch SRS.',
+    description: 'Nhắc mở LingoBites đúng "giờ vàng" để ôn từ đúng lịch SRS.',
     importance: AndroidImportance.HIGH,
   };
 }
@@ -137,7 +136,7 @@ function dueAtOfPending(item: TriggerNotification): string | null {
 /** Builds the adapter instance the sync `ReminderScheduler` port can consume. */
 export function createNativeReminderScheduler(
   api: NotifeeLike,
-  opts: { now?: () => number } = {},
+  opts: {now?: () => number} = {},
 ): NativeReminderScheduler {
   const nowMs = opts.now ?? (() => Date.now());
   const shadow = new Map<string, string>();
@@ -152,12 +151,12 @@ export function createNativeReminderScheduler(
     listPending: () => {
       const items: PendingReminder[] = [];
       for (const [cardId, dueAt] of shadow.entries()) {
-        items.push({ cardId, dueAt });
+        items.push({cardId, dueAt});
       }
       return items.sort((a, b) => a.cardId.localeCompare(b.cardId));
     },
 
-    schedule: ({ cardId, word, dueAt }) => {
+    schedule: ({cardId, word, dueAt}) => {
       const timestamp = Date.parse(dueAt);
       if (!Number.isFinite(timestamp) || timestamp <= nowMs()) {
         // Past or invalid due instants are never scheduled — reconcile is the
@@ -165,13 +164,13 @@ export function createNativeReminderScheduler(
         return;
       }
       shadow.set(cardId, dueAt);
-      const copy = buildReminderNotification({ word, dueAt });
+      const copy = buildReminderNotification({word, dueAt});
       const notification: Notification = {
         id: cardId,
         title: copy.title,
         body: copy.body,
-        data: { kind: 'golden-hour-review', cardId, dueAt },
-        android: { channelId: GOLDEN_HOUR_CHANNEL_ID },
+        data: {kind: 'golden-hour-review', cardId, dueAt},
+        android: {channelId: GOLDEN_HOUR_CHANNEL_ID},
       };
       const trigger: TimestampTrigger = {
         type: TriggerType.TIMESTAMP,
@@ -238,7 +237,7 @@ async function installNativeScheduler(
  */
 export async function configureNativeReminderNotifications(
   api: NotifeeLike,
-  opts: { promptIfUseful?: boolean; now?: () => string } = {},
+  opts: {promptIfUseful?: boolean; now?: () => string} = {},
 ): Promise<ReminderPermissionStatus> {
   const now = opts.now ?? (() => new Date().toISOString());
   const promptIfUseful = opts.promptIfUseful ?? true;
@@ -249,10 +248,7 @@ export async function configureNativeReminderNotifications(
   } catch {
     return 'unavailable';
   }
-  if (
-    !settings ||
-    typeof settings.authorizationStatus !== 'number'
-  ) {
+  if (!settings || typeof settings.authorizationStatus !== 'number') {
     return 'unavailable';
   }
 
@@ -290,8 +286,9 @@ export async function configureNativeReminderNotifications(
 }
 
 /** Convenience wrapper wiring the real `@notifee/react-native` module. */
-export function bootstrapGoldenHourReminders(
-  opts?: { promptIfUseful?: boolean; now?: () => string },
-): Promise<ReminderPermissionStatus> {
+export function bootstrapGoldenHourReminders(opts?: {
+  promptIfUseful?: boolean;
+  now?: () => string;
+}): Promise<ReminderPermissionStatus> {
   return configureNativeReminderNotifications(notifee, opts);
 }

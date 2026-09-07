@@ -1,4 +1,4 @@
-import type { FeatureKey } from './feature-registry';
+import type {FeatureKey} from './feature-registry';
 
 export const featureDependencies: Record<FeatureKey, string[]> = {
   pasteTextInput: [],

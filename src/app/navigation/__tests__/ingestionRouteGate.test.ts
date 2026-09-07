@@ -1,4 +1,4 @@
-import { getReleaseConfig } from '../../../release';
+import {getReleaseConfig} from '../../../release';
 import {
   isIngestionRouteHiddenForMvp,
   LEGACY_INGESTION_ROUTE_NAMES,

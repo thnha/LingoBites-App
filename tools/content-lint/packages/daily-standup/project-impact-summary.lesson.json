@@ -6,17 +6,12 @@
   "title_vi": "Mô tả tác động và thành tựu dự án quá khứ",
   "blurb_vi": "Diễn tả các thành tích kỹ thuật (tăng tốc độ nạp trang, giảm chi phí server, cải thiện retention).",
   "level": "B2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Trình bày các kết quả và tác động định lượng (metrics) bạn đạt được trong dự án cũ.",
   "situation_vi": "Trả lời câu hỏi phỏng vấn về thành tựu đáng nhớ nhất.",
   "learner_role_vi": "Lập trình viên thuyết minh kết quả công việc.",
-  "prerequisite_lesson_slugs": [
-    "technical-skills-profile"
-  ],
+  "prerequisite_lesson_slugs": ["technical-skills-profile"],
   "pronunciation_focus_vi": "Nhấn giọng các con số và chỉ số tác động: reduced, improved, optimized, increased.",
   "final_speaking_task_vi": "Kể lại một dự án bạn đã cải thiện hiệu năng thành công.",
   "pass_conditions_vi": "Sử dụng mô hình STAR (Situation, Task, Action, Result) và số liệu cụ thể.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã giảm 40% thời gian nạp trang ban đầu\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "0761dc2938f87c94"
-      ],
-      "srs_ref_ids": [
-        "d00e1183a2e08e9c"
-      ],
+      "audio_ref_ids": ["0761dc2938f87c94"],
+      "srs_ref_ids": ["d00e1183a2e08e9c"],
       "dialogue_turns": [
         {
           "id": "e1ea5dd35c68210c",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "d00e1183a2e08e9c"
-        ],
+        "re_present_refs": ["d00e1183a2e08e9c"],
         "tip_vi": "Hãy nhớ cụm từ \"I reduced initial page load time by 40 percent\" nghĩa là \"Tôi đã giảm 40% thời gian nạp trang ban đầu\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã viết lại mã nguồn cũ để tăng khả năng bảo trì\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2ae1b1c3541eea77"
-      ],
-      "srs_ref_ids": [
-        "5a131f744c035544"
-      ],
+      "audio_ref_ids": ["2ae1b1c3541eea77"],
+      "srs_ref_ids": ["5a131f744c035544"],
       "dialogue_turns": [
         {
           "id": "c5733f3cafe7fbdd",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "5a131f744c035544"
-        ],
+        "re_present_refs": ["5a131f744c035544"],
         "tip_vi": "Hãy nhớ cụm từ \"I refactored legacy codebase to improve maintainability\" nghĩa là \"Tôi đã viết lại mã nguồn cũ để tăng khả năng bảo trì\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã tối ưu các truy vấn SQL cho giao dịch dung lượng lớn\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7ea44db7e720b9b1"
-      ],
-      "srs_ref_ids": [
-        "ba2a189139af85a7"
-      ],
+      "audio_ref_ids": ["7ea44db7e720b9b1"],
+      "srs_ref_ids": ["ba2a189139af85a7"],
       "dialogue_turns": [
         {
           "id": "e3171fc36dc6d3df",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "ba2a189139af85a7"
-        ],
+        "re_present_refs": ["ba2a189139af85a7"],
         "tip_vi": "Hãy nhớ cụm từ \"I optimized SQL queries for high-volume transactions\" nghĩa là \"Tôi đã tối ưu các truy vấn SQL cho giao dịch dung lượng lớn\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã dẫn dắt nhóm 4 lập trình viên chuyển đổi hệ thống\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "5b03cdcadf491a7d"
-      ],
-      "srs_ref_ids": [
-        "bc2870d478b2c0de"
-      ],
+      "audio_ref_ids": ["5b03cdcadf491a7d"],
+      "srs_ref_ids": ["bc2870d478b2c0de"],
       "dialogue_turns": [
         {
           "id": "51ed13bb443582bd",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "bc2870d478b2c0de"
-        ],
+        "re_present_refs": ["bc2870d478b2c0de"],
         "tip_vi": "Hãy nhớ cụm từ \"I led a team of four developers on migration\" nghĩa là \"Tôi đã dẫn dắt nhóm 4 lập trình viên chuyển đổi hệ thống\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Đạt chỉ số không có thời gian chết khi chuyển đổi hệ thống lớn\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "b29e57a8a74b6c47"
-      ],
-      "srs_ref_ids": [
-        "3649705536f5da19"
-      ],
+      "audio_ref_ids": ["b29e57a8a74b6c47"],
+      "srs_ref_ids": ["3649705536f5da19"],
       "dialogue_turns": [
         {
           "id": "5aef2924ce3e2316",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "3649705536f5da19"
-        ],
+        "re_present_refs": ["3649705536f5da19"],
         "tip_vi": "Hãy nhớ cụm từ \"Achieved zero downtime during major system migration\" nghĩa là \"Đạt chỉ số không có thời gian chết khi chuyển đổi hệ thống lớn\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Sự tối ưu này trực tiếp cải thiện tỷ lệ giữ chân người dùng\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "6edc0dff0f80c7e3"
-      ],
-      "srs_ref_ids": [
-        "7651c54e9973071c"
-      ],
+      "audio_ref_ids": ["6edc0dff0f80c7e3"],
+      "srs_ref_ids": ["7651c54e9973071c"],
       "dialogue_turns": [
         {
           "id": "3f6546a6ab536c3f",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "7651c54e9973071c"
-        ],
+        "re_present_refs": ["7651c54e9973071c"],
         "tip_vi": "Hãy nhớ cụm từ \"This optimization directly improved user retention\" nghĩa là \"Sự tối ưu này trực tiếp cải thiện tỷ lệ giữ chân người dùng\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Bàn giao các tính năng dự án cốt lõi vượt tiến độ\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2f243ea9c8d520e6"
-      ],
-      "srs_ref_ids": [
-        "2cb9e118537fab72"
-      ],
+      "audio_ref_ids": ["2f243ea9c8d520e6"],
+      "srs_ref_ids": ["2cb9e118537fab72"],
       "dialogue_turns": [
         {
           "id": "feb3f9a90754e75a",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "2cb9e118537fab72"
-        ],
+        "re_present_refs": ["2cb9e118537fab72"],
         "tip_vi": "Hãy nhớ cụm từ \"Delivered the core project features ahead of schedule\" nghĩa là \"Bàn giao các tính năng dự án cốt lõi vượt tiến độ\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Đóng góp của tôi được ban lãnh đạo kỹ thuật ghi nhận\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "ce5c9b4718b22160"
-      ],
-      "srs_ref_ids": [
-        "471c4b181c49bed6"
-      ],
+      "audio_ref_ids": ["ce5c9b4718b22160"],
+      "srs_ref_ids": ["471c4b181c49bed6"],
       "dialogue_turns": [
         {
           "id": "c664d504a1bc89cd",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "471c4b181c49bed6"
-        ],
+        "re_present_refs": ["471c4b181c49bed6"],
         "tip_vi": "Hãy nhớ cụm từ \"My contribution was recognized by engineering leadership\" nghĩa là \"Đóng góp của tôi được ban lãnh đạo kỹ thuật ghi nhận\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Mô tả tác động và thành tựu dự án quá khứ",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "I reduced initial page load time by 40 percent",

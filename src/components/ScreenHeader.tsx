@@ -27,8 +27,16 @@ export function ScreenHeader({
         height: 56,
         justifyContent: 'space-between',
         paddingHorizontal: theme.gutter,
-      }}>
-      <View style={{alignItems: 'center', flexDirection: 'row', gap: 4, minWidth: 0}}>
+      }}
+    >
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: 4,
+          minWidth: 0,
+        }}
+      >
         {onBack ? (
           <IconButton
             accessibilityLabel={backLabel}
@@ -42,7 +50,8 @@ export function ScreenHeader({
         )}
         <AppText
           numberOfLines={1}
-          style={{color: theme.colors.primary, fontSize: 20, fontWeight: '600'}}>
+          style={{color: theme.colors.primary, fontSize: 20, fontWeight: '600'}}
+        >
           {title}
         </AppText>
       </View>

@@ -1,7 +1,7 @@
-import { Platform } from 'react-native';
-import { createRequestId } from './requestId';
-import { getAppConfig } from './appConfig';
-import { NETWORK_LOST_MESSAGE, OCR_FAILED_MESSAGE } from '../copy/userMessages';
+import {Platform} from 'react-native';
+import {createRequestId} from './requestId';
+import {getAppConfig} from './appConfig';
+import {NETWORK_LOST_MESSAGE, OCR_FAILED_MESSAGE} from '../copy/userMessages';
 import type {
   ApiErrorBody,
   OCRImageInput,
@@ -43,7 +43,7 @@ function isSuccessBody(body: unknown): body is OCRSuccessBody {
 export async function extractTextFromImage(
   image: OCRImageInput,
 ): Promise<OCRTextResult> {
-  const { apiBaseUrl } = getAppConfig();
+  const {apiBaseUrl} = getAppConfig();
   const requestId = createRequestId();
   const platform =
     Platform.OS === 'ios'

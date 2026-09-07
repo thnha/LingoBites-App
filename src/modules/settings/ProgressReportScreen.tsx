@@ -66,13 +66,18 @@ export function ProgressReportScreen({navigation}: Props) {
             paddingHorizontal: theme.gutter,
           },
         ]}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <SectionHeader title="Chỉ số năng lực học tập (REQ-39)" />
 
         {/* 1. Spoken without looking */}
         <AppCard style={styles.metricCard}>
           <View style={styles.metricHeader}>
-            <MaterialIcon color={theme.colors.primary} name="record_voice_over" size={24} />
+            <MaterialIcon
+              color={theme.colors.primary}
+              name="record_voice_over"
+              size={24}
+            />
             <AppText variant="h3">Nói không cần nhìn prompt</AppText>
           </View>
           <AppText style={[styles.metricValue, {color: theme.colors.primary}]}>
@@ -81,42 +86,59 @@ export function ProgressReportScreen({navigation}: Props) {
               : 'Chưa đủ dữ liệu'}
           </AppText>
           <AppText color="secondary" variant="caption">
-            Số lượng câu/mẫu câu học viên thực hành phản xạ không cần nhìn văn bản.
+            Số lượng câu/mẫu câu học viên thực hành phản xạ không cần nhìn văn
+            bản.
           </AppText>
         </AppCard>
 
         {/* 2. Start-to-answer time */}
         <AppCard style={styles.metricCard}>
           <View style={styles.metricHeader}>
-            <MaterialIcon color={theme.colors.tertiary} name="timer" size={24} />
+            <MaterialIcon
+              color={theme.colors.tertiary}
+              name="timer"
+              size={24}
+            />
             <AppText variant="h3">Thời gian bắt đầu phản xạ</AppText>
           </View>
           <AppText style={[styles.metricValue, {color: theme.colors.tertiary}]}>
             {report.startToAnswerTimeFormatted}
           </AppText>
           <AppText color="secondary" variant="caption">
-            Thời gian trung bình từ khi nhận tín hiệu đến khi đưa ra câu trả lời.
+            Thời gian trung bình từ khi nhận tín hiệu đến khi đưa ra câu trả
+            lời.
           </AppText>
         </AppCard>
 
         {/* 3. First-listen comprehension */}
         <AppCard style={styles.metricCard}>
           <View style={styles.metricHeader}>
-            <MaterialIcon color={theme.colors.secondary} name="hearing" size={24} />
+            <MaterialIcon
+              color={theme.colors.secondary}
+              name="hearing"
+              size={24}
+            />
             <AppText variant="h3">Hiểu ngay lần nghe đầu tiên</AppText>
           </View>
-          <AppText style={[styles.metricValue, {color: theme.colors.secondary}]}>
+          <AppText
+            style={[styles.metricValue, {color: theme.colors.secondary}]}
+          >
             {formatPercentage(report.firstListenComprehensionRate)}
           </AppText>
           <AppText color="secondary" variant="caption">
-            Tỷ lệ trả lời chính xác ngay trong lần nghe đầu tiên không cần nghe lại.
+            Tỷ lệ trả lời chính xác ngay trong lần nghe đầu tiên không cần nghe
+            lại.
           </AppText>
         </AppCard>
 
         {/* 4. 7-day & 30-day Retention */}
         <AppCard style={styles.metricCard}>
           <View style={styles.metricHeader}>
-            <MaterialIcon color={theme.colors.accentInk} name="psychology" size={24} />
+            <MaterialIcon
+              color={theme.colors.accentInk}
+              name="psychology"
+              size={24}
+            />
             <AppText variant="h3">Tỷ lệ ghi nhớ SRS (7d / 30d)</AppText>
           </View>
           <View style={styles.retentionRow}>
@@ -124,7 +146,9 @@ export function ProgressReportScreen({navigation}: Props) {
               <AppText color="secondary" variant="caption">
                 7 ngày qua
               </AppText>
-              <AppText style={[styles.metricValueSmall, {color: theme.colors.primary}]}>
+              <AppText
+                style={[styles.metricValueSmall, {color: theme.colors.primary}]}
+              >
                 {formatPercentage(report.retention7DayRate)}
               </AppText>
             </View>
@@ -132,7 +156,9 @@ export function ProgressReportScreen({navigation}: Props) {
               <AppText color="secondary" variant="caption">
                 30 ngày qua
               </AppText>
-              <AppText style={[styles.metricValueSmall, {color: theme.colors.primary}]}>
+              <AppText
+                style={[styles.metricValueSmall, {color: theme.colors.primary}]}
+              >
                 {formatPercentage(report.retention30DayRate)}
               </AppText>
             </View>
@@ -145,7 +171,11 @@ export function ProgressReportScreen({navigation}: Props) {
         {/* 5. Passed situations */}
         <AppCard style={styles.metricCard}>
           <View style={styles.metricHeader}>
-            <MaterialIcon color={theme.colors.primary} name="check_circle" size={24} />
+            <MaterialIcon
+              color={theme.colors.primary}
+              name="check_circle"
+              size={24}
+            />
             <AppText variant="h3">Tình huống đã đạt (Situations)</AppText>
           </View>
           <AppText style={[styles.metricValue, {color: theme.colors.primary}]}>
@@ -154,31 +184,51 @@ export function ProgressReportScreen({navigation}: Props) {
               : 'Chưa đủ dữ liệu'}
           </AppText>
           <AppText color="secondary" variant="caption">
-            Số lượng bài kiểm tra tình huống tuần & stage check đạt kết quả `pass`.
+            Số lượng bài kiểm tra tình huống tuần & stage check đạt kết quả
+            `pass`.
           </AppText>
         </AppCard>
 
         {/* 6. Before / After Recordings */}
         <AppCard style={styles.metricCard}>
           <View style={styles.metricHeader}>
-            <MaterialIcon color={theme.colors.tertiary} name="compare" size={24} />
+            <MaterialIcon
+              color={theme.colors.tertiary}
+              name="compare"
+              size={24}
+            />
             <AppText variant="h3">So sánh ghi âm trước & sau</AppText>
           </View>
-          {report.beforeAfterRecordings.earliest && report.beforeAfterRecordings.latest ? (
+          {report.beforeAfterRecordings.earliest &&
+          report.beforeAfterRecordings.latest ? (
             <View style={{gap: 8, marginTop: 4}}>
               <AppText variant="body">
                 • Bản ghi đầu:{' '}
-                {new Date(report.beforeAfterRecordings.earliest.createdAt).toLocaleDateString()} (
-                {Math.round(report.beforeAfterRecordings.earliest.durationMs / 1000)}s)
+                {new Date(
+                  report.beforeAfterRecordings.earliest.createdAt,
+                ).toLocaleDateString()}{' '}
+                (
+                {Math.round(
+                  report.beforeAfterRecordings.earliest.durationMs / 1000,
+                )}
+                s)
               </AppText>
               <AppText variant="body">
                 • Bản ghi mới nhất:{' '}
-                {new Date(report.beforeAfterRecordings.latest.createdAt).toLocaleDateString()} (
-                {Math.round(report.beforeAfterRecordings.latest.durationMs / 1000)}s)
+                {new Date(
+                  report.beforeAfterRecordings.latest.createdAt,
+                ).toLocaleDateString()}{' '}
+                (
+                {Math.round(
+                  report.beforeAfterRecordings.latest.durationMs / 1000,
+                )}
+                s)
               </AppText>
             </View>
           ) : (
-            <AppText style={[styles.metricValue, {color: theme.colors.textSecondary}]}>
+            <AppText
+              style={[styles.metricValue, {color: theme.colors.text.secondary}]}
+            >
               Chưa đủ dữ liệu ghi âm
             </AppText>
           )}
@@ -198,15 +248,18 @@ export function ProgressReportScreen({navigation}: Props) {
         </View>
 
         {exportJson ? (
-          <AppCard style={{marginTop: 12, backgroundColor: theme.colors.surface}}>
+          <AppCard
+            style={{marginTop: 12, backgroundColor: theme.colors.surface}}
+          >
             <AppText variant="h3">Metrics Export (CON-6 Privacy-Safe):</AppText>
             <AppText
               style={{
                 fontFamily: 'Courier',
                 fontSize: 11,
                 marginTop: 8,
-                color: theme.colors.textSecondary,
-              }}>
+                color: theme.colors.text.secondary,
+              }}
+            >
               {exportJson}
             </AppText>
           </AppCard>

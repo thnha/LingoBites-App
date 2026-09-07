@@ -1,5 +1,11 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, Image, Pressable, ScrollView, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {HomeStackParamList} from '../../app/navigation/types';
 import {AppButton} from '../../components/AppButton';
@@ -145,14 +151,15 @@ export function ImageCaptureScreen({navigation, route}: Props) {
             gap: theme.spacing.lg,
             justifyContent: 'center',
             padding: theme.spacing.xl,
-          }}>
+          }}
+        >
           <ActivityIndicator color={theme.colors.primary} size="large" />
           <AppText color="secondary" style={{textAlign: 'center'}}>
             {screenState.type === 'ocr_loading'
               ? 'Đang nhận diện chữ trong ảnh...'
               : isGallery
-                ? 'Đang mở thư viện ảnh...'
-                : 'Đang mở camera...'}
+              ? 'Đang mở thư viện ảnh...'
+              : 'Đang mở camera...'}
           </AppText>
         </View>
       </AppScreen>
@@ -169,8 +176,12 @@ export function ImageCaptureScreen({navigation, route}: Props) {
             gap: theme.spacing.md,
             justifyContent: 'center',
             padding: theme.spacing.xl,
-          }}>
-          <ErrorCard message={PERMISSION_DENIED_MESSAGE} onRetry={() => void launchPicker()} />
+          }}
+        >
+          <ErrorCard
+            message={PERMISSION_DENIED_MESSAGE}
+            onRetry={() => void launchPicker()}
+          />
           <AppButton
             title="Nhập text thủ công"
             variant="secondary"
@@ -185,7 +196,12 @@ export function ImageCaptureScreen({navigation, route}: Props) {
     return (
       <AppScreen>
         <ScreenHeader onBack={() => navigation.goBack()} title={headerTitle} />
-        <ScrollView contentContainerStyle={{gap: theme.spacing.md, padding: theme.spacing.xl}}>
+        <ScrollView
+          contentContainerStyle={{
+            gap: theme.spacing.md,
+            padding: theme.spacing.xl,
+          }}
+        >
           {screenState.image ? (
             <Image
               resizeMode="contain"
@@ -205,7 +221,11 @@ export function ImageCaptureScreen({navigation, route}: Props) {
               onPress={() => void handleContinue(screenState.image!)}
             />
           ) : null}
-          <AppButton title="Chọn ảnh khác" variant="secondary" onPress={() => void launchPicker()} />
+          <AppButton
+            title="Chọn ảnh khác"
+            variant="secondary"
+            onPress={() => void launchPicker()}
+          />
           <AppButton
             title="Nhập text thủ công"
             variant="secondary"
@@ -225,7 +245,8 @@ export function ImageCaptureScreen({navigation, route}: Props) {
             gap: theme.spacing.lg,
             paddingHorizontal: theme.gutter,
             paddingTop: theme.spacing.sm,
-          }}>
+          }}
+        >
           <Image
             resizeMode="contain"
             source={{uri: screenState.image.uri}}
@@ -236,14 +257,19 @@ export function ImageCaptureScreen({navigation, route}: Props) {
               width: '100%',
             }}
           />
-          <AppButton title="Chọn ảnh khác" variant="secondary" onPress={() => void launchPicker()} />
+          <AppButton
+            title="Chọn ảnh khác"
+            variant="secondary"
+            onPress={() => void launchPicker()}
+          />
         </ScrollView>
         <BottomActionBar
           style={{
             backgroundColor: theme.colors.background,
             borderTopColor: theme.colors.outlineVariant,
             paddingBottom: theme.spacing.lg,
-          }}>
+          }}
+        >
           <Pressable
             accessibilityLabel="Trích xuất text"
             accessibilityRole="button"
@@ -259,9 +285,20 @@ export function ImageCaptureScreen({navigation, route}: Props) {
                 minHeight: 52,
                 opacity: pressed ? theme.states.pressedOpacity : 1,
               },
-            ]}>
-            <MaterialIcon color={theme.colors.text.inverse} name="document_scanner" size={22} />
-            <AppText style={{color: theme.colors.text.inverse, fontSize: 18, fontWeight: '600'}}>
+            ]}
+          >
+            <MaterialIcon
+              color={theme.colors.text.inverse}
+              name="document_scanner"
+              size={22}
+            />
+            <AppText
+              style={{
+                color: theme.colors.text.inverse,
+                fontSize: 18,
+                fontWeight: '600',
+              }}
+            >
               Trích xuất text
             </AppText>
           </Pressable>
@@ -280,7 +317,8 @@ export function ImageCaptureScreen({navigation, route}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <Pressable
           accessibilityLabel="Chọn ảnh từ thư viện"
           accessibilityRole="button"
@@ -298,7 +336,8 @@ export function ImageCaptureScreen({navigation, route}: Props) {
               paddingHorizontal: 24,
               paddingVertical: 32,
             },
-          ]}>
+          ]}
+        >
           <View
             style={{
               alignItems: 'center',
@@ -311,10 +350,18 @@ export function ImageCaptureScreen({navigation, route}: Props) {
               shadowOpacity: 0.1,
               shadowRadius: 20,
               width: 72,
-            }}>
-            <MaterialIcon color={theme.colors.primary} name="add_photo_alternate" size={34} />
+            }}
+          >
+            <MaterialIcon
+              color={theme.colors.primary}
+              name="add_photo_alternate"
+              size={34}
+            />
           </View>
-          <AppText style={{color: theme.colors.primary, fontWeight: '600'}} variant="h3">
+          <AppText
+            style={{color: theme.colors.primary, fontWeight: '600'}}
+            variant="h3"
+          >
             Chạm để chọn ảnh
           </AppText>
           <AppText color="muted" variant="caption">
@@ -333,8 +380,14 @@ export function ImageCaptureScreen({navigation, route}: Props) {
           </View>
         </View>
 
-        <AppCard style={{alignItems: 'flex-start', flexDirection: 'row', gap: 12}}>
-          <MaterialIcon color={theme.colors.primary} name="auto_awesome" size={22} />
+        <AppCard
+          style={{alignItems: 'flex-start', flexDirection: 'row', gap: 12}}
+        >
+          <MaterialIcon
+            color={theme.colors.primary}
+            name="auto_awesome"
+            size={22}
+          />
           <View style={{flex: 1, gap: 2}}>
             <AppText variant="label">OCR thông minh</AppText>
             <AppText color="muted" variant="caption">
@@ -349,7 +402,8 @@ export function ImageCaptureScreen({navigation, route}: Props) {
           backgroundColor: theme.colors.background,
           borderTopColor: theme.colors.outlineVariant,
           paddingBottom: theme.spacing.lg,
-        }}>
+        }}
+      >
         <Pressable
           accessibilityLabel="Trích xuất text"
           accessibilityRole="button"
@@ -365,9 +419,20 @@ export function ImageCaptureScreen({navigation, route}: Props) {
               minHeight: 52,
               opacity: pressed ? theme.states.pressedOpacity : 1,
             },
-          ]}>
-          <MaterialIcon color={theme.colors.text.inverse} name="document_scanner" size={22} />
-          <AppText style={{color: theme.colors.text.inverse, fontSize: 18, fontWeight: '600'}}>
+          ]}
+        >
+          <MaterialIcon
+            color={theme.colors.text.inverse}
+            name="document_scanner"
+            size={22}
+          />
+          <AppText
+            style={{
+              color: theme.colors.text.inverse,
+              fontSize: 18,
+              fontWeight: '600',
+            }}
+          >
             Trích xuất text
           </AppText>
         </Pressable>

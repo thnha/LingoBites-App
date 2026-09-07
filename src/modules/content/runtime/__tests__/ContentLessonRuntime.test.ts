@@ -259,7 +259,12 @@ describe('LessonRuntimeSession', () => {
 
     const created = listContentReviewItems(LESSON_ID);
     const createdIds = created.map(item => item.srsItemId).sort();
-    expect(createdIds).toEqual(['srs-chunk1', 'srs-dt1', 'srs-gram1', 'srs-qa2']);
+    expect(createdIds).toEqual([
+      'srs-chunk1',
+      'srs-dt1',
+      'srs-gram1',
+      'srs-qa2',
+    ]);
 
     for (const item of created) {
       expect(item.masteryState).toBe('new');

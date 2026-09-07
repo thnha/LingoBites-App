@@ -12,7 +12,7 @@ import {
   sessionXp,
   toLocalDayKey,
 } from '../gamificationPolicy';
-import type { GamificationEventRecord } from '../types';
+import type {GamificationEventRecord} from '../types';
 
 function localIsoForDayKey(key: string, hour = 12): string {
   const [year, month, day] = key.split('-').map(Number);
@@ -52,8 +52,8 @@ describe('gamificationPolicy', () => {
       expect(XP_PER_RATING.forgot).toBe(2);
       expect(XP_PER_RATING.remembered).toBe(7);
 
-      expect(sessionXp({ remembered: 1, forgot: 1 })).toBe(7 + 2);
-      expect(sessionXp({ remembered: 3 })).toBe(21);
+      expect(sessionXp({remembered: 1, forgot: 1})).toBe(7 + 2);
+      expect(sessionXp({remembered: 3})).toBe(21);
       expect(sessionXp({})).toBe(0);
     });
   });
@@ -85,7 +85,7 @@ describe('gamificationPolicy', () => {
 
     it('never counts a card with unknown due time', () => {
       expect(
-        isOnTimeReview({ dueAt: null, reviewedAt: '2026-09-05T12:00:00.000Z' }),
+        isOnTimeReview({dueAt: null, reviewedAt: '2026-09-05T12:00:00.000Z'}),
       ).toBe(false);
     });
   });
@@ -127,9 +127,7 @@ describe('gamificationPolicy', () => {
     });
 
     it('stays alive when the most recent day is yesterday', () => {
-      expect(
-        computeCurrentStreak(['2026-09-03', '2026-09-04'], today),
-      ).toBe(2);
+      expect(computeCurrentStreak(['2026-09-03', '2026-09-04'], today)).toBe(2);
     });
 
     it('resets when the last completed day is older than yesterday', () => {
@@ -215,7 +213,7 @@ describe('gamificationPolicy', () => {
     it('sums XP/water and reproduces streak state from events only', () => {
       const events = [
         sessionEvent('2026-09-04', 7),
-        sessionEvent('2026-09-05', sessionXp({ remembered: 1, forgot: 1 })),
+        sessionEvent('2026-09-05', sessionXp({remembered: 1, forgot: 1})),
         onTimeEvent('2026-09-05'),
         onTimeEvent('2026-09-05'),
         sessionEvent('2026-09-03', 2),
@@ -230,7 +228,10 @@ describe('gamificationPolicy', () => {
     });
 
     it('awards the first-review badge after one completed session', () => {
-      const snapshot = deriveGamificationSnapshot([sessionEvent('2026-09-05', 7)], today);
+      const snapshot = deriveGamificationSnapshot(
+        [sessionEvent('2026-09-05', 7)],
+        today,
+      );
       expect(snapshot.badges.map(badge => badge.id)).toContain('first_review');
       expect(snapshot.badges.map(badge => badge.id)).not.toContain('xp_100');
     });

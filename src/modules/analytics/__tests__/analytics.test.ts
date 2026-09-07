@@ -17,9 +17,9 @@ describe('getTextLengthBucket', () => {
 
 describe('sanitizeAnalyticsPayload', () => {
   it('rejects forbidden sensitive keys', () => {
-    expect(() =>
-      sanitizeAnalyticsPayload({confirmed_text: 'secret'}),
-    ).toThrow('confirmed_text');
+    expect(() => sanitizeAnalyticsPayload({confirmed_text: 'secret'})).toThrow(
+      'confirmed_text',
+    );
   });
 
   it('allows metadata-only properties', () => {

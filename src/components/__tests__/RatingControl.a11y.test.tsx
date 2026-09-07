@@ -34,7 +34,10 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
 
   it('has accessibility labels for all buttons', async () => {
     const tree = await render(
-      <RatingControl onRate={mockHandlers.onRate} onSkip={mockHandlers.onSkip} />,
+      <RatingControl
+        onRate={mockHandlers.onRate}
+        onSkip={mockHandlers.onSkip}
+      />,
     );
 
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});
@@ -50,7 +53,10 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
 
   it('has accessibility roles for all buttons', async () => {
     const tree = await render(
-      <RatingControl onRate={mockHandlers.onRate} onSkip={mockHandlers.onSkip} />,
+      <RatingControl
+        onRate={mockHandlers.onRate}
+        onSkip={mockHandlers.onSkip}
+      />,
     );
 
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});
@@ -66,7 +72,10 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
 
   it('has icon+text label pairing for all buttons (NFR-ACC-004)', async () => {
     const tree = await render(
-      <RatingControl onRate={mockHandlers.onRate} onSkip={mockHandlers.onSkip} />,
+      <RatingControl
+        onRate={mockHandlers.onRate}
+        onSkip={mockHandlers.onSkip}
+      />,
     );
 
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});

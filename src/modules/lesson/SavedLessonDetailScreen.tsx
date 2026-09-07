@@ -2,7 +2,10 @@ import React, {useCallback, useState} from 'react';
 import {ActivityIndicator, Alert, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList, LessonsStackParamList} from '../../app/navigation/types';
+import type {
+  HomeStackParamList,
+  LessonsStackParamList,
+} from '../../app/navigation/types';
 import {AppButton} from '../../components/AppButton';
 import {AppScreen} from '../../components/AppScreen';
 import {AppText} from '../../components/AppText';
@@ -26,7 +29,10 @@ import {trackEvent} from '../analytics';
 import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 import {LessonHubView} from './LessonHubView';
 
-type HomeProps = NativeStackScreenProps<HomeStackParamList, 'SavedLessonDetail'>;
+type HomeProps = NativeStackScreenProps<
+  HomeStackParamList,
+  'SavedLessonDetail'
+>;
 type LessonsProps = NativeStackScreenProps<
   LessonsStackParamList,
   'SavedLessonDetail'
@@ -155,9 +161,16 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
             gap: theme.spacing.lg,
             justifyContent: 'center',
             padding: theme.spacing.xl,
-          }}>
-          <AppText color="danger">{errorMessage ?? OPEN_LESSON_ERROR_MESSAGE}</AppText>
-          <AppButton title="Quay lại" variant="secondary" onPress={() => navigation.goBack()} />
+          }}
+        >
+          <AppText color="danger">
+            {errorMessage ?? OPEN_LESSON_ERROR_MESSAGE}
+          </AppText>
+          <AppButton
+            title="Quay lại"
+            variant="secondary"
+            onPress={() => navigation.goBack()}
+          />
         </View>
       </AppScreen>
     );
@@ -208,7 +221,10 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
     if (practice.length === 0) {
       return;
     }
-    drilldownNav.navigate('Practice', {questions: practice, title: aiLesson.title});
+    drilldownNav.navigate('Practice', {
+      questions: practice,
+      title: aiLesson.title,
+    });
   }
 
   function handleStartLearning() {
@@ -248,7 +264,10 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
         }
       />
       {deleteError ? (
-        <AppText color="danger" style={{padding: theme.spacing.lg, textAlign: 'center'}}>
+        <AppText
+          color="danger"
+          style={{padding: theme.spacing.lg, textAlign: 'center'}}
+        >
           {deleteError}
         </AppText>
       ) : null}
@@ -258,7 +277,9 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
           showSaveButton={false}
           savedVocabularyIds={savedVocabularyIds}
           onToggleWordSave={
-            reviewSystemEnabled ? word => void handleToggleWordSave(word) : undefined
+            reviewSystemEnabled
+              ? word => void handleToggleWordSave(word)
+              : undefined
           }
           {...drilldown}
         />

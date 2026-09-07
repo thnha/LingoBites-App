@@ -37,7 +37,10 @@ const created = (statusUrl = '/v1/ai/analyses/job-1') => ({
   status_url: statusUrl,
 });
 
-const inProgress = (status: 'queued' | 'processing' | 'paused', percent: number) => ({
+const inProgress = (
+  status: 'queued' | 'processing' | 'paused',
+  percent: number,
+) => ({
   analysis_id: 'job-1',
   request_id: 'mock-uuid',
   status,
@@ -83,7 +86,9 @@ afterEach(() => {
 describe('runAnalysisJob - create + happy-path polling', () => {
   it('creates a job, polls its relative status_url, and resolves with the lesson', async () => {
     mockFetch
-      .mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '1'}))
+      .mockResolvedValueOnce(
+        response(created(), {status: 202, retryAfter: '1'}),
+      )
       .mockResolvedValueOnce(response(inProgress('queued', 0)))
       .mockResolvedValueOnce(response(inProgress('processing', 40)))
       .mockResolvedValueOnce(response(completedBody(lessonData())));
@@ -126,7 +131,9 @@ describe('runAnalysisJob - create + happy-path polling', () => {
   it('polls an absolute status_url unchanged', async () => {
     mockFetch
       .mockResolvedValueOnce(
-        response(created('https://jobs.example.test/status/job-1'), {status: 202}),
+        response(created('https://jobs.example.test/status/job-1'), {
+          status: 202,
+        }),
       )
       .mockResolvedValueOnce(response(completedBody(lessonData())));
 
@@ -149,24 +156,29 @@ describe('runAnalysisJob - create + happy-path polling', () => {
     ['NaN', 1_000],
     ['Infinity', 1_000],
     ['200', 10_000], // capped at MAX_RETRY_AFTER_MS, not the full 200_000ms
-  ])('waits %s -> %ims before the first poll', async (retryAfter, expectedDelayMs) => {
-    mockFetch
-      .mockResolvedValueOnce(response(created(), {status: 202, retryAfter}))
-      .mockResolvedValueOnce(response(completedBody(lessonData())));
+  ])(
+    'waits %s -> %ims before the first poll',
+    async (retryAfter, expectedDelayMs) => {
+      mockFetch
+        .mockResolvedValueOnce(response(created(), {status: 202, retryAfter}))
+        .mockResolvedValueOnce(response(completedBody(lessonData())));
 
-    const pending = runAnalysisJob('Sample text.');
+      const pending = runAnalysisJob('Sample text.');
 
-    if (expectedDelayMs > 0) {
-      await jest.advanceTimersByTimeAsync(expectedDelayMs - 1);
-      expect(mockFetch).toHaveBeenCalledTimes(1);
-      await jest.advanceTimersByTimeAsync(1);
-    } else {
-      await jest.advanceTimersByTimeAsync(0);
-    }
+      if (expectedDelayMs > 0) {
+        await jest.advanceTimersByTimeAsync(expectedDelayMs - 1);
+        expect(mockFetch).toHaveBeenCalledTimes(1);
+        await jest.advanceTimersByTimeAsync(1);
+      } else {
+        await jest.advanceTimersByTimeAsync(0);
+      }
 
-    expect(mockFetch).toHaveBeenCalledTimes(2);
-    await expect(pending).resolves.toEqual(expect.objectContaining({ok: true}));
-  });
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      await expect(pending).resolves.toEqual(
+        expect.objectContaining({ok: true}),
+      );
+    },
+  );
 });
 
 describe('runAnalysisJob - terminal create errors', () => {
@@ -222,7 +234,11 @@ describe('runAnalysisJob - terminal poll errors', () => {
       .mockResolvedValueOnce(response(created(), {status: 202}))
       .mockResolvedValueOnce(
         response(
-          {request_id: 'r', status: 'failed', error: {code: 'AI_JOB_NOT_FOUND', message: 'gone'}},
+          {
+            request_id: 'r',
+            status: 'failed',
+            error: {code: 'AI_JOB_NOT_FOUND', message: 'gone'},
+          },
           {ok: false, status: 404},
         ),
       );
@@ -242,7 +258,11 @@ describe('runAnalysisJob - terminal poll errors', () => {
       .mockResolvedValueOnce(response(created(), {status: 202}))
       .mockResolvedValueOnce(
         response(
-          {request_id: 'r', status: 'failed', error: {code: 'AI_FINAL_VALIDATION_FAILED', message: 'bad'}},
+          {
+            request_id: 'r',
+            status: 'failed',
+            error: {code: 'AI_FINAL_VALIDATION_FAILED', message: 'bad'},
+          },
           {ok: false, status: 422},
         ),
       );
@@ -289,23 +309,39 @@ describe('runAnalysisJob - transient poll failures recover', () => {
           json: jest.fn().mockRejectedValue(new Error('bad json')),
         }),
     ],
-    ['HTTP 429', () => mockFetch.mockResolvedValueOnce(response({}, {ok: false, status: 429}))],
-    ['HTTP 500', () => mockFetch.mockResolvedValueOnce(response({}, {ok: false, status: 500}))],
-  ])('treats a poll %s as transient and recovers on the next interval', async (_label, queueTransientPoll) => {
-    mockFetch.mockResolvedValueOnce(response(created(), {status: 202}));
-    queueTransientPoll();
-    mockFetch.mockResolvedValueOnce(response(completedBody(lessonData())));
+    [
+      'HTTP 429',
+      () =>
+        mockFetch.mockResolvedValueOnce(response({}, {ok: false, status: 429})),
+    ],
+    [
+      'HTTP 500',
+      () =>
+        mockFetch.mockResolvedValueOnce(response({}, {ok: false, status: 500})),
+    ],
+  ])(
+    'treats a poll %s as transient and recovers on the next interval',
+    async (_label, queueTransientPoll) => {
+      mockFetch.mockResolvedValueOnce(response(created(), {status: 202}));
+      queueTransientPoll();
+      mockFetch.mockResolvedValueOnce(response(completedBody(lessonData())));
 
-    const pending = runAnalysisJob('Sample text.');
-    await jest.advanceTimersByTimeAsync(1_000 + 1_500);
-    await expect(pending).resolves.toEqual(expect.objectContaining({ok: true}));
-    expect(mockFetch).toHaveBeenCalledTimes(3);
-  });
+      const pending = runAnalysisJob('Sample text.');
+      await jest.advanceTimersByTimeAsync(1_000 + 1_500);
+      await expect(pending).resolves.toEqual(
+        expect.objectContaining({ok: true}),
+      );
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+    },
+  );
 });
 
 describe('runAnalysisJob - malformed successful bodies', () => {
   it.each([
-    ['an unrecognized status value', {...inProgress('processing', 50), status: 'cancelled'}],
+    [
+      'an unrecognized status value',
+      {...inProgress('processing', 50), status: 'cancelled'},
+    ],
     [
       'a missing status field',
       (() => {
@@ -376,7 +412,9 @@ describe('runAnalysisJob - malformed successful bodies', () => {
 
 describe('runAnalysisJob - poll deadline', () => {
   it('gives up after the 75s poll deadline without issuing a fetch after it', async () => {
-    mockFetch.mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '0'}));
+    mockFetch.mockResolvedValueOnce(
+      response(created(), {status: 202, retryAfter: '0'}),
+    );
     mockFetch.mockResolvedValue(response({}, {ok: false, status: 500}));
 
     const pending = runAnalysisJob('Sample text.');
@@ -396,7 +434,9 @@ describe('runAnalysisJob - poll deadline', () => {
 describe('runAnalysisJob - per-request timeout', () => {
   it('abandons a poll GET that never resolves once the per-request timeout fires, retries at the next interval, and completes normally', async () => {
     mockFetch
-      .mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '0'}))
+      .mockResolvedValueOnce(
+        response(created(), {status: 202, retryAfter: '0'}),
+      )
       .mockImplementationOnce(
         (_url: string, options: {signal: AbortSignal}) =>
           new Promise((_resolve, reject) => {
@@ -475,7 +515,9 @@ describe('runAnalysisJob - cancellation', () => {
 
   it('returns cancelled when the signal aborts during the initial Retry-After wait', async () => {
     const controller = new AbortController();
-    mockFetch.mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '5'}));
+    mockFetch.mockResolvedValueOnce(
+      response(created(), {status: 202, retryAfter: '5'}),
+    );
 
     const pending = runAnalysisJob(
       'Sample text.',
@@ -498,7 +540,9 @@ describe('runAnalysisJob - cancellation', () => {
     const controller = new AbortController();
     const onProgress = jest.fn();
     mockFetch
-      .mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '0'}))
+      .mockResolvedValueOnce(
+        response(created(), {status: 202, retryAfter: '0'}),
+      )
       .mockResolvedValueOnce(response(inProgress('processing', 40)));
 
     const pending = runAnalysisJob(
@@ -525,7 +569,9 @@ describe('runAnalysisJob - cancellation', () => {
 describe('runAnalysisJob - progress snapshot immutability', () => {
   it('never hands out or mutates a previously delivered progress snapshot', async () => {
     mockFetch
-      .mockResolvedValueOnce(response(created(), {status: 202, retryAfter: '1'}))
+      .mockResolvedValueOnce(
+        response(created(), {status: 202, retryAfter: '1'}),
+      )
       .mockResolvedValueOnce(response(inProgress('paused', 0)))
       .mockResolvedValueOnce(response(inProgress('processing', 40)))
       .mockResolvedValueOnce(response(completedBody(lessonData())));

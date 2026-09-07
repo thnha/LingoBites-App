@@ -14,7 +14,9 @@ export function TextField({hasError = false, style, ...rest}: Props) {
       style={[
         {
           backgroundColor: theme.components.input.background,
-          borderColor: hasError ? theme.colors.danger : theme.components.input.border,
+          borderColor: hasError
+            ? theme.colors.danger
+            : theme.components.input.border,
           borderRadius: theme.components.input.radius,
           borderWidth: 1,
           color: theme.components.input.text,

@@ -17,7 +17,10 @@ type Props = {
   accessibilityLabel?: string;
 };
 
-function medallionColors(theme: ReturnType<typeof useAppTheme>['theme'], tone: MedallionTone) {
+function medallionColors(
+  theme: ReturnType<typeof useAppTheme>['theme'],
+  tone: MedallionTone,
+) {
   switch (tone) {
     case 'coral':
       return {bg: theme.colors.secondarySoft, fg: theme.colors.secondary};
@@ -50,7 +53,8 @@ export function ProfileSettingsRow({
         paddingHorizontal: 16,
         paddingVertical: 14,
         ...theme.shadow.soft,
-      }}>
+      }}
+    >
       <View
         style={{
           alignItems: 'center',
@@ -59,12 +63,19 @@ export function ProfileSettingsRow({
           height: 46,
           justifyContent: 'center',
           width: 46,
-        }}>
+        }}
+      >
         <MaterialIcon color={medallion.fg} name={icon} size={22} />
       </View>
-      <AppText style={{flex: 1, fontSize: 16, fontWeight: '600'}}>{label}</AppText>
+      <AppText style={{flex: 1, fontSize: 16, fontWeight: '600'}}>
+        {label}
+      </AppText>
       {trailing === 'chevron' ? (
-        <MaterialIcon color={theme.colors.text.secondary} name="chevron_right" size={22} />
+        <MaterialIcon
+          color={theme.colors.text.secondary}
+          name="chevron_right"
+          size={22}
+        />
       ) : trailing && 'chip' in trailing ? (
         <Chip label={trailing.chip} tone={trailing.chipTone ?? 'accentSoft'} />
       ) : trailing && 'text' in trailing ? (
@@ -84,7 +95,10 @@ export function ProfileSettingsRow({
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityRole="button"
       onPress={onPress}
-      style={({pressed}) => [{opacity: pressed ? theme.states.pressedOpacity : 1}]}>
+      style={({pressed}) => [
+        {opacity: pressed ? theme.states.pressedOpacity : 1},
+      ]}
+    >
       {row}
     </Pressable>
   );

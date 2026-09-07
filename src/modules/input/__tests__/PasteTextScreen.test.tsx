@@ -68,7 +68,10 @@ describe('PasteTextScreen', () => {
       tree = renderPasteTextScreen();
     });
 
-    const analyzeButton = findPressableByLabel(tree!.root, 'Trích xuất từ vựng');
+    const analyzeButton = findPressableByLabel(
+      tree!.root,
+      'Trích xuất từ vựng',
+    );
 
     await ReactTestRenderer.act(async () => {
       analyzeButton?.props.onPress();
@@ -94,7 +97,10 @@ describe('PasteTextScreen', () => {
       input.props.onChangeText('   ');
     });
 
-    const analyzeButton = findPressableByLabel(tree!.root, 'Trích xuất từ vựng');
+    const analyzeButton = findPressableByLabel(
+      tree!.root,
+      'Trích xuất từ vựng',
+    );
     await ReactTestRenderer.act(async () => {
       analyzeButton?.props.onPress();
       await flushPromises();

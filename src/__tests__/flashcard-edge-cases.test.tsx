@@ -124,7 +124,9 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
 
       // Verify only ONE flashcard was created (deduplication by word)
       const allFlashcards = listFlashcards();
-      const duplicateCards = allFlashcards.filter(card => card.word === 'duplicate');
+      const duplicateCards = allFlashcards.filter(
+        card => card.word === 'duplicate',
+      );
 
       // The system should either:
       // A) Create separate cards (one per lesson) - current behavior
@@ -234,7 +236,9 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
       expect(banner).toBeTruthy();
 
       const bannerText = tree.root.findAll(
-        node => typeof node.props.children === 'string' && node.props.children.includes('còn'),
+        node =>
+          typeof node.props.children === 'string' &&
+          node.props.children.includes('còn'),
       );
       expect(bannerText.length).toBeGreaterThan(0);
       expect(bannerText[0].props.children).toBe('còn 2 thẻ để dành lần ôn sau');
@@ -276,7 +280,9 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
       );
 
       // Banner should NOT appear
-      const banners = tree.root.findAll(node => node.props.testID === 'review-banner');
+      const banners = tree.root.findAll(
+        node => node.props.testID === 'review-banner',
+      );
       expect(banners.length).toBe(0);
     });
   });
@@ -284,11 +290,15 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
   describe('Empty State 06a: Never saved any flashcards', () => {
     it('shows correct empty state when no flashcards exist', async () => {
       const nav = createMockNavigation();
-      const tree = await renderScreen(<DailyReviewScreen navigation={nav as never} />);
+      const tree = await renderScreen(
+        <DailyReviewScreen navigation={nav as never} />,
+      );
 
       // Should show empty state message for never saved
       const emptyMessages = tree.root.findAll(
-        node => node.props.children === 'Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.',
+        node =>
+          node.props.children ===
+          'Lưu flashcard đầu tiên để bắt đầu ôn mỗi ngày.',
       );
 
       expect(emptyMessages.length).toBeGreaterThan(0);
@@ -322,7 +332,9 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
 
       // Review the card
       const nav = createMockNavigation();
-      const tree = await renderScreen(<DailyReviewScreen navigation={nav as never} />);
+      const tree = await renderScreen(
+        <DailyReviewScreen navigation={nav as never} />,
+      );
 
       await revealCard(tree);
       await act(async () => {
@@ -330,10 +342,13 @@ describe('E2E Edge Cases: Flashcard Feature', () => {
       });
 
       // Now render again - should show "all done" state
-      const secondTree = await renderScreen(<DailyReviewScreen navigation={nav as never} />);
+      const secondTree = await renderScreen(
+        <DailyReviewScreen navigation={nav as never} />,
+      );
 
       const doneMessages = secondTree.root.findAll(
-        node => node.props.children === 'Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.',
+        node =>
+          node.props.children === 'Bạn đã ôn xong tất cả thẻ đến hạn hôm nay.',
       );
 
       expect(doneMessages.length).toBeGreaterThan(0);

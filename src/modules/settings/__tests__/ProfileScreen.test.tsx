@@ -136,7 +136,10 @@ describe('ProfileScreen', () => {
       tree = renderProfileScreen();
     });
 
-    const deleteSpeakingBtn = findPressableByLabel(tree!.root, 'Xóa dữ liệu luyện nói & ghi âm');
+    const deleteSpeakingBtn = findPressableByLabel(
+      tree!.root,
+      'Xóa dữ liệu luyện nói & ghi âm',
+    );
 
     await ReactTestRenderer.act(async () => {
       deleteSpeakingBtn?.props.onPress();

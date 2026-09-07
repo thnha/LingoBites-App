@@ -72,9 +72,10 @@ describe('SyncOutboxRepository', () => {
       'event-2',
       'event-3',
     ]);
-    expect(
-      listPendingSyncEvents({limit: 2}).map(event => event.id),
-    ).toEqual(['event-1', 'event-2']);
+    expect(listPendingSyncEvents({limit: 2}).map(event => event.id)).toEqual([
+      'event-1',
+      'event-2',
+    ]);
   });
 
   it('marks only pending ids as synced', () => {
@@ -83,9 +84,7 @@ describe('SyncOutboxRepository', () => {
     enqueueSyncOutboxEvent({id: 'event-3', entityId: 'c', payload});
     markSyncEventsSynced(['event-1', 'event-3'], '2026-09-05T15:00:00.000Z');
 
-    expect(listPendingSyncEvents().map(event => event.id)).toEqual([
-      'event-2',
-    ]);
+    expect(listPendingSyncEvents().map(event => event.id)).toEqual(['event-2']);
     expect(countPendingSyncEvents()).toBe(1);
   });
 

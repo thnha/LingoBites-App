@@ -1,0 +1,11 @@
+.ai-logs/
+.claude/
+.code-review-graph/
+.vibeguard/
+.worktrees/
+android/
+docs/legacy/
+ios/
+node_modules/
+vendor/
+workdir/

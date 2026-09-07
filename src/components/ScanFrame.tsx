@@ -16,7 +16,8 @@ export function ScanFrame({children}: Props) {
         borderWidth: 2,
         overflow: 'hidden',
         padding: theme.spacing.sm,
-      }}>
+      }}
+    >
       {children}
     </View>
   );

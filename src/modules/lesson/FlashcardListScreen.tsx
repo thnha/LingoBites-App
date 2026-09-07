@@ -28,10 +28,7 @@ import {
   unsaveFlashcard,
 } from '../../shared/db/FlashcardRepository';
 import {listLessons} from '../../shared/db/LessonRepository';
-import type {
-  FlashcardRecord,
-  LessonListItem,
-} from '../../shared/db/types';
+import type {FlashcardRecord, LessonListItem} from '../../shared/db/types';
 import {useAppTheme} from '../../theme';
 
 type HomeProps = Partial<
@@ -47,9 +44,9 @@ export function FlashcardListScreen({navigation, route}: Props) {
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
 
   const initialLessonId = route?.params?.lessonId;
-  const [selectedLessonId, setSelectedLessonId] = useState<
-    string | undefined
-  >(initialLessonId);
+  const [selectedLessonId, setSelectedLessonId] = useState<string | undefined>(
+    initialLessonId,
+  );
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -130,7 +127,8 @@ export function FlashcardListScreen({navigation, route}: Props) {
             flex: 1,
             justifyContent: 'center',
             padding: theme.spacing.lg,
-          }}>
+          }}
+        >
           <ErrorCard message="Tính năng ôn tập hiện chưa được bật." />
         </View>
       </AppScreen>
@@ -153,7 +151,8 @@ export function FlashcardListScreen({navigation, route}: Props) {
           <ScrollView
             contentContainerStyle={styles.chipContainer}
             horizontal
-            showsHorizontalScrollIndicator={false}>
+            showsHorizontalScrollIndicator={false}
+          >
             <Chip
               label="Tất cả bài học"
               onPress={() => {
@@ -178,7 +177,10 @@ export function FlashcardListScreen({navigation, route}: Props) {
 
         {/* FlipCard Active View Modal / Card Preview */}
         {activeCard ? (
-          <View style={styles.activeFlipCardSection} testID="active-flipcard-view">
+          <View
+            style={styles.activeFlipCardSection}
+            testID="active-flipcard-view"
+          >
             <View style={styles.activeCardHeader}>
               <AppText color="secondary" variant="label">
                 Đang xem flashcard ({activeCard.word})
@@ -197,7 +199,11 @@ export function FlashcardListScreen({navigation, route}: Props) {
                   <AppText style={styles.wordTitle} variant="h2">
                     {activeCard.word}
                   </AppText>
-                  <AppText color="primary" style={styles.meaningText} variant="h3">
+                  <AppText
+                    color="primary"
+                    style={styles.meaningText}
+                    variant="h3"
+                  >
                     {activeCard.meaningVi}
                   </AppText>
                   {activeCard.example ? (
@@ -273,7 +279,8 @@ export function FlashcardListScreen({navigation, route}: Props) {
                 accessibilityLabel={`Flashcard ${item.word}`}
                 accessibilityRole="button"
                 onPress={() => handleSelectCard(item.id)}
-                testID={`card-item-${item.id}`}>
+                testID={`card-item-${item.id}`}
+              >
                 <AppCard
                   style={StyleSheet.flatten([
                     styles.cardRow,
@@ -283,7 +290,8 @@ export function FlashcardListScreen({navigation, route}: Props) {
                           borderWidth: 2,
                         }
                       : {},
-                  ])}>
+                  ])}
+                >
                   <View style={styles.cardRowLeft}>
                     <View style={styles.wordHeaderRow}>
                       <AppText style={styles.itemWordTitle} variant="h3">
@@ -301,7 +309,11 @@ export function FlashcardListScreen({navigation, route}: Props) {
                     </AppText>
 
                     {/* Lesson Badge - E2 requirement: visually sets apart same word from different lessons */}
-                    <AppText color="muted" style={styles.lessonBadge} testID={`card-lesson-tag-${item.id}`}>
+                    <AppText
+                      color="muted"
+                      style={styles.lessonBadge}
+                      testID={`card-lesson-tag-${item.id}`}
+                    >
                       📖 {lessonTitle}
                     </AppText>
                   </View>

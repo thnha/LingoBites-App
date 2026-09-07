@@ -17,7 +17,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
     describe('RatingControl Buttons', () => {
       it('Remembered button: icon+text on accentSoft background', () => {
         // RatingControl uses accentSoft background with primary color for icon/text
-        const result = checkContrast(theme.colors.primary, theme.colors.accentSoft);
+        const result = checkContrast(
+          theme.colors.primary,
+          theme.colors.accentSoft,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);
@@ -26,7 +29,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Forgot button: icon+text on surface background', () => {
         // Forgot button uses surface background with text.secondary
-        const result = checkContrast(theme.colors.text.secondary, theme.colors.surface);
+        const result = checkContrast(
+          theme.colors.text.secondary,
+          theme.colors.surface,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);
@@ -35,7 +41,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Skip button: icon+text on surface background', () => {
         // Skip button uses surface background with text.secondary
-        const result = checkContrast(theme.colors.text.secondary, theme.colors.surface);
+        const result = checkContrast(
+          theme.colors.text.secondary,
+          theme.colors.surface,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);
@@ -44,7 +53,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Remembered button border on accentSoft background', () => {
         // Border uses primary color on accentSoft background
-        const result = checkContrast(theme.colors.primary, theme.colors.accentSoft);
+        const result = checkContrast(
+          theme.colors.primary,
+          theme.colors.accentSoft,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.ratio).toBeGreaterThanOrEqual(3); // Borders need 3:1 for WCAG AA
@@ -62,7 +74,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
     describe('Banner Text', () => {
       it('Info variant: text on accentSoft background', () => {
         // Banner info variant uses text.secondary on accentSoft background
-        const result = checkContrast(theme.colors.text.secondary, theme.colors.accentSoft);
+        const result = checkContrast(
+          theme.colors.text.secondary,
+          theme.colors.accentSoft,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);
@@ -71,7 +86,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Info variant: icon on accentSoft background', () => {
         // Banner info variant uses primary color for icon on accentSoft background
-        const result = checkContrast(theme.colors.primary, theme.colors.accentSoft);
+        const result = checkContrast(
+          theme.colors.primary,
+          theme.colors.accentSoft,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.ratio).toBeGreaterThanOrEqual(3); // Icons need 3:1 for WCAG AA
@@ -79,7 +97,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Neutral variant: text on surfaceMuted background', () => {
         // Banner neutral variant uses text.secondary on surfaceMuted background
-        const result = checkContrast(theme.colors.text.secondary, theme.colors.surfaceMuted);
+        const result = checkContrast(
+          theme.colors.text.secondary,
+          theme.colors.surfaceMuted,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);
@@ -88,7 +109,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Neutral variant: icon on surfaceMuted background', () => {
         // Banner neutral variant uses text.secondary for icon on surfaceMuted background
-        const result = checkContrast(theme.colors.text.secondary, theme.colors.surfaceMuted);
+        const result = checkContrast(
+          theme.colors.text.secondary,
+          theme.colors.surfaceMuted,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.ratio).toBeGreaterThanOrEqual(3); // Icons need 3:1 for WCAG AA
@@ -110,7 +134,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Secondary text (meaning) on card background', () => {
         // FlipCard meaning uses primary color on card background
-        const result = checkContrast(theme.colors.primary, theme.components.card.background);
+        const result = checkContrast(
+          theme.colors.primary,
+          theme.components.card.background,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);
@@ -119,7 +146,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Muted text (hint) on card background', () => {
         // FlipCard hint uses text.muted on card background
-        const result = checkContrast(theme.colors.text.muted, theme.components.card.background);
+        const result = checkContrast(
+          theme.colors.text.muted,
+          theme.components.card.background,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);
@@ -128,7 +158,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Border on background when flipped', () => {
         // FlipCard flipped state uses primary border on card background
-        const result = checkContrast(theme.colors.primary, theme.components.card.background);
+        const result = checkContrast(
+          theme.colors.primary,
+          theme.components.card.background,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.ratio).toBeGreaterThanOrEqual(3); // Borders need 3:1 for WCAG AA
@@ -136,7 +169,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
 
       it('Border on background when not flipped', () => {
         // FlipCard normal state uses border color on card background
-        const result = checkContrast(theme.colors.border, theme.components.card.background);
+        const result = checkContrast(
+          theme.colors.border,
+          theme.components.card.background,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.ratio).toBeGreaterThanOrEqual(3); // Borders need 3:1 for WCAG AA
@@ -146,7 +182,10 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
     describe('Summary Screen', () => {
       it('Summary title on background', () => {
         // Summary screen title uses text.primary on background
-        const result = checkContrast(theme.colors.text.primary, theme.colors.background);
+        const result = checkContrast(
+          theme.colors.text.primary,
+          theme.colors.background,
+        );
 
         expect(result.passes).toBe(true);
         expect(result.level).toMatch(/^(AA|AAA)$/);

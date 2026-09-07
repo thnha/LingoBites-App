@@ -23,7 +23,11 @@ describe('every registered theme renders App* components', () => {
                   <AppText>body</AppText>
                 </AppCard>
                 <AppButton title="Primary" onPress={() => {}} />
-                <AppButton title="Secondary" variant="secondary" onPress={() => {}} />
+                <AppButton
+                  title="Secondary"
+                  variant="secondary"
+                  onPress={() => {}}
+                />
               </>
             </AppThemeProvider>
           </FeatureFlagProvider>,

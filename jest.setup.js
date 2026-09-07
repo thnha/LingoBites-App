@@ -52,7 +52,9 @@ jest.mock('react-native-image-picker', () => ({
   launchImageLibrary: jest.fn(),
 }));
 
-jest.mock('react-native-quick-sqlite', () => require('./test-utils/sqliteMock'));
+jest.mock('react-native-quick-sqlite', () =>
+  require('./test-utils/sqliteMock'),
+);
 
 // Native device-integration modules (SETE-90). Each adapter injects its own
 // fake in its unit tests; these global mocks only keep imports safe under Jest
@@ -75,8 +77,8 @@ jest.mock('@notifee/react-native', () => {
       cancelTriggerNotification: jest.fn(),
     },
     AuthorizationStatus,
-    AndroidImportance: { DEFAULT: 3, HIGH: 4 },
-    TriggerType: { TIMESTAMP: 0 },
+    AndroidImportance: {DEFAULT: 3, HIGH: 4},
+    TriggerType: {TIMESTAMP: 0},
   };
 });
 
@@ -112,7 +114,7 @@ jest.mock('react-native-sound', () => {
 
 jest.mock('react-native-audio-recorder-player', () => {
   class MockAudioRecorderPlayer {
-    startRecorder = jest.fn(async (uri) => uri ?? '/mock/recording.m4a');
+    startRecorder = jest.fn(async uri => uri ?? '/mock/recording.m4a');
     stopRecorder = jest.fn(async () => '/mock/recording.m4a');
     startPlayer = jest.fn(async () => '/mock/recording.m4a');
     stopPlayer = jest.fn(async () => '/mock/recording.m4a');

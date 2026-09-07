@@ -25,7 +25,9 @@ export function evaluateCheckOutcome(scorePercentage: number): CheckOutcome {
   return 'not_yet';
 }
 
-export function evaluateCheck(answers: Array<{correct: boolean}>): CheckEvaluationResult {
+export function evaluateCheck(
+  answers: Array<{correct: boolean}>,
+): CheckEvaluationResult {
   const totalCount = answers.length;
   if (totalCount === 0) {
     return {
@@ -46,10 +48,12 @@ export function evaluateCheck(answers: Array<{correct: boolean}>): CheckEvaluati
       feedbackVi = 'Xuất sắc! Bạn đã đạt yêu cầu bài kiểm tra.';
       break;
     case 'conditional_pass':
-      feedbackVi = 'Đạt yêu cầu có điều kiện. Hãy ôn lại một số điểm kiến thức còn yếu.';
+      feedbackVi =
+        'Đạt yêu cầu có điều kiện. Hãy ôn lại một số điểm kiến thức còn yếu.';
       break;
     case 'not_yet':
-      feedbackVi = 'Chưa đạt. Hãy thực hành lại bài học tiền đề trước khi thử lại.';
+      feedbackVi =
+        'Chưa đạt. Hãy thực hành lại bài học tiền đề trước khi thử lại.';
       break;
   }
 

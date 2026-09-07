@@ -1,20 +1,20 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppText } from '../../components/AppText';
-import type { HandoffIconName } from '../../components/icons/iconRegistry';
-import { MaterialIcon } from '../../components/MaterialIcon';
-import { useAppTheme } from '../../theme';
+import {Pressable, View} from 'react-native';
+import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {AppText} from '../../components/AppText';
+import type {HandoffIconName} from '../../components/icons/iconRegistry';
+import {MaterialIcon} from '../../components/MaterialIcon';
+import {useAppTheme} from '../../theme';
 
-const TAB_ITEMS: Record<string, { label: string; icon: HandoffIconName }> = {
-  Home: { label: 'Trang chủ', icon: 'home' },
-  Lessons: { label: 'Bài học', icon: 'school' },
-  Profile: { label: 'Hồ sơ', icon: 'person' },
+const TAB_ITEMS: Record<string, {label: string; icon: HandoffIconName}> = {
+  Home: {label: 'Trang chủ', icon: 'home'},
+  Lessons: {label: 'Bài học', icon: 'school'},
+  Profile: {label: 'Hồ sơ', icon: 'person'},
 };
 
-export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-  const { theme } = useAppTheme();
+export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
+  const {theme} = useAppTheme();
   const insets = useSafeAreaInsets();
 
   return (
@@ -27,7 +27,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         paddingHorizontal: 12,
         paddingTop: 10,
         shadowColor: theme.colors.primary,
-        shadowOffset: { width: 0, height: -6 },
+        shadowOffset: {width: 0, height: -6},
         shadowOpacity: 0.08,
         shadowRadius: 24,
         elevation: 12,
@@ -45,7 +45,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             key={route.key}
             accessibilityLabel={item.label}
             accessibilityRole="button"
-            accessibilityState={{ selected: focused }}
+            accessibilityState={{selected: focused}}
             onPress={() => {
               const event = navigation.emit({
                 type: 'tabPress',

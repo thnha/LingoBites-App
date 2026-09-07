@@ -19,7 +19,8 @@ export function ErrorCard({message, onRetry, retryLabel = 'Thử lại'}: Props)
         borderRadius: theme.radius.lg,
         gap: theme.spacing.sm,
         padding: theme.spacing.lg,
-      }}>
+      }}
+    >
       <AppText color="danger">{message}</AppText>
       {onRetry ? (
         <AppButton title={retryLabel} variant="secondary" onPress={onRetry} />

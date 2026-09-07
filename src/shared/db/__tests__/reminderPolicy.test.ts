@@ -3,10 +3,7 @@ import {
   REVIEW_REMINDER_BODY,
   REVIEW_REMINDER_TITLE,
 } from '../reminderPolicy';
-import type {
-  PendingReminder,
-  UpcomingReviewReminder,
-} from '../reminderPolicy';
+import type {PendingReminder, UpcomingReviewReminder} from '../reminderPolicy';
 
 const card = (cardId: string, dueAt: string): UpcomingReviewReminder => ({
   cardId,
@@ -28,7 +25,7 @@ describe('reminderPolicy', () => {
     const plan = computeReminderPlan({
       upcoming: [card('a', '2026-09-06T08:00:00.000Z')],
       pending: [
-        { cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z' } as PendingReminder,
+        {cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z'} as PendingReminder,
       ],
     });
     expect(plan.toSchedule).toEqual([]);
@@ -39,8 +36,8 @@ describe('reminderPolicy', () => {
     const plan = computeReminderPlan({
       upcoming: [],
       pending: [
-        { cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z' } as PendingReminder,
-        { cardId: 'b', dueAt: '2026-09-06T08:00:00.000Z' } as PendingReminder,
+        {cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z'} as PendingReminder,
+        {cardId: 'b', dueAt: '2026-09-06T08:00:00.000Z'} as PendingReminder,
       ],
     });
     expect(plan.toSchedule).toEqual([]);
@@ -50,7 +47,7 @@ describe('reminderPolicy', () => {
   it('reschedules a card whose due time changed (stale reminder)', () => {
     const plan = computeReminderPlan({
       upcoming: [card('a', '2026-09-07T08:00:00.000Z')],
-      pending: [{ cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z' }],
+      pending: [{cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z'}],
     });
     expect(plan.toSchedule).toEqual([card('a', '2026-09-07T08:00:00.000Z')]);
     expect(plan.toCancel).toEqual(['a']);
@@ -63,9 +60,9 @@ describe('reminderPolicy', () => {
         card('b', '2026-09-07T08:00:00.000Z'),
       ],
       pending: [
-        { cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z' },
-        { cardId: 'b', dueAt: '2026-09-06T08:00:00.000Z' }, // stale due time
-        { cardId: 'c', dueAt: '2026-09-06T08:00:00.000Z' }, // card no longer upcoming
+        {cardId: 'a', dueAt: '2026-09-06T08:00:00.000Z'},
+        {cardId: 'b', dueAt: '2026-09-06T08:00:00.000Z'}, // stale due time
+        {cardId: 'c', dueAt: '2026-09-06T08:00:00.000Z'}, // card no longer upcoming
       ],
     });
     expect(plan.toSchedule).toEqual([card('b', '2026-09-07T08:00:00.000Z')]);

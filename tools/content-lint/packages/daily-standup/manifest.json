@@ -98,10 +98,7 @@
       "title_en": "Weekly Check: Introduction & Onboarding",
       "title_vi": "Kiểm tra tuần: Giới thiệu & Hội nhập",
       "instructions_vi": "Đánh giá khả năng giới thiệu bản thân và môi trường công nghệ.",
-      "covered_lesson_slugs": [
-        "self-introduction",
-        "team-onboarding"
-      ],
+      "covered_lesson_slugs": ["self-introduction", "team-onboarding"],
       "items": [
         {
           "id": "d7129c29a307852a",
@@ -109,9 +106,7 @@
           "prompt_en": "Introduce your role as a full-stack developer working with React and Node.js.",
           "prompt_vi": "Giới thiệu vai trò lập trình viên full-stack của bạn với React và Node.js.",
           "rubric_vi": "Phát âm rõ ràng các công nghệ và sử dụng đúng mẫu câu giới thiệu.",
-          "target_chunk_ids": [
-            "7e2a92551f811dce"
-          ]
+          "target_chunk_ids": ["7e2a92551f811dce"]
         }
       ]
     },
@@ -138,9 +133,7 @@
           "unseen_prompt_en": "Your Tech Lead explained a complex caching policy rapidly. Politely request them to slow down and post the details in Slack.",
           "unseen_prompt_vi": "Tech Lead giải thích chính sách lưu đệm nhanh. Hãy lịch sự nhờ họ nói chậm lại và đăng chi tiết lên Slack.",
           "rubric_vi": "Sử dụng cấu trúc câu hỏi lịch sự chưa học vẹt.",
-          "target_chunk_ids": [
-            "6941415dbd7e58ec"
-          ]
+          "target_chunk_ids": ["6941415dbd7e58ec"]
         }
       ]
     }
@@ -150,34 +143,22 @@
       {
         "stage": 1,
         "name_vi": "Nền tảng & Giao tiếp ban đầu",
-        "unit_slugs": [
-          "introduction",
-          "clarification"
-        ]
+        "unit_slugs": ["introduction", "clarification"]
       },
       {
         "stage": 2,
         "name_vi": "Làm việc nhóm & Họp hàng ngày",
-        "unit_slugs": [
-          "team-roles",
-          "daily-standup"
-        ]
+        "unit_slugs": ["team-roles", "daily-standup"]
       },
       {
         "stage": 3,
         "name_vi": "Mô tả hệ thống & Báo cáo sự cố",
-        "unit_slugs": [
-          "app-description",
-          "bug-report"
-        ]
+        "unit_slugs": ["app-description", "bug-report"]
       },
       {
         "stage": 4,
         "name_vi": "Hồ sơ cá nhân & Phỏng vấn kỹ thuật",
-        "unit_slugs": [
-          "career-profile",
-          "interview-practice"
-        ]
+        "unit_slugs": ["career-profile", "interview-practice"]
       }
     ]
   }

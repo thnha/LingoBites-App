@@ -1,19 +1,19 @@
-import { Platform } from 'react-native';
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../../../shared/db/constants';
+import {Platform} from 'react-native';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../../../shared/db/constants';
 import {
   saveFlashcard,
   recordFlashcardRating,
 } from '../../../shared/db/FlashcardRepository';
-import { validFullOutput } from '../../../shared/fixtures';
-import { configureReminderScheduler, noopReminderScheduler } from '../reminderService';
+import {validFullOutput} from '../../../shared/fixtures';
 import {
-  AuthorizationStatus,
-  TriggerType,
-} from '@notifee/react-native';
-import type { NotificationSettings } from '@notifee/react-native';
+  configureReminderScheduler,
+  noopReminderScheduler,
+} from '../reminderService';
+import {AuthorizationStatus, TriggerType} from '@notifee/react-native';
+import type {NotificationSettings} from '@notifee/react-native';
 import {
   createNativeReminderScheduler,
   configureNativeReminderNotifications,
@@ -21,18 +21,17 @@ import {
   permissionStatusFromSettings,
   shouldRequestReminderPermission,
 } from '../nativeReminderScheduler';
-import type { NotifeeLike } from '../nativeReminderScheduler';
-import type { PendingReminder } from '../../../shared/db/reminderPolicy';
+import type {NotifeeLike} from '../nativeReminderScheduler';
+import type {PendingReminder} from '../../../shared/db/reminderPolicy';
 
 const NOW = '2026-09-02T09:00:00.000Z';
 const FIXED_NOW_MS = () => Date.parse('2026-09-02T00:00:00.000Z');
 
-function settingsWith(
-  authorizationStatus: number,
-): NotificationSettings {
+function settingsWith(authorizationStatus: number): NotificationSettings {
   return {
-    authorizationStatus: authorizationStatus as NotificationSettings['authorizationStatus'],
-    ios: { authorizationStatus: authorizationStatus as never },
+    authorizationStatus:
+      authorizationStatus as NotificationSettings['authorizationStatus'],
+    ios: {authorizationStatus: authorizationStatus as never},
     android: {},
     web: {},
   } as unknown as NotificationSettings;
@@ -54,7 +53,8 @@ function createFakeNotifee(overrides: Partial<NotifeeLike> = {}): {
     channels: [] as unknown[],
   };
   const api: NotifeeLike = {
-    getNotificationSettings: async () => settingsWith(AuthorizationStatus.AUTHORIZED),
+    getNotificationSettings: async () =>
+      settingsWith(AuthorizationStatus.AUTHORIZED),
     requestPermission: async () => settingsWith(AuthorizationStatus.AUTHORIZED),
     createChannel: async channel => {
       calls.channels.push(channel);
@@ -62,7 +62,7 @@ function createFakeNotifee(overrides: Partial<NotifeeLike> = {}): {
     },
     getTriggerNotifications: async () => [],
     createTriggerNotification: async (notification, trigger) => {
-      calls.scheduled.push({ notification, trigger });
+      calls.scheduled.push({notification, trigger});
       return notification.id ?? 'mock-id';
     },
     cancelTriggerNotification: async id => {
@@ -70,7 +70,7 @@ function createFakeNotifee(overrides: Partial<NotifeeLike> = {}): {
     },
     ...overrides,
   };
-  return { api, calls };
+  return {api, calls};
 }
 
 /** Saves one flashcard whose next review then sits in the future at NOW. */
@@ -119,7 +119,9 @@ describe('shouldRequestReminderPermission', () => {
   });
 
   it('only asks when a reminder would actually do something', () => {
-    expect(shouldRequestReminderPermission('not-determined', false)).toBe(false);
+    expect(shouldRequestReminderPermission('not-determined', false)).toBe(
+      false,
+    );
     expect(shouldRequestReminderPermission('not-determined', true)).toBe(true);
   });
 
@@ -129,7 +131,9 @@ describe('shouldRequestReminderPermission', () => {
 
   it('re-asks after denial on Android where denied also means not asked yet', () => {
     expect(
-      shouldRequestReminderPermission('denied', true, { requestAfterDenied: true }),
+      shouldRequestReminderPermission('denied', true, {
+        requestAfterDenied: true,
+      }),
     ).toBe(true);
   });
 });
@@ -140,8 +144,8 @@ describe('createNativeReminderScheduler', () => {
   });
 
   it('schedules a future reminder through notifee and mirrors it in pending', () => {
-    const { api, calls } = createFakeNotifee();
-    const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
+    const {api, calls} = createFakeNotifee();
+    const scheduler = createNativeReminderScheduler(api, {now: FIXED_NOW_MS});
 
     scheduler.schedule({
       cardId: 'card-1',
@@ -155,10 +159,10 @@ describe('createNativeReminderScheduler', () => {
         id: string;
         title: string;
         body: string;
-        data: { kind: string; cardId: string; dueAt: string };
-        android: { channelId: string };
+        data: {kind: string; cardId: string; dueAt: string};
+        android: {channelId: string};
       };
-      trigger: { type: number; timestamp: number };
+      trigger: {type: number; timestamp: number};
     };
     expect(scheduled.notification.id).toBe('card-1');
     expect(scheduled.notification.title).toContain('ôn tập');
@@ -173,25 +177,33 @@ describe('createNativeReminderScheduler', () => {
     );
 
     expect(scheduler.listPending()).toEqual([
-      { cardId: 'card-1', dueAt: '2026-09-05T08:00:00.000Z' },
+      {cardId: 'card-1', dueAt: '2026-09-05T08:00:00.000Z'},
     ]);
   });
 
   it('never schedules a past or invalid due instant', () => {
-    const { api, calls } = createFakeNotifee();
-    const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
+    const {api, calls} = createFakeNotifee();
+    const scheduler = createNativeReminderScheduler(api, {now: FIXED_NOW_MS});
 
-    scheduler.schedule({ cardId: 'past', word: 'w', dueAt: '2020-01-01T00:00:00.000Z' });
-    scheduler.schedule({ cardId: 'garbage', word: 'w', dueAt: 'not-a-date' });
+    scheduler.schedule({
+      cardId: 'past',
+      word: 'w',
+      dueAt: '2020-01-01T00:00:00.000Z',
+    });
+    scheduler.schedule({cardId: 'garbage', word: 'w', dueAt: 'not-a-date'});
 
     expect(calls.scheduled).toHaveLength(0);
     expect(scheduler.listPending()).toEqual([]);
   });
 
   it('cancels a card from pending and from the OS', () => {
-    const { api, calls } = createFakeNotifee();
-    const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
-    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-05T08:00:00.000Z' });
+    const {api, calls} = createFakeNotifee();
+    const scheduler = createNativeReminderScheduler(api, {now: FIXED_NOW_MS});
+    scheduler.schedule({
+      cardId: 'card-1',
+      word: 'hello',
+      dueAt: '2026-09-05T08:00:00.000Z',
+    });
 
     scheduler.cancel('card-1');
 
@@ -200,14 +212,18 @@ describe('createNativeReminderScheduler', () => {
   });
 
   it('rolls the shadow back when the OS rejects a schedule', async () => {
-    const { api } = createFakeNotifee({
+    const {api} = createFakeNotifee({
       createTriggerNotification: async () => {
         throw new Error('not linked');
       },
     });
-    const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
+    const scheduler = createNativeReminderScheduler(api, {now: FIXED_NOW_MS});
 
-    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-05T08:00:00.000Z' });
+    scheduler.schedule({
+      cardId: 'card-1',
+      word: 'hello',
+      dueAt: '2026-09-05T08:00:00.000Z',
+    });
     expect(scheduler.listPending()).toHaveLength(1);
 
     await flushMicrotasks();
@@ -215,52 +231,65 @@ describe('createNativeReminderScheduler', () => {
   });
 
   it('refreshes the shadow from the OS pending set (data or trigger timestamp)', async () => {
-    const { api } = createFakeNotifee({
+    const {api} = createFakeNotifee({
       getTriggerNotifications: async () =>
         [
           {
             notification: {
               id: 'from-data',
-              data: { dueAt: '2026-09-05T08:00:00.000Z' },
+              data: {dueAt: '2026-09-05T08:00:00.000Z'},
             },
-            trigger: { type: TriggerType.TIMESTAMP, timestamp: Date.parse('2026-09-04T08:00:00.000Z') },
+            trigger: {
+              type: TriggerType.TIMESTAMP,
+              timestamp: Date.parse('2026-09-04T08:00:00.000Z'),
+            },
           },
           {
-            notification: { id: 'from-trigger' },
-            trigger: { type: TriggerType.TIMESTAMP, timestamp: Date.parse('2026-09-05T08:00:00.000Z') },
+            notification: {id: 'from-trigger'},
+            trigger: {
+              type: TriggerType.TIMESTAMP,
+              timestamp: Date.parse('2026-09-05T08:00:00.000Z'),
+            },
           },
           {
-            notification: { id: 'no-timestamp' },
-            trigger: { type: 3 },
+            notification: {id: 'no-timestamp'},
+            trigger: {type: 3},
           },
         ] as unknown as Awaited<
           ReturnType<NotifeeLike['getTriggerNotifications']>
         >,
     });
-    const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
+    const scheduler = createNativeReminderScheduler(api, {now: FIXED_NOW_MS});
 
     await scheduler.refreshPending();
 
     const expected: PendingReminder[] = [
-      { cardId: 'from-data', dueAt: '2026-09-05T08:00:00.000Z' },
-      { cardId: 'from-trigger', dueAt: new Date(Date.parse('2026-09-05T08:00:00.000Z')).toISOString() },
+      {cardId: 'from-data', dueAt: '2026-09-05T08:00:00.000Z'},
+      {
+        cardId: 'from-trigger',
+        dueAt: new Date(Date.parse('2026-09-05T08:00:00.000Z')).toISOString(),
+      },
     ];
     expect(scheduler.listPending()).toEqual(expected);
   });
 
   it('keeps the current shadow when the OS pending query fails', async () => {
-    const { api } = createFakeNotifee({
+    const {api} = createFakeNotifee({
       getTriggerNotifications: async () => {
         throw new Error('unavailable');
       },
     });
-    const scheduler = createNativeReminderScheduler(api, { now: FIXED_NOW_MS });
-    scheduler.schedule({ cardId: 'card-1', word: 'hello', dueAt: '2026-09-05T08:00:00.000Z' });
+    const scheduler = createNativeReminderScheduler(api, {now: FIXED_NOW_MS});
+    scheduler.schedule({
+      cardId: 'card-1',
+      word: 'hello',
+      dueAt: '2026-09-05T08:00:00.000Z',
+    });
 
     await scheduler.refreshPending();
 
     expect(scheduler.listPending()).toEqual([
-      { cardId: 'card-1', dueAt: '2026-09-05T08:00:00.000Z' },
+      {cardId: 'card-1', dueAt: '2026-09-05T08:00:00.000Z'},
     ]);
   });
 });
@@ -268,21 +297,23 @@ describe('createNativeReminderScheduler', () => {
 describe('configureNativeReminderNotifications', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
     configureReminderScheduler(noopReminderScheduler);
   });
 
   it('installs the native scheduler and schedules due reviews when granted', async () => {
     const cardId = seedFlashcardDueInFuture();
-    const { api, calls } = createFakeNotifee();
+    const {api, calls} = createFakeNotifee();
 
-    const status = await configureNativeReminderNotifications(api, { now: () => NOW });
+    const status = await configureNativeReminderNotifications(api, {
+      now: () => NOW,
+    });
 
     expect(status).toBe('granted');
     // Reconcile after install schedules the one future reminder.
     expect(calls.scheduled).toHaveLength(1);
     const scheduled = calls.scheduled[0] as {
-      notification: { id: string; data: { dueAt: string } };
+      notification: {id: string; data: {dueAt: string}};
     };
     expect(scheduled.notification.id).toBe(cardId);
     expect(scheduled.notification.data.dueAt).toBe('2026-09-05T08:00:00.000Z');
@@ -293,12 +324,12 @@ describe('configureNativeReminderNotifications', () => {
     Platform.OS = 'android' as typeof Platform.OS;
     try {
       seedFlashcardDueInFuture();
-      const { api, calls } = createFakeNotifee();
+      const {api, calls} = createFakeNotifee();
 
-      await configureNativeReminderNotifications(api, { now: () => NOW });
+      await configureNativeReminderNotifications(api, {now: () => NOW});
 
       expect(calls.channels).toHaveLength(1);
-      expect(calls.channels[0]).toMatchObject({ id: GOLDEN_HOUR_CHANNEL_ID });
+      expect(calls.channels[0]).toMatchObject({id: GOLDEN_HOUR_CHANNEL_ID});
     } finally {
       Platform.OS = originalOs;
     }
@@ -306,7 +337,7 @@ describe('configureNativeReminderNotifications', () => {
 
   it('asks for permission when undetermined and a review is due, then installs', async () => {
     seedFlashcardDueInFuture();
-    const { api, calls } = createFakeNotifee({
+    const {api, calls} = createFakeNotifee({
       getNotificationSettings: async () =>
         settingsWith(AuthorizationStatus.NOT_DETERMINED),
       requestPermission: async () => {
@@ -315,7 +346,9 @@ describe('configureNativeReminderNotifications', () => {
       },
     });
 
-    const status = await configureNativeReminderNotifications(api, { now: () => NOW });
+    const status = await configureNativeReminderNotifications(api, {
+      now: () => NOW,
+    });
 
     expect(calls.requested).toBe(1);
     expect(status).toBe('granted');
@@ -323,7 +356,7 @@ describe('configureNativeReminderNotifications', () => {
   });
 
   it('does not prompt when nothing is due yet (no upcoming reminder)', async () => {
-    const { api, calls } = createFakeNotifee({
+    const {api, calls} = createFakeNotifee({
       getNotificationSettings: async () =>
         settingsWith(AuthorizationStatus.NOT_DETERMINED),
       requestPermission: async () => {
@@ -332,7 +365,9 @@ describe('configureNativeReminderNotifications', () => {
       },
     });
 
-    const status = await configureNativeReminderNotifications(api, { now: () => NOW });
+    const status = await configureNativeReminderNotifications(api, {
+      now: () => NOW,
+    });
 
     expect(status).toBe('not-determined');
     expect(calls.requested).toBe(0);
@@ -341,12 +376,15 @@ describe('configureNativeReminderNotifications', () => {
 
   it('stays on the no-op scheduler when permission stays denied', async () => {
     seedFlashcardDueInFuture();
-    const { api, calls } = createFakeNotifee({
-      getNotificationSettings: async () => settingsWith(AuthorizationStatus.DENIED),
+    const {api, calls} = createFakeNotifee({
+      getNotificationSettings: async () =>
+        settingsWith(AuthorizationStatus.DENIED),
       requestPermission: async () => settingsWith(AuthorizationStatus.DENIED),
     });
 
-    const status = await configureNativeReminderNotifications(api, { now: () => NOW });
+    const status = await configureNativeReminderNotifications(api, {
+      now: () => NOW,
+    });
 
     expect(status).toBe('denied');
     expect(calls.scheduled).toHaveLength(0);
@@ -354,14 +392,14 @@ describe('configureNativeReminderNotifications', () => {
 
   it('returns unavailable without throwing when the native module is missing', async () => {
     seedFlashcardDueInFuture();
-    const { api } = createFakeNotifee({
+    const {api} = createFakeNotifee({
       getNotificationSettings: async () => {
         throw new Error('NativeModule: null');
       },
     });
 
     await expect(
-      configureNativeReminderNotifications(api, { now: () => NOW }),
+      configureNativeReminderNotifications(api, {now: () => NOW}),
     ).resolves.toBe('unavailable');
   });
 });

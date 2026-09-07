@@ -21,10 +21,7 @@ import {
   getMostRecentInactivePackage,
   getPackageById,
 } from '../../../shared/db/ContentPackageRepository';
-import {
-  constantTimeEqualHex,
-  sha256Hex,
-} from './packageChecksum';
+import {constantTimeEqualHex, sha256Hex} from './packageChecksum';
 import {
   lintContentPackage,
   validateLessonShape,
@@ -113,7 +110,9 @@ const REQUIRED_MANIFEST_PATH = 'manifest.json';
 
 function loadManifestFromExtracted(
   entries: ReadonlyMap<string, Uint8Array>,
-): {ok: true; manifest: ContentPackageManifest; manifestBytes: Uint8Array} | {ok: false; error: ContentPackageImportError} {
+):
+  | {ok: true; manifest: ContentPackageManifest; manifestBytes: Uint8Array}
+  | {ok: false; error: ContentPackageImportError} {
   const manifestBytes = entries.get(REQUIRED_MANIFEST_PATH);
   if (!manifestBytes) {
     return {
@@ -152,7 +151,9 @@ function loadManifestFromExtracted(
 function loadLessonsFromExtracted(
   manifest: ContentPackageManifest,
   entries: ReadonlyMap<string, Uint8Array>,
-): {ok: true; lessons: ContentLesson[]} | {ok: false; error: ContentPackageImportError} {
+):
+  | {ok: true; lessons: ContentLesson[]}
+  | {ok: false; error: ContentPackageImportError} {
   const lessons: ContentLesson[] = [];
   for (const entry of manifest.lessons) {
     const fileBytes = entries.get(entry.file);
@@ -173,7 +174,9 @@ function loadLessonsFromExtracted(
         ok: false,
         error: makeError(
           'INVALID_LESSON',
-          `lesson file "${entry.file}" is not valid JSON: ${(e as Error).message}`,
+          `lesson file "${entry.file}" is not valid JSON: ${
+            (e as Error).message
+          }`,
         ),
       };
     }
@@ -183,7 +186,9 @@ function loadLessonsFromExtracted(
         ok: false,
         error: makeError(
           'INVALID_LESSON',
-          `lesson file "${entry.file}" failed validation: ${validation.errors.join('; ')}`,
+          `lesson file "${
+            entry.file
+          }" failed validation: ${validation.errors.join('; ')}`,
         ),
       };
     }
@@ -202,11 +207,16 @@ type InsertPlan = {
   previousActiveId: string | null;
 };
 
-function insertPlanIntoDb(plan: InsertPlan, getDb: typeof getDatabase): {
-  ok: true;
-  lessonCount: number;
-  itemCount: number;
-} | {ok: false; error: ContentPackageImportError} {
+function insertPlanIntoDb(
+  plan: InsertPlan,
+  getDb: typeof getDatabase,
+):
+  | {
+      ok: true;
+      lessonCount: number;
+      itemCount: number;
+    }
+  | {ok: false; error: ContentPackageImportError} {
   const db = getDb();
   try {
     withTransaction(db, () => {
@@ -369,7 +379,10 @@ function insertPlanIntoDb(plan: InsertPlan, getDb: typeof getDatabase): {
   } catch (e) {
     return {
       ok: false,
-      error: makeError('DB_ERROR', `Failed to insert content rows: ${(e as Error).message}`),
+      error: makeError(
+        'DB_ERROR',
+        `Failed to insert content rows: ${(e as Error).message}`,
+      ),
     };
   }
   return {
@@ -411,7 +424,9 @@ export async function importContentPackage(
   reportProgress(start);
 
   const previous = getActivePackage();
-  const failureShell = (error: ContentPackageImportError): ContentPackageImportResult => {
+  const failureShell = (
+    error: ContentPackageImportError,
+  ): ContentPackageImportResult => {
     const failure = {
       ok: false as const,
       error,
@@ -489,8 +504,8 @@ export async function importContentPackage(
     typeof manifestAny.expected_sha256 === 'string'
       ? manifestAny.expected_sha256
       : typeof manifestAny.sha256 === 'string'
-        ? manifestAny.sha256
-        : null;
+      ? manifestAny.sha256
+      : null;
   if (
     expectedSha &&
     expectedSha.length === SHA256_HEX_LENGTH &&
@@ -514,7 +529,10 @@ export async function importContentPackage(
 
   // 5) Lint
   reportProgress(buildProgress('validating', null, 'Validating content…'));
-  const lint = lintContentPackage(manifestResult.manifest, lessonsResult.lessons);
+  const lint = lintContentPackage(
+    manifestResult.manifest,
+    lessonsResult.lessons,
+  );
   if (!lint.ok) {
     return failureShell(
       makeError(
@@ -531,7 +549,10 @@ export async function importContentPackage(
   const insertPlan: InsertPlan = {
     manifest: manifestResult.manifest,
     lessons: lessonsResult.lessons,
-    packageId: `pkg-${manifestResult.manifest.package_id}-${importedAt.replace(/[:.]/g, '-')}`,
+    packageId: `pkg-${manifestResult.manifest.package_id}-${importedAt.replace(
+      /[:.]/g,
+      '-',
+    )}`,
     importedAt,
     sourceUrl,
     sha256: computedSha,
@@ -543,9 +564,7 @@ export async function importContentPackage(
   }
 
   // 7) Atomic activation swap
-  reportProgress(
-    buildProgress('activating', null, 'Activating new package…'),
-  );
+  reportProgress(buildProgress('activating', null, 'Activating new package…'));
   try {
     const db = getDb();
     withTransaction(db, () => {

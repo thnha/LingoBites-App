@@ -6,17 +6,12 @@
   "title_vi": "Hội nhập nhóm & Thiết lập dự án",
   "blurb_vi": "Học các câu hỏi và câu nói cần thiết trong ngày đầu tiên hội nhập dự án phần mềm.",
   "level": "A1",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Hỏi và trả lời về quy trình onboarding, mã nguồn và tài liệu dự án.",
   "situation_vi": "Ngày đầu tiên nhận tài liệu và cài đặt môi trường phát triển.",
   "learner_role_vi": "Kỹ sư phần mềm mới nhận nhiệm vụ.",
-  "prerequisite_lesson_slugs": [
-    "self-introduction"
-  ],
+  "prerequisite_lesson_slugs": ["self-introduction"],
   "pronunciation_focus_vi": "Phát âm đúng các từ thuật ngữ: repository, documentation, setup, access.",
   "final_speaking_task_vi": "Hỏi nhóm về quyền truy cập mã nguồn và tài liệu hướng dẫn.",
   "pass_conditions_vi": "Trả lời đúng các câu hỏi thực hành và phát âm chuẩn các thuật ngữ onboarding.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi có thể tìm liên kết mã nguồn ở đâu?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "95015b2ed5cb6f47"
-      ],
-      "srs_ref_ids": [
-        "12c4c69b64251b66"
-      ],
+      "audio_ref_ids": ["95015b2ed5cb6f47"],
+      "srs_ref_ids": ["12c4c69b64251b66"],
       "dialogue_turns": [
         {
           "id": "31609076a8b170ee",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "12c4c69b64251b66"
-        ],
+        "re_present_refs": ["12c4c69b64251b66"],
         "tip_vi": "Hãy nhớ cụm từ \"Where can I find the repository link?\" nghĩa là \"Tôi có thể tìm liên kết mã nguồn ở đâu?\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi cần quyền truy cập để tải mã nguồn về\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "6796662fa1502a06"
-      ],
-      "srs_ref_ids": [
-        "82ee228a41e43f10"
-      ],
+      "audio_ref_ids": ["6796662fa1502a06"],
+      "srs_ref_ids": ["82ee228a41e43f10"],
       "dialogue_turns": [
         {
           "id": "182bc3e983628598",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "82ee228a41e43f10"
-        ],
+        "re_present_refs": ["82ee228a41e43f10"],
         "tip_vi": "Hãy nhớ cụm từ \"I need access to clone the project\" nghĩa là \"Tôi cần quyền truy cập để tải mã nguồn về\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Vui lòng đọc tệp README để xem hướng dẫn cài đặt\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "a8c9710212eafa29"
-      ],
-      "srs_ref_ids": [
-        "9d6f6ce1314504fb"
-      ],
+      "audio_ref_ids": ["a8c9710212eafa29"],
+      "srs_ref_ids": ["9d6f6ce1314504fb"],
       "dialogue_turns": [
         {
           "id": "88c438120576e5cd",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "9d6f6ce1314504fb"
-        ],
+        "re_present_refs": ["9d6f6ce1314504fb"],
         "tip_vi": "Hãy nhớ cụm từ \"Please check the README file for setup instructions\" nghĩa là \"Vui lòng đọc tệp README để xem hướng dẫn cài đặt\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta có mẫu cấu hình biến môi trường không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "1cd59575a7d4e933"
-      ],
-      "srs_ref_ids": [
-        "0f85254541bfcad8"
-      ],
+      "audio_ref_ids": ["1cd59575a7d4e933"],
+      "srs_ref_ids": ["0f85254541bfcad8"],
       "dialogue_turns": [
         {
           "id": "f7030f46a2ce20bb",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "0f85254541bfcad8"
-        ],
+        "re_present_refs": ["0f85254541bfcad8"],
         "tip_vi": "Hãy nhớ cụm từ \"Do we have a template for environment variables?\" nghĩa là \"Chúng ta có mẫu cấu hình biến môi trường không?\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đang cài đặt môi trường phát triển tại máy\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2b89d81de9e7d9a8"
-      ],
-      "srs_ref_ids": [
-        "6d8f2083327db88b"
-      ],
+      "audio_ref_ids": ["2b89d81de9e7d9a8"],
+      "srs_ref_ids": ["6d8f2083327db88b"],
       "dialogue_turns": [
         {
           "id": "9d7ffc2af04dbe69",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "6d8f2083327db88b"
-        ],
+        "re_present_refs": ["6d8f2083327db88b"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm setting up my local development environment\" nghĩa là \"Tôi đang cài đặt môi trường phát triển tại máy\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi vẫn cần thông tin đăng nhập cho máy chủ staging\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "f53360e800f6eef3"
-      ],
-      "srs_ref_ids": [
-        "b70217d91a8f4740"
-      ],
+      "audio_ref_ids": ["f53360e800f6eef3"],
+      "srs_ref_ids": ["b70217d91a8f4740"],
       "dialogue_turns": [
         {
           "id": "b84158596eabe6b6",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "b70217d91a8f4740"
-        ],
+        "re_present_refs": ["b70217d91a8f4740"],
         "tip_vi": "Hãy nhớ cụm từ \"I still need credentials for staging server\" nghĩa là \"Tôi vẫn cần thông tin đăng nhập cho máy chủ staging\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "3b8a2d6a389bb6f6"
-      ],
-      "srs_ref_ids": [
-        "01f26c16c9ab44b7"
-      ],
+      "audio_ref_ids": ["3b8a2d6a389bb6f6"],
+      "srs_ref_ids": ["01f26c16c9ab44b7"],
       "dialogue_turns": [
         {
           "id": "07a02fe63174c37f",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "01f26c16c9ab44b7"
-        ],
+        "re_present_refs": ["01f26c16c9ab44b7"],
         "tip_vi": "Hãy nhớ cụm từ \"Who should I contact regarding DB access?\" nghĩa là \"Tôi nên liên hệ ai về việc truy cập cơ sở dữ liệu?\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "bdcd8275576b6ab3"
-      ],
-      "srs_ref_ids": [
-        "fef7e34d8f1abc2f"
-      ],
+      "audio_ref_ids": ["bdcd8275576b6ab3"],
+      "srs_ref_ids": ["fef7e34d8f1abc2f"],
       "dialogue_turns": [
         {
           "id": "89a567205c138b5a",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "fef7e34d8f1abc2f"
-        ],
+        "re_present_refs": ["fef7e34d8f1abc2f"],
         "tip_vi": "Hãy nhớ cụm từ \"I'm ready for my first sprint task\" nghĩa là \"Tôi đã sẵn sàng cho nhiệm vụ đầu tiên trong sprint\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Hội nhập nhóm & Thiết lập dự án",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "Where can I find the repository link?",

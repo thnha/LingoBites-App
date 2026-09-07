@@ -4,7 +4,9 @@ import {getTextLengthBucket, trackEvent} from '../analytics';
 import type {OCRImageInput, OCRTextResult} from '../../shared/api/types';
 import {extractTextWithMock} from './MockOCRService';
 
-export async function extractText(image: OCRImageInput): Promise<OCRTextResult> {
+export async function extractText(
+  image: OCRImageInput,
+): Promise<OCRTextResult> {
   const {useMockOcr} = getAppConfig();
   const provider = useMockOcr ? 'mock' : 'api';
 
@@ -20,7 +22,9 @@ export async function extractText(image: OCRImageInput): Promise<OCRTextResult> 
   if (result.ok) {
     trackEvent('ocr_completed', {
       status: 'success',
-      text_length_bucket: getTextLengthBucket(result.extractedText.trim().length),
+      text_length_bucket: getTextLengthBucket(
+        result.extractedText.trim().length,
+      ),
       confidence: result.confidence,
     });
     return result;

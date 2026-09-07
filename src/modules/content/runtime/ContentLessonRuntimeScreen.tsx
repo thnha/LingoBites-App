@@ -17,7 +17,10 @@ import {RolePlayCard} from './activities/RolePlayCard';
 import {ShadowingCard} from './activities/ShadowingCard';
 import type {FeedbackStepData} from './types';
 
-type Props = NativeStackScreenProps<LessonsStackParamList, 'ContentLessonRuntime'>;
+type Props = NativeStackScreenProps<
+  LessonsStackParamList,
+  'ContentLessonRuntime'
+>;
 
 export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
@@ -63,7 +66,14 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
     return (
       <AppScreen>
         <ScreenHeader onBack={() => navigation.goBack()} title="Bài học" />
-        <View style={{alignItems: 'center', flex: 1, justifyContent: 'center', padding: theme.spacing.xl}}>
+        <View
+          style={{
+            alignItems: 'center',
+            flex: 1,
+            justifyContent: 'center',
+            padding: theme.spacing.xl,
+          }}
+        >
           <AppText color="danger">Không tìm thấy bài học.</AppText>
         </View>
       </AppScreen>
@@ -72,9 +82,13 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader onBack={() => navigation.goBack()} title={session.data.lesson.titleVi} />
+      <ScreenHeader
+        onBack={() => navigation.goBack()}
+        title={session.data.lesson.titleVi}
+      />
       <ScrollView
-        contentContainerStyle={{gap: theme.spacing.lg, padding: theme.gutter}}>
+        contentContainerStyle={{gap: theme.spacing.lg, padding: theme.gutter}}
+      >
         {finished ? (
           <FeedbackCard data={finished} onFinish={() => navigation.goBack()} />
         ) : step?.kind === 'context' ? (

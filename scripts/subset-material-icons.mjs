@@ -30,6 +30,7 @@ const ICON_ALIASES = {
   menu_book: 'menu-book',
   photo_camera: 'photo-camera',
   play_circle: 'play-circle',
+  record_voice_over: 'record-voice-over',
   restaurant_menu: 'restaurant-menu',
   tips_and_updates: 'tips-and-updates',
   upload_file: 'upload-file',

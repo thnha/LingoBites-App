@@ -1,9 +1,9 @@
-import { validFullOutput } from '../../fixtures';
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { getDatabase, resetDatabaseForTests } from '../database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../constants';
-import { saveLesson } from '../LessonRepository';
+import {validFullOutput} from '../../fixtures';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {getDatabase, resetDatabaseForTests} from '../database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../constants';
+import {saveLesson} from '../LessonRepository';
 import {
   getDueFlashcards,
   listFlashcards,
@@ -35,20 +35,22 @@ function readScheduleRow(cardId: string) {
     'SELECT * FROM review_schedule WHERE card_id = ? LIMIT 1;',
     [cardId],
   );
-  return (result.rows?.item(0) as
-    | {
-        card_id: string;
-        interval_days: number;
-        next_review_at: string;
-        updated_at: string;
-      }
-    | undefined) ?? null;
+  return (
+    (result.rows?.item(0) as
+      | {
+          card_id: string;
+          interval_days: number;
+          next_review_at: string;
+          updated_at: string;
+        }
+      | undefined) ?? null
+  );
 }
 
 describe('FlashcardRepository', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
   });
 
   it('saves flashcard vocabulary with a lesson reference and lists it', () => {
@@ -96,7 +98,7 @@ describe('FlashcardRepository', () => {
     });
 
     expect(
-      listFlashcards({ lessonId: firstLessonId }).map(card => card.word),
+      listFlashcards({lessonId: firstLessonId}).map(card => card.word),
     ).toEqual(['offer']);
   });
 
@@ -122,7 +124,7 @@ describe('FlashcardRepository', () => {
       true,
     );
     expect(listFlashcards()).toHaveLength(0);
-    expect(listFlashcards({ includeUnsaved: true })[0]).toMatchObject({
+    expect(listFlashcards({includeUnsaved: true})[0]).toMatchObject({
       id: saved.flashcardId,
       isSaved: false,
     });
@@ -140,9 +142,9 @@ describe('FlashcardRepository', () => {
       return;
     }
 
-    expect(
-      getDueFlashcards({ today: '2026-08-17T12:00:00.000Z' }),
-    ).toHaveLength(1);
+    expect(getDueFlashcards({today: '2026-08-17T12:00:00.000Z'})).toHaveLength(
+      1,
+    );
 
     const result = recordFlashcardRating({
       flashcardId: saved.flashcardId,
@@ -155,9 +157,9 @@ describe('FlashcardRepository', () => {
       return;
     }
     expect(result.intervalDays).toBe(3);
-    expect(
-      getDueFlashcards({ today: '2026-08-17T12:01:00.000Z' }),
-    ).toHaveLength(0);
+    expect(getDueFlashcards({today: '2026-08-17T12:01:00.000Z'})).toHaveLength(
+      0,
+    );
   });
 
   it('respects due queue soft cap and carries overflow to later calls', () => {
@@ -181,9 +183,9 @@ describe('FlashcardRepository', () => {
     });
 
     expect(due.map(card => card.word)).toEqual(['word-0', 'word-1']);
-    expect(
-      getDueFlashcards({ today: '2026-08-18T12:00:00.000Z' }),
-    ).toHaveLength(3);
+    expect(getDueFlashcards({today: '2026-08-18T12:00:00.000Z'})).toHaveLength(
+      3,
+    );
   });
 
   it('forgot rating resets the card to a 1-day relearn', () => {
@@ -374,7 +376,9 @@ describe('FlashcardRepository', () => {
     // Schedule must not have been reset by the duplicate save.
     const rowAfterDuplicate = readScheduleRow(first.flashcardId);
     expect(rowAfterDuplicate?.interval_days).toBe(3);
-    expect(rowAfterDuplicate?.interval_days).toBe(rowAfterRating?.interval_days);
+    expect(rowAfterDuplicate?.interval_days).toBe(
+      rowAfterRating?.interval_days,
+    );
   });
 
   it('returns FLASHCARD_NOT_FOUND when rating a nonexistent card', () => {

@@ -4,7 +4,10 @@ import {useTranslation} from 'react-i18next';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList, RootTabParamList} from '../../app/navigation/types';
+import type {
+  HomeStackParamList,
+  RootTabParamList,
+} from '../../app/navigation/types';
 import {AppScreen} from '../../components/AppScreen';
 import {AppText} from '../../components/AppText';
 import {IconButton} from '../../components/IconButton';
@@ -27,7 +30,8 @@ export function HomeScreen({navigation}: Props) {
   const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const mvpReviewFlowEnabled = useFeatureEnabled('lingobitesMvpReviewFlow');
-  const tabNavigation = navigation.getParent<NavigationProp<RootTabParamList>>();
+  const tabNavigation =
+    navigation.getParent<NavigationProp<RootTabParamList>>();
   const [recentLessons, setRecentLessons] = useState<LessonCardView[]>([]);
   const [dueReviewCount, setDueReviewCount] = useState(0);
 
@@ -58,7 +62,10 @@ export function HomeScreen({navigation}: Props) {
     }, [reviewSystemEnabled, t]),
   );
 
-  const emptyRecent = useMemo(() => recentLessons.length === 0, [recentLessons]);
+  const emptyRecent = useMemo(
+    () => recentLessons.length === 0,
+    [recentLessons],
+  );
 
   return (
     <AppScreen>
@@ -69,12 +76,29 @@ export function HomeScreen({navigation}: Props) {
           height: 56,
           justifyContent: 'space-between',
           paddingHorizontal: theme.gutter,
-        }}>
-        <View style={{alignItems: 'center', flexDirection: 'row', gap: 10, minWidth: 0}}>
-          <MaterialIcon color={theme.colors.primary} name="translate" size={26} />
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            gap: 10,
+            minWidth: 0,
+          }}
+        >
+          <MaterialIcon
+            color={theme.colors.primary}
+            name="translate"
+            size={26}
+          />
           <AppText
             numberOfLines={1}
-            style={{color: theme.colors.primary, fontSize: 20, fontWeight: '600'}}>
+            style={{
+              color: theme.colors.primary,
+              fontSize: 20,
+              fontWeight: '600',
+            }}
+          >
             {t('app.name')}
           </AppText>
         </View>
@@ -93,7 +117,8 @@ export function HomeScreen({navigation}: Props) {
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{gap: 6}}>
           <AppText variant="h1">{t('home.title')}</AppText>
           <AppText color="secondary" variant="body">
@@ -120,7 +145,8 @@ export function HomeScreen({navigation}: Props) {
                 ...theme.shadow.soft,
               },
             ]}
-            testID="daily-review-widget">
+            testID="daily-review-widget"
+          >
             <View
               style={{
                 alignItems: 'center',
@@ -129,16 +155,27 @@ export function HomeScreen({navigation}: Props) {
                 height: 48,
                 justifyContent: 'center',
                 width: 48,
-              }}>
-              <MaterialIcon color={theme.colors.primary} name="refresh" size={26} />
+              }}
+            >
+              <MaterialIcon
+                color={theme.colors.primary}
+                name="refresh"
+                size={26}
+              />
             </View>
             <View style={{flex: 1, gap: 2}}>
-              <AppText variant="h3">{t('home.daily_review_widget_title')}</AppText>
+              <AppText variant="h3">
+                {t('home.daily_review_widget_title')}
+              </AppText>
               <AppText color="secondary" variant="label">
                 {t('home.daily_review_widget_due', {count: dueReviewCount})}
               </AppText>
             </View>
-            <MaterialIcon color={theme.colors.primary} name="chevron_right" size={24} />
+            <MaterialIcon
+              color={theme.colors.primary}
+              name="chevron_right"
+              size={24}
+            />
           </Pressable>
         ) : null}
 
@@ -151,7 +188,8 @@ export function HomeScreen({navigation}: Props) {
               gap: theme.spacing.sm,
               padding: 24,
             }}
-            testID="mvp-no-content-card">
+            testID="mvp-no-content-card"
+          >
             <View
               style={{
                 alignItems: 'center',
@@ -160,12 +198,15 @@ export function HomeScreen({navigation}: Props) {
                 height: 64,
                 justifyContent: 'center',
                 width: 64,
-              }}>
-              <MaterialIcon color={theme.colors.primary} name="menu_book" size={30} />
+              }}
+            >
+              <MaterialIcon
+                color={theme.colors.primary}
+                name="menu_book"
+                size={30}
+              />
             </View>
-            <AppText
-              style={{textAlign: 'center'}}
-              variant="h3">
+            <AppText style={{textAlign: 'center'}} variant="h3">
               {t('home.mvp_content_title')}
             </AppText>
             <AppText color="secondary" style={{textAlign: 'center'}}>
@@ -186,7 +227,8 @@ export function HomeScreen({navigation}: Props) {
                   paddingVertical: 10,
                 },
               ]}
-              testID="mvp-open-lessons">
+              testID="mvp-open-lessons"
+            >
               <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
                 {t('home.mvp_open_lessons')}
               </AppText>
@@ -213,7 +255,8 @@ export function HomeScreen({navigation}: Props) {
                   shadowRadius: 34,
                   elevation: 8,
                 },
-              ]}>
+              ]}
+            >
               <View
                 style={{
                   alignItems: 'center',
@@ -222,13 +265,31 @@ export function HomeScreen({navigation}: Props) {
                   height: 84,
                   justifyContent: 'center',
                   width: 84,
-                }}>
-                <MaterialIcon color={theme.colors.accentInk} filled name="photo_camera" size={42} />
+                }}
+              >
+                <MaterialIcon
+                  color={theme.colors.accentInk}
+                  filled
+                  name="photo_camera"
+                  size={42}
+                />
               </View>
-              <AppText style={{color: theme.colors.accentInk, fontSize: 22, fontWeight: '600'}}>
+              <AppText
+                style={{
+                  color: theme.colors.accentInk,
+                  fontSize: 22,
+                  fontWeight: '600',
+                }}
+              >
                 {t('home.capture_photo')}
               </AppText>
-              <AppText style={{color: theme.colors.accentInk, fontSize: 12, opacity: 0.85}}>
+              <AppText
+                style={{
+                  color: theme.colors.accentInk,
+                  fontSize: 12,
+                  opacity: 0.85,
+                }}
+              >
                 {t('home.capture_photo_hint')}
               </AppText>
             </Pressable>
@@ -250,9 +311,20 @@ export function HomeScreen({navigation}: Props) {
                     paddingVertical: 22,
                     ...theme.shadow.strong,
                   },
-                ]}>
-                <MaterialIcon color={theme.colors.text.inverse} name="upload_file" size={30} />
-                <AppText style={{color: theme.colors.text.inverse, fontSize: 14, fontWeight: '600'}}>
+                ]}
+              >
+                <MaterialIcon
+                  color={theme.colors.text.inverse}
+                  name="upload_file"
+                  size={30}
+                />
+                <AppText
+                  style={{
+                    color: theme.colors.text.inverse,
+                    fontSize: 14,
+                    fontWeight: '600',
+                  }}
+                >
                   {t('home.upload_image')}
                 </AppText>
               </Pressable>
@@ -279,9 +351,20 @@ export function HomeScreen({navigation}: Props) {
                     shadowRadius: 22,
                     elevation: 2,
                   },
-                ]}>
-                <MaterialIcon color={theme.colors.primary} name="content_paste" size={30} />
-                <AppText style={{color: theme.colors.primary, fontSize: 14, fontWeight: '600'}}>
+                ]}
+              >
+                <MaterialIcon
+                  color={theme.colors.primary}
+                  name="content_paste"
+                  size={30}
+                />
+                <AppText
+                  style={{
+                    color: theme.colors.primary,
+                    fontSize: 14,
+                    fontWeight: '600',
+                  }}
+                >
                   {t('home.paste_text')}
                 </AppText>
               </Pressable>
@@ -297,15 +380,24 @@ export function HomeScreen({navigation}: Props) {
                 accessibilityLabel={t('home.view_all_a11y')}
                 accessibilityRole="button"
                 onPress={() => tabNavigation?.navigate('Lessons')}
-                style={{minHeight: 44, justifyContent: 'center'}}>
-                <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
+                style={{minHeight: 44, justifyContent: 'center'}}
+              >
+                <AppText
+                  style={{color: theme.colors.primary, fontWeight: '600'}}
+                >
                   {t('home.view_all')}
                 </AppText>
               </Pressable>
             }
           />
           {emptyRecent ? (
-            <View style={{alignItems: 'center', gap: theme.spacing.md, paddingVertical: 8}}>
+            <View
+              style={{
+                alignItems: 'center',
+                gap: theme.spacing.md,
+                paddingVertical: 8,
+              }}
+            >
               <Medallion label="📚" />
               <AppText color="secondary">
                 {mvpReviewFlowEnabled
@@ -336,15 +428,21 @@ export function HomeScreen({navigation}: Props) {
               flexDirection: 'row',
               gap: 12,
               padding: 16,
-            }}>
-            <MaterialIcon color={theme.colors.tertiary} name="lightbulb" size={22} />
+            }}
+          >
+            <MaterialIcon
+              color={theme.colors.tertiary}
+              name="lightbulb"
+              size={22}
+            />
             <AppText
               style={{
                 color: theme.colors.tertiary,
                 flex: 1,
                 fontSize: 13,
                 fontWeight: '600',
-              }}>
+              }}
+            >
               {t('home.tip')}
             </AppText>
           </View>

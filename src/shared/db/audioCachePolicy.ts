@@ -1,4 +1,4 @@
-import type { AudioAssetRecord, ChapterAudioSummary } from './types';
+import type {AudioAssetRecord, ChapterAudioSummary} from './types';
 
 /**
  * Offline audio cache budget (REQ-9, SETE-88). Storage stays bounded by a

@@ -6,17 +6,12 @@
   "title_vi": "Làm rõ yêu cầu & Hỏi lại chi tiết",
   "blurb_vi": "Nắm vững các mẫu câu lịch sự để yêu cầu đồng nghiệp hoặc khách hàng giải thích lại yêu cầu kỹ thuật.",
   "level": "A2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Sử dụng thành thạo 8 mẫu câu yêu cầu giải thích lại khi chưa nghe rõ.",
   "situation_vi": "Buổi họp trao đổi yêu cầu tính năng nhưng kết nối bị chập chờn hoặc nói quá nhanh.",
   "learner_role_vi": "Lập trình viên đang lắng nghe yêu cầu từ Product Owner.",
-  "prerequisite_lesson_slugs": [
-    "team-onboarding"
-  ],
+  "prerequisite_lesson_slugs": ["team-onboarding"],
   "pronunciation_focus_vi": "Nâng cao ngữ điệu câu hỏi lịch sự (Could you, Would you mind).",
   "final_speaking_task_vi": "Yêu cầu người nói giải thích lại tiêu chí chấp nhận của tính năng.",
   "pass_conditions_vi": "Phát âm tự nhiên các câu hỏi làm rõ với tốc độ vừa phải.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể lặp lại điểm đó được không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "687ad979521cc616"
-      ],
-      "srs_ref_ids": [
-        "7fb91110fd7238ed"
-      ],
+      "audio_ref_ids": ["687ad979521cc616"],
+      "srs_ref_ids": ["7fb91110fd7238ed"],
       "dialogue_turns": [
         {
           "id": "344508d35bfc8249",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "7fb91110fd7238ed"
-        ],
+        "re_present_refs": ["7fb91110fd7238ed"],
         "tip_vi": "Hãy nhớ cụm từ \"Could you please repeat that point?\" nghĩa là \"Bạn có thể lặp lại điểm đó được không?\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Ý bạn là gì khi nói các trường hợp biên ở đây?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "4ca52048b8f6f184"
-      ],
-      "srs_ref_ids": [
-        "900446e092e8810b"
-      ],
+      "audio_ref_ids": ["4ca52048b8f6f184"],
+      "srs_ref_ids": ["900446e092e8810b"],
       "dialogue_turns": [
         {
           "id": "5a88d72acdd166da",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "900446e092e8810b"
-        ],
+        "re_present_refs": ["900446e092e8810b"],
         "tip_vi": "Hãy nhớ cụm từ \"What do you mean by edge cases here?\" nghĩa là \"Ý bạn là gì khi nói các trường hợp biên ở đây?\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể nói rõ hơn về nghiệp vụ này được không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "33edf1c2efb101a6"
-      ],
-      "srs_ref_ids": [
-        "4e7aaa8525e95c74"
-      ],
+      "audio_ref_ids": ["33edf1c2efb101a6"],
+      "srs_ref_ids": ["4e7aaa8525e95c74"],
       "dialogue_turns": [
         {
           "id": "344b3b1ec76147bf",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "4e7aaa8525e95c74"
-        ],
+        "re_present_refs": ["4e7aaa8525e95c74"],
         "tip_vi": "Hãy nhớ cụm từ \"Can you elaborate on the business logic?\" nghĩa là \"Bạn có thể nói rõ hơn về nghiệp vụ này được không?\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "d4e37a9719d56ea8"
-      ],
-      "srs_ref_ids": [
-        "d6359d75e4ce813f"
-      ],
+      "audio_ref_ids": ["d4e37a9719d56ea8"],
+      "srs_ref_ids": ["d6359d75e4ce813f"],
       "dialogue_turns": [
         {
           "id": "0eaaf4d5b57d6bf5",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "d6359d75e4ce813f"
-        ],
+        "re_present_refs": ["d6359d75e4ce813f"],
         "tip_vi": "Hãy nhớ cụm từ \"So if I understand correctly, we need to cache this?\" nghĩa là \"Vậy nếu tôi hiểu đúng thì chúng ta cần lưu bộ nhớ đệm cái này?\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "4da648fefc4be6a1"
-      ],
-      "srs_ref_ids": [
-        "0dbab292c6243d39"
-      ],
+      "audio_ref_ids": ["4da648fefc4be6a1"],
+      "srs_ref_ids": ["0dbab292c6243d39"],
       "dialogue_turns": [
         {
           "id": "4c9f234e8eb4161c",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "0dbab292c6243d39"
-        ],
+        "re_present_refs": ["0dbab292c6243d39"],
         "tip_vi": "Hãy nhớ cụm từ \"I lost you on the database schema part\" nghĩa là \"Tôi chưa theo kịp bạn ở phần lược đồ cơ sở dữ liệu\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể nói chậm lại một chút được không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "43d1ad5afa0d2741"
-      ],
-      "srs_ref_ids": [
-        "b4f2acafbc71a30c"
-      ],
+      "audio_ref_ids": ["43d1ad5afa0d2741"],
+      "srs_ref_ids": ["b4f2acafbc71a30c"],
       "dialogue_turns": [
         {
           "id": "ff2b07a1f583da1f",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "b4f2acafbc71a30c"
-        ],
+        "re_present_refs": ["b4f2acafbc71a30c"],
         "tip_vi": "Hãy nhớ cụm từ \"Could you speak a bit slower, please?\" nghĩa là \"Bạn có thể nói chậm lại một chút được không?\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Bạn có thể nhắn yêu cầu đó lên Slack được không?\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "14fda172421e0bbd"
-      ],
-      "srs_ref_ids": [
-        "f47c0cef84802dcf"
-      ],
+      "audio_ref_ids": ["14fda172421e0bbd"],
+      "srs_ref_ids": ["f47c0cef84802dcf"],
       "dialogue_turns": [
         {
           "id": "e32bc78e7d37a22e",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "f47c0cef84802dcf"
-        ],
+        "re_present_refs": ["f47c0cef84802dcf"],
         "tip_vi": "Hãy nhớ cụm từ \"Could you post that requirement in Slack?\" nghĩa là \"Bạn có thể nhắn yêu cầu đó lên Slack được không?\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "7ff1e641bba9bd74"
-      ],
-      "srs_ref_ids": [
-        "15d7a869522a12e9"
-      ],
+      "audio_ref_ids": ["7ff1e641bba9bd74"],
+      "srs_ref_ids": ["15d7a869522a12e9"],
       "dialogue_turns": [
         {
           "id": "72696e561d59014c",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "15d7a869522a12e9"
-        ],
+        "re_present_refs": ["15d7a869522a12e9"],
         "tip_vi": "Hãy nhớ cụm từ \"That makes total sense now, thank you\" nghĩa là \"Bây giờ tôi đã hiểu hoàn toàn rồi, cảm ơn bạn\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Làm rõ yêu cầu & Hỏi lại chi tiết",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "Could you please repeat that point?",

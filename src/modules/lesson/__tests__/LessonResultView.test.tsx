@@ -6,7 +6,11 @@ import {
   EMPTY_VOCABULARY_MESSAGE,
 } from '../../../shared/copy/userMessages';
 import {validFullOutput, validMinimalOutput} from '../../../shared/fixtures';
-import type {AIOutput, GrammarPoint, VocabularyItem} from '../../../shared/schemas/ai-output-v1';
+import type {
+  AIOutput,
+  GrammarPoint,
+  VocabularyItem,
+} from '../../../shared/schemas/ai-output-v1';
 import {AppThemeProvider} from '../../../theme';
 import {LessonResultView} from '../LessonResultView';
 
@@ -27,11 +31,14 @@ function renderLesson(lesson: AIOutput): string {
 }
 
 function buildLessonWithVocab(count: number): AIOutput {
-  const vocabulary: VocabularyItem[] = Array.from({length: count}, (_, index) => ({
-    id: `v${index + 1}`,
-    word: `word-${index + 1}`,
-    meaning_vi: `nghĩa ${index + 1}`,
-  }));
+  const vocabulary: VocabularyItem[] = Array.from(
+    {length: count},
+    (_, index) => ({
+      id: `v${index + 1}`,
+      word: `word-${index + 1}`,
+      meaning_vi: `nghĩa ${index + 1}`,
+    }),
+  );
 
   return {
     ...validFullOutput,
@@ -40,15 +47,18 @@ function buildLessonWithVocab(count: number): AIOutput {
 }
 
 function buildLessonWithGrammar(count: number): AIOutput {
-  const grammar_points: GrammarPoint[] = Array.from({length: count}, (_, index) => ({
-    id: `g${index + 1}`,
-    name: `Grammar ${index + 1}`,
-    vietnamese_name: `Ngữ pháp ${index + 1}`,
-    pattern: 'pattern',
-    found_in: 'found',
-    explanation_vi: `Giải thích ${index + 1}`,
-    examples: [],
-  }));
+  const grammar_points: GrammarPoint[] = Array.from(
+    {length: count},
+    (_, index) => ({
+      id: `g${index + 1}`,
+      name: `Grammar ${index + 1}`,
+      vietnamese_name: `Ngữ pháp ${index + 1}`,
+      pattern: 'pattern',
+      found_in: 'found',
+      explanation_vi: `Giải thích ${index + 1}`,
+      examples: [],
+    }),
+  );
 
   return {
     ...validFullOutput,
@@ -69,9 +79,7 @@ describe('LessonResultView', () => {
 
     ReactTestRenderer.act(() => {
       unsavedTree = ReactTestRenderer.create(
-        wrap(
-          <LessonResultView lesson={validFullOutput} saveState="unsaved" />,
-        ),
+        wrap(<LessonResultView lesson={validFullOutput} saveState="unsaved" />),
       );
       savedTree = ReactTestRenderer.create(
         wrap(<LessonResultView lesson={validFullOutput} saveState="saved" />),
@@ -84,10 +92,12 @@ describe('LessonResultView', () => {
     expect(text).toContain('discount');
     expect(text).toContain('Lưu bài học');
     expect(
-      unsavedTree!.root.findByProps({testID: 'save-lesson-enabled'}).props.disabled,
+      unsavedTree!.root.findByProps({testID: 'save-lesson-enabled'}).props
+        .disabled,
     ).toBe(false);
     expect(
-      savedTree!.root.findByProps({testID: 'save-lesson-disabled'}).props.disabled,
+      savedTree!.root.findByProps({testID: 'save-lesson-disabled'}).props
+        .disabled,
     ).toBe(true);
     expect(JSON.stringify(savedTree!.toJSON())).toContain('Đã lưu');
   });

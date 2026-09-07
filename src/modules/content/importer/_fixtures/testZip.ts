@@ -11,7 +11,10 @@
 import {createHash} from 'crypto';
 
 /** Build a single stored-method ZIP entry (no central directory yet). */
-function buildStoredEntry(name: string, data: Uint8Array): {
+function buildStoredEntry(
+  name: string,
+  data: Uint8Array,
+): {
   local: Uint8Array;
   central: {
     name: Uint8Array;
@@ -79,7 +82,9 @@ function crc32(bytes: Uint8Array): number {
 export function buildStoredZip(
   entries: ReadonlyArray<readonly [name: string, data: Uint8Array]>,
 ): Uint8Array {
-  const builtEntries = entries.map(([name, data]) => buildStoredEntry(name, data));
+  const builtEntries = entries.map(([name, data]) =>
+    buildStoredEntry(name, data),
+  );
   let localOffset = 0;
   const localChunks: Uint8Array[] = [];
   for (let i = 0; i < builtEntries.length; i += 1) {

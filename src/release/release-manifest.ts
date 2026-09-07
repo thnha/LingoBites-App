@@ -3,7 +3,7 @@ import lingobitensMvp from './configs/lingobites-mvp.json';
 import miniGameRelease from './configs/mini-game-release.json';
 import situationLearningRelease from './configs/situation-learning-release.json';
 import themeRelease from './configs/theme-release.json';
-import type { ReleaseConfig } from './types';
+import type {ReleaseConfig} from './types';
 
 // export const DEFAULT_RELEASE_NAME = 'close-beta-1';
 // export const DEFAULT_RELEASE_NAME = 'situation-learning-release';

@@ -2,9 +2,7 @@ import {
   countPendingSyncEvents,
   listPendingSyncEvents,
 } from '../../shared/db/SyncOutboxRepository';
-import {
-  drainOutboxOnce,
-} from './outboxSync';
+import {drainOutboxOnce} from './outboxSync';
 import {
   SYNC_MAX_ROUNDS_PER_REQUEST,
   isSyncStuck,
@@ -50,10 +48,7 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
     if (pending.length === 0) {
       return;
     }
-    const maxAttempt = Math.max(
-      0,
-      ...pending.map(event => event.attemptCount),
-    );
+    const maxAttempt = Math.max(0, ...pending.map(event => event.attemptCount));
     const delayMs = syncRetryDelayMs(maxAttempt + 1);
     retryTimer = setTimeout(() => {
       retryTimer = null;
@@ -67,11 +62,7 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
     }
     busy = true;
     try {
-      for (
-        let round = 0;
-        round < SYNC_MAX_ROUNDS_PER_REQUEST;
-        round += 1
-      ) {
+      for (let round = 0; round < SYNC_MAX_ROUNDS_PER_REQUEST; round += 1) {
         const outcome = await drainOutboxOnce({
           fetchImpl: deps.fetchImpl,
           includeStuck,

@@ -20,7 +20,9 @@ export function GuidedPracticeCard({data, onComplete, onSkip}: Props) {
 
   return (
     <View style={{gap: theme.spacing.lg}}>
-      {data.instructionsVi ? <AppText color="secondary">{data.instructionsVi}</AppText> : null}
+      {data.instructionsVi ? (
+        <AppText color="secondary">{data.instructionsVi}</AppText>
+      ) : null}
       {data.items.map(item => {
         const isRevealed = revealed.has(item.id);
         return (

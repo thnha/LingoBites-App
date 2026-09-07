@@ -6,17 +6,12 @@
   "title_vi": "Phỏng vấn kỹ thuật thử nghiệm: Thiết kế hệ thống",
   "blurb_vi": "Luyện tập câu hỏi phỏng vấn thiết kế hệ thống (System Design Interview) quy mô lớn.",
   "level": "B2",
-  "target_skills": [
-    "speaking",
-    "listening"
-  ],
+  "target_skills": ["speaking", "listening"],
   "estimated_duration_minutes": 15,
   "objective_vi": "Trả lời câu hỏi phỏng vấn thiết kế ứng dụng chat hoặc ứng dụng đặt xe.",
   "situation_vi": "Vòng phỏng vấn kỹ thuật trực tiếp với Senior Technical Interviewer.",
   "learner_role_vi": "Ứng viên trả lời bài toán thiết kế hệ thống.",
-  "prerequisite_lesson_slugs": [
-    "project-impact-summary"
-  ],
+  "prerequisite_lesson_slugs": ["project-impact-summary"],
   "pronunciation_focus_vi": "Phát âm chuẩn từ load balancer, message queue, caching, redundancy, bottleneck.",
   "final_speaking_task_vi": "Trình bày giải pháp thiết kế hệ thống thông báo đẩy cho 1 triệu người dùng.",
   "pass_conditions_vi": "Phân tích trôi chảy các thành phần và rủi ro nghẽn cổ chai.",
@@ -49,12 +44,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "9675a0dffd03868d"
-      ],
-      "srs_ref_ids": [
-        "326e0c643737ff9e"
-      ],
+      "audio_ref_ids": ["9675a0dffd03868d"],
+      "srs_ref_ids": ["326e0c643737ff9e"],
       "dialogue_turns": [
         {
           "id": "f2c727cf11172ca3",
@@ -87,9 +78,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "326e0c643737ff9e"
-        ],
+        "re_present_refs": ["326e0c643737ff9e"],
         "tip_vi": "Hãy nhớ cụm từ \"Let us start by clarifying functional requirements\" nghĩa là \"Hãy bắt đầu bằng việc làm rõ các yêu cầu chức năng\"."
       }
     },
@@ -104,12 +93,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "c18aaf4752f57564"
-      ],
-      "srs_ref_ids": [
-        "3a51c958917d0449"
-      ],
+      "audio_ref_ids": ["c18aaf4752f57564"],
+      "srs_ref_ids": ["3a51c958917d0449"],
       "dialogue_turns": [
         {
           "id": "f66039cae7e79ad7",
@@ -142,9 +127,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "3a51c958917d0449"
-        ],
+        "re_present_refs": ["3a51c958917d0449"],
         "tip_vi": "Hãy nhớ cụm từ \"I will estimate daily active users and storage needs\" nghĩa là \"Tôi sẽ ước tính lượng người dùng hàng ngày và dung lượng lưu trữ\"."
       }
     },
@@ -159,12 +142,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta nên đặt bộ cân bằng tải phía trước API\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "869d3300d5aafbac"
-      ],
-      "srs_ref_ids": [
-        "fbaaa8f67d70107b"
-      ],
+      "audio_ref_ids": ["869d3300d5aafbac"],
+      "srs_ref_ids": ["fbaaa8f67d70107b"],
       "dialogue_turns": [
         {
           "id": "186859af6c0a6e01",
@@ -197,9 +176,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "fbaaa8f67d70107b"
-        ],
+        "re_present_refs": ["fbaaa8f67d70107b"],
         "tip_vi": "Hãy nhớ cụm từ \"We should place a load balancer in front of API\" nghĩa là \"Chúng ta nên đặt bộ cân bằng tải phía trước API\"."
       }
     },
@@ -214,12 +191,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "6633964a332b9a5a"
-      ],
-      "srs_ref_ids": [
-        "8abb634a33c5ea94"
-      ],
+      "audio_ref_ids": ["6633964a332b9a5a"],
+      "srs_ref_ids": ["8abb634a33c5ea94"],
       "dialogue_turns": [
         {
           "id": "e6f137f30015ba2e",
@@ -252,9 +225,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "8abb634a33c5ea94"
-        ],
+        "re_present_refs": ["8abb634a33c5ea94"],
         "tip_vi": "Hãy nhớ cụm từ \"Use a message queue like Kafka for decoupling\" nghĩa là \"Sử dụng hàng đợi tin nhắn như Kafka để tách biệt dịch vụ\"."
       }
     },
@@ -269,12 +240,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "69ff510d76157ab9"
-      ],
-      "srs_ref_ids": [
-        "4257bb1b27538977"
-      ],
+      "audio_ref_ids": ["69ff510d76157ab9"],
+      "srs_ref_ids": ["4257bb1b27538977"],
       "dialogue_turns": [
         {
           "id": "b82a5dcf0e1a0a3d",
@@ -307,9 +274,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "4257bb1b27538977"
-        ],
+        "re_present_refs": ["4257bb1b27538977"],
         "tip_vi": "Hãy nhớ cụm từ \"We can apply database sharding to handle scale\" nghĩa là \"Chúng ta có thể áp dụng phân mảnh DB để xử lý quy mô lớn\"."
       }
     },
@@ -324,12 +289,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "3f5601a98945a859"
-      ],
-      "srs_ref_ids": [
-        "10134dee3cbed06d"
-      ],
+      "audio_ref_ids": ["3f5601a98945a859"],
+      "srs_ref_ids": ["10134dee3cbed06d"],
       "dialogue_turns": [
         {
           "id": "e4a9fe92139c1d58",
@@ -362,9 +323,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "10134dee3cbed06d"
-        ],
+        "re_present_refs": ["10134dee3cbed06d"],
         "tip_vi": "Hãy nhớ cụm từ \"We must eliminate any single point of failure\" nghĩa là \"Chúng ta phải loại bỏ bất kỳ điểm lỗi đơn lẻ nào\"."
       }
     },
@@ -379,12 +338,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Có sự đánh đổi giữa SQL và NoSQL ở đây\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "1d3de205218328a1"
-      ],
-      "srs_ref_ids": [
-        "dcb1e2dcb0e40985"
-      ],
+      "audio_ref_ids": ["1d3de205218328a1"],
+      "srs_ref_ids": ["dcb1e2dcb0e40985"],
       "dialogue_turns": [
         {
           "id": "793110b604b28d89",
@@ -417,9 +372,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "dcb1e2dcb0e40985"
-        ],
+        "re_present_refs": ["dcb1e2dcb0e40985"],
         "tip_vi": "Hãy nhớ cụm từ \"There is a trade-off between SQL and NoSQL here\" nghĩa là \"Có sự đánh đổi giữa SQL và NoSQL ở đây\"."
       }
     },
@@ -434,12 +387,8 @@
       "context_sentence_vi": "Trong công việc hàng ngày: \"Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi\".",
       "grammar_ref_ids": [],
       "vocab_ref_ids": [],
-      "audio_ref_ids": [
-        "2c5a060768a532f5"
-      ],
-      "srs_ref_ids": [
-        "1482df8a18f7a6f9"
-      ],
+      "audio_ref_ids": ["2c5a060768a532f5"],
+      "srs_ref_ids": ["1482df8a18f7a6f9"],
       "dialogue_turns": [
         {
           "id": "2aa80adb36a46b6c",
@@ -472,9 +421,7 @@
       ],
       "remediation": {
         "trigger": "wrong_answer",
-        "re_present_refs": [
-          "1482df8a18f7a6f9"
-        ],
+        "re_present_refs": ["1482df8a18f7a6f9"],
         "tip_vi": "Hãy nhớ cụm từ \"That concludes my high-level architecture design\" nghĩa là \"Đó là toàn bộ phần thiết kế kiến trúc mức cao của tôi\"."
       }
     }
@@ -487,10 +434,7 @@
       "name_vi": "Mẫu câu chính bài Phỏng vấn kỹ thuật thử nghiệm: Thiết kế hệ thống",
       "pattern": "S + V + O",
       "explanation_vi": "Mẫu câu cơ bản được sử dụng trong bài học này để trình bày ý kiến rõ ràng.",
-      "tied_to_actions": [
-        "speaking",
-        "listening"
-      ],
+      "tied_to_actions": ["speaking", "listening"],
       "examples": [
         {
           "en": "Let us start by clarifying functional requirements",

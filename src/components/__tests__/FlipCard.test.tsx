@@ -83,7 +83,9 @@ describe('FlipCard', () => {
       />,
     );
 
-    const appCard = tree.root.findByType(FlipCard).findByProps({testID: 'flip-card'});
+    const appCard = tree.root
+      .findByType(FlipCard)
+      .findByProps({testID: 'flip-card'});
     expect(appCard).toBeTruthy();
   });
 });

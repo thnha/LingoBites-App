@@ -42,7 +42,9 @@ function firstRow<T>(result: {
  * transaction that commits the underlying review write (ADR-2), so a crash
  * cannot produce a local review session with no outbox entry.
  */
-export function enqueueSyncOutboxEvent(input: EnqueueSyncOutboxEventInput): void {
+export function enqueueSyncOutboxEvent(
+  input: EnqueueSyncOutboxEventInput,
+): void {
   const db = getDatabase();
   const createdAt = input.createdAt ?? new Date().toISOString();
   db.execute(

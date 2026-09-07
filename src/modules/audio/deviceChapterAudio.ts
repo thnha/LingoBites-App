@@ -1,15 +1,15 @@
 import * as RNFS from '@dr.pogodin/react-native-fs';
 import Sound from 'react-native-sound';
-import { getReadyAudioAsset } from '../../shared/db/AudioAssetRepository';
-import { sha256HexBytes } from '../../shared/utils/sha256';
-import { bytesToBase64 } from './bytesToBase64';
-import { ensureChapterAudio } from './chapterAudioCache';
+import {getReadyAudioAsset} from '../../shared/db/AudioAssetRepository';
+import {sha256HexBytes} from '../../shared/utils/sha256';
+import {bytesToBase64} from './bytesToBase64';
+import {ensureChapterAudio} from './chapterAudioCache';
 import type {
   ChapterAudioDownloader,
   ChapterAudioFileStore,
   EnsureChapterAudioResult,
 } from './chapterAudioCache';
-import { fetchChapterAudioManifest } from './audioManifestClient';
+import {fetchChapterAudioManifest} from './audioManifestClient';
 
 /**
  * Real on-device file/download/playback for downloaded chapter audio
@@ -75,7 +75,7 @@ async function ensureDirectory(directory: string): Promise<void> {
 
 /** Writes downloaded audio bytes under the app's Documents directory. */
 export const deviceChapterAudioFileStore: ChapterAudioFileStore = {
-  async writeAsset({ chapterId, asset, data }) {
+  async writeAsset({chapterId, asset, data}) {
     if (!nativeFsAvailable()) {
       throw new Error('UNAVAILABLE');
     }
@@ -107,13 +107,13 @@ export const deviceChapterAudioFileStore: ChapterAudioFileStore = {
 
 /** Fetches a manifest asset and returns checksum-verifiable bytes. */
 export const deviceChapterAudioDownloader: ChapterAudioDownloader = {
-  async download({ asset }) {
+  async download({asset}) {
     if (!nativeFsAvailable()) {
       throw new Error('UNAVAILABLE');
     }
     let response: Response;
     try {
-      response = await fetch(asset.url, { method: 'GET' });
+      response = await fetch(asset.url, {method: 'GET'});
     } catch {
       throw new Error('FETCH_FAILED');
     }
@@ -147,7 +147,7 @@ export function ensureChapterAudioOnDevice(
 }
 
 export type ChapterAudioPlaybackResult =
-  | { ok: true }
+  | {ok: true}
   | {
       ok: false;
       errorCode: 'NOT_READY' | 'UNAVAILABLE';
@@ -214,7 +214,7 @@ export function playReadyChapterAudio(
             activeSound = null;
           }
         });
-        resolve({ ok: true });
+        resolve({ok: true});
       });
     } catch {
       resolve({

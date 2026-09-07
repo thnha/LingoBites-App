@@ -1,9 +1,9 @@
-import { createRequestId } from '../api/requestId';
-import type { UpcomingReviewReminder } from './reminderPolicy';
-import { getOrCreateAnonymousUserId } from './anonymousUserId';
-import { getDatabase, withTransaction } from './database';
-import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
-import { REVIEW_EVENT_SCHEMA_VERSION } from './types';
+import {createRequestId} from '../api/requestId';
+import type {UpcomingReviewReminder} from './reminderPolicy';
+import {getOrCreateAnonymousUserId} from './anonymousUserId';
+import {getDatabase, withTransaction} from './database';
+import {enqueueSyncOutboxEvent} from './SyncOutboxRepository';
+import {REVIEW_EVENT_SCHEMA_VERSION} from './types';
 import {
   DEFAULT_REVIEW_INTERVAL_DAYS,
   calculateNextReviewState,
@@ -69,7 +69,7 @@ function mapFlashcardRow(row: FlashcardRow): FlashcardRecord {
 }
 
 function firstRow<T>(result: {
-  rows?: { item: (index: number) => unknown };
+  rows?: {item: (index: number) => unknown};
 }): T | null {
   return (result.rows?.item(0) as T | undefined) ?? null;
 }
@@ -90,7 +90,7 @@ export function saveFlashcard(input: SaveFlashcardInput): SaveFlashcardResult {
         'UPDATE flashcards SET is_saved = 1, updated_at = ? WHERE id = ?;',
         [now, existing.id],
       );
-      return { ok: true, flashcardId: existing.id, duplicate: true };
+      return {ok: true, flashcardId: existing.id, duplicate: true};
     }
 
     const flashcardId = createRequestId();
@@ -135,7 +135,7 @@ export function saveFlashcard(input: SaveFlashcardInput): SaveFlashcardResult {
       ],
     );
 
-    return { ok: true, flashcardId, duplicate: false };
+    return {ok: true, flashcardId, duplicate: false};
   } catch {
     return {
       ok: false,
@@ -339,9 +339,7 @@ export function getCardDueAt(cardId: string): string | null {
     'SELECT next_review_at FROM review_schedule WHERE card_id = ? LIMIT 1;',
     [cardId],
   );
-  const row = result.rows?.item(0) as
-    | { next_review_at: string }
-    | undefined;
+  const row = result.rows?.item(0) as {next_review_at: string} | undefined;
   return row?.next_review_at ?? null;
 }
 

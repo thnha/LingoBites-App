@@ -1,14 +1,14 @@
-import { __resetMockDatabases } from '../../../../test-utils/sqliteMock';
-import { resetDatabaseForTests } from '../../../shared/db/database';
-import { open } from 'react-native-quick-sqlite';
-import { DB_NAME } from '../../../shared/db/constants';
-import { listGamificationEvents } from '../../../shared/db/GamificationRepository';
-import { startReviewSession } from '../reviewSession';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {resetDatabaseForTests} from '../../../shared/db/database';
+import {open} from 'react-native-quick-sqlite';
+import {DB_NAME} from '../../../shared/db/constants';
+import {listGamificationEvents} from '../../../shared/db/GamificationRepository';
+import {startReviewSession} from '../reviewSession';
 
 describe('reviewSession (engagement)', () => {
   beforeEach(() => {
     __resetMockDatabases();
-    resetDatabaseForTests(open({ name: DB_NAME }));
+    resetDatabaseForTests(open({name: DB_NAME}));
   });
 
   it('records nothing and persists nothing when the session has no ratings', () => {
@@ -47,7 +47,9 @@ describe('reviewSession (engagement)', () => {
     const sessionEvent = events.find(
       event => event.eventType === 'review_session_completed',
     );
-    const onTimeEvent = events.find(event => event.eventType === 'review_on_time');
+    const onTimeEvent = events.find(
+      event => event.eventType === 'review_on_time',
+    );
     expect(sessionEvent?.points).toBe(9);
     expect(sessionEvent?.sourceEventId).toBe(session.sessionId);
     expect(sessionEvent?.createdAt).toBe('2026-09-05T21:00:00.000Z');

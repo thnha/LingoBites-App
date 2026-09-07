@@ -4,12 +4,20 @@
 
 import type {ReactTestInstance} from 'react-test-renderer';
 
+function getComponentName(type: ReactTestInstance['type']): string | null {
+  if (typeof type === 'string') {
+    return type;
+  }
+  if (typeof type === 'function') {
+    return type.displayName ?? type.name ?? null;
+  }
+  return null;
+}
+
 /**
  * Checks if a component has proper accessibility label
  */
-export function hasAccessibilityLabel(
-  instance: ReactTestInstance,
-): boolean {
+export function hasAccessibilityLabel(instance: ReactTestInstance): boolean {
   return (
     typeof instance.props.accessibilityLabel === 'string' &&
     instance.props.accessibilityLabel.length > 0
@@ -19,9 +27,7 @@ export function hasAccessibilityLabel(
 /**
  * Checks if a component has proper accessibility role
  */
-export function hasAccessibilityRole(
-  instance: ReactTestInstance,
-): boolean {
+export function hasAccessibilityRole(instance: ReactTestInstance): boolean {
   return (
     typeof instance.props.accessibilityRole === 'string' &&
     instance.props.accessibilityRole.length > 0
@@ -31,9 +37,11 @@ export function hasAccessibilityRole(
 /**
  * Checks if interactive component has both icon and text label (NFR-ACC-004)
  */
-export function hasIconAndTextLabel(
-  instance: ReactTestInstance,
-): {hasIcon: boolean; hasText: boolean; passes: boolean} {
+export function hasIconAndTextLabel(instance: ReactTestInstance): {
+  hasIcon: boolean;
+  hasText: boolean;
+  passes: boolean;
+} {
   let hasIcon = false;
   let hasText = false;
 
@@ -43,19 +51,16 @@ export function hasIconAndTextLabel(
       return;
     }
 
+    const componentName = getComponentName(node.type);
+
     // Check for MaterialIcon or any icon component
-    if (
-      typeof node.type === 'function' &&
-      (node.type.name === 'MaterialIcon' || node.type.displayName === 'MaterialIcon')
-    ) {
+    if (componentName === 'MaterialIcon') {
       hasIcon = true;
     }
 
     // Check for AppText or Text with content
     if (
-      (node.type === 'Text' ||
-        (typeof node.type === 'function' &&
-          (node.type.name === 'AppText' || node.type.displayName === 'AppText'))) &&
+      (componentName === 'Text' || componentName === 'AppText') &&
       node.props.children
     ) {
       hasText = true;
@@ -102,7 +107,10 @@ function getRelativeLuminance(color: string): number {
  * Calculate contrast ratio between two colors
  * https://www.w3.org/TR/WCAG20/#contrast-ratiodef
  */
-export function getContrastRatio(foreground: string, background: string): number {
+export function getContrastRatio(
+  foreground: string,
+  background: string,
+): number {
   const l1 = getRelativeLuminance(foreground);
   const l2 = getRelativeLuminance(background);
 
@@ -118,7 +126,10 @@ export function getContrastRatio(foreground: string, background: string): number
  * @param largeText - Whether the text is large (18pt+ or 14pt+ bold)
  * @returns true if meets WCAG AA standard
  */
-export function meetsWCAG_AA(ratio: number, largeText: boolean = false): boolean {
+export function meetsWCAG_AA(
+  ratio: number,
+  largeText: boolean = false,
+): boolean {
   return largeText ? ratio >= 3 : ratio >= 4.5;
 }
 
@@ -128,7 +139,10 @@ export function meetsWCAG_AA(ratio: number, largeText: boolean = false): boolean
  * @param largeText - Whether the text is large (18pt+ or 14pt+ bold)
  * @returns true if meets WCAG AAA standard
  */
-export function meetsWCAG_AAA(ratio: number, largeText: boolean = false): boolean {
+export function meetsWCAG_AAA(
+  ratio: number,
+  largeText: boolean = false,
+): boolean {
   return largeText ? ratio >= 4.5 : ratio >= 7;
 }
 

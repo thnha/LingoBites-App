@@ -1,4 +1,4 @@
-import type { ReviewRating, ReviewScheduleRecord } from './types';
+import type {ReviewRating, ReviewScheduleRecord} from './types';
 
 export const DEFAULT_REVIEW_INTERVAL_DAYS = 1;
 
@@ -70,7 +70,7 @@ export function calculateNextReviewState({
 
 export function selectDueReviewCards(
   schedules: ReviewScheduleRecord[],
-  { today = new Date().toISOString(), limit }: SelectDueReviewCardsOptions = {},
+  {today = new Date().toISOString(), limit}: SelectDueReviewCardsOptions = {},
 ): ReviewScheduleRecord[] {
   const dueBy = endOfUtcDay(today);
   const due = schedules
