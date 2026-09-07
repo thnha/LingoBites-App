@@ -19,12 +19,12 @@ import type {
   DialogueTurn,
   QAItem,
   SrsItem,
-} from '../../modules/content/schema';
+  ContentMasteryState,
+} from '../../modules/content';
 import {
   calculateNextContentReviewState,
   selectDueContentReviewItems,
-} from '../../modules/content/srs/contentScheduler';
-import type {ContentMasteryState} from '../../modules/content/srs/contentScheduler';
+} from '../../modules/content';
 
 export type ContentChunkRow = {
   id: string;

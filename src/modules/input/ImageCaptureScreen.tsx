@@ -23,7 +23,7 @@ import {
   PERMISSION_DENIED_MESSAGE,
 } from '../../shared/copy/userMessages';
 import {useAppTheme} from '../../theme';
-import {extractText} from '../ocr/OCRService';
+import {extractText} from '../ocr';
 import {getImageSizeCategory, trackEvent} from '../analytics';
 import {
   pickImageFromCamera,

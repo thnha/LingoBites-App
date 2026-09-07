@@ -16,10 +16,9 @@ import {
   getAudioCacheStats,
   listReadyAudioAssets,
 } from '../../shared/db/AudioAssetRepository';
-import {formatCacheBytes} from '../audio/audioCachePolicy';
-import {playReadyChapterAudio} from '../audio/deviceChapterAudio';
-import {getGamificationSnapshot} from '../engagement/gamification';
-import type {GamificationSnapshot} from '../engagement/gamificationPolicy';
+import {formatCacheBytes, playReadyChapterAudio} from '../audio';
+import {getGamificationSnapshot} from '../engagement';
+import type {GamificationSnapshot} from '../engagement';
 import {
   CLEAR_DATA_CONFIRM_MESSAGE,
   CLEAR_DATA_DONE_MESSAGE,

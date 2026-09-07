@@ -1,4 +1,4 @@
-import {analyzeText} from '../modules/ai-analysis/AIAnalysisService';
+import {analyzeText} from '../modules/ai-analysis';
 import type {AIOutput} from '../shared/schemas/ai-output-v1';
 
 export type AnalyzeSourceType = 'paste_text' | 'camera' | 'gallery';

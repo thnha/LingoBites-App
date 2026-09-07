@@ -5,8 +5,7 @@ import type {
   Sentence,
   VocabularyItem,
 } from '../../shared/schemas/ai-output-v1';
-import type {OCRSourceType} from '../../shared/api/types';
-import type {AnalyzeSourceType} from '../../modules/ai-analysis/types';
+import type {AnalyzeSourceType, OCRSourceType} from '../../shared/api/types';
 
 /**
  * Learning-mode drill-down screens shared by the Home and Lessons stacks.

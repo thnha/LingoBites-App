@@ -19,7 +19,7 @@ import type {
   AnalysisProgress,
   AnalysisProgressCallback,
   AnalyzeTextResult,
-} from '../../modules/ai-analysis/types';
+} from '../../modules/ai-analysis';
 
 const CREATE_PATH = '/v1/ai/analyses';
 const DEFAULT_PROMPT_VERSION = 'lesson-analysis-v1';

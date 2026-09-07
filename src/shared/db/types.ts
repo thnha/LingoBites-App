@@ -1,7 +1,7 @@
 import type {AIOutput} from '../schemas/ai-output-v1';
 import type {VocabularyItem} from '../schemas/ai-output-v1';
 import type {LessonSubjectKey} from '../../types/lesson';
-import type {ContentMasteryState} from '../../modules/content/srs/contentScheduler';
+import type {ContentMasteryState} from '../../modules/content';
 
 export type {ContentMasteryState};
 

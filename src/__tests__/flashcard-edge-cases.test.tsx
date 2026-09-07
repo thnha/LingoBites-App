@@ -25,7 +25,7 @@ import {saveLesson, deleteLesson} from '../shared/db/LessonRepository';
 import {validFullOutput} from '../shared/fixtures';
 import {AppThemeProvider} from '../theme';
 import {__resetMockDatabases} from '../../test-utils/sqliteMock';
-import {DailyReviewScreen} from '../modules/review/DailyReviewScreen';
+import {DailyReviewScreen} from '../modules/review';
 
 const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
 

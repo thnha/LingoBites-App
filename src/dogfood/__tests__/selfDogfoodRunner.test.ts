@@ -5,7 +5,7 @@ import {DB_NAME} from '../../shared/db/constants';
 import {
   saveLearnerProfileData,
   getLearnerStateSnapshot,
-} from '../../modules/today/todayAdapter';
+} from '../../modules/today';
 import {
   insertPackageRecord,
   swapActivePackage,

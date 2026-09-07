@@ -12,7 +12,7 @@ import {MaterialIcon} from '../../components/MaterialIcon';
 import {Medallion} from '../../components/Medallion';
 import {RatingControl} from '../../components/RatingControl';
 import {useFeatureEnabled} from '../../release';
-import {requestSync} from '../sync/appSync';
+import {requestSync} from '../sync';
 import {
   getCardDueAt,
   getDueFlashcards,

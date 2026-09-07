@@ -8,29 +8,39 @@ import type {
   ProfileStackParamList,
   RootTabParamList,
 } from './types';
-import {HomeScreen} from '../../modules/input/HomeScreen';
-import {PasteTextScreen} from '../../modules/input/PasteTextScreen';
-import {ImageCaptureScreen} from '../../modules/input/ImageCaptureScreen';
-import {OCRReviewScreen} from '../../modules/ocr/OCRReviewScreen';
-import {AnalyzingScreen} from '../../modules/ai-analysis/AnalyzingScreen';
-import {LessonResultScreen} from '../../modules/lesson/LessonResultScreen';
-import {LessonsHistoryScreen} from '../../modules/lesson/LessonsHistoryScreen';
-import {SavedLessonDetailScreen} from '../../modules/lesson/SavedLessonDetailScreen';
-import {SentenceDetailScreen} from '../../modules/lesson/SentenceDetailScreen';
-import {WordDetailScreen} from '../../modules/lesson/WordDetailScreen';
-import {GrammarDetailScreen} from '../../modules/lesson/GrammarDetailScreen';
-import {PracticeScreen} from '../../modules/practice/PracticeScreen';
-import {FlashcardListScreen} from '../../modules/lesson/FlashcardListScreen';
-import {DailyReviewScreen} from '../../modules/review/DailyReviewScreen';
-import {TodayScreen} from '../../modules/today/TodayScreen';
-import {ContentLessonListScreen} from '../../modules/content/runtime/ContentLessonListScreen';
-import {ContentLessonDetailScreen} from '../../modules/content/runtime/ContentLessonDetailScreen';
-import {ContentLessonRuntimeScreen} from '../../modules/content/runtime/ContentLessonRuntimeScreen';
-import {SpeakingRoomScreen} from '../../modules/speaking/SpeakingRoomScreen';
-import {SpeakingShadowingActivity} from '../../modules/speaking/activities/SpeakingShadowingActivity';
-import {PrivacyNoteScreen} from '../../modules/settings/PrivacyNoteScreen';
-import {ProgressReportScreen} from '../../modules/settings/ProgressReportScreen';
-import {ProfileScreen} from '../../modules/settings/ProfileScreen';
+import {
+  HomeScreen,
+  PasteTextScreen,
+  ImageCaptureScreen,
+} from '../../modules/input';
+import {OCRReviewScreen} from '../../modules/ocr';
+import {AnalyzingScreen} from '../../modules/ai-analysis';
+import {
+  LessonResultScreen,
+  LessonsHistoryScreen,
+  SavedLessonDetailScreen,
+  SentenceDetailScreen,
+  WordDetailScreen,
+  GrammarDetailScreen,
+  FlashcardListScreen,
+} from '../../modules/lesson';
+import {PracticeScreen} from '../../modules/practice';
+import {DailyReviewScreen} from '../../modules/review';
+import {TodayScreen} from '../../modules/today';
+import {
+  ContentLessonListScreen,
+  ContentLessonDetailScreen,
+  ContentLessonRuntimeScreen,
+} from '../../modules/content';
+import {
+  SpeakingRoomScreen,
+  SpeakingShadowingActivity,
+} from '../../modules/speaking';
+import {
+  PrivacyNoteScreen,
+  ProgressReportScreen,
+  ProfileScreen,
+} from '../../modules/settings';
 import {useFeatureEnabled} from '../../release';
 import {TabBar} from './TabBar';
 import {isIngestionRouteHiddenForMvp} from './ingestionRouteGate';
