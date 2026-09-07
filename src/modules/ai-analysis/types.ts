@@ -1,5 +1,11 @@
 import type {AIOutput} from '../../shared/schemas/ai-output-v1';
-import type {ApiErrorCode, AnalysisJobStage} from '../../shared/api/types';
+import type {
+  AnalyzeSourceType,
+  ApiErrorCode,
+  AnalysisJobStage,
+} from '../../shared/api/types';
+
+export type {AnalyzeSourceType};
 
 export type AnalyzeErrorCode = ApiErrorCode;
 
@@ -23,8 +29,6 @@ export type AnalyzeTextResult =
     };
 
 export type MockFixture = 'full' | 'minimal';
-
-export type AnalyzeSourceType = 'paste_text' | 'camera' | 'gallery';
 
 export type AnalyzeOptions = {
   fixture?: MockFixture;

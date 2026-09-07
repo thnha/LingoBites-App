@@ -18,7 +18,7 @@ import {
 } from '../../shared/copy/userMessages';
 import {useAppTheme} from '../../theme';
 import {getTextLengthBucket, trackEvent} from '../analytics';
-import {validateConfirmedText} from '../input/textValidation';
+import {validateConfirmedText} from '../../shared/utils/textValidation';
 import {extractText} from './OCRService';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'OCRReview'>;

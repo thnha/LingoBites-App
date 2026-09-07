@@ -46,6 +46,8 @@ export type AIAnalyzeSuccessBody = {
 
 export type OCRSourceType = 'camera' | 'gallery';
 
+export type AnalyzeSourceType = 'paste_text' | 'camera' | 'gallery';
+
 export type OCRQualityBody = {
   text_length: number;
   text_length_bucket: string;

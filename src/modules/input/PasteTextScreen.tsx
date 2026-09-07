@@ -13,7 +13,7 @@ import {TextField} from '../../components/TextField';
 import {RETRY_ACTION_LABEL} from '../../shared/copy/userMessages';
 import {useAppTheme} from '../../theme';
 import {getTextLengthBucket, trackEvent} from '../analytics';
-import {validateConfirmedText} from './textValidation';
+import {validateConfirmedText} from '../../shared/utils/textValidation';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'PasteText'>;
 

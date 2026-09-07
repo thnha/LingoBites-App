@@ -1,4 +1,4 @@
-import {MAX_INPUT_TEXT_LENGTH} from '../../../shared/copy/userMessages';
+import {MAX_INPUT_TEXT_LENGTH} from '../../copy/userMessages';
 import {validateConfirmedText} from '../textValidation';
 
 describe('validateConfirmedText', () => {

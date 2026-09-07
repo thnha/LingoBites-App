@@ -2,7 +2,7 @@ import {
   EMPTY_INPUT_MESSAGE,
   MAX_INPUT_TEXT_LENGTH,
   TEXT_TOO_LONG_MESSAGE,
-} from '../../shared/copy/userMessages';
+} from '../copy/userMessages';
 
 export {MAX_INPUT_TEXT_LENGTH};
 
