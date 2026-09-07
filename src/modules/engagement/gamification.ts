@@ -1,6 +1,6 @@
 import {listGamificationEvents} from '../../shared/db/GamificationRepository';
-import {deriveGamificationSnapshot} from '../../shared/db/gamificationPolicy';
-import type {GamificationSnapshot} from '../../shared/db/gamificationPolicy';
+import {deriveGamificationSnapshot} from './gamificationPolicy';
+import type {GamificationSnapshot} from './gamificationPolicy';
 
 /**
  * Loads the current gamification snapshot by recomputing it from the persisted

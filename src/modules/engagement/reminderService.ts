@@ -3,8 +3,8 @@ import {
   computeReminderPlan,
   REVIEW_REMINDER_BODY,
   REVIEW_REMINDER_TITLE,
-} from '../../shared/db/reminderPolicy';
-import type {PendingReminder} from '../../shared/db/reminderPolicy';
+} from './reminderPolicy';
+import type {PendingReminder} from './reminderPolicy';
 
 /**
  * Golden-hour reminders (REQ-10 / SETE-89).

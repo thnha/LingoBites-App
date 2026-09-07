@@ -1,4 +1,4 @@
-import type {ReviewRating, ReviewScheduleRecord} from './types';
+import type {ReviewRating, ReviewScheduleRecord} from '../../shared/db/types';
 
 export const DEFAULT_REVIEW_INTERVAL_DAYS = 1;
 

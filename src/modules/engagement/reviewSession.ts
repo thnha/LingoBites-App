@@ -4,7 +4,7 @@ import {
   ON_TIME_WATER_POINTS,
   isOnTimeReview,
   sessionXp,
-} from '../../shared/db/gamificationPolicy';
+} from './gamificationPolicy';
 import type {ReviewRating} from '../../shared/db/types';
 
 /**

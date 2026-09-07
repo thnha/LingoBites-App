@@ -6,7 +6,7 @@ import {
   summarizeReadyAssets,
   selectStaleChapters,
   selectChaptersToEvict,
-} from '../../shared/db/audioCachePolicy';
+} from './audioCachePolicy';
 import type {ChapterAudioAsset} from '../../shared/db/types';
 import type {ChapterAudioManifestResult} from './audioManifestClient';
 

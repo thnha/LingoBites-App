@@ -13,7 +13,7 @@ import {
   reconcileReminders,
   syncReviewReminders,
 } from '../reminderService';
-import type {PendingReminder} from '../../../shared/db/reminderPolicy';
+import type {PendingReminder} from '../reminderPolicy';
 
 const NOW = '2026-09-01T00:00:00.000Z';
 

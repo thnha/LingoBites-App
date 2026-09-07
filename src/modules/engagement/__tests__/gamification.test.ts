@@ -5,7 +5,7 @@ import {DB_NAME} from '../../../shared/db/constants';
 import {
   addLocalDays,
   toLocalDayKey,
-} from '../../../shared/db/gamificationPolicy';
+} from '../gamificationPolicy';
 import {getGamificationSnapshot} from '../gamification';
 import {startReviewSession} from '../reviewSession';
 

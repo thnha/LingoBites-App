@@ -12,7 +12,7 @@ import type {
   TriggerNotification,
 } from '@notifee/react-native';
 import {listUpcomingReviewReminders} from '../../shared/db/FlashcardRepository';
-import type {PendingReminder} from '../../shared/db/reminderPolicy';
+import type {PendingReminder} from './reminderPolicy';
 import {
   buildReminderNotification,
   configureReminderScheduler,

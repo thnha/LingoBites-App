@@ -22,7 +22,7 @@ import {
   shouldRequestReminderPermission,
 } from '../nativeReminderScheduler';
 import type {NotifeeLike} from '../nativeReminderScheduler';
-import type {PendingReminder} from '../../../shared/db/reminderPolicy';
+import type {PendingReminder} from '../reminderPolicy';
 
 const NOW = '2026-09-02T09:00:00.000Z';
 const FIXED_NOW_MS = () => Date.parse('2026-09-02T00:00:00.000Z');
