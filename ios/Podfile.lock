@@ -1946,8 +1946,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNAudioRecorderPlayer (3.6.12):
-    - React-Core
   - RNCAsyncStorage (2.2.0):
     - hermes-engine
     - RCTRequired
@@ -2363,7 +2361,6 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDependencies (from `../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)
   - "ReactNativeFs (from `../node_modules/@dr.pogodin/react-native-fs`)"
-  - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
@@ -2533,8 +2530,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
   ReactNativeFs:
     :path: "../node_modules/@dr.pogodin/react-native-fs"
-  RNAudioRecorderPlayer:
-    :path: "../node_modules/react-native-audio-recorder-player"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNGestureHandler:
@@ -2635,7 +2630,6 @@ SPEC CHECKSUMS:
   ReactCommon: 3ec2a55999d296af90c24beb66c8a77dc660d3ef
   ReactNativeDependencies: 9270b61f94d53163cb1041da87b20cb36a5ed0e2
   ReactNativeFs: cc1e7ee61c1ca1884a0b5541ad472c16372d336a
-  RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
   RNCAsyncStorage: 0f84413588571e74ef9cff6e3b669346e3abf9cb
   RNGestureHandler: b3c8f99c4b2f15bf975d4fd92f2397787967547d
   RNKeychain: 1b055a0ec36d058cb0a075e965d8c9d335e0c828
