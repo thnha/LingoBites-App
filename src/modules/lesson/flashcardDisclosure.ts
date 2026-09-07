@@ -2,7 +2,7 @@ import {Alert} from 'react-native';
 import {
   getFlashcardDisclosureAcknowledged,
   saveFlashcardDisclosureAcknowledged,
-} from '../../theme/flashcardDisclosureStorage';
+} from './flashcardDisclosureStorage';
 
 export async function confirmFirstFlashcardSave(
   onConfirm: () => void | Promise<void>,
