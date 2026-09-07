@@ -97,7 +97,6 @@ export function saveLesson(input: SaveLessonInput): SaveLessonResult {
     return {
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',
-      message: 'Không thể lưu bài học vì dữ liệu không hợp lệ.',
     };
   }
 
@@ -150,7 +149,6 @@ export function saveLesson(input: SaveLessonInput): SaveLessonResult {
     return {
       ok: false,
       errorCode: 'LOCAL_DB_ERROR',
-      message: 'Không thể lưu bài học. Vui lòng thử lại.',
     };
   }
 }

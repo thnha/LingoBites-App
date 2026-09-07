@@ -48,7 +48,6 @@ export type SaveLessonResult =
   | {
       ok: false;
       errorCode: 'LOCAL_DB_ERROR' | 'AI_INVALID_OUTPUT';
-      message: string;
     };
 
 export type ReviewRating = 'remembered' | 'forgot';
@@ -90,7 +89,7 @@ export type SaveFlashcardInput = {
 
 export type SaveFlashcardResult =
   | {ok: true; flashcardId: string; duplicate: boolean}
-  | {ok: false; errorCode: 'LOCAL_DB_ERROR'; message: string};
+  | {ok: false; errorCode: 'LOCAL_DB_ERROR'};
 
 export type ListFlashcardsOptions = {
   lessonId?: string;
@@ -113,7 +112,6 @@ export type RecordFlashcardRatingResult =
   | {
       ok: false;
       errorCode: 'FLASHCARD_NOT_FOUND' | 'LOCAL_DB_ERROR';
-      message: string;
     };
 
 /**

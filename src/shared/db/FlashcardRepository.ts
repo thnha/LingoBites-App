@@ -140,7 +140,6 @@ export function saveFlashcard(input: SaveFlashcardInput): SaveFlashcardResult {
     return {
       ok: false,
       errorCode: 'LOCAL_DB_ERROR',
-      message: 'Không thể lưu flashcard. Vui lòng thử lại.',
     };
   }
 }
@@ -251,7 +250,6 @@ export function recordFlashcardRating(
       return {
         ok: false,
         errorCode: 'FLASHCARD_NOT_FOUND',
-        message: 'Không tìm thấy flashcard để ôn tập.',
       };
     }
 
@@ -323,7 +321,6 @@ export function recordFlashcardRating(
     return {
       ok: false,
       errorCode: 'LOCAL_DB_ERROR',
-      message: 'Không thể lưu kết quả ôn tập. Vui lòng thử lại.',
     };
   }
 }

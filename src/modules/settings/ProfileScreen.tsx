@@ -23,6 +23,7 @@ import {
   CLEAR_DATA_CONFIRM_MESSAGE,
   CLEAR_DATA_DONE_MESSAGE,
 } from '../../shared/copy/userMessages';
+import {PET_STAGE_LABELS} from '../../shared/copy/gamificationCopy';
 import {clearAllLocalData} from '../../shared/db/LessonRepository';
 import {useAppTheme} from '../../theme';
 
@@ -307,7 +308,7 @@ export function ProfileScreen({navigation}: Props) {
                 fontWeight: '700',
               }}
             >
-              {gamification.pet.stageLabel}
+              {PET_STAGE_LABELS[gamification.pet.stageId]}
             </AppText>
             <AppText
               style={{

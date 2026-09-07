@@ -6,7 +6,10 @@ import {AppScreen} from '../../components/AppScreen';
 import {IconButton} from '../../components/IconButton';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {useFeatureEnabled} from '../../release';
-import {SAVE_LESSON_ERROR_MESSAGE} from '../../shared/copy/userMessages';
+import {
+  SAVE_LESSON_ERROR_MESSAGE,
+  SAVE_LESSON_INVALID_DATA_MESSAGE,
+} from '../../shared/copy/userMessages';
 import {
   listFlashcards,
   saveFlashcard,
@@ -92,7 +95,11 @@ export function LessonResultScreen({navigation, route}: Props) {
 
     if (!result.ok) {
       setSaveState('error');
-      setSaveErrorMessage(result.message ?? SAVE_LESSON_ERROR_MESSAGE);
+      setSaveErrorMessage(
+        result.errorCode === 'AI_INVALID_OUTPUT'
+          ? SAVE_LESSON_INVALID_DATA_MESSAGE
+          : SAVE_LESSON_ERROR_MESSAGE,
+      );
       return null;
     }
 

@@ -165,23 +165,25 @@ export type PetStageId = 'seed' | 'sprout' | 'sapling' | 'tree' | 'bloom';
 
 export type PetStage = {
   id: PetStageId;
-  label: string;
   /** Water units required to reach this stage (monotonic milestones). */
   minWater: number;
 };
 
-/** Virtual plant growth milestones (SETE-89 product rule, MochiMochi-style). */
+/**
+ * Virtual plant growth milestones (SETE-89 product rule, MochiMochi-style).
+ * Display labels for each stage live in `shared/copy/gamificationCopy.ts` —
+ * this policy only owns the IDs and thresholds.
+ */
 export const PET_STAGES: readonly PetStage[] = [
-  {id: 'seed', label: 'Hạt mầm', minWater: 0},
-  {id: 'sprout', label: 'Mầm non', minWater: 5},
-  {id: 'sapling', label: 'Cây con', minWater: 15},
-  {id: 'tree', label: 'Cây trưởng thành', minWater: 30},
-  {id: 'bloom', label: 'Cây nở hoa', minWater: 60},
+  {id: 'seed', minWater: 0},
+  {id: 'sprout', minWater: 5},
+  {id: 'sapling', minWater: 15},
+  {id: 'tree', minWater: 30},
+  {id: 'bloom', minWater: 60},
 ];
 
 export type PetState = {
   stageId: PetStageId;
-  stageLabel: string;
   waterUnits: number;
   /** Water needed for the next stage, or null at the final stage. */
   waterForNextStage: number | null;
@@ -203,7 +205,6 @@ export function derivePetState(waterUnits: number): PetState {
   if (nextStage === null) {
     return {
       stageId: stage.id,
-      stageLabel: stage.label,
       waterUnits,
       waterForNextStage: null,
       progressToNextStage: 1,
@@ -213,7 +214,6 @@ export function derivePetState(waterUnits: number): PetState {
   const progress = (waterUnits - stage.minWater) / span;
   return {
     stageId: stage.id,
-    stageLabel: stage.label,
     waterUnits,
     waterForNextStage: nextStage.minWater - waterUnits,
     progressToNextStage: Math.min(1, Math.max(0, progress)),
@@ -232,8 +232,6 @@ export type BadgeId =
 
 export type BadgeDefinition = {
   id: BadgeId;
-  label: string;
-  description: string;
   earned: (counters: {
     totalSessions: number;
     bestStreak: number;
@@ -242,62 +240,24 @@ export type BadgeDefinition = {
   }) => boolean;
 };
 
-/** Badges rewarded purely from committed review events (SETE-89 product rule). */
+/**
+ * Badges rewarded purely from committed review events (SETE-89 product rule).
+ * Display labels/descriptions live in `shared/copy/gamificationCopy.ts` —
+ * this policy only owns the IDs and earn conditions.
+ */
 export const BADGE_DEFINITIONS: readonly BadgeDefinition[] = [
-  {
-    id: 'first_review',
-    label: 'Cú hích đầu tiên',
-    description: 'Hoàn thành phiên ôn tập đầu tiên',
-    earned: counters => counters.totalSessions >= 1,
-  },
-  {
-    id: 'streak_3',
-    label: 'Chuỗi 3 ngày',
-    description: 'Ôn tập 3 ngày liên tiếp',
-    earned: counters => counters.bestStreak >= 3,
-  },
-  {
-    id: 'streak_7',
-    label: 'Chuỗi 7 ngày',
-    description: 'Ôn tập 7 ngày liên tiếp',
-    earned: counters => counters.bestStreak >= 7,
-  },
-  {
-    id: 'streak_30',
-    label: 'Chuỗi 30 ngày',
-    description: 'Ôn tập 30 ngày liên tiếp',
-    earned: counters => counters.bestStreak >= 30,
-  },
-  {
-    id: 'xp_100',
-    label: 'Trăm điểm',
-    description: 'Tích lũy 100 XP',
-    earned: counters => counters.totalXp >= 100,
-  },
-  {
-    id: 'xp_500',
-    label: 'Năm trăm điểm',
-    description: 'Tích lũy 500 XP',
-    earned: counters => counters.totalXp >= 500,
-  },
-  {
-    id: 'water_10',
-    label: 'Tưới 10 lần',
-    description: '10 lượt ôn đúng hạn',
-    earned: counters => counters.waterUnits >= 10,
-  },
-  {
-    id: 'water_50',
-    label: 'Tưới 50 lần',
-    description: '50 lượt ôn đúng hạn',
-    earned: counters => counters.waterUnits >= 50,
-  },
+  {id: 'first_review', earned: counters => counters.totalSessions >= 1},
+  {id: 'streak_3', earned: counters => counters.bestStreak >= 3},
+  {id: 'streak_7', earned: counters => counters.bestStreak >= 7},
+  {id: 'streak_30', earned: counters => counters.bestStreak >= 30},
+  {id: 'xp_100', earned: counters => counters.totalXp >= 100},
+  {id: 'xp_500', earned: counters => counters.totalXp >= 500},
+  {id: 'water_10', earned: counters => counters.waterUnits >= 10},
+  {id: 'water_50', earned: counters => counters.waterUnits >= 50},
 ];
 
 export type EarnedBadge = {
   id: BadgeId;
-  label: string;
-  description: string;
 };
 
 export type GamificationSnapshot = {
@@ -336,7 +296,7 @@ export function deriveGamificationSnapshot(
   const counters = {totalSessions, bestStreak, totalXp, waterUnits};
   const badges = BADGE_DEFINITIONS.filter(definition =>
     definition.earned(counters),
-  ).map(({id, label, description}) => ({id, label, description}));
+  ).map(({id}) => ({id}));
 
   return {
     totalSessions,

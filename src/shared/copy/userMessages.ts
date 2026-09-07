@@ -43,6 +43,15 @@ export const SAVE_LESSON_SAVED_LABEL = 'Đã lưu';
 export const SAVE_LESSON_ERROR_MESSAGE =
   'Không thể lưu bài học. Vui lòng thử lại.';
 
+export const SAVE_LESSON_INVALID_DATA_MESSAGE =
+  'Không thể lưu bài học vì dữ liệu không hợp lệ.';
+
+export const FLASHCARD_NOT_FOUND_MESSAGE =
+  'Không tìm thấy flashcard để ôn tập.';
+
+export const FLASHCARD_RATING_SAVE_FAILED_MESSAGE =
+  'Không thể lưu kết quả ôn tập. Vui lòng thử lại.';
+
 export const OPEN_LESSON_ERROR_MESSAGE =
   'Không thể mở bài học đã lưu. Vui lòng thử lại.';
 

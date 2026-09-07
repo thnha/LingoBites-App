@@ -24,7 +24,7 @@ function saveFixtureLesson(): string {
   });
 
   if (!result.ok) {
-    throw new Error(result.message);
+    throw new Error(`saveLesson failed: ${result.errorCode}`);
   }
 
   return result.lessonId;
