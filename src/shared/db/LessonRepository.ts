@@ -223,4 +223,8 @@ export function clearAllLocalData(): void {
   db.execute('DELETE FROM lessons;');
   db.execute('DELETE FROM app_settings;');
   db.execute('DELETE FROM gamification_events;');
+  db.execute('DELETE FROM speaking_recordings;');
+  db.execute('DELETE FROM error_events;');
+  db.execute('DELETE FROM sync_outbox;');
+  db.execute('DELETE FROM content_review_items;');
 }

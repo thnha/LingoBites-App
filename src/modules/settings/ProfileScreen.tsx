@@ -318,6 +318,14 @@ export function ProfileScreen({navigation}: Props) {
             trailing={{text: audioCacheTrailingLabel}}
           />
           <ProfileSettingsRow
+            accessibilityLabel="Báo cáo tiến độ và năng lực"
+            icon="analytics"
+            label="Báo cáo tiến độ & Năng lực"
+            medallionTone="teal"
+            onPress={() => navigation.navigate('ProgressReport')}
+            trailing="chevron"
+          />
+          <ProfileSettingsRow
             accessibilityLabel="Quyền riêng tư"
             icon="visibility"
             label="Quyền riêng tư"

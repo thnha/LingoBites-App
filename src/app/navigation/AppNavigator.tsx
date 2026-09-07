@@ -29,6 +29,7 @@ import {ContentLessonRuntimeScreen} from '../../modules/content/runtime/ContentL
 import {SpeakingRoomScreen} from '../../modules/speaking/SpeakingRoomScreen';
 import {SpeakingShadowingActivity} from '../../modules/speaking/activities/SpeakingShadowingActivity';
 import {PrivacyNoteScreen} from '../../modules/settings/PrivacyNoteScreen';
+import {ProgressReportScreen} from '../../modules/settings/ProgressReportScreen';
 import {ProfileScreen} from '../../modules/settings/ProfileScreen';
 import {useFeatureEnabled} from '../../release';
 import {TabBar} from './TabBar';
@@ -209,6 +210,11 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen
         component={PrivacyNoteScreen}
         name="PrivacyNote"
+        options={{headerShown: false}}
+      />
+      <ProfileStack.Screen
+        component={ProgressReportScreen}
+        name="ProgressReport"
         options={{headerShown: false}}
       />
     </ProfileStack.Navigator>

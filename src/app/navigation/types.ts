@@ -83,6 +83,7 @@ export type LessonsStackParamList = {
 export type ProfileStackParamList = {
   ProfileMain: undefined;
   PrivacyNote: undefined;
+  ProgressReport: undefined;
 };
 
 export type RootTabParamList = {
