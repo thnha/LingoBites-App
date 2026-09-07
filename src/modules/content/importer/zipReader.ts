@@ -19,6 +19,7 @@
  */
 
 import {Buffer} from 'buffer';
+import {decodeUtf8} from './utf8';
 
 const SIG_LOCAL = 0x04034b50;
 const SIG_CENTRAL = 0x02014b50;
@@ -170,9 +171,7 @@ function parseCentralDirectory(
     if (nameEnd > end) {
       throw new ZipReadError('ZIP central directory name out of range');
     }
-    const name = new TextDecoder('utf-8').decode(
-      bytes.slice(nameStart, nameEnd),
-    );
+    const name = decodeUtf8(bytes.slice(nameStart, nameEnd));
     entries.push({
       name,
       method,

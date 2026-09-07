@@ -21,7 +21,6 @@ import {
 } from '../ContentPackageImporter';
 import {
   getActivePackage,
-  getMostRecentInactivePackage,
   getPackageById,
   listPackages,
 } from '../../../../shared/db/ContentPackageRepository';
@@ -86,6 +85,19 @@ function makeFailingFetcher(message = 'boom') {
   });
 }
 
+async function withoutGlobalTextDecoder<T>(fn: () => Promise<T>): Promise<T> {
+  const globalWithDecoder = globalThis as typeof globalThis & {
+    TextDecoder?: typeof TextDecoder;
+  };
+  const original = globalWithDecoder.TextDecoder;
+  Reflect.deleteProperty(globalWithDecoder, 'TextDecoder');
+  try {
+    return await fn();
+  } finally {
+    globalWithDecoder.TextDecoder = original;
+  }
+}
+
 describe('ContentPackageImporter', () => {
   beforeEach(() => {
     setupDb();
@@ -135,6 +147,25 @@ describe('ContentPackageImporter', () => {
     expect(chunkCount).toBe(10);
 
     expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it('imports a valid package when the mobile runtime has no TextDecoder global', async () => {
+    const lesson = makeLesson({includeGrammar: true, includeVocab: true});
+    const manifest = makeManifest(lesson);
+    const bytes = makePackageBytes(manifest, lesson);
+    const fetcher = makeFetcher(bytes);
+
+    const result = await withoutGlobalTextDecoder(() =>
+      importContentPackage('https://example.com/pkg.zip', {
+        fetcher,
+        now: () => NOW,
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.packageSlug).toBe('daily-standup');
+    expect(getActivePackage()?.slug).toBe('daily-standup');
   });
 
   // AC: "Importing a package with a corrupt checksum: fails before any DB

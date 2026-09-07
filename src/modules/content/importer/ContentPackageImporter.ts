@@ -42,11 +42,11 @@ import type {
   ContentPackageImportProgress,
   ContentPackageImportResult,
   ContentPackageRollbackResult,
-  ExtractedPackage,
   ContentLesson,
   ContentPackageManifest,
 } from './types';
 import {extractZip} from './zipReader';
+import {decodeUtf8} from './utf8';
 
 /**
  * Fetches a URL and returns the raw bytes. The default implementation
@@ -88,7 +88,7 @@ function nowIso(now?: () => string): string {
 }
 
 function utf8Decode(bytes: Uint8Array): string {
-  return new TextDecoder('utf-8').decode(bytes);
+  return decodeUtf8(bytes);
 }
 
 function buildProgress(
@@ -192,53 +192,6 @@ function loadLessonsFromExtracted(
   return {ok: true, lessons};
 }
 
-function extractPackageFromBytes(
-  zipBytes: Uint8Array,
-): Promise<
-  | {ok: true; extracted: ExtractedPackage}
-  | {ok: false; error: ContentPackageImportError}
-> {
-  return (async () => {
-    let entries: ReturnType<typeof extractZip> extends Promise<infer T>
-      ? T
-      : never;
-    try {
-      const result = await extractZip(zipBytes);
-      entries = result;
-    } catch (e) {
-      return {
-        ok: false as const,
-        error: makeError(
-          'INVALID_ZIP',
-          `Package is not a valid ZIP archive: ${(e as Error).message}`,
-        ),
-      };
-    }
-    const map = new Map<string, Uint8Array>();
-    for (const entry of entries.entries) {
-      map.set(entry.name, entry.bytes);
-    }
-    const manifestResult = loadManifestFromExtracted(map);
-    if (!manifestResult.ok) {
-      return manifestResult;
-    }
-    const lessonsResult = loadLessonsFromExtracted(
-      manifestResult.manifest,
-      map,
-    );
-    if (!lessonsResult.ok) {
-      return lessonsResult;
-    }
-    return {
-      ok: true as const,
-      extracted: {
-        manifest: manifestResult.manifest,
-        lessons: lessonsResult.lessons,
-      },
-    };
-  })();
-}
-
 type InsertPlan = {
   manifest: ContentPackageManifest;
   lessons: ContentLesson[];
@@ -266,7 +219,6 @@ function insertPlanIntoDb(plan: InsertPlan, getDb: typeof getDatabase): {
         importedAt: plan.importedAt,
         isActive: false,
       });
-      let itemCount = 0;
       for (const lesson of plan.lessons) {
         db.execute(
           `INSERT INTO content_lessons (
@@ -314,7 +266,6 @@ function insertPlanIntoDb(plan: InsertPlan, getDb: typeof getDatabase): {
               }),
             ],
           );
-          itemCount += 1;
         }
         for (const vocab of lesson.vocabulary ?? []) {
           db.execute(
