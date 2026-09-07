@@ -4,7 +4,6 @@
 
 # Xcode
 #
-build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -92,8 +91,9 @@ AGENTS.md
 description.md
 reply.md
 artifacts/
+workdir/
+attachments/
 
 .vscode/*
 .vibeguard/*
-.worktree/*
-.multica/*
+.worktrees/
