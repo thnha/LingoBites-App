@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {CommonActions} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {HomeStackParamList} from '../../app/navigation/types';
@@ -49,17 +49,14 @@ function getStepState(
 
 function StepIndicator({state, theme}: {state: StepState; theme: AppTheme}) {
   const size = 26;
+  const themedStyles = React.useMemo(
+    () => makeStepIndicatorStyles(theme, size, state === 'done'),
+    [state, theme],
+  );
 
   if (state === 'active') {
     return (
-      <View
-        style={{
-          alignItems: 'center',
-          height: size,
-          justifyContent: 'center',
-          width: size,
-        }}
-      >
+      <View style={styles.activeStepIndicator}>
         <ActivityIndicator color={theme.colors.primary} size="small" />
       </View>
     );
@@ -67,35 +64,15 @@ function StepIndicator({state, theme}: {state: StepState; theme: AppTheme}) {
 
   const filled = state === 'done';
   return (
-    <View
-      style={{
-        alignItems: 'center',
-        backgroundColor: filled ? theme.colors.primary : undefined,
-        borderColor: theme.colors.outlineVariant,
-        borderRadius: size / 2,
-        borderWidth: filled ? 0 : 2,
-        height: size,
-        justifyContent: 'center',
-        width: size,
-      }}
-    >
-      {filled ? (
-        <AppText
-          style={{
-            color: theme.colors.text.inverse,
-            fontSize: 14,
-            fontWeight: '800',
-          }}
-        >
-          ✓
-        </AppText>
-      ) : null}
+    <View style={themedStyles.indicator}>
+      {filled ? <AppText style={themedStyles.checkmark}>✓</AppText> : null}
     </View>
   );
 }
 
 export function AnalyzingScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const {confirmedText, sourceType, origin} = route.params;
 
   const [progress, setProgress] = useState<AnalysisProgress>({
@@ -174,45 +151,30 @@ export function AnalyzingScreen({navigation, route}: Props) {
   return (
     <AppScreen>
       <ScreenHeader onBack={() => navigation.goBack()} title="Đang phân tích" />
-      <View
-        style={{
-          flex: 1,
-          gap: theme.spacing.xl,
-          justifyContent: 'center',
-          paddingBottom: theme.spacing.xxl,
-          paddingHorizontal: theme.gutter,
-        }}
-      >
-        <View style={{alignItems: 'center', gap: theme.spacing.sm}}>
-          <AppText style={{textAlign: 'center'}} variant="title">
+      <View style={themedStyles.container}>
+        <View style={themedStyles.heroText}>
+          <AppText style={styles.centerText} variant="title">
             Đang tạo bài học…
           </AppText>
-          <AppText
-            color="secondary"
-            style={{textAlign: 'center'}}
-            variant="body"
-          >
+          <AppText color="secondary" style={styles.centerText} variant="body">
             {subtitle}
           </AppText>
         </View>
 
-        <View style={{gap: theme.spacing.md}}>
+        <View style={themedStyles.stepList}>
           {STAGES.map(step => {
             const stepState = getStepState(step.key, progress.stages, done);
             return (
-              <View
-                key={step.key}
-                style={{alignItems: 'center', flexDirection: 'row', gap: 12}}
-              >
+              <View key={step.key} style={styles.stepRow}>
                 <StepIndicator state={stepState} theme={theme} />
                 <AppText
-                  style={{
-                    color:
-                      stepState === 'pending'
-                        ? theme.colors.text.muted
-                        : theme.colors.text.primary,
-                    fontWeight: stepState === 'active' ? '700' : '500',
-                  }}
+                  style={
+                    stepState === 'pending'
+                      ? themedStyles.pendingStepText
+                      : stepState === 'active'
+                      ? themedStyles.activeStepText
+                      : themedStyles.doneStepText
+                  }
                 >
                   {step.label}
                 </AppText>
@@ -228,4 +190,76 @@ export function AnalyzingScreen({navigation, route}: Props) {
       </View>
     </AppScreen>
   );
+}
+
+const styles = StyleSheet.create({
+  activeStepIndicator: {
+    alignItems: 'center',
+    height: 26,
+    justifyContent: 'center',
+    width: 26,
+  },
+  centerText: {
+    textAlign: 'center',
+  },
+  stepRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+  },
+});
+
+function makeStepIndicatorStyles(
+  theme: AppTheme,
+  size: number,
+  filled: boolean,
+) {
+  return StyleSheet.create({
+    checkmark: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.typography.size.sm,
+      fontWeight: theme.typography.weight.bold,
+    },
+    indicator: {
+      alignItems: 'center',
+      backgroundColor: filled ? theme.colors.primary : undefined,
+      borderColor: theme.colors.outlineVariant,
+      borderRadius: size / 2,
+      borderWidth: filled ? 0 : 2,
+      height: size,
+      justifyContent: 'center',
+      width: size,
+    },
+  });
+}
+
+function makeStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    activeStepText: {
+      color: theme.colors.text.primary,
+      fontWeight: '700',
+    },
+    container: {
+      flex: 1,
+      gap: theme.spacing.xl,
+      justifyContent: 'center',
+      paddingBottom: theme.spacing.xxl,
+      paddingHorizontal: theme.gutter,
+    },
+    doneStepText: {
+      color: theme.colors.text.primary,
+      fontWeight: '500',
+    },
+    heroText: {
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    pendingStepText: {
+      color: theme.colors.text.muted,
+      fontWeight: '500',
+    },
+    stepList: {
+      gap: theme.spacing.md,
+    },
+  });
 }

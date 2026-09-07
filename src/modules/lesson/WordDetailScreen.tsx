@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Pressable, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
@@ -20,7 +20,7 @@ import {
   unsaveFlashcard,
 } from '../../shared/db/FlashcardRepository';
 import type {FlashcardRecord} from '../../shared/db/types';
-import {useAppTheme} from '../../theme';
+import {useAppTheme, type AppTheme} from '../../theme';
 import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 
 type Props =
@@ -29,6 +29,7 @@ type Props =
 
 export function WordDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const nav = navigation as NativeStackScreenProps<
     HomeStackParamList,
@@ -95,42 +96,26 @@ export function WordDetailScreen({navigation, route}: Props) {
         title="Từ vựng"
       />
       <ScrollView
-        contentContainerStyle={{
-          gap: theme.spacing.lg,
-          paddingBottom: theme.spacing.lg,
-          paddingHorizontal: theme.gutter,
-          paddingTop: theme.spacing.sm,
-        }}
+        contentContainerStyle={themedStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <AppCard
-          style={{alignItems: 'center', gap: theme.spacing.sm, paddingTop: 30}}
-        >
+        <AppCard style={themedStyles.heroCard}>
           {word.cefr_level ? (
-            <View style={{position: 'absolute', right: 16, top: 16}}>
+            <View style={styles.cefrBadge}>
               <Chip label={word.cefr_level} tone="gold" />
             </View>
           ) : null}
-          <AppText
-            style={{color: theme.colors.primary, fontSize: 44, lineHeight: 48}}
-          >
-            {word.word}
-          </AppText>
+          <AppText style={themedStyles.word}>{word.word}</AppText>
           {metaParts.length > 0 ? (
-            <View
-              style={{
-                alignItems: 'center',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: 8,
-              }}
-            >
+            <View style={styles.metaRow}>
               {metaParts.map((part, partIndex) => (
                 <React.Fragment key={part}>
                   {partIndex > 0 ? <AppText color="muted">•</AppText> : null}
                   <AppText
                     color="secondary"
-                    style={{fontStyle: part === word.ipa ? 'normal' : 'italic'}}
+                    style={
+                      part === word.ipa ? styles.normalText : styles.italicText
+                    }
                   >
                     {part}
                   </AppText>
@@ -138,18 +123,8 @@ export function WordDetailScreen({navigation, route}: Props) {
               ))}
             </View>
           ) : null}
-          <View
-            style={{
-              alignSelf: 'stretch',
-              backgroundColor: theme.colors.outlineVariant,
-              height: 1,
-              marginVertical: theme.spacing.sm,
-            }}
-          />
-          <AppText
-            style={{color: theme.colors.secondary, fontWeight: '700'}}
-            variant="h3"
-          >
+          <View style={themedStyles.divider} />
+          <AppText style={themedStyles.meaning} variant="h3">
             {word.meaning_vi}
           </AppText>
           {word.phrase_from_text ? (
@@ -160,24 +135,15 @@ export function WordDetailScreen({navigation, route}: Props) {
         </AppCard>
 
         {word.why_important ? (
-          <AppCard
-            style={{
-              borderLeftColor: theme.colors.accent,
-              borderLeftWidth: 4,
-              gap: theme.spacing.sm,
-            }}
-          >
-            <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
+          <AppCard style={themedStyles.whyCard}>
+            <View style={styles.sectionTitleRow}>
               <MaterialIcon
                 color={theme.colors.primary}
                 filled
                 name="lightbulb"
                 size={22}
               />
-              <AppText
-                style={{color: theme.colors.primary, fontWeight: '600'}}
-                variant="h3"
-              >
+              <AppText style={themedStyles.whyTitle} variant="h3">
                 Vì sao nên học
               </AppText>
             </View>
@@ -186,43 +152,25 @@ export function WordDetailScreen({navigation, route}: Props) {
         ) : null}
 
         {word.example ? (
-          <AppCard
-            style={{
-              borderLeftColor: theme.colors.secondaryContainer,
-              borderLeftWidth: 4,
-              gap: theme.spacing.sm,
-            }}
-          >
-            <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
+          <AppCard style={themedStyles.exampleCard}>
+            <View style={styles.sectionTitleRow}>
               <MaterialIcon
                 color={theme.colors.secondary}
                 filled
                 name="format_quote"
                 size={22}
               />
-              <AppText
-                style={{color: theme.colors.secondary, fontWeight: '600'}}
-                variant="h3"
-              >
+              <AppText style={themedStyles.exampleTitle} variant="h3">
                 Ví dụ
               </AppText>
             </View>
-            <View
-              style={{
-                backgroundColor: theme.colors.surfaceLow,
-                borderLeftColor: theme.colors.secondaryContainer,
-                borderLeftWidth: 4,
-                borderRadius: 10,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-              }}
-            >
-              <AppText style={{fontWeight: '700'}} variant="bodyLg">
+            <View style={themedStyles.exampleQuote}>
+              <AppText style={styles.boldText} variant="bodyLg">
                 {word.example}
               </AppText>
             </View>
             {word.example_translation ? (
-              <AppText color="muted" style={{fontStyle: 'italic'}}>
+              <AppText color="muted" style={styles.italicText}>
                 {word.example_translation}
               </AppText>
             ) : null}
@@ -230,28 +178,14 @@ export function WordDetailScreen({navigation, route}: Props) {
         ) : null}
       </ScrollView>
       {hasPractice ? (
-        <BottomActionBar
-          style={{
-            backgroundColor: theme.colors.background,
-            borderTopColor: theme.colors.outlineVariant,
-            paddingBottom: theme.spacing.lg,
-          }}
-        >
+        <BottomActionBar style={themedStyles.actionBar}>
           <Pressable
             accessibilityLabel="Luyện từ này"
             accessibilityRole="button"
             onPress={() => nav.navigate('Practice', {questions: practice})}
             style={({pressed}) => [
-              {
-                alignItems: 'center',
-                backgroundColor: theme.colors.primary,
-                borderRadius: theme.radius.lg,
-                flexDirection: 'row',
-                gap: 8,
-                justifyContent: 'center',
-                minHeight: 52,
-                opacity: pressed ? theme.states.pressedOpacity : 1,
-              },
+              themedStyles.practiceButton,
+              pressed && themedStyles.pressed,
             ]}
           >
             <MaterialIcon
@@ -259,13 +193,7 @@ export function WordDetailScreen({navigation, route}: Props) {
               name="fitness_center"
               size={22}
             />
-            <AppText
-              style={{
-                color: theme.colors.text.inverse,
-                fontSize: 18,
-                fontWeight: '600',
-              }}
-            >
+            <AppText style={themedStyles.practiceButtonText}>
               Luyện từ này
             </AppText>
           </Pressable>
@@ -273,4 +201,112 @@ export function WordDetailScreen({navigation, route}: Props) {
       ) : null}
     </AppScreen>
   );
+}
+
+const styles = StyleSheet.create({
+  boldText: {
+    fontWeight: '700',
+  },
+  cefrBadge: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+  },
+  italicText: {
+    fontStyle: 'italic',
+  },
+  metaRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  normalText: {
+    fontStyle: 'normal',
+  },
+  sectionTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+});
+
+function makeStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    actionBar: {
+      backgroundColor: theme.colors.background,
+      borderTopColor: theme.colors.outlineVariant,
+      paddingBottom: theme.spacing.lg,
+    },
+    divider: {
+      alignSelf: 'stretch',
+      backgroundColor: theme.colors.outlineVariant,
+      height: 1,
+      marginVertical: theme.spacing.sm,
+    },
+    exampleCard: {
+      borderLeftColor: theme.colors.secondaryContainer,
+      borderLeftWidth: 4,
+      gap: theme.spacing.sm,
+    },
+    exampleQuote: {
+      backgroundColor: theme.colors.surfaceLow,
+      borderLeftColor: theme.colors.secondaryContainer,
+      borderLeftWidth: 4,
+      borderRadius: 10,
+      paddingHorizontal: 14,
+      paddingVertical: theme.spacing.md,
+    },
+    exampleTitle: {
+      color: theme.colors.secondary,
+      fontWeight: theme.typography.weight.medium,
+    },
+    heroCard: {
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      paddingTop: 30,
+    },
+    meaning: {
+      color: theme.colors.secondary,
+      fontWeight: '700',
+    },
+    practiceButton: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.radius.lg,
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+      justifyContent: 'center',
+      minHeight: 52,
+      opacity: 1,
+    },
+    practiceButtonText: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.typography.size.md,
+      fontWeight: theme.typography.weight.medium,
+    },
+    pressed: {
+      opacity: theme.states.pressedOpacity,
+    },
+    scrollContent: {
+      gap: theme.spacing.lg,
+      paddingBottom: theme.spacing.lg,
+      paddingHorizontal: theme.gutter,
+      paddingTop: theme.spacing.sm,
+    },
+    whyCard: {
+      borderLeftColor: theme.colors.accent,
+      borderLeftWidth: 4,
+      gap: theme.spacing.sm,
+    },
+    whyTitle: {
+      color: theme.colors.primary,
+      fontWeight: theme.typography.weight.medium,
+    },
+    word: {
+      color: theme.colors.primary,
+      fontSize: 44,
+      lineHeight: 48,
+    },
+  });
 }

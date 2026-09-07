@@ -1,8 +1,8 @@
 import React from 'react';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {AppText} from './AppText';
 import {IconButton} from './IconButton';
-import {useAppTheme} from '../theme';
+import {useAppTheme, type AppTheme} from '../theme';
 
 type Props = {
   title: string;
@@ -18,25 +18,11 @@ export function ScreenHeader({
   rightAction,
 }: Props) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
 
   return (
-    <View
-      style={{
-        alignItems: 'center',
-        flexDirection: 'row',
-        height: 56,
-        justifyContent: 'space-between',
-        paddingHorizontal: theme.gutter,
-      }}
-    >
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: 4,
-          minWidth: 0,
-        }}
-      >
+    <View style={themedStyles.header}>
+      <View style={styles.titleRow}>
         {onBack ? (
           <IconButton
             accessibilityLabel={backLabel}
@@ -46,16 +32,46 @@ export function ScreenHeader({
             tone="bare"
           />
         ) : (
-          <View style={{width: 40}} />
+          <View style={styles.backPlaceholder} />
         )}
-        <AppText
-          numberOfLines={1}
-          style={{color: theme.colors.primary, fontSize: 20, fontWeight: '600'}}
-        >
+        <AppText numberOfLines={1} style={themedStyles.title}>
           {title}
         </AppText>
       </View>
-      <View style={{alignItems: 'flex-end', minWidth: 40}}>{rightAction}</View>
+      <View style={styles.rightAction}>{rightAction}</View>
     </View>
   );
+}
+
+const styles = StyleSheet.create({
+  backPlaceholder: {
+    width: 40,
+  },
+  rightAction: {
+    alignItems: 'flex-end',
+    minWidth: 40,
+  },
+  titleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+    minWidth: 0,
+  },
+});
+
+function makeStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    header: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      height: 56,
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.gutter,
+    },
+    title: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.size.lg,
+      fontWeight: theme.typography.weight.medium,
+    },
+  });
 }

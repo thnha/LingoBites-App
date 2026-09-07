@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
@@ -15,7 +15,7 @@ import {ImagePlaceholder} from '../../components/ImagePlaceholder';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {EMPTY_SECTION_MESSAGE} from '../../shared/copy/userMessages';
-import {useAppTheme} from '../../theme';
+import {useAppTheme, type AppTheme} from '../../theme';
 import {useQuiz} from './useQuiz';
 
 type Props =
@@ -24,6 +24,7 @@ type Props =
 
 export function PracticeScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const {questions, title} = route.params;
   const quiz = useQuiz(questions);
 
@@ -45,15 +46,8 @@ export function PracticeScreen({navigation, route}: Props) {
           }
           title={headerTitle}
         />
-        <View
-          style={{
-            alignItems: 'center',
-            flex: 1,
-            justifyContent: 'center',
-            padding: theme.spacing.xl,
-          }}
-        >
-          <AppText color="muted" style={{textAlign: 'center'}}>
+        <View style={themedStyles.emptyState}>
+          <AppText color="muted" style={styles.centerText}>
             {EMPTY_SECTION_MESSAGE}
           </AppText>
         </View>
@@ -80,12 +74,7 @@ export function PracticeScreen({navigation, route}: Props) {
         title={headerTitle}
       />
       <ScrollView
-        contentContainerStyle={{
-          gap: theme.spacing.lg,
-          paddingBottom: theme.spacing.xxl,
-          paddingHorizontal: theme.gutter,
-          paddingTop: theme.spacing.sm,
-        }}
+        contentContainerStyle={themedStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <HandoffProgressTrack
@@ -111,6 +100,7 @@ export function PracticeScreen({navigation, route}: Props) {
 
 function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const {state, current, isLast, isMultipleChoice, correctIndex} = quiz;
   if (!current) {
     return null;
@@ -118,13 +108,13 @@ function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
   const answered = state.status === 'answered';
 
   return (
-    <View style={{gap: theme.spacing.lg}}>
+    <View style={themedStyles.questionBlock}>
       <ImagePlaceholder height={120} label="Câu hỏi luyện tập" />
 
       <AppText variant="h2">{current.question}</AppText>
 
       {isMultipleChoice && current.options ? (
-        <View style={{gap: 10}}>
+        <View style={styles.optionList}>
           {current.options.map((option, optionIndex) => (
             <OptionButton
               key={`${optionIndex}-${option}`}
@@ -137,16 +127,13 @@ function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
           ))}
         </View>
       ) : (
-        <AppCard style={{gap: theme.spacing.sm}}>
+        <AppCard style={themedStyles.answerCard}>
           {answered ? (
             <>
               <AppText color="muted" variant="caption">
                 Đáp án
               </AppText>
-              <AppText
-                style={{fontWeight: theme.typography.weight.bold}}
-                variant="bodyLg"
-              >
+              <AppText style={themedStyles.answerText} variant="bodyLg">
                 {current.answer}
               </AppText>
             </>
@@ -161,14 +148,14 @@ function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
       )}
 
       {answered ? (
-        <View style={{gap: theme.spacing.sm}}>
+        <View style={themedStyles.feedbackBlock}>
           {state.isCorrect !== null ? (
             <AppText
-              style={{
-                color: state.isCorrect
-                  ? theme.colors.primary
-                  : theme.colors.danger,
-              }}
+              style={
+                state.isCorrect
+                  ? themedStyles.correctFeedback
+                  : themedStyles.incorrectFeedback
+              }
               variant="label"
             >
               {state.isCorrect
@@ -216,6 +203,10 @@ function OptionButton({
     border = theme.colors.danger;
     textColor = theme.colors.secondary;
   }
+  const themedStyles = React.useMemo(
+    () => makeOptionStyles(theme, background, border, textColor),
+    [background, border, textColor, theme],
+  );
 
   return (
     <Pressable
@@ -225,20 +216,11 @@ function OptionButton({
       disabled={answered}
       onPress={onPress}
       style={({pressed}) => [
-        {
-          backgroundColor: background,
-          borderColor: border,
-          borderRadius: 18,
-          borderWidth: 2,
-          justifyContent: 'center',
-          minHeight: 52,
-          paddingHorizontal: theme.spacing.lg,
-          paddingVertical: theme.spacing.sm,
-        },
-        pressed && !answered && {opacity: theme.states.pressedOpacity},
+        themedStyles.button,
+        pressed && !answered && themedStyles.pressed,
       ]}
     >
-      <AppText style={{color: textColor, fontWeight: '600'}}>{label}</AppText>
+      <AppText style={themedStyles.label}>{label}</AppText>
     </Pressable>
   );
 }
@@ -257,15 +239,10 @@ function ResultCard({
   onDone: () => void;
 }) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   return (
-    <View style={{gap: theme.spacing.lg}}>
-      <AppCard
-        style={{
-          alignItems: 'center',
-          gap: theme.spacing.sm,
-          paddingVertical: theme.spacing.xl,
-        }}
-      >
+    <View style={themedStyles.resultBlock}>
+      <AppCard style={themedStyles.resultCard}>
         <MaterialIcon
           color={theme.colors.accent}
           filled
@@ -275,7 +252,7 @@ function ResultCard({
         <AppText color="muted" variant="caption">
           Kết quả
         </AppText>
-        <AppText style={{color: theme.colors.primary}} variant="display">
+        <AppText style={themedStyles.resultScore} variant="display">
           {score}/{total}
         </AppText>
         <AppText color="secondary">Độ chính xác {accuracy}%</AppText>
@@ -284,4 +261,86 @@ function ResultCard({
       <AppButton onPress={onDone} title="Hoàn tất" />
     </View>
   );
+}
+
+const styles = StyleSheet.create({
+  centerText: {
+    textAlign: 'center',
+  },
+  optionList: {
+    gap: 10,
+  },
+});
+
+function makeStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    answerCard: {
+      gap: theme.spacing.sm,
+    },
+    answerText: {
+      fontWeight: theme.typography.weight.bold,
+    },
+    correctFeedback: {
+      color: theme.colors.primary,
+    },
+    emptyState: {
+      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+      padding: theme.spacing.xl,
+    },
+    feedbackBlock: {
+      gap: theme.spacing.sm,
+    },
+    incorrectFeedback: {
+      color: theme.colors.danger,
+    },
+    questionBlock: {
+      gap: theme.spacing.lg,
+    },
+    resultBlock: {
+      gap: theme.spacing.lg,
+    },
+    resultCard: {
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      paddingVertical: theme.spacing.xl,
+    },
+    resultScore: {
+      color: theme.colors.primary,
+    },
+    scrollContent: {
+      gap: theme.spacing.lg,
+      paddingBottom: theme.spacing.xxl,
+      paddingHorizontal: theme.gutter,
+      paddingTop: theme.spacing.sm,
+    },
+  });
+}
+
+function makeOptionStyles(
+  theme: AppTheme,
+  backgroundColor: string,
+  borderColor: string,
+  color: string,
+) {
+  return StyleSheet.create({
+    button: {
+      backgroundColor,
+      borderColor,
+      borderRadius: 18,
+      borderWidth: 2,
+      justifyContent: 'center',
+      minHeight: 52,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.sm,
+    },
+    label: {
+      color,
+      fontWeight: theme.typography.weight.medium,
+    },
+    pressed: {
+      opacity: theme.states.pressedOpacity,
+    },
+  });
 }

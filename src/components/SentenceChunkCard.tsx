@@ -1,8 +1,8 @@
 import React from 'react';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {AppText} from './AppText';
 import {Chip} from './Chip';
-import {useAppTheme} from '../theme';
+import {useAppTheme, type AppTheme} from '../theme';
 
 type Props = {
   text: string;
@@ -21,32 +21,16 @@ export function SentenceChunkCard({
   const barColor = accentBar
     ? theme.colors.accent
     : theme.colors.secondaryContainer;
+  const themedStyles = React.useMemo(
+    () => makeStyles(theme, barColor),
+    [barColor, theme],
+  );
 
   return (
-    <View
-      style={{
-        alignItems: 'center',
-        backgroundColor: theme.colors.surface,
-        borderLeftColor: barColor,
-        borderLeftWidth: 4,
-        borderRadius: 18,
-        flexDirection: 'row',
-        gap: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        ...theme.shadow.soft,
-      }}
-    >
-      <View style={{flex: 1, gap: 3}}>
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 8,
-          }}
-        >
-          <AppText style={{fontSize: 18, fontWeight: '700'}}>{text}</AppText>
+    <View style={themedStyles.card}>
+      <View style={styles.copy}>
+        <View style={styles.textRow}>
+          <AppText style={styles.text}>{text}</AppText>
           {roleLabel ? (
             <Chip label={roleLabel} tone={accentBar ? 'gold' : 'coralSoft'} />
           ) : null}
@@ -57,4 +41,38 @@ export function SentenceChunkCard({
       </View>
     </View>
   );
+}
+
+const styles = StyleSheet.create({
+  copy: {
+    flex: 1,
+    gap: 3,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  textRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+});
+
+function makeStyles(theme: AppTheme, barColor: string) {
+  return StyleSheet.create({
+    card: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderLeftColor: barColor,
+      borderLeftWidth: 4,
+      borderRadius: 18,
+      flexDirection: 'row',
+      gap: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: 14,
+      ...theme.shadow.soft,
+    },
+  });
 }

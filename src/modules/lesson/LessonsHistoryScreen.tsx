@@ -7,6 +7,7 @@ import {
   FlatList,
   Pressable,
   ScrollView,
+  StyleSheet,
   View,
 } from 'react-native';
 import type {
@@ -29,13 +30,10 @@ import {
   listActivePackageLessons,
   type ContentLessonListItem,
 } from '../../shared/db/ContentRuntimeRepository';
-import {
-  useLibraryStore,
-  type LibrarySubjectFilter,
-} from '../../store/useLibraryStore';
-import {useAppTheme} from '../../theme';
-import type {LibraryLessonCardView} from '../../types/lesson';
+import type {LibrarySubjectFilter} from '../../store/useLibraryStore';
+import {useAppTheme, type AppTheme} from '../../theme';
 import {bootstrapContentPackage} from '../content/bootstrap';
+import {useLessonLibrary} from './useLessonLibrary';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'LessonsList'>;
 
@@ -46,26 +44,20 @@ const FILTER_CHIPS: Array<{key: LibrarySubjectFilter; label: string}> = [
   {key: 'idioms', label: 'Thành ngữ'},
 ];
 
-/** Placeholder stats until progress store ships (handoff visual parity). */
-const SUMMARY_PLACEHOLDER = {
-  accuracy: '85%',
-  streakDays: 5,
-} as const;
-
 export function LessonsHistoryScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const themedStyles = useMemo(() => makeStyles(theme), [theme]);
   const tabNavigation =
     navigation.getParent<NavigationProp<RootTabParamList>>();
-  const query = useLibraryStore(state => state.query);
-  const subjectFilter = useLibraryStore(state => state.subjectFilter);
-  const setQuery = useLibraryStore(state => state.setQuery);
-  const setSubjectFilter = useLibraryStore(state => state.setSubjectFilter);
-  const [userLessons, setUserLessons] = useState<LibraryLessonCardView[]>(() =>
-    useLibraryStore.getState().getLibraryCards(),
-  );
-  const [summary, setSummary] = useState(() =>
-    useLibraryStore.getState().getSummary(),
-  );
+  const {
+    query,
+    subjectFilter,
+    setQuery,
+    setSubjectFilter,
+    userLessons,
+    summary,
+    refresh,
+  } = useLessonLibrary();
 
   const [packagedLessons, setPackagedLessons] = useState<
     ContentLessonListItem[]
@@ -105,11 +97,6 @@ export function LessonsHistoryScreen({navigation}: Props) {
     }
   }, []);
 
-  const refresh = useCallback(() => {
-    setUserLessons(useLibraryStore.getState().getLibraryCards());
-    setSummary(useLibraryStore.getState().getSummary());
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       refresh();
@@ -141,40 +128,18 @@ export function LessonsHistoryScreen({navigation}: Props) {
 
   return (
     <AppScreen>
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          height: 56,
-          justifyContent: 'space-between',
-          paddingHorizontal: theme.gutter,
-        }}
-      >
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            gap: 10,
-            minWidth: 0,
-          }}
-        >
+      <View style={themedStyles.header}>
+        <View style={styles.headerTitleRow}>
           <MaterialIcon
             color={theme.colors.primary}
             name="translate"
             size={26}
           />
-          <AppText
-            numberOfLines={1}
-            style={{
-              color: theme.colors.primary,
-              fontSize: 20,
-              fontWeight: '600',
-            }}
-          >
+          <AppText numberOfLines={1} style={themedStyles.headerTitle}>
             Bài học
           </AppText>
         </View>
-        <View style={{flexDirection: 'row', gap: 8}}>
+        <View style={styles.headerActions}>
           <IconButton
             accessibilityLabel="Bài học đóng gói"
             icon="school"
@@ -191,27 +156,16 @@ export function LessonsHistoryScreen({navigation}: Props) {
       </View>
 
       <FlatList
-        contentContainerStyle={{
-          gap: 14,
-          paddingBottom: 28,
-          paddingHorizontal: theme.gutter,
-          paddingTop: theme.spacing.sm,
-        }}
+        contentContainerStyle={themedStyles.listContent}
         data={userLessons}
         keyExtractor={item => item.id}
         ListEmptyComponent={
           !hasAnyLessons &&
           bootstrapState !== 'loading' &&
           bootstrapState !== 'error' ? (
-            <View
-              style={{
-                alignItems: 'center',
-                gap: theme.spacing.md,
-                paddingVertical: 24,
-              }}
-            >
+            <View style={themedStyles.emptyState}>
               <Medallion label="📖" />
-              <AppText color="secondary" style={{textAlign: 'center'}}>
+              <AppText color="secondary" style={styles.centerText}>
                 {query || subjectFilter !== 'all'
                   ? 'Không tìm thấy bài học phù hợp.'
                   : NO_LESSONS_MESSAGE}
@@ -220,126 +174,72 @@ export function LessonsHistoryScreen({navigation}: Props) {
           ) : null
         }
         ListFooterComponent={
-          <View style={{gap: 12, marginTop: theme.spacing.sm}}>
+          <View style={themedStyles.footer}>
             <SectionHeader title="Tổng kết học tập" />
-            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 12}}>
+            <View style={styles.summaryGrid}>
               <View
-                style={{
-                  alignItems: 'center',
-                  backgroundColor: theme.colors.accentSoft,
-                  borderRadius: 18,
-                  flexBasis: '47%',
-                  flexGrow: 1,
-                  paddingHorizontal: 12,
-                  paddingVertical: 16,
-                }}
+                style={[
+                  themedStyles.summaryCard,
+                  themedStyles.summaryCardAccent,
+                ]}
               >
-                <AppText
-                  style={{
-                    color: theme.colors.primary,
-                    fontSize: 26,
-                    fontWeight: '700',
-                  }}
-                >
+                <AppText style={themedStyles.summaryValuePrimary}>
                   {summary.lessonCount}
                 </AppText>
-                <AppText
-                  style={{
-                    color: theme.colors.primary,
-                    fontSize: 12,
-                    fontWeight: '600',
-                  }}
-                >
+                <AppText style={themedStyles.summaryLabelPrimary}>
                   Bài đã học
                 </AppText>
               </View>
               <View
-                style={{
-                  alignItems: 'center',
-                  backgroundColor: theme.colors.tertiarySoft,
-                  borderRadius: 18,
-                  flexBasis: '47%',
-                  flexGrow: 1,
-                  paddingHorizontal: 12,
-                  paddingVertical: 16,
-                }}
+                style={[
+                  themedStyles.summaryCard,
+                  themedStyles.summaryCardTertiary,
+                ]}
               >
-                <AppText
-                  style={{
-                    color: theme.colors.tertiary,
-                    fontSize: 26,
-                    fontWeight: '700',
-                  }}
-                >
+                <AppText style={themedStyles.summaryValueTertiary}>
                   {wordCountLabel}
                 </AppText>
-                <AppText
-                  style={{
-                    color: theme.colors.tertiary,
-                    fontSize: 12,
-                    fontWeight: '600',
-                  }}
-                >
+                <AppText style={themedStyles.summaryLabelTertiary}>
                   Từ đã biết
                 </AppText>
               </View>
               <View
-                style={{
-                  alignItems: 'center',
-                  backgroundColor: theme.colors.secondarySoft,
-                  borderRadius: 18,
-                  flexBasis: '47%',
-                  flexGrow: 1,
-                  paddingHorizontal: 12,
-                  paddingVertical: 16,
-                }}
+                style={[
+                  themedStyles.summaryCard,
+                  themedStyles.summaryCardSecondary,
+                ]}
               >
                 <AppText
-                  style={{
-                    color: theme.colors.secondary,
-                    fontSize: 26,
-                    fontWeight: '700',
-                  }}
+                  adjustsFontSizeToFit
+                  numberOfLines={1}
+                  style={themedStyles.summaryEmptyValueSecondary}
                 >
-                  {SUMMARY_PLACEHOLDER.accuracy}
+                  {summary.accuracyLabel}
                 </AppText>
-                <AppText
-                  style={{
-                    color: theme.colors.secondary,
-                    fontSize: 12,
-                    fontWeight: '600',
-                  }}
-                >
+                <AppText style={themedStyles.summaryLabelSecondary}>
                   Độ chính xác
                 </AppText>
               </View>
               <View
-                style={{
-                  alignItems: 'center',
-                  backgroundColor: theme.colors.accentSoft,
-                  borderRadius: 18,
-                  flexBasis: '47%',
-                  flexGrow: 1,
-                  paddingHorizontal: 12,
-                  paddingVertical: 16,
-                }}
+                style={[
+                  themedStyles.summaryCard,
+                  themedStyles.summaryCardAccent,
+                ]}
               >
                 <AppText
-                  style={{
-                    color: theme.colors.primary,
-                    fontSize: 26,
-                    fontWeight: '700',
-                  }}
+                  adjustsFontSizeToFit
+                  numberOfLines={1}
+                  style={
+                    summary.currentStreak > 0
+                      ? themedStyles.summaryValuePrimary
+                      : themedStyles.summaryEmptyValuePrimary
+                  }
                 >
-                  {SUMMARY_PLACEHOLDER.streakDays}
+                  {summary.currentStreak > 0
+                    ? summary.currentStreak
+                    : 'Chưa có dữ liệu'}
                 </AppText>
-                <AppText
-                  style={{
-                    color: theme.colors.primary,
-                    fontSize: 12,
-                    fontWeight: '600',
-                  }}
-                >
+                <AppText style={themedStyles.summaryLabelPrimary}>
                   Chuỗi ngày
                 </AppText>
               </View>
@@ -347,20 +247,9 @@ export function LessonsHistoryScreen({navigation}: Props) {
           </View>
         }
         ListHeaderComponent={
-          <View style={{gap: theme.spacing.md, marginBottom: 2}}>
+          <View style={themedStyles.listHeader}>
             <View>
-              <View
-                pointerEvents="none"
-                style={{
-                  alignItems: 'center',
-                  bottom: 0,
-                  justifyContent: 'center',
-                  left: 16,
-                  position: 'absolute',
-                  top: 0,
-                  zIndex: 1,
-                }}
-              >
+              <View pointerEvents="none" style={styles.searchIcon}>
                 <MaterialIcon
                   color={theme.colors.primary}
                   name="search"
@@ -370,15 +259,9 @@ export function LessonsHistoryScreen({navigation}: Props) {
               <TextField
                 onChangeText={value => {
                   setQuery(value);
-                  refresh();
                 }}
                 placeholder="Tìm bài học, chủ đề…"
-                style={{
-                  borderColor: theme.colors.accentSoft,
-                  borderRadius: theme.radius.pill,
-                  borderWidth: 2,
-                  paddingLeft: 48,
-                }}
+                style={themedStyles.searchField}
                 value={query}
               />
             </View>
@@ -386,16 +269,13 @@ export function LessonsHistoryScreen({navigation}: Props) {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{gap: 10, paddingBottom: 2}}
+              contentContainerStyle={styles.filterContent}
             >
               {FILTER_CHIPS.map(chip => (
                 <Chip
                   key={chip.key}
                   label={chip.label}
-                  onPress={() => {
-                    setSubjectFilter(chip.key);
-                    refresh();
-                  }}
+                  onPress={() => setSubjectFilter(chip.key)}
                   tone={subjectFilter === chip.key ? 'accent' : 'neutral'}
                 />
               ))}
@@ -404,11 +284,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
             {bootstrapState === 'loading' && packagedLessons.length === 0 && (
               <AppCard
                 testID="content-bootstrap-loading-card"
-                style={{
-                  alignItems: 'center',
-                  gap: theme.spacing.sm,
-                  paddingVertical: 24,
-                }}
+                style={themedStyles.bootstrapCard}
               >
                 <ActivityIndicator
                   color={theme.colors.primary}
@@ -416,7 +292,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
                   testID="content-bootstrap-loading"
                 />
                 <AppText variant="h3">Đang chuẩn bị gói bài học…</AppText>
-                <AppText color="secondary" style={{textAlign: 'center'}}>
+                <AppText color="secondary" style={styles.centerText}>
                   Hệ thống đang khởi tạo 16 bài học đóng gói offline.
                 </AppText>
               </AppCard>
@@ -425,17 +301,13 @@ export function LessonsHistoryScreen({navigation}: Props) {
             {bootstrapState === 'error' && packagedLessons.length === 0 && (
               <AppCard
                 testID="content-bootstrap-error-card"
-                style={{
-                  alignItems: 'center',
-                  gap: theme.spacing.sm,
-                  paddingVertical: 20,
-                }}
+                style={themedStyles.bootstrapErrorCard}
               >
                 <Medallion label="⚠️" />
                 <AppText variant="h3">
                   Không thể chuẩn bị nội dung bài học
                 </AppText>
-                <AppText color="secondary" style={{textAlign: 'center'}}>
+                <AppText color="secondary" style={styles.centerText}>
                   {bootstrapError ??
                     'Gói bài học chưa thể chuẩn bị. Vui lòng thử lại.'}
                 </AppText>
@@ -449,9 +321,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
             )}
 
             {filteredPackagedLessons.length > 0 && (
-              <View
-                style={{gap: theme.spacing.sm, marginTop: theme.spacing.xs}}
-              >
+              <View style={themedStyles.packagedSection}>
                 <SectionHeader title="Bài học theo lộ trình (MVP)" />
                 {filteredPackagedLessons.map(item => (
                   <Pressable
@@ -464,15 +334,9 @@ export function LessonsHistoryScreen({navigation}: Props) {
                     }
                     testID={`packaged-lesson-${item.id}`}
                   >
-                    <AppCard style={{gap: theme.spacing.xs}}>
-                      <View
-                        style={{
-                          alignItems: 'center',
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <AppText style={{flex: 1}} variant="h3">
+                    <AppCard style={themedStyles.packagedCard}>
+                      <View style={styles.packagedCardHeader}>
+                        <AppText style={styles.flexOne} variant="h3">
                           {item.titleVi}
                         </AppText>
                         <Chip label={item.level} tone="accent" />
@@ -488,7 +352,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
             )}
 
             {userLessons.length > 0 && (
-              <View style={{marginTop: theme.spacing.xs}}>
+              <View style={themedStyles.userLessonsSection}>
                 <SectionHeader title="Bài học cá nhân / Đã lưu" />
               </View>
             )}
@@ -506,4 +370,160 @@ export function LessonsHistoryScreen({navigation}: Props) {
       />
     </AppScreen>
   );
+}
+
+const styles = StyleSheet.create({
+  centerText: {
+    textAlign: 'center',
+  },
+  filterContent: {
+    gap: 10,
+    paddingBottom: 2,
+  },
+  flexOne: {
+    flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  headerTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    minWidth: 0,
+  },
+  packagedCardHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  searchIcon: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 16,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
+  },
+  summaryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+});
+
+function makeStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    bootstrapCard: {
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      paddingVertical: theme.spacing.xl,
+    },
+    bootstrapErrorCard: {
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      paddingVertical: 20,
+    },
+    emptyState: {
+      alignItems: 'center',
+      gap: theme.spacing.md,
+      paddingVertical: theme.spacing.xl,
+    },
+    footer: {
+      gap: theme.spacing.md,
+      marginTop: theme.spacing.sm,
+    },
+    header: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      height: 56,
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.gutter,
+    },
+    headerTitle: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.size.lg,
+      fontWeight: theme.typography.weight.medium,
+    },
+    listContent: {
+      gap: 14,
+      paddingBottom: 28,
+      paddingHorizontal: theme.gutter,
+      paddingTop: theme.spacing.sm,
+    },
+    listHeader: {
+      gap: theme.spacing.md,
+      marginBottom: 2,
+    },
+    packagedCard: {
+      gap: theme.spacing.xs,
+    },
+    packagedSection: {
+      gap: theme.spacing.sm,
+      marginTop: theme.spacing.xs,
+    },
+    searchField: {
+      borderColor: theme.colors.accentSoft,
+      borderRadius: theme.radius.pill,
+      borderWidth: 2,
+      paddingLeft: 48,
+    },
+    summaryCard: {
+      alignItems: 'center',
+      borderRadius: 18,
+      flexBasis: '47%',
+      flexGrow: 1,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.lg,
+    },
+    summaryCardAccent: {
+      backgroundColor: theme.colors.accentSoft,
+    },
+    summaryCardSecondary: {
+      backgroundColor: theme.colors.secondarySoft,
+    },
+    summaryCardTertiary: {
+      backgroundColor: theme.colors.tertiarySoft,
+    },
+    summaryEmptyValuePrimary: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.size.md,
+      fontWeight: '700',
+    },
+    summaryEmptyValueSecondary: {
+      color: theme.colors.secondary,
+      fontSize: theme.typography.size.md,
+      fontWeight: '700',
+    },
+    summaryLabelPrimary: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.size.xs,
+      fontWeight: theme.typography.weight.medium,
+    },
+    summaryLabelSecondary: {
+      color: theme.colors.secondary,
+      fontSize: theme.typography.size.xs,
+      fontWeight: theme.typography.weight.medium,
+    },
+    summaryLabelTertiary: {
+      color: theme.colors.tertiary,
+      fontSize: theme.typography.size.xs,
+      fontWeight: theme.typography.weight.medium,
+    },
+    summaryValuePrimary: {
+      color: theme.colors.primary,
+      fontSize: 26,
+      fontWeight: '700',
+    },
+    summaryValueTertiary: {
+      color: theme.colors.tertiary,
+      fontSize: 26,
+      fontWeight: '700',
+    },
+    userLessonsSection: {
+      marginTop: theme.spacing.xs,
+    },
+  });
 }

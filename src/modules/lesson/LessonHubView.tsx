@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {AppCard} from '../../components/AppCard';
 import {AppText} from '../../components/AppText';
 import {BottomActionBar} from '../../components/BottomActionBar';
@@ -15,7 +15,7 @@ import {
   SAVE_LESSON_SAVED_LABEL,
 } from '../../shared/copy/userMessages';
 import type {AIOutput, VocabularyItem} from '../../shared/schemas/ai-output-v1';
-import {useAppTheme} from '../../theme';
+import {useAppTheme, type AppTheme} from '../../theme';
 import type {LessonSaveState} from './LessonResultView';
 
 type Props = {
@@ -52,6 +52,7 @@ export function LessonHubView({
   onToggleWordSave,
 }: Props) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const sentences = lesson.sentences ?? [];
   const vocabulary = lesson.vocabulary ?? [];
   const grammarPoints = lesson.grammar_points ?? [];
@@ -65,52 +66,16 @@ export function LessonHubView({
     saveState === 'saved' ? SAVE_LESSON_SAVED_LABEL : SAVE_LESSON_LABEL;
 
   return (
-    <View style={{flex: 1}}>
+    <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={{
-          gap: theme.spacing.lg,
-          paddingBottom: theme.spacing.lg,
-          paddingHorizontal: theme.gutter,
-          paddingTop: theme.spacing.sm,
-        }}
+        contentContainerStyle={themedStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View
-          style={{
-            borderRadius: theme.radius.lg,
-            height: 170,
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
+        <View style={themedStyles.heroImage}>
           <ImagePlaceholder height={170} label={imageLabel ?? lesson.title} />
-          <View
-            style={{
-              backgroundColor: theme.colors.overlay,
-              bottom: 0,
-              left: 0,
-              padding: 16,
-              position: 'absolute',
-              right: 0,
-            }}
-          >
-            <AppText
-              style={{
-                color: theme.colors.onOverlay,
-                fontSize: 22,
-                fontWeight: '600',
-              }}
-            >
-              {lesson.title}
-            </AppText>
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: 8,
-                marginTop: 8,
-              }}
-            >
+          <View style={themedStyles.heroOverlay}>
+            <AppText style={themedStyles.heroTitle}>{lesson.title}</AppText>
+            <View style={styles.heroChips}>
               <Chip
                 label={lesson.detected_language || 'English'}
                 tone="accent"
@@ -120,23 +85,14 @@ export function LessonHubView({
           </View>
         </View>
 
-        <AppCard
-          style={{
-            borderBottomColor: theme.colors.accentSoft,
-            borderBottomWidth: 4,
-            gap: theme.spacing.sm,
-          }}
-        >
-          <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
+        <AppCard style={themedStyles.originalCard}>
+          <View style={styles.sectionTitleRow}>
             <MaterialIcon
               color={theme.colors.primary}
               name="description"
               size={22}
             />
-            <AppText
-              style={{color: theme.colors.primary, fontWeight: '600'}}
-              variant="h3"
-            >
+            <AppText style={themedStyles.originalTitle} variant="h3">
               Bản gốc
             </AppText>
           </View>
@@ -145,23 +101,14 @@ export function LessonHubView({
           </AppText>
         </AppCard>
 
-        <AppCard
-          style={{
-            borderBottomColor: theme.colors.secondarySoft,
-            borderBottomWidth: 4,
-            gap: theme.spacing.sm,
-          }}
-        >
-          <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
+        <AppCard style={themedStyles.translationCard}>
+          <View style={styles.sectionTitleRow}>
             <MaterialIcon
               color={theme.colors.secondary}
               name="translate"
               size={22}
             />
-            <AppText
-              style={{color: theme.colors.secondary, fontWeight: '600'}}
-              variant="h3"
-            >
+            <AppText style={themedStyles.translationTitle} variant="h3">
               Bản dịch
             </AppText>
           </View>
@@ -170,7 +117,7 @@ export function LessonHubView({
           </AppText>
         </AppCard>
 
-        <View style={{gap: 10}}>
+        <View style={styles.exploreSection}>
           <SectionHeader title="Khám phá bài học" />
           <LessonExploreRow
             disabled={sentences.length === 0}
@@ -216,7 +163,7 @@ export function LessonHubView({
         </View>
 
         {vocabulary.length > 0 ? (
-          <View style={{gap: theme.spacing.sm}}>
+          <View style={themedStyles.vocabularySection}>
             <SectionHeader title="Từ vựng chính" />
             {vocabulary.map(item => (
               <WordCard
@@ -235,33 +182,16 @@ export function LessonHubView({
         ) : null}
       </ScrollView>
 
-      <BottomActionBar
-        style={{
-          backgroundColor: theme.colors.background,
-          borderTopColor: theme.colors.outlineVariant,
-          gap: theme.spacing.sm,
-          paddingBottom: theme.spacing.lg,
-        }}
-      >
-        <View style={{flexDirection: 'row', gap: theme.spacing.sm}}>
+      <BottomActionBar style={themedStyles.actionBar}>
+        <View style={themedStyles.actionRow}>
           <Pressable
             accessibilityLabel="Bắt đầu học"
             accessibilityRole="button"
             disabled={!onStartLearning}
             onPress={onStartLearning}
             style={({pressed}) => [
-              {
-                alignItems: 'center',
-                backgroundColor: theme.colors.primary,
-                borderRadius: theme.radius.lg,
-                flex: 1,
-                flexDirection: 'row',
-                gap: 8,
-                justifyContent: 'center',
-                minHeight: 52,
-                opacity:
-                  !onStartLearning || pressed ? theme.states.pressedOpacity : 1,
-              },
+              themedStyles.primaryAction,
+              (!onStartLearning || pressed) && themedStyles.pressed,
             ]}
           >
             <MaterialIcon
@@ -270,13 +200,7 @@ export function LessonHubView({
               name="school"
               size={22}
             />
-            <AppText
-              style={{
-                color: theme.colors.text.inverse,
-                fontSize: 18,
-                fontWeight: '600',
-              }}
-            >
+            <AppText style={themedStyles.primaryActionText}>
               Bắt đầu học
             </AppText>
           </Pressable>
@@ -284,15 +208,8 @@ export function LessonHubView({
             accessibilityLabel="Chia sẻ"
             accessibilityRole="button"
             style={({pressed}) => [
-              {
-                alignItems: 'center',
-                backgroundColor: theme.colors.secondaryContainer,
-                borderRadius: 18,
-                height: 56,
-                justifyContent: 'center',
-                opacity: pressed ? theme.states.pressedOpacity : 1,
-                width: 56,
-              },
+              themedStyles.shareButton,
+              pressed && themedStyles.pressed,
             ]}
           >
             <MaterialIcon
@@ -309,22 +226,10 @@ export function LessonHubView({
             disabled={saveDisabled}
             onPress={onSave}
             style={({pressed}) => [
-              {
-                alignItems: 'center',
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.primary,
-                borderRadius: theme.radius.lg,
-                borderWidth: 2,
-                flexDirection: 'row',
-                gap: 8,
-                justifyContent: 'center',
-                minHeight: 52,
-                opacity: saveDisabled
-                  ? theme.states.disabledOpacity
-                  : pressed
-                  ? theme.states.pressedOpacity
-                  : 1,
-              },
+              themedStyles.saveButton,
+              saveDisabled
+                ? themedStyles.disabled
+                : pressed && themedStyles.pressed,
             ]}
           >
             <MaterialIcon
@@ -332,23 +237,149 @@ export function LessonHubView({
               name="bookmark_add"
               size={22}
             />
-            <AppText
-              style={{
-                color: theme.colors.primary,
-                fontSize: 18,
-                fontWeight: '600',
-              }}
-            >
+            <AppText style={themedStyles.saveButtonText}>
               {saveState === 'saving' ? 'Đang lưu...' : saveLabel}
             </AppText>
           </Pressable>
         ) : null}
         {saveState === 'error' ? (
-          <AppText color="danger" style={{textAlign: 'center'}}>
+          <AppText color="danger" style={styles.centerText}>
             {saveErrorMessage ?? SAVE_LESSON_ERROR_MESSAGE}
           </AppText>
         ) : null}
       </BottomActionBar>
     </View>
   );
+}
+
+const styles = StyleSheet.create({
+  centerText: {
+    textAlign: 'center',
+  },
+  container: {
+    flex: 1,
+  },
+  exploreSection: {
+    gap: 10,
+  },
+  heroChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+  },
+  sectionTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+});
+
+function makeStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    actionBar: {
+      backgroundColor: theme.colors.background,
+      borderTopColor: theme.colors.outlineVariant,
+      gap: theme.spacing.sm,
+      paddingBottom: theme.spacing.lg,
+    },
+    actionRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+    },
+    disabled: {
+      opacity: theme.states.disabledOpacity,
+    },
+    heroImage: {
+      borderRadius: theme.radius.lg,
+      height: 170,
+      overflow: 'hidden',
+      position: 'relative',
+    },
+    heroOverlay: {
+      backgroundColor: theme.colors.overlay,
+      bottom: 0,
+      left: 0,
+      padding: theme.spacing.lg,
+      position: 'absolute',
+      right: 0,
+    },
+    heroTitle: {
+      color: theme.colors.onOverlay,
+      fontSize: theme.typography.presets.h2.fontSize,
+      fontWeight: theme.typography.weight.medium,
+    },
+    originalCard: {
+      borderBottomColor: theme.colors.accentSoft,
+      borderBottomWidth: 4,
+      gap: theme.spacing.sm,
+    },
+    originalTitle: {
+      color: theme.colors.primary,
+      fontWeight: theme.typography.weight.medium,
+    },
+    pressed: {
+      opacity: theme.states.pressedOpacity,
+    },
+    primaryAction: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.radius.lg,
+      flex: 1,
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+      justifyContent: 'center',
+      minHeight: 52,
+      opacity: 1,
+    },
+    primaryActionText: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.typography.size.md,
+      fontWeight: theme.typography.weight.medium,
+    },
+    saveButton: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.primary,
+      borderRadius: theme.radius.lg,
+      borderWidth: 2,
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+      justifyContent: 'center',
+      minHeight: 52,
+      opacity: 1,
+    },
+    saveButtonText: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.size.md,
+      fontWeight: theme.typography.weight.medium,
+    },
+    scrollContent: {
+      gap: theme.spacing.lg,
+      paddingBottom: theme.spacing.lg,
+      paddingHorizontal: theme.gutter,
+      paddingTop: theme.spacing.sm,
+    },
+    shareButton: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.secondaryContainer,
+      borderRadius: 18,
+      height: 56,
+      justifyContent: 'center',
+      opacity: 1,
+      width: 56,
+    },
+    translationCard: {
+      borderBottomColor: theme.colors.secondarySoft,
+      borderBottomWidth: 4,
+      gap: theme.spacing.sm,
+    },
+    translationTitle: {
+      color: theme.colors.secondary,
+      fontWeight: theme.typography.weight.medium,
+    },
+    vocabularySection: {
+      gap: theme.spacing.sm,
+    },
+  });
 }

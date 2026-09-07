@@ -1,23 +1,28 @@
 import React, {useCallback, useState} from 'react';
-import {Pressable, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {HomeStackParamList} from '../../app/navigation/types';
+import type {
+  HomeStackParamList,
+  LessonsStackParamList,
+} from '../../app/navigation/types';
 import {AppCard} from '../../components/AppCard';
 import {AppScreen} from '../../components/AppScreen';
 import {AppText} from '../../components/AppText';
 import {Chip} from '../../components/Chip';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {SectionHeader} from '../../components/SectionHeader';
-import {useAppTheme} from '../../theme';
+import {useAppTheme, type AppTheme} from '../../theme';
 import {generateStudyBlock} from './adaptationEngine';
 import {getLearnerStateSnapshot} from './todayAdapter';
 import type {StudyActivityItem, StudyBlockPlan, TodayMode} from './types';
 
-type NavigationProp = NativeStackNavigationProp<HomeStackParamList>;
+type TodayNavigationParamList = HomeStackParamList & LessonsStackParamList;
+type NavigationProp = NativeStackNavigationProp<TodayNavigationParamList>;
 
 export function TodayScreen() {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const navigation = useNavigation<NavigationProp>();
 
   const [mode, setMode] = useState<TodayMode>('normal');
@@ -63,48 +68,29 @@ export function TodayScreen() {
 
   return (
     <AppScreen testID="today-screen">
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          height: 56,
-          justifyContent: 'space-between',
-          paddingHorizontal: theme.gutter,
-        }}
-      >
-        <View style={{alignItems: 'center', flexDirection: 'row', gap: 10}}>
+      <View style={themedStyles.header}>
+        <View style={styles.headerTitleRow}>
           <MaterialIcon
             color={theme.colors.primary}
             name="event_note"
             size={26}
           />
-          <AppText
-            style={{
-              color: theme.colors.primary,
-              fontSize: 20,
-              fontWeight: '600',
-            }}
-          >
+          <AppText style={themedStyles.headerTitle}>
             Hôm nay (Today Study Center)
           </AppText>
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={{
-          gap: theme.spacing.lg,
-          paddingBottom: 28,
-          paddingHorizontal: theme.gutter,
-          paddingTop: theme.spacing.sm,
-        }}
+        contentContainerStyle={themedStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Mode Selector (REQ-12, REQ-13) */}
-        <View style={{gap: 8}}>
+        <View style={styles.modeBlock}>
           <AppText variant="label" color="secondary">
             Chọn thời gian học hôm nay:
           </AppText>
-          <View style={{flexDirection: 'row', gap: 8}} testID="mode-selector">
+          <View style={styles.modeSelector} testID="mode-selector">
             <Chip
               label="⚡ 5 phút"
               selected={mode === '5-minute'}
@@ -129,17 +115,10 @@ export function TodayScreen() {
         {/* Backlog Control Banner (REQ-14) */}
         {plan?.isConsolidation ? (
           <View
-            style={{
-              backgroundColor: theme.colors.accentSoft,
-              borderColor: theme.colors.accent,
-              borderRadius: theme.radius.lg,
-              borderWidth: 1.5,
-              gap: 8,
-              padding: 16,
-            }}
+            style={themedStyles.consolidationBanner}
             testID="backlog-consolidation-banner"
           >
-            <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
+            <View style={styles.inlineHeader}>
               <MaterialIcon
                 color={theme.colors.primary}
                 name="warning"
@@ -159,8 +138,8 @@ export function TodayScreen() {
 
         {/* Explainability UI Card (REQ-31) */}
         {plan ? (
-          <AppCard testID="explainability-card" style={{gap: 10}}>
-            <View style={{alignItems: 'center', flexDirection: 'row', gap: 8}}>
+          <AppCard testID="explainability-card" style={styles.explainCard}>
+            <View style={styles.inlineHeader}>
               <MaterialIcon
                 color={theme.colors.tertiary}
                 name="auto_awesome"
@@ -173,29 +152,12 @@ export function TodayScreen() {
             </AppText>
 
             {plan.reasonCodes.length > 0 ? (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  gap: 6,
-                  marginTop: 4,
-                }}
-              >
+              <View style={styles.reasonCodeList}>
                 {plan.reasonCodes.map(code => (
-                  <View
-                    key={code}
-                    style={{
-                      backgroundColor: theme.colors.surface,
-                      borderColor: theme.colors.accentSoft,
-                      borderRadius: theme.radius.pill,
-                      borderWidth: 1,
-                      paddingHorizontal: 10,
-                      paddingVertical: 4,
-                    }}
-                  >
+                  <View key={code} style={themedStyles.reasonCodeChip}>
                     <AppText
                       variant="caption"
-                      style={{color: theme.colors.primary}}
+                      style={themedStyles.reasonCodeText}
                     >
                       #{code}
                     </AppText>
@@ -207,7 +169,7 @@ export function TodayScreen() {
         ) : null}
 
         {/* Executable Study Block Activity List */}
-        <View style={{gap: 12}}>
+        <View style={styles.activityList}>
           <SectionHeader
             title="Chuỗi bài học gợi ý"
             action={
@@ -225,44 +187,23 @@ export function TodayScreen() {
               accessibilityRole="button"
               onPress={() => handleExecuteActivity(activity)}
               style={({pressed}) => [
-                {
-                  alignItems: 'center',
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.accentSoft,
-                  borderRadius: theme.radius.lg,
-                  borderWidth: 1,
-                  flexDirection: 'row',
-                  gap: 12,
-                  opacity: pressed ? theme.states.pressedOpacity : 1,
-                  padding: 16,
-                  ...theme.shadow.soft,
-                },
+                themedStyles.activityItem,
+                pressed && themedStyles.pressedActivityItem,
               ]}
               testID={`activity-item-${index}`}
             >
-              <View
-                style={{
-                  alignItems: 'center',
-                  backgroundColor: theme.colors.accentSoft,
-                  borderRadius: 999,
-                  height: 44,
-                  justifyContent: 'center',
-                  width: 44,
-                }}
-              >
-                <AppText style={{fontSize: 18, fontWeight: '700'}}>
-                  {index + 1}
-                </AppText>
+              <View style={themedStyles.activityIndexBadge}>
+                <AppText style={styles.activityIndexText}>{index + 1}</AppText>
               </View>
 
-              <View style={{flex: 1, gap: 4}}>
+              <View style={styles.activityCopy}>
                 <AppText variant="h3">{activity.titleVi}</AppText>
                 <AppText color="secondary" variant="caption">
                   {activity.subtitleVi}
                 </AppText>
               </View>
 
-              <View style={{alignItems: 'flex-end', gap: 4}}>
+              <View style={styles.activityMeta}>
                 <AppText variant="caption" color="secondary">
                   ~{activity.estimatedMinutes}m
                 </AppText>
@@ -278,4 +219,113 @@ export function TodayScreen() {
       </ScrollView>
     </AppScreen>
   );
+}
+
+const styles = StyleSheet.create({
+  activityCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  activityIndexText: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  activityList: {
+    gap: 12,
+  },
+  activityMeta: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  explainCard: {
+    gap: 10,
+  },
+  headerTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  inlineHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  modeBlock: {
+    gap: 8,
+  },
+  modeSelector: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  reasonCodeList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 4,
+  },
+});
+
+function makeStyles(theme: AppTheme) {
+  return StyleSheet.create({
+    activityIndexBadge: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.accentSoft,
+      borderRadius: theme.radius.pill,
+      height: 44,
+      justifyContent: 'center',
+      width: 44,
+    },
+    activityItem: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.accentSoft,
+      borderRadius: theme.radius.lg,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: theme.spacing.md,
+      opacity: 1,
+      padding: theme.spacing.lg,
+      ...theme.shadow.soft,
+    },
+    consolidationBanner: {
+      backgroundColor: theme.colors.accentSoft,
+      borderColor: theme.colors.accent,
+      borderRadius: theme.radius.lg,
+      borderWidth: 1.5,
+      gap: theme.spacing.sm,
+      padding: theme.spacing.lg,
+    },
+    header: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      height: 56,
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.gutter,
+    },
+    headerTitle: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.size.lg,
+      fontWeight: theme.typography.weight.medium,
+    },
+    pressedActivityItem: {
+      opacity: theme.states.pressedOpacity,
+    },
+    reasonCodeChip: {
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.accentSoft,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      paddingHorizontal: 10,
+      paddingVertical: theme.spacing.xs,
+    },
+    reasonCodeText: {
+      color: theme.colors.primary,
+    },
+    scrollContent: {
+      gap: theme.spacing.lg,
+      paddingBottom: 28,
+      paddingHorizontal: theme.gutter,
+      paddingTop: theme.spacing.sm,
+    },
+  });
 }

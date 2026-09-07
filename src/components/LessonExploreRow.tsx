@@ -1,10 +1,10 @@
 import React from 'react';
-import {Pressable, View} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {AppText} from './AppText';
 import {Chip} from './Chip';
 import type {HandoffIconName} from './icons/iconRegistry';
 import {MaterialIcon} from './MaterialIcon';
-import {useAppTheme} from '../theme';
+import {useAppTheme, type AppTheme} from '../theme';
 
 type MedallionTone = 'teal' | 'coral' | 'gold';
 
@@ -43,43 +43,23 @@ export function LessonExploreRow({
 }: Props) {
   const {theme} = useAppTheme();
   const medallion = medallionColors(theme, medallionTone);
+  const themedStyles = React.useMemo(
+    () => makeStyles(theme, medallion.bg, disabled, badge),
+    [badge, disabled, medallion.bg, theme],
+  );
 
   const row = (
-    <View
-      style={{
-        alignItems: 'center',
-        backgroundColor: theme.colors.surface,
-        borderRadius: 18,
-        flexDirection: 'row',
-        gap: 14,
-        opacity: disabled ? theme.states.disabledOpacity : 1,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        position: 'relative',
-        ...theme.shadow.soft,
-      }}
-    >
+    <View style={themedStyles.row}>
       {badge ? (
-        <View style={{position: 'absolute', right: 14, top: 10, zIndex: 1}}>
+        <View style={styles.badge}>
           <Chip label={badge} tone="coralSoft" />
         </View>
       ) : null}
-      <View
-        style={{
-          alignItems: 'center',
-          backgroundColor: medallion.bg,
-          borderRadius: 14,
-          height: 46,
-          justifyContent: 'center',
-          width: 46,
-        }}
-      >
+      <View style={themedStyles.medallion}>
         <MaterialIcon color={medallion.fg} name={icon} size={22} />
       </View>
-      <View
-        style={{flex: 1, gap: 2, minWidth: 0, paddingRight: badge ? 48 : 0}}
-      >
-        <AppText style={{fontSize: 16, fontWeight: '600'}}>{title}</AppText>
+      <View style={themedStyles.copy}>
+        <AppText style={styles.title}>{title}</AppText>
         <AppText color="muted" variant="caption">
           {subtitle}
         </AppText>
@@ -102,11 +82,64 @@ export function LessonExploreRow({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({pressed}) => [
-        {opacity: pressed ? theme.states.pressedOpacity : 1},
-      ]}
+      style={({pressed}) => [pressed ? themedStyles.pressed : styles.resting]}
     >
       {row}
     </Pressable>
   );
+}
+
+const styles = StyleSheet.create({
+  badge: {
+    position: 'absolute',
+    right: 14,
+    top: 10,
+    zIndex: 1,
+  },
+  resting: {
+    opacity: 1,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+
+function makeStyles(
+  theme: AppTheme,
+  medallionBackground: string,
+  disabled: boolean,
+  badge?: string,
+) {
+  return StyleSheet.create({
+    copy: {
+      flex: 1,
+      gap: 2,
+      minWidth: 0,
+      paddingRight: badge ? 48 : 0,
+    },
+    medallion: {
+      alignItems: 'center',
+      backgroundColor: medallionBackground,
+      borderRadius: 14,
+      height: 46,
+      justifyContent: 'center',
+      width: 46,
+    },
+    pressed: {
+      opacity: theme.states.pressedOpacity,
+    },
+    row: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderRadius: 18,
+      flexDirection: 'row',
+      gap: 14,
+      opacity: disabled ? theme.states.disabledOpacity : 1,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: 14,
+      position: 'relative',
+      ...theme.shadow.soft,
+    },
+  });
 }

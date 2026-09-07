@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, View} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {AppCard} from './AppCard';
 import {AppText} from './AppText';
 import {Chip} from './Chip';
@@ -20,35 +20,40 @@ function formatWordCount(count: number): string {
 
 export function LibraryLessonCard({lesson, onPress}: Props) {
   const {theme} = useAppTheme();
+  const themedStyles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        pressed: {
+          opacity: theme.states.pressedOpacity,
+        },
+        resting: {
+          opacity: 1,
+        },
+      }),
+    [theme.states.pressedOpacity],
+  );
 
   const card = (
-    <AppCard style={{gap: 0}}>
-      <View
-        style={{
-          alignItems: 'flex-start',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 10,
-        }}
-      >
+    <AppCard style={styles.card}>
+      <View style={styles.header}>
         <Chip label={lesson.subjectLabel} tone={lesson.subjectTone} />
         <AppText color="muted" variant="caption">
           {lesson.dateLabel}
         </AppText>
       </View>
-      <AppText style={{marginBottom: 4}} variant="h3">
+      <AppText style={styles.title} variant="h3">
         {lesson.title}
       </AppText>
       <AppText
         color="secondary"
         numberOfLines={2}
-        style={{marginBottom: 12}}
+        style={styles.blurb}
         variant="body"
       >
         {lesson.blurb}
       </AppText>
-      <View style={{flexDirection: 'row', gap: 16}}>
-        <View style={{alignItems: 'center', flexDirection: 'row', gap: 5}}>
+      <View style={styles.metaRow}>
+        <View style={styles.metaItem}>
           <MaterialIcon
             color={theme.colors.tertiary}
             name="menu_book"
@@ -58,7 +63,7 @@ export function LibraryLessonCard({lesson, onPress}: Props) {
             {formatWordCount(lesson.vocabularyCount)} từ
           </AppText>
         </View>
-        <View style={{alignItems: 'center', flexDirection: 'row', gap: 5}}>
+        <View style={styles.metaItem}>
           <MaterialIcon
             color={theme.colors.secondary}
             name="schedule"
@@ -81,10 +86,37 @@ export function LibraryLessonCard({lesson, onPress}: Props) {
       accessibilityRole="button"
       onPress={onPress}
       style={({pressed}) => [
-        {opacity: pressed ? theme.states.pressedOpacity : 1},
+        pressed ? themedStyles.pressed : themedStyles.resting,
       ]}
     >
       {card}
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  blurb: {
+    marginBottom: 12,
+  },
+  card: {
+    gap: 0,
+  },
+  header: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  metaItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 5,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  title: {
+    marginBottom: 4,
+  },
+});
