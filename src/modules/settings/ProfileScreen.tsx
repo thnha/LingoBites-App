@@ -28,8 +28,10 @@ import {
   type GamificationSnapshot,
 } from '@modules/engagement';
 import {useTranslation} from 'react-i18next';
-import {useLessonRepository} from '@modules/lesson';
-import {deleteRecordingFile} from '@modules/speaking';
+import {
+  clearAllLocalDataWithFiles,
+  clearSpeakingLocalData,
+} from '@shared/localData';
 import {useLibraryStore} from '@/store/useLibraryStore';
 import {useFeatureFlags} from '@/release';
 import {useAppTheme, type AppTheme} from '@theme';
@@ -58,7 +60,6 @@ export function ProfileScreen({navigation}: Props) {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const supportEmail = getSupportEmail();
   const {getAudioCacheStats, listReadyAudioAssets} = useAudioLibrary();
-  const {clearAllLocalData} = useLessonRepository();
   const {getCapabilityProgressReport} = useProgressReport();
   const getSummary = useLibraryStore(state => state.getSummary);
   const audioCacheStats = getAudioCacheStats();
@@ -106,8 +107,18 @@ export function ProfileScreen({navigation}: Props) {
         text: 'Xóa',
         style: 'destructive',
         onPress: () => {
-          clearAllLocalData();
-          setStatusMessage(t('settings.clear_data_done'));
+          void (async () => {
+            const result = await clearAllLocalDataWithFiles();
+            if (!result.dbCleared) {
+              setStatusMessage(t('settings.clear_data_partial_failure'));
+              return;
+            }
+            setStatusMessage(
+              result.ok
+                ? t('settings.clear_data_done')
+                : t('settings.clear_data_partial_failure'),
+            );
+          })();
         },
       },
     ]);
@@ -116,21 +127,21 @@ export function ProfileScreen({navigation}: Props) {
   function handleClearSpeakingData() {
     Alert.alert(
       'Xóa dữ liệu luyện nói',
-      'Tất cả bản ghi âm và lịch sử sổ tay lỗi nói sẽ bị xóa khỏi máy. Bạn có chắc chắn không?',
+      t('settings.clear_speaking_data_confirm'),
       [
         {text: 'Hủy', style: 'cancel'},
         {
           text: 'Xóa',
           style: 'destructive',
-          onPress: async () => {
-            const {
-              clearSpeakingData,
-            } = require('@shared/db/SpeakingRepository');
-            const {deletedFilePaths} = clearSpeakingData();
-            for (const path of deletedFilePaths) {
-              await deleteRecordingFile(path);
-            }
-            setStatusMessage('Đã xóa toàn bộ dữ liệu luyện nói và ghi âm.');
+          onPress: () => {
+            void (async () => {
+              const result = await clearSpeakingLocalData();
+              setStatusMessage(
+                result.ok
+                  ? t('settings.clear_speaking_data_done')
+                  : t('settings.clear_speaking_data_partial_failure'),
+              );
+            })();
           },
         },
       ],

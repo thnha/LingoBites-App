@@ -181,6 +181,25 @@ export function touchChapterAudioOpened(chapterId: string, now: string): void {
   ]);
 }
 
+/** Local paths for cached chapter audio — collect before deleting metadata. */
+export function listAudioAssetLocalPaths(): string[] {
+  const db = getDatabase();
+  const result = db.execute(
+    `SELECT local_path FROM audio_assets WHERE local_path IS NOT NULL AND local_path != '';`,
+  );
+  const rows = result.rows;
+  const filePaths: string[] = [];
+  if (rows) {
+    for (let index = 0; index < rows.length; index += 1) {
+      const localPath = (rows.item(index) as {local_path: string}).local_path;
+      if (localPath) {
+        filePaths.push(localPath);
+      }
+    }
+  }
+  return filePaths;
+}
+
 /** Removes one downloaded row. The caller owns deleting the file on disk. */
 export function deleteChapterAudioAsset(id: string): void {
   const db = getDatabase();

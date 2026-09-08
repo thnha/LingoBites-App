@@ -110,8 +110,10 @@
   "settings": {
     "clear_data_confirm": "Delete all lessons saved on this device?",
     "clear_data_done": "Learning data on this device has been deleted.",
+    "clear_data_partial_failure": "Local data was deleted but some audio files could not be removed. Try again or reinstall the app.",
     "clear_speaking_data_confirm": "Delete all speaking recordings and error/review history from the Speaking Room on this device?",
     "clear_speaking_data_done": "Speaking data on this device has been deleted.",
+    "clear_speaking_data_partial_failure": "Speaking data was deleted but some recording files could not be removed. Try again or reinstall the app.",
     "privacy_title": "Privacy",
     "privacy_provided_data_title": "Data you provide",
     "privacy_local_storage_title": "On-device storage",

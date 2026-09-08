@@ -110,8 +110,10 @@
   "settings": {
     "clear_data_confirm": "Xóa toàn bộ bài học đã lưu trên thiết bị này?",
     "clear_data_done": "Đã xóa dữ liệu học trên máy.",
+    "clear_data_partial_failure": "Đã xóa dữ liệu trên máy nhưng một số file âm thanh chưa được gỡ. Bạn có thể thử lại hoặc cài lại app.",
     "clear_speaking_data_confirm": "Xóa toàn bộ bản ghi âm luyện nói và lịch sử lỗi/ôn tập từ Phòng luyện nói trên thiết bị này?",
     "clear_speaking_data_done": "Đã xóa dữ liệu luyện nói trên máy.",
+    "clear_speaking_data_partial_failure": "Đã xóa dữ liệu luyện nói nhưng một số file ghi âm chưa được gỡ. Bạn có thể thử lại hoặc cài lại app.",
     "privacy_title": "Quyền riêng tư",
     "privacy_provided_data_title": "Dữ liệu bạn cung cấp",
     "privacy_local_storage_title": "Lưu trữ trên thiết bị",

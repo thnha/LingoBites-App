@@ -246,16 +246,25 @@ function addDaysIso(iso: string, days: number): string {
  * lesson-runtime review items. Returns the file paths of deleted recordings
  * so the caller can unlink them from disk.
  */
-export function clearSpeakingData(): {deletedFilePaths: string[]} {
+/**
+ * File paths for all managed recordings — collect before deleting metadata.
+ */
+export function listSpeakingRecordingFilePaths(): string[] {
   const db = getDatabase();
   const result = db.execute('SELECT file_path FROM speaking_recordings;');
   const rows = result.rows;
-  const deletedFilePaths: string[] = [];
+  const filePaths: string[] = [];
   if (rows) {
     for (let i = 0; i < rows.length; i += 1) {
-      deletedFilePaths.push((rows.item(i) as {file_path: string}).file_path);
+      filePaths.push((rows.item(i) as {file_path: string}).file_path);
     }
   }
+  return filePaths;
+}
+
+export function clearSpeakingData(): {deletedFilePaths: string[]} {
+  const deletedFilePaths = listSpeakingRecordingFilePaths();
+  const db = getDatabase();
   db.execute('DELETE FROM speaking_recordings;');
   db.execute('DELETE FROM error_events;');
   db.execute('DELETE FROM content_review_items WHERE item_type = ?;', [

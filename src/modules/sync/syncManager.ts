@@ -33,6 +33,7 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
   let enabled = false;
   let busy = false;
   let retryTimer: ReturnType<typeof setTimeout> | null = null;
+  let runGeneration = 0;
 
   function clearRetryTimer(): void {
     if (retryTimer !== null) {
@@ -41,7 +42,10 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
     }
   }
 
-  function scheduleRetry(): void {
+  function scheduleRetry(generation: number): void {
+    if (generation !== runGeneration || !enabled) {
+      return;
+    }
     const pending = listPendingSyncEvents().filter(
       event => !isSyncStuck(event.attemptCount),
     );
@@ -51,29 +55,36 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
     const maxAttempt = Math.max(0, ...pending.map(event => event.attemptCount));
     const delayMs = syncRetryDelayMs(maxAttempt + 1);
     retryTimer = setTimeout(() => {
+      if (generation !== runGeneration || !enabled) return;
       retryTimer = null;
-      run(false).catch(() => {});
+      run(false, generation).catch(() => {});
     }, delayMs);
   }
 
-  async function run(includeStuck: boolean): Promise<void> {
+  async function run(includeStuck: boolean, generation: number): Promise<void> {
     if (busy) {
       return;
     }
     busy = true;
     try {
       for (let round = 0; round < SYNC_MAX_ROUNDS_PER_REQUEST; round += 1) {
+        if (generation !== runGeneration || !enabled) {
+          return;
+        }
         const outcome = await drainOutboxOnce({
           fetchImpl: deps.fetchImpl,
           includeStuck,
         });
+        if (generation !== runGeneration || !enabled) {
+          return;
+        }
         if (outcome.status === 'idle' || outcome.status === 'stuck') {
           clearRetryTimer();
           return;
         }
         if (outcome.status === 'failed') {
           if (outcome.retryable) {
-            scheduleRetry();
+            scheduleRetry(generation);
           } else {
             // Permanent rejection (e.g. bad payload): no point auto-retrying.
             // A future foreground/requestSync will still attempt rows again.
@@ -89,11 +100,14 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
       }
       // More rows than the per-request round cap allows: keep the backoff
       // schedule alive instead of dropping them.
-      scheduleRetry();
+      scheduleRetry(generation);
     } catch {
-      scheduleRetry();
+      scheduleRetry(generation);
     } finally {
       busy = false;
+      if (enabled && generation !== runGeneration) {
+        requestSync();
+      }
     }
   }
 
@@ -104,7 +118,7 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
     clearRetryTimer();
     // Explicit triggers may retry capped ("stuck") rows: the cap only governs
     // the automatic backoff timer, so a reconnect still drains a stuck queue.
-    run(true).catch(() => {});
+    run(true, runGeneration).catch(() => {});
   }
 
   return {
@@ -113,11 +127,13 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
         return;
       }
       enabled = true;
+      runGeneration += 1;
       requestSync();
     },
 
     stop() {
       enabled = false;
+      runGeneration += 1;
       clearRetryTimer();
     },
 

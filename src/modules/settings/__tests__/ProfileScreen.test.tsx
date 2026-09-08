@@ -6,10 +6,20 @@ import {AppThemeProvider} from '@theme';
 import {ProfileScreen} from '../ProfileScreen';
 
 const mockNavigate = jest.fn();
-const mockClearAllLocalData = jest.fn();
+const mockClearAllLocalDataWithFiles = jest.fn(async () => ({
+  ok: true,
+  dbCleared: true,
+  failedFilePaths: [],
+}));
+const mockClearSpeakingLocalData = jest.fn(async () => ({
+  ok: true,
+  dbCleared: true,
+  failedFilePaths: [],
+}));
 
-jest.mock('@shared/db/LessonRepository', () => ({
-  clearAllLocalData: () => mockClearAllLocalData(),
+jest.mock('@shared/localData', () => ({
+  clearAllLocalDataWithFiles: () => mockClearAllLocalDataWithFiles(),
+  clearSpeakingLocalData: () => mockClearSpeakingLocalData(),
 }));
 
 jest.mock('@shared/api/appConfig', () => ({
@@ -76,7 +86,18 @@ function findPressableByLabel(
 describe('ProfileScreen', () => {
   beforeEach(() => {
     mockNavigate.mockReset();
-    mockClearAllLocalData.mockReset();
+    mockClearAllLocalDataWithFiles.mockReset();
+    mockClearSpeakingLocalData.mockReset();
+    mockClearAllLocalDataWithFiles.mockResolvedValue({
+      ok: true,
+      dbCleared: true,
+      failedFilePaths: [],
+    });
+    mockClearSpeakingLocalData.mockResolvedValue({
+      ok: true,
+      dbCleared: true,
+      failedFilePaths: [],
+    });
     jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined as never);
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });

@@ -201,4 +201,85 @@ describe('createSyncManager', () => {
     expect(listPendingSyncEvents()).toHaveLength(0);
     expect(getSyncOutboxStatus()).toEqual({pending: 0, stuck: 0});
   });
+
+  it('stop() during a pending fetch prevents retries if the drain fails', async () => {
+    seedEvent('event-1');
+    let rejectFetch: (err: any) => void;
+    const fetchPromise = new Promise((_, rej) => {
+      rejectFetch = rej;
+    });
+    mockFetch.mockReturnValueOnce(fetchPromise);
+
+    const manager = createSyncManager({fetchImpl: mockFetch as never});
+    manager.start();
+    await flush();
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    manager.stop();
+    rejectFetch!(new Error('offline'));
+    await flush();
+
+    await jest.advanceTimersByTimeAsync(10 * 60_000);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('stop() during a pending fetch prevents further drains if the drain succeeds but rows remain', async () => {
+    seedEvent('event-1');
+    seedEvent('event-2');
+    
+    let resolveFetch: (res: any) => void;
+    const fetchPromise = new Promise((res) => {
+      resolveFetch = res;
+    });
+    mockFetch.mockReturnValueOnce(fetchPromise);
+
+    const manager = createSyncManager({fetchImpl: mockFetch as never});
+    manager.start();
+    await flush();
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    manager.stop();
+
+    // event-1 is resolved, but event-2 remains pending
+    resolveFetch!(response(successBody(['event-1'])));
+    await flush();
+
+    // The manager should not have triggered a second network call for event-2
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(listPendingSyncEvents()).toHaveLength(1);
+  });
+
+  it('re-starting after a stop works correctly and is not affected by stale run', async () => {
+    seedEvent('event-1');
+    let rejectFetch: (err: any) => void;
+    const fetchPromise1 = new Promise((_, rej) => {
+      rejectFetch = rej;
+    });
+    mockFetch.mockReturnValueOnce(fetchPromise1);
+
+    const manager = createSyncManager({fetchImpl: mockFetch as never});
+    manager.start();
+    await flush();
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    manager.stop();
+    manager.start();
+
+    // still waiting on first fetch, so start() buffered a new request
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    // mock the second fetch
+    mockFetch.mockResolvedValueOnce(response(successBody(['event-1'])));
+
+    // finish the first fetch (fails)
+    rejectFetch!(new Error('offline'));
+    await flush();
+
+    // it should immediately trigger the buffered request and resolve it
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(listPendingSyncEvents()).toHaveLength(0);
+  });
 });
