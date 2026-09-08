@@ -179,7 +179,6 @@ export function HomeScreen({navigation}: Props) {
               <View style={themedStyles.cameraIcon}>
                 <MaterialIcon
                   color={theme.colors.accentInk}
-                  filled
                   name="photo_camera"
                   size={42}
                 />

@@ -45,7 +45,6 @@ export function SentenceDetailScreen({navigation, route}: Props) {
         rightAction={
           <IconButton
             accessibilityLabel="Phát âm"
-            filled
             icon="volume_up"
             tone="accent"
           />

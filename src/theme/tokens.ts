@@ -24,6 +24,12 @@ export const typographyPresets = {
   h1: {fontSize: 28, lineHeight: 34, fontWeight: '700' as const},
   h2: {fontSize: 22, lineHeight: 28, fontWeight: '600' as const},
   h3: {fontSize: 18, lineHeight: 24, fontWeight: '600' as const},
+  title: {fontSize: fontSize.xxl, lineHeight: 36, fontWeight: '800' as const},
+  subtitle: {
+    fontSize: fontSize.md,
+    lineHeight: 24,
+    fontWeight: '400' as const,
+  },
   bodyLg: {fontSize: 18, lineHeight: 28, fontWeight: '500' as const},
   body: {fontSize: 16, lineHeight: 24, fontWeight: '500' as const},
   label: {fontSize: 14, lineHeight: 18, fontWeight: '600' as const},

@@ -88,6 +88,8 @@ export type AppTheme = {
       h1: TypographyPreset;
       h2: TypographyPreset;
       h3: TypographyPreset;
+      title: TypographyPreset;
+      subtitle: TypographyPreset;
       bodyLg: TypographyPreset;
       body: TypographyPreset;
       label: TypographyPreset;

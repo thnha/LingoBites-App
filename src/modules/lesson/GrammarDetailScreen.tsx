@@ -49,7 +49,6 @@ export function GrammarDetailScreen({navigation, route}: Props) {
         rightAction={
           <IconButton
             accessibilityLabel="Phát âm"
-            filled
             icon="volume_up"
             tone="coral"
           />
@@ -140,7 +139,6 @@ export function GrammarDetailScreen({navigation, route}: Props) {
                 <View style={themedStyles.tipIcon}>
                   <MaterialIcon
                     color={theme.colors.onTertiaryContainer}
-                    filled
                     name="tips_and_updates"
                     size={22}
                   />
@@ -205,7 +203,6 @@ export function GrammarDetailScreen({navigation, route}: Props) {
             >
               <MaterialIcon
                 color={theme.colors.text.inverse}
-                filled
                 name="play_circle"
                 size={22}
               />

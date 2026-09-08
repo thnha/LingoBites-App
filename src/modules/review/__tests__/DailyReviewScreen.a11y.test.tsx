@@ -109,26 +109,23 @@ describe('DailyReviewScreen - Accessibility', () => {
         <DailyReviewScreen navigation={navigation() as never} />,
       );
 
-      // FlipCard's testID is on the inner Pressable which has the accessibility props
+      // FlipCard's testID is on the inner Pressable which has the accessibility props.
+      // It intentionally has no static accessibilityLabel so descendant card text
+      // remains announced.
       const flipCardPressables = tree.root.findAll(
         node =>
           node.props.testID === 'daily-review-flip-card' &&
-          node.props.accessibilityLabel !== undefined,
+          node.props.accessibilityRole === 'button',
       );
       expect(flipCardPressables.length).toBeGreaterThan(0);
 
       const flipCard = flipCardPressables[0];
-      expect(typeof flipCard.props.accessibilityLabel).toBe('string');
+      expect(flipCard.props.accessibilityLabel).toBeUndefined();
       expect(flipCard.props.accessibilityRole).toBe('button');
       expect(flipCard.props.accessibilityHint).toBe('Chạm để lật thẻ');
     });
 
-    // SETE-122 known bug: with a real seeded flashcard (word "word-1",
-    // meaning "meaning-1"), FlipCard's static accessibilityLabel masks that
-    // content from screen readers. Fixing FlipCard is out of scope here
-    // (tooling only) — this documents the bug is reachable from this real
-    // screen, not just from FlipCard's own unit tests.
-    it('announces flashcard word/meaning on the FlipCard (currently red — SETE-122)', async () => {
+    it('announces flashcard word/meaning on the FlipCard', async () => {
       seedCards(1);
       const tree = await renderScreen(
         <DailyReviewScreen navigation={navigation() as never} />,
@@ -137,7 +134,7 @@ describe('DailyReviewScreen - Accessibility', () => {
       const flipCard = tree.root.findAll(
         node =>
           node.props.testID === 'daily-review-flip-card' &&
-          node.props.accessibilityLabel !== undefined,
+          node.props.accessibilityRole === 'button',
       )[0];
 
       expect(getAnnouncedText(flipCard)).toContain('word-1');

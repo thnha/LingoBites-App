@@ -22,7 +22,7 @@ async function render(ui: React.ReactElement) {
 }
 
 describe('FlipCard - Accessibility', () => {
-  it('has accessibility label that changes based on flip state', async () => {
+  it('announces front and back content based on flip state', async () => {
     const tree = await render(
       <FlipCard
         back={<Text>Back content</Text>}
@@ -33,9 +33,8 @@ describe('FlipCard - Accessibility', () => {
     );
 
     const cardButton = tree.root.findByProps({testID: 'flip-card'});
-    expect(getAnnouncedText(cardButton)).toBe('Mặt trước flashcard');
+    expect(getAnnouncedText(cardButton)).toBe('Front content');
 
-    // Re-render with flipped=true
     const flippedTree = await render(
       <FlipCard
         back={<Text>Back content</Text>}
@@ -48,7 +47,7 @@ describe('FlipCard - Accessibility', () => {
     const flippedCardButton = flippedTree.root.findByProps({
       testID: 'flip-card',
     });
-    expect(getAnnouncedText(flippedCardButton)).toBe('Mặt sau flashcard');
+    expect(getAnnouncedText(flippedCardButton)).toBe('Back content');
   });
 
   it('has accessibility hint for flip action', async () => {
@@ -79,10 +78,6 @@ describe('FlipCard - Accessibility', () => {
     expect(cardButton.props.accessibilityRole).toBe('button');
   });
 
-  // SETE-122: red test — a static accessibilityLabel on an accessible
-  // Pressable REPLACES descendant Text content for screen readers (RN
-  // behavior), so the actual card content (front/back) is never announced.
-  // Fixing FlipCard itself is out of scope for this issue (tooling only).
   it('announces the card content to screen readers, not just a static label', async () => {
     const tree = await render(
       <FlipCard
@@ -108,7 +103,7 @@ describe('FlipCard - Accessibility', () => {
     );
 
     const masked = findMaskedContent(tree.root);
-    expect(masked.some(node => node.maskedText.includes('hello'))).toBe(true);
+    expect(masked.some(node => node.maskedText.includes('hello'))).toBe(false);
   });
 
   it('triggers onFlip when pressed (supports screen reader double-tap)', async () => {

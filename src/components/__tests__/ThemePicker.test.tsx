@@ -1,4 +1,5 @@
 import React from 'react';
+import {StyleSheet} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '../../release';
 import {AppThemeProvider} from '../../theme';
@@ -24,7 +25,9 @@ async function render(releaseName: 'theme-release' | 'close-beta-1') {
 
 function labelsOf(tree: ReactTestRenderer.ReactTestRenderer): string[] {
   return tree.root
-    .findAllByProps({testID: 'theme-option'})
+    .findAll(node =>
+      String(node.props.testID ?? '').startsWith('theme-option-'),
+    )
     .map(n => n.props.accessibilityLabel);
 }
 
@@ -47,11 +50,22 @@ describe('ThemePicker', () => {
   it('applies a theme on tap', async () => {
     const tree = await render('theme-release');
     const darkOption = tree.root
-      .findAllByProps({testID: 'theme-option'})
+      .findAll(node =>
+        String(node.props.testID ?? '').startsWith('theme-option-'),
+      )
       .find(n => n.props.accessibilityLabel === themes.dark.name)!;
     await act(async () => {
       darkOption.props.onPress();
     });
     expect(darkOption.props.accessibilityState.selected).toBe(true);
+  });
+
+  it('uses stable per-theme test ids and a 44px minimum target', async () => {
+    const tree = await render('theme-release');
+    const darkOption = tree.root.findByProps({testID: 'theme-option-dark'});
+    const flattened = StyleSheet.flatten(darkOption.props.style);
+
+    expect(darkOption.props.accessibilityLabel).toBe(themes.dark.name);
+    expect(flattened.minHeight).toBe(44);
   });
 });

@@ -74,15 +74,20 @@ export function LessonExploreRow({
     </View>
   );
 
-  if (!onPress || disabled) {
+  if (!onPress) {
     return row;
   }
 
   return (
     <Pressable
+      accessibilityLabel={title}
       accessibilityRole="button"
+      accessibilityState={{disabled}}
+      disabled={disabled}
       onPress={onPress}
-      style={({pressed}) => [pressed ? themedStyles.pressed : styles.resting]}
+      style={({pressed}) => [
+        pressed && !disabled ? themedStyles.pressed : styles.resting,
+      ]}
     >
       {row}
     </Pressable>

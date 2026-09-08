@@ -196,7 +196,6 @@ export function LessonHubView({
           >
             <MaterialIcon
               color={theme.colors.text.inverse}
-              filled
               name="school"
               size={22}
             />

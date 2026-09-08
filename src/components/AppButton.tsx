@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Pressable,
   type PressableProps,
+  type StyleProp,
   StyleSheet,
   Text,
   type ViewStyle,
@@ -15,7 +16,7 @@ type Props = Omit<PressableProps, 'style' | 'children'> & {
   title: string;
   variant?: Variant;
   loading?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function AppButton({
@@ -24,16 +25,25 @@ export function AppButton({
   loading = false,
   disabled,
   style,
+  accessibilityLabel,
+  accessibilityState,
+  testID = 'app-button',
   ...rest
 }: Props) {
   const {theme} = useAppTheme();
   const spec = theme.components.button[variant];
+  const isDisabled = disabled || loading;
+  const buttonAccessibilityState = loading
+    ? {disabled: true, busy: true}
+    : {...accessibilityState, disabled: isDisabled};
 
   return (
     <Pressable
-      testID="app-button"
+      testID={testID}
+      accessibilityLabel={accessibilityLabel ?? title}
       accessibilityRole="button"
-      disabled={disabled || loading}
+      accessibilityState={buttonAccessibilityState}
+      disabled={isDisabled}
       style={({pressed}) => [
         styles.base,
         {
@@ -45,14 +55,18 @@ export function AppButton({
           borderColor: theme.components.button.secondary.border,
           borderWidth: 1,
         },
-        pressed && {opacity: theme.states.pressedOpacity},
-        (disabled || loading) && {opacity: theme.states.disabledOpacity},
+        pressed && !isDisabled && {opacity: theme.states.pressedOpacity},
+        isDisabled && {opacity: theme.states.disabledOpacity},
         style,
       ]}
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color={spec.text} />
+        <ActivityIndicator
+          accessibilityElementsHidden
+          color={spec.text}
+          importantForAccessibility="no"
+        />
       ) : (
         <Text
           style={{

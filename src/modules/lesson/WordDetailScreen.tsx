@@ -79,7 +79,6 @@ export function WordDetailScreen({navigation, route}: Props) {
     reviewSystemEnabled && lessonId ? (
       <IconButton
         accessibilityLabel={savedFlashcard ? 'Bỏ lưu từ' : 'Lưu từ'}
-        filled={Boolean(savedFlashcard)}
         icon="bookmark"
         onPress={() => void handleToggleSave()}
         tone={savedFlashcard ? 'accent' : 'surface'}
@@ -137,7 +136,6 @@ export function WordDetailScreen({navigation, route}: Props) {
             <View style={styles.sectionTitleRow}>
               <MaterialIcon
                 color={theme.colors.primary}
-                filled
                 name="lightbulb"
                 size={22}
               />
@@ -154,7 +152,6 @@ export function WordDetailScreen({navigation, route}: Props) {
             <View style={styles.sectionTitleRow}>
               <MaterialIcon
                 color={theme.colors.secondary}
-                filled
                 name="format_quote"
                 size={22}
               />

@@ -71,7 +71,6 @@ export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
               color={
                 focused ? theme.colors.accentInk : theme.colors.text.secondary
               }
-              filled={focused}
               name={item.icon}
               size={24}
             />

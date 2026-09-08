@@ -11,12 +11,16 @@ type Props = {
 
 export function HandoffProgressTrack({progress, label}: Props) {
   const {theme} = useAppTheme();
-  const width = `${Math.round(
-    Math.min(Math.max(progress, 0), 1) * 100,
-  )}%` as DimensionValue;
+  const progressPercent = Math.round(Math.min(Math.max(progress, 0), 1) * 100);
+  const width = `${progressPercent}%` as DimensionValue;
 
   return (
-    <View style={{alignItems: 'center', flexDirection: 'row', gap: 12}}>
+    <View
+      accessibilityLabel={label}
+      accessibilityRole="progressbar"
+      accessibilityValue={{min: 0, max: 100, now: progressPercent}}
+      style={{alignItems: 'center', flexDirection: 'row', gap: 12}}
+    >
       <View
         style={{
           backgroundColor: theme.colors.surfaceHigh,

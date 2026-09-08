@@ -62,6 +62,7 @@ export function HandoffDualActionBar({
           <Pressable
             accessibilityLabel={continueLabel}
             accessibilityRole="button"
+            accessibilityState={{disabled: continueDisabled}}
             disabled={continueDisabled}
             onPress={onContinue}
             style={({pressed}) => [

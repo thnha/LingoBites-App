@@ -121,10 +121,12 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
 
     const skipButton = tree.root.findByProps({testID: 'rating-skip'});
     expect(skipButton.props.disabled).toBe(true);
+    expect(skipButton.props.accessibilityState).toEqual({disabled: true});
 
     for (const button of RATING_BUTTONS) {
       const node = tree.root.findByProps({testID: button.testID});
       expect(node.props.disabled).toBe(true);
+      expect(node.props.accessibilityState).toEqual({disabled: true});
     }
   });
 });

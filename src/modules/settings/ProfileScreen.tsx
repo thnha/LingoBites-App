@@ -19,7 +19,11 @@ import {ProfileSettingsRow} from '../../components/ProfileSettingsRow';
 import {SectionHeader} from '../../components/SectionHeader';
 import {ThemePicker} from '../../components/ThemePicker';
 import {getSupportEmail} from '../../shared/api/appConfig';
-import {formatCacheBytes, playReadyChapterAudio, useAudioLibrary} from '../audio';
+import {
+  formatCacheBytes,
+  playReadyChapterAudio,
+  useAudioLibrary,
+} from '../audio';
 import {getGamificationSnapshot} from '../engagement';
 import type {GamificationSnapshot} from '../engagement';
 import {
@@ -165,7 +169,6 @@ export function ProfileScreen({navigation}: Props) {
         <View style={themedStyles.streakCard}>
           <MaterialIcon
             color={theme.colors.accentInk}
-            filled
             name="local_fire_department"
             size={42}
           />

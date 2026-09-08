@@ -74,6 +74,7 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
 
   return (
     <Pressable
+      accessibilityLabel={`${lesson.title}, ${lesson.meta}`}
       accessibilityRole="button"
       onPress={onPress}
       style={({pressed}) => [

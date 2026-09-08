@@ -45,7 +45,7 @@ export function ScreenHeader({
 
 const styles = StyleSheet.create({
   backPlaceholder: {
-    width: 40,
+    width: 44,
   },
   rightAction: {
     alignItems: 'flex-end',
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
   },
   titleRow: {
     alignItems: 'center',
+    flex: 1,
     flexDirection: 'row',
     gap: 4,
     minWidth: 0,
@@ -70,6 +71,7 @@ function makeStyles(theme: AppTheme) {
     },
     title: {
       color: theme.colors.primary,
+      flexShrink: 1,
       fontSize: theme.typography.size.lg,
       fontWeight: theme.typography.weight.medium,
     },

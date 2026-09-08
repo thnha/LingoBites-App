@@ -20,6 +20,10 @@ type Props = TextProps & {
   color?: ColorToken;
 };
 
+type TypographyPresetKey = keyof ReturnType<
+  typeof useAppTheme
+>['theme']['typography']['presets'];
+
 export function AppText({
   variant = 'body',
   color = 'primary',
@@ -27,43 +31,12 @@ export function AppText({
   ...rest
 }: Props) {
   const {theme} = useAppTheme();
-
-  const presetVariants = new Set([
-    'display',
-    'h1',
-    'h2',
-    'h3',
-    'bodyLg',
-    'body',
-    'label',
-    'caption',
-  ]);
-
-  const variantStyle = presetVariants.has(variant)
-    ? {
-        fontSize:
-          theme.typography.presets[
-            variant as keyof typeof theme.typography.presets
-          ].fontSize,
-        lineHeight:
-          theme.typography.presets[
-            variant as keyof typeof theme.typography.presets
-          ].lineHeight,
-        fontWeight:
-          theme.typography.presets[
-            variant as keyof typeof theme.typography.presets
-          ].fontWeight,
-      }
-    : {
-        title: {
-          fontSize: theme.typography.size.xxl,
-          fontWeight: theme.typography.weight.bold,
-        },
-        subtitle: {
-          fontSize: theme.typography.size.md,
-          fontWeight: theme.typography.weight.regular,
-        },
-      }[variant as 'title' | 'subtitle'];
+  const preset = theme.typography.presets[variant as TypographyPresetKey];
+  const variantStyle = {
+    fontSize: preset.fontSize,
+    lineHeight: preset.lineHeight,
+    fontWeight: preset.fontWeight,
+  };
 
   const colorValue =
     color === 'danger' ? theme.colors.danger : theme.colors.text[color];

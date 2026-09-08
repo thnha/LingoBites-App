@@ -41,6 +41,30 @@ export function ProfileSettingsRow({
 }: Props) {
   const {theme} = useAppTheme();
   const medallion = medallionColors(theme, medallionTone);
+  const trailingNode = (() => {
+    if (trailing === 'chevron') {
+      return onPress ? (
+        <MaterialIcon
+          color={theme.colors.text.secondary}
+          name="chevron_right"
+          size={22}
+        />
+      ) : null;
+    }
+    if (trailing && 'chip' in trailing) {
+      return (
+        <Chip label={trailing.chip} tone={trailing.chipTone ?? 'accentSoft'} />
+      );
+    }
+    if (trailing && 'text' in trailing) {
+      return (
+        <AppText color="muted" variant="caption">
+          {trailing.text}
+        </AppText>
+      );
+    }
+    return null;
+  })();
 
   const row = (
     <View
@@ -70,19 +94,7 @@ export function ProfileSettingsRow({
       <AppText style={{flex: 1, fontSize: 16, fontWeight: '600'}}>
         {label}
       </AppText>
-      {trailing === 'chevron' ? (
-        <MaterialIcon
-          color={theme.colors.text.secondary}
-          name="chevron_right"
-          size={22}
-        />
-      ) : trailing && 'chip' in trailing ? (
-        <Chip label={trailing.chip} tone={trailing.chipTone ?? 'accentSoft'} />
-      ) : trailing && 'text' in trailing ? (
-        <AppText color="muted" variant="caption">
-          {trailing.text}
-        </AppText>
-      ) : null}
+      {trailingNode}
     </View>
   );
 

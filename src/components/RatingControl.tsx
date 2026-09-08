@@ -68,6 +68,7 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
           <Pressable
             accessibilityLabel={t(option.accessibilityKey)}
             accessibilityRole="button"
+            accessibilityState={{disabled}}
             disabled={disabled}
             key={option.rating}
             onPress={() => onRate(option.rating)}
@@ -92,6 +93,7 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
       <Pressable
         accessibilityLabel={t('rating.skip_a11y')}
         accessibilityRole="button"
+        accessibilityState={{disabled}}
         disabled={disabled}
         onPress={onSkip}
         style={[

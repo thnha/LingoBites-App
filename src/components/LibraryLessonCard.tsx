@@ -83,6 +83,11 @@ export function LibraryLessonCard({lesson, onPress}: Props) {
 
   return (
     <Pressable
+      accessibilityLabel={`${lesson.title}, ${
+        lesson.subjectLabel
+      }, ${formatWordCount(lesson.vocabularyCount)} từ, ${
+        lesson.durationMin
+      } phút`}
       accessibilityRole="button"
       onPress={onPress}
       style={({pressed}) => [

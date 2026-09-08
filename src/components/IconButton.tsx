@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, type ViewStyle} from 'react-native';
+import {Pressable, type StyleProp, type ViewStyle} from 'react-native';
 import type {HandoffIconName} from './icons/iconRegistry';
 import {MaterialIcon} from './MaterialIcon';
 import {useAppTheme} from '../theme';
@@ -20,10 +20,9 @@ type Props = {
   tone?: IconButtonTone;
   size?: number;
   iconSize?: number;
-  filled?: boolean;
   onPress?: () => void;
   disabled?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   testID?: string;
 };
 
@@ -61,7 +60,6 @@ export function IconButton({
   tone = 'surface',
   size = 40,
   iconSize = 22,
-  filled = false,
   onPress,
   disabled = false,
   style,
@@ -70,25 +68,22 @@ export function IconButton({
   const {theme} = useAppTheme();
   const colors = resolveTone(theme, tone);
   const isInteractive = typeof onPress === 'function';
+  const targetSize = Math.max(size, 44);
 
   const buttonStyle: ViewStyle = {
     alignItems: 'center',
     backgroundColor: colors.background,
     borderRadius: tone === 'bare' ? theme.radius.md : theme.radius.pill,
-    height: size,
+    height: targetSize,
     justifyContent: 'center',
+    minHeight: 44,
+    minWidth: 44,
     opacity: disabled ? theme.states.disabledOpacity : 1,
-    width: size,
-    ...style,
+    width: targetSize,
   };
 
   const iconNode = (
-    <MaterialIcon
-      color={colors.icon}
-      filled={filled}
-      name={icon}
-      size={iconSize}
-    />
+    <MaterialIcon color={colors.icon} name={icon} size={iconSize} />
   );
 
   if (!isInteractive) {
@@ -105,6 +100,7 @@ export function IconButton({
       testID={testID}
       style={({pressed}) => [
         buttonStyle,
+        style,
         pressed && !disabled && {opacity: theme.states.pressedOpacity},
       ]}
     >

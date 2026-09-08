@@ -11,10 +11,9 @@ type Props = {
   name: HandoffIconName;
   size?: number;
   color?: string;
-  filled?: boolean;
 };
 
-export function MaterialIcon({name, size = 24, color, filled = false}: Props) {
+export function MaterialIcon({name, size = 24, color}: Props) {
   const {theme} = useAppTheme();
   const glyph = resolveHandoffIconName(name);
 
@@ -26,10 +25,11 @@ export function MaterialIcon({name, size = 24, color, filled = false}: Props) {
 
   return (
     <MaterialIcons
+      accessibilityElementsHidden
+      importantForAccessibility="no"
       name={glyph}
       size={size}
       color={color ?? theme.colors.primary}
-      style={filled ? {fontWeight: '700'} : undefined}
     />
   );
 }

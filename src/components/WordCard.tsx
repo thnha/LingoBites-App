@@ -42,7 +42,6 @@ export function WordCard({
         {showSave ? (
           <IconButton
             accessibilityLabel={saved ? 'Bỏ lưu từ' : 'Lưu từ'}
-            filled={saved}
             icon="bookmark"
             onPress={onToggleSave}
             size={36}

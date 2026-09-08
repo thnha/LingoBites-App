@@ -30,7 +30,7 @@ export function ThemePicker() {
         return (
           <Pressable
             key={id}
-            testID="theme-option"
+            testID={`theme-option-${id}`}
             accessibilityRole="button"
             accessibilityLabel={themes[id].name}
             accessibilityState={{selected}}
@@ -40,6 +40,7 @@ export function ThemePicker() {
               {
                 borderColor: theme.colors.border,
                 borderRadius: theme.radius.pill,
+                minHeight: 44,
                 paddingHorizontal: theme.spacing.md,
                 paddingVertical: theme.spacing.sm,
               },

@@ -245,7 +245,6 @@ function ResultCard({
       <AppCard style={themedStyles.resultCard}>
         <MaterialIcon
           color={theme.colors.accent}
-          filled
           name="emoji_events"
           size={40}
         />

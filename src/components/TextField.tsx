@@ -4,12 +4,38 @@ import {useAppTheme} from '../theme';
 
 type Props = TextInputProps & {
   hasError?: boolean;
+  label?: string;
+  errorMessage?: string;
 };
 
-export function TextField({hasError = false, style, ...rest}: Props) {
+export function TextField({
+  hasError = false,
+  label,
+  errorMessage,
+  style,
+  accessibilityLabel,
+  accessibilityState,
+  accessibilityHint,
+  accessibilityValue,
+  placeholder,
+  ...rest
+}: Props) {
   const {theme} = useAppTheme();
   return (
     <TextInput
+      accessibilityLabel={
+        accessibilityLabel ??
+        label ??
+        (typeof placeholder === 'string' ? placeholder : undefined)
+      }
+      accessibilityHint={accessibilityHint ?? errorMessage}
+      accessibilityState={accessibilityState}
+      accessibilityValue={
+        errorMessage
+          ? {...accessibilityValue, text: errorMessage}
+          : accessibilityValue
+      }
+      placeholder={placeholder}
       placeholderTextColor={theme.components.input.placeholder}
       style={[
         {

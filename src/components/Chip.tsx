@@ -112,7 +112,9 @@ export function Chip({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{selected}}
       onPress={onPress}
+      style={{justifyContent: 'center', minHeight: 44}}
       testID={testID}
     >
       {inner}

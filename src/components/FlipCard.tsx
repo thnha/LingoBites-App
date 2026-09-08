@@ -26,7 +26,6 @@ export function FlipCard({
   return (
     <Pressable
       accessibilityHint="Chạm để lật thẻ"
-      accessibilityLabel={flipped ? 'Mặt sau flashcard' : 'Mặt trước flashcard'}
       accessibilityRole="button"
       onPress={onFlip}
       testID={testID}
@@ -46,7 +45,12 @@ export function FlipCard({
         ])}
       >
         <View style={styles.contentContainer}>{flipped ? back : front}</View>
-        <AppText color="muted" style={styles.hintText}>
+        <AppText
+          accessibilityElementsHidden
+          color="muted"
+          importantForAccessibility="no-hide-descendants"
+          style={styles.hintText}
+        >
           {flipped ? '🔄 Nhấn để xem mặt trước' : '🔄 Nhấn để xem mặt sau'}
         </AppText>
       </AppCard>
@@ -57,7 +61,6 @@ export function FlipCard({
 const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
-    flex: 1,
     justifyContent: 'center',
     width: '100%',
   },
