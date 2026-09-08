@@ -24,10 +24,13 @@ import {
   playReadyChapterAudio,
   useAudioLibrary,
 } from '../audio';
-import {getGamificationSnapshot} from '../engagement';
-import type {GamificationSnapshot} from '../engagement';
+import {
+  getGamificationSnapshot,
+  type GamificationSnapshot,
+} from '@modules/engagement';
 import {useTranslation} from 'react-i18next';
-import {useLessonRepository} from '../lesson';
+import {useLessonRepository} from '@modules/lesson';
+import {deleteRecordingFile} from '@modules/speaking';
 import {useAppTheme, type AppTheme} from '@theme';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
@@ -99,9 +102,6 @@ export function ProfileScreen({navigation}: Props) {
             const {
               clearSpeakingData,
             } = require('@shared/db/SpeakingRepository');
-            const {
-              deleteRecordingFile,
-            } = require('../speaking/recordingService');
             const {deletedFilePaths} = clearSpeakingData();
             for (const path of deletedFilePaths) {
               await deleteRecordingFile(path);

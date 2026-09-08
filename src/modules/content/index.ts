@@ -4,6 +4,8 @@ export {
   ContentLessonRuntimeScreen,
   useContentLibrary,
 } from './runtime';
+export {playContentAudio} from './runtime/contentAudioPlayer';
+export {bootstrapContentPackage} from './bootstrap';
 export type {ContentLessonListItem, ContentLessonRow} from './runtime';
 export type {AudioAsset, DialogueTurn, QAItem, SrsItem} from './schema';
 export {

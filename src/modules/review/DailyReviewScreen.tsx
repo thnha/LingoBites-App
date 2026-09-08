@@ -12,12 +12,14 @@ import {MaterialIcon} from '@components/MaterialIcon';
 import {Medallion} from '@components/Medallion';
 import {RatingControl} from '@components/RatingControl';
 import {useFeatureEnabled} from '@/release';
-import {requestSync} from '../sync';
-import {useFlashcardLibrary} from '../lesson';
+import {requestSync} from '@modules/sync';
+import {useFlashcardLibrary} from '@modules/lesson';
 import type {FlashcardRecord, ReviewRating} from '@shared/db/types';
-import {startReviewSession} from '../engagement/reviewSession';
-import type {ReviewSession} from '../engagement/reviewSession';
-import {reconcileReminders} from '../engagement/reminderService';
+import {
+  reconcileReminders,
+  startReviewSession,
+  type ReviewSession,
+} from '@modules/engagement';
 import {useAppTheme} from '@theme';
 
 const DEFAULT_SOFT_CAP = 10;

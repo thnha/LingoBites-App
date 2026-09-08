@@ -8,8 +8,7 @@ import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {useAppTheme} from '@theme';
-import {useContentLibrary} from '@modules/content';
-import {playContentAudio} from '@modules/content/runtime/contentAudioPlayer';
+import {playContentAudio, useContentLibrary} from '@modules/content';
 import {captureSpeakingErrorIfNeeded} from '../errorNotebookService';
 import {
   playRecording,
