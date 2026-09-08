@@ -12,6 +12,8 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
+const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
+
 function render(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   act(() => {
@@ -21,6 +23,7 @@ function render(ui: React.ReactElement) {
       </FeatureFlagProvider>,
     );
   });
+  renderedTrees.push(tree);
   return tree;
 }
 
@@ -59,6 +62,14 @@ const mockPackagedLesson2 = {
 describe('LessonsTabContent', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+  });
+
+  afterEach(() => {
+    renderedTrees.splice(0).forEach(tree => {
+      act(() => {
+        tree.unmount();
+      });
+    });
   });
 
   it('renders two sections with correct titles', () => {

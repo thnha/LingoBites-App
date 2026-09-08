@@ -36,6 +36,8 @@ jest.mock('../../useBookmarkOptimistic', () => ({
   })),
 }));
 
+const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
+
 function render(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   act(() => {
@@ -45,6 +47,7 @@ function render(ui: React.ReactElement) {
       </FeatureFlagProvider>,
     );
   });
+  renderedTrees.push(tree);
   return tree;
 }
 
@@ -94,6 +97,14 @@ describe('VocabularyTabContent', () => {
     mockNavigate.mockClear();
     mockOnVocabularySave.mockClear();
     mockOnVocabularyUnsave.mockClear();
+  });
+
+  afterEach(() => {
+    renderedTrees.splice(0).forEach(tree => {
+      act(() => {
+        tree.unmount();
+      });
+    });
   });
 
   it('renders empty state when vocabulary is empty', () => {
