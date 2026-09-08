@@ -5,12 +5,13 @@ import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {AppCard} from '@components/AppCard';
 import {useAppTheme} from '@theme';
-import {featureRegistry, useFeatureEnabled} from '@/release';
+import {featureRegistry, useFeatureFlags} from '@/release';
 import type {FeatureRegistryEntry} from '@/release/types';
 
 export function FeatureStatusScreen() {
   const theme = useAppTheme();
   const themedStyles = makeStyles(theme);
+  const { isFeatureEnabled } = useFeatureFlags();
 
   return (
     <AppScreen>
@@ -20,7 +21,7 @@ export function FeatureStatusScreen() {
       <ScrollView contentContainerStyle={themedStyles.scrollContent}>
         {featureRegistry.map((item) => {
           const entry = item as unknown as FeatureRegistryEntry;
-          const isEnabled = useFeatureEnabled(entry.key as any);
+          const isEnabled = isFeatureEnabled(entry.key as any);
           const isMissing = entry.status === 'not_implemented';
 
           return (
