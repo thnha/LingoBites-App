@@ -4,12 +4,12 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {AppCard} from '@components/AppCard';
-import {useAppTheme} from '@theme';
+import {useAppTheme, type AppTheme} from '@theme';
 import {featureRegistry, useFeatureFlags} from '@/release';
 import type {FeatureRegistryEntry} from '@/release/types';
 
 export function FeatureStatusScreen() {
-  const theme = useAppTheme();
+  const {theme} = useAppTheme();
   const themedStyles = makeStyles(theme);
   const { isFeatureEnabled } = useFeatureFlags();
 
@@ -58,7 +58,7 @@ export function FeatureStatusScreen() {
   );
 }
 
-function makeStyles(theme: any) {
+function makeStyles(theme: AppTheme) {
   return StyleSheet.create({
     header: {
       alignItems: 'center',
