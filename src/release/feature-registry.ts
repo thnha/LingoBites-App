@@ -67,7 +67,7 @@ export const featureRegistry = [
   },
   {
     key: 'lingobitesMvpReviewFlow',
-    module: 'features/mvp-review-flow',
+    module: 'app/navigation',
     required: false,
     releaseGroup: 'foundation',
     status: 'ready',
@@ -83,7 +83,7 @@ export const featureRegistry = [
   },
   {
     key: 'pronunciationSupport',
-    module: 'modules/pronunciation',
+    module: 'modules/speaking',
     required: false,
     releaseGroup: 'foundation',
     status: 'not_implemented',
@@ -155,7 +155,7 @@ export const featureRegistry = [
   },
   {
     key: 'reviewSystem',
-    module: 'features/lesson-review',
+    module: 'modules/review',
     required: false,
     releaseGroup: 'practice',
     status: 'ready',
@@ -163,7 +163,7 @@ export const featureRegistry = [
   },
   {
     key: 'miniGame',
-    module: 'features/mini-games',
+    module: 'modules/engagement',
     required: false,
     releaseGroup: 'practice',
     status: 'not_implemented',
@@ -171,7 +171,7 @@ export const featureRegistry = [
   },
   {
     key: 'wordMatchGame',
-    module: 'features/mini-games/word-match',
+    module: 'modules/engagement',
     required: false,
     releaseGroup: 'practice',
     status: 'not_implemented',
@@ -179,7 +179,7 @@ export const featureRegistry = [
   },
   {
     key: 'fillBlankGame',
-    module: 'features/mini-games/fill-blank',
+    module: 'modules/engagement',
     required: false,
     releaseGroup: 'practice',
     status: 'not_implemented',
@@ -187,7 +187,7 @@ export const featureRegistry = [
   },
   {
     key: 'tenseQuizGame',
-    module: 'features/mini-games/tense-quiz',
+    module: 'modules/engagement',
     required: false,
     releaseGroup: 'practice',
     status: 'not_implemented',
@@ -195,7 +195,7 @@ export const featureRegistry = [
   },
   {
     key: 'sentenceOrderGame',
-    module: 'features/mini-games/sentence-order',
+    module: 'modules/engagement',
     required: false,
     releaseGroup: 'practice',
     status: 'not_implemented',
@@ -203,7 +203,7 @@ export const featureRegistry = [
   },
   {
     key: 'flashcardChallenge',
-    module: 'features/mini-games/flashcard-challenge',
+    module: 'modules/engagement',
     required: false,
     releaseGroup: 'practice',
     status: 'not_implemented',
@@ -211,7 +211,7 @@ export const featureRegistry = [
   },
   {
     key: 'situationLearning',
-    module: 'features/situation-learning',
+    module: 'modules/content',
     required: false,
     releaseGroup: 'expansion',
     status: 'not_implemented',
@@ -219,7 +219,7 @@ export const featureRegistry = [
   },
   {
     key: 'dialogueGenerator',
-    module: 'features/situation-learning',
+    module: 'modules/content',
     required: false,
     releaseGroup: 'expansion',
     status: 'not_implemented',
@@ -227,7 +227,7 @@ export const featureRegistry = [
   },
   {
     key: 'phraseExtractor',
-    module: 'features/situation-learning',
+    module: 'modules/content',
     required: false,
     releaseGroup: 'expansion',
     status: 'not_implemented',
@@ -235,7 +235,7 @@ export const featureRegistry = [
   },
   {
     key: 'situationPractice',
-    module: 'features/situation-learning',
+    module: 'modules/content',
     required: false,
     releaseGroup: 'expansion',
     status: 'not_implemented',
