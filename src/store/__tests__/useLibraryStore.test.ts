@@ -1,11 +1,11 @@
 import {useLibraryStore} from '../useLibraryStore';
-import type {LessonListItem} from '../../shared/db/types';
+import type {LessonListItem} from '@shared/db/types';
 
-jest.mock('../../shared/db/LessonRepository', () => ({
+jest.mock('@shared/db/LessonRepository', () => ({
   listLessons: jest.fn(),
 }));
 
-import {listLessons} from '../../shared/db/LessonRepository';
+import {listLessons} from '@shared/db/LessonRepository';
 const mockListLessons = listLessons as jest.Mock;
 
 function makeItem(overrides: Partial<LessonListItem>): LessonListItem {

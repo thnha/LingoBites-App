@@ -1,4 +1,4 @@
-import type {AnalyzeSourceType} from '../../shared/api/types';
+import type {AnalyzeSourceType} from '@shared/api/types';
 
 export type AnalyticsEventName =
   | 'app_opened'

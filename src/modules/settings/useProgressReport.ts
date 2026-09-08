@@ -2,8 +2,8 @@ import {
   exportPrivacySafeMetrics,
   formatPercentage,
   getCapabilityProgressReport,
-} from '../../shared/db/PilotMetricsRepository';
-import type {CapabilityProgressReport} from '../../shared/db/PilotMetricsRepository';
+} from '@shared/db/PilotMetricsRepository';
+import type {CapabilityProgressReport} from '@shared/db/PilotMetricsRepository';
 
 export type {CapabilityProgressReport};
 

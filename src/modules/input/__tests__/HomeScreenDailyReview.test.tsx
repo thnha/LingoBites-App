@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
-import {FeatureFlagProvider, type ReleaseConfigName} from '../../../release';
-import {DB_NAME} from '../../../shared/db/constants';
-import {resetDatabaseForTests} from '../../../shared/db/database';
-import {saveFlashcard} from '../../../shared/db/FlashcardRepository';
-import {saveLesson} from '../../../shared/db/LessonRepository';
-import {validFullOutput} from '../../../shared/fixtures';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider, type ReleaseConfigName} from '@/release';
+import {DB_NAME} from '@shared/db/constants';
+import {resetDatabaseForTests} from '@shared/db/database';
+import {saveFlashcard} from '@shared/db/FlashcardRepository';
+import {saveLesson} from '@shared/db/LessonRepository';
+import {validFullOutput} from '@shared/fixtures';
+import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {HomeScreen} from '../HomeScreen';
 

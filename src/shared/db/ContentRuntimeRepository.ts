@@ -20,11 +20,11 @@ import type {
   QAItem,
   SrsItem,
   ContentMasteryState,
-} from '../../modules/content';
+} from '@modules/content';
 import {
   calculateNextContentReviewState,
   selectDueContentReviewItems,
-} from '../../modules/content';
+} from '@modules/content';
 
 export type ContentChunkRow = {
   id: string;

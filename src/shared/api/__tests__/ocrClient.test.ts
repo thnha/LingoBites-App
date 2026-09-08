@@ -1,4 +1,4 @@
-import i18n from '../../../i18n';
+import i18n from '@/i18n';
 import {extractTextFromImage} from '../ocrClient';
 
 const mockFetch = jest.fn();

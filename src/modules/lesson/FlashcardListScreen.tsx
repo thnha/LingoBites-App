@@ -12,21 +12,21 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
-} from '../../app/navigation/types';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {Chip} from '../../components/Chip';
-import {ErrorCard} from '../../components/ErrorCard';
-import {FlipCard} from '../../components/FlipCard';
-import {IconButton} from '../../components/IconButton';
-import {ScreenHeader} from '../../components/ScreenHeader';
-import {useFeatureEnabled} from '../../release';
-import type {FlashcardRecord, LessonListItem} from '../../shared/db/types';
+} from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {Chip} from '@components/Chip';
+import {ErrorCard} from '@components/ErrorCard';
+import {FlipCard} from '@components/FlipCard';
+import {IconButton} from '@components/IconButton';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {useFeatureEnabled} from '@/release';
+import type {FlashcardRecord, LessonListItem} from '@shared/db/types';
 import {useFlashcardLibrary} from './useFlashcardLibrary';
 import {useLessonRepository} from './useLessonRepository';
-import {useAppTheme} from '../../theme';
+import {useAppTheme} from '@theme';
 
 type HomeProps = Partial<
   NativeStackScreenProps<HomeStackParamList, 'FlashcardList'>

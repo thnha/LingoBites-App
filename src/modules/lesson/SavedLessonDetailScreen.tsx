@@ -5,17 +5,17 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
-} from '../../app/navigation/types';
-import {AppButton} from '../../components/AppButton';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {IconButton} from '../../components/IconButton';
-import {ScreenHeader} from '../../components/ScreenHeader';
+} from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
+import {ScreenHeader} from '@components/ScreenHeader';
 import {useTranslation} from 'react-i18next';
-import {useFeatureEnabled} from '../../release';
-import type {SavedLessonRecord} from '../../shared/db/types';
-import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
-import {useAppTheme} from '../../theme';
+import {useFeatureEnabled} from '@/release';
+import type {SavedLessonRecord} from '@shared/db/types';
+import type {VocabularyItem} from '@shared/schemas/ai-output-v1';
+import {useAppTheme} from '@theme';
 import {trackEvent} from '../analytics';
 import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 import {LessonHubView} from './LessonHubView';

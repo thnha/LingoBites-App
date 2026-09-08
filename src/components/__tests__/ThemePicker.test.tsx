@@ -1,9 +1,9 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../release';
-import {AppThemeProvider} from '../../theme';
-import {themes} from '../../theme/themeRegistry';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
+import {themes} from '@theme/themeRegistry';
 import {ThemePicker} from '../ThemePicker';
 
 async function render(releaseName: 'theme-release' | 'close-beta-1') {

@@ -13,14 +13,14 @@
  * `message`. The caller (the future UI, or a test) decides what to show.
  */
 
-import {getDatabase, withTransaction} from '../../../shared/db/database';
+import {getDatabase, withTransaction} from '@shared/db/database';
 import {
   insertPackageRecord,
   swapActivePackage,
   getActivePackage,
   getMostRecentInactivePackage,
   getPackageById,
-} from '../../../shared/db/ContentPackageRepository';
+} from '@shared/db/ContentPackageRepository';
 import {constantTimeEqualHex, sha256Hex} from './packageChecksum';
 import {
   lintContentPackage,

@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {FeatureFlagProvider} from '../../../release';
-import {validFullOutput} from '../../../shared/fixtures';
-import type {HomeStackParamList} from '../../../app/navigation/types';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {validFullOutput} from '@shared/fixtures';
+import type {HomeStackParamList} from '@/app/navigation/types';
+import {AppThemeProvider} from '@theme';
 import {PracticeScreen} from '../PracticeScreen';
 
 const navigation = {

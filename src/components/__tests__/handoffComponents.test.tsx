@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../release';
-import {AppThemeProvider} from '../../theme';
-import {themeList} from '../../theme/themeRegistry';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
+import {themeList} from '@theme/themeRegistry';
 import {ChunkRow} from '../ChunkRow';
 import {LessonCard} from '../LessonCard';
 import {QuizOption} from '../QuizOption';

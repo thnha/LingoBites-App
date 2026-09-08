@@ -5,7 +5,7 @@ import {
   getLessonById,
   listLessons,
   saveLesson,
-} from '../../shared/db/LessonRepository';
+} from '@shared/db/LessonRepository';
 
 /**
  * Public entry point for saved-lesson persistence. Screens call this instead

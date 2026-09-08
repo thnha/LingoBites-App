@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../../release';
-import i18n from '../../../i18n';
-import {validFullOutput, validMinimalOutput} from '../../../shared/fixtures';
+import {FeatureFlagProvider} from '@/release';
+import i18n from '@/i18n';
+import {validFullOutput, validMinimalOutput} from '@shared/fixtures';
 import type {
   AIOutput,
   GrammarPoint,
   VocabularyItem,
-} from '../../../shared/schemas/ai-output-v1';
-import {AppThemeProvider} from '../../../theme';
+} from '@shared/schemas/ai-output-v1';
+import {AppThemeProvider} from '@theme';
 import {LessonResultView} from '../LessonResultView';
 
 function renderLesson(lesson: AIOutput): string {

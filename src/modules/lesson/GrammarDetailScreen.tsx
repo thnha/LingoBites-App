@@ -4,19 +4,19 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
-} from '../../app/navigation/types';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {BottomActionBar} from '../../components/BottomActionBar';
-import {Chip} from '../../components/Chip';
-import {IconButton} from '../../components/IconButton';
-import {LessonExploreRow} from '../../components/LessonExploreRow';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ScreenHeader} from '../../components/ScreenHeader';
-import {SectionHeader} from '../../components/SectionHeader';
-import type {GrammarPoint} from '../../shared/schemas/ai-output-v1';
-import {useAppTheme, type AppTheme} from '../../theme';
+} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {BottomActionBar} from '@components/BottomActionBar';
+import {Chip} from '@components/Chip';
+import {IconButton} from '@components/IconButton';
+import {LessonExploreRow} from '@components/LessonExploreRow';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {SectionHeader} from '@components/SectionHeader';
+import type {GrammarPoint} from '@shared/schemas/ai-output-v1';
+import {useAppTheme, type AppTheme} from '@theme';
 
 type Props =
   | NativeStackScreenProps<HomeStackParamList, 'GrammarDetail'>

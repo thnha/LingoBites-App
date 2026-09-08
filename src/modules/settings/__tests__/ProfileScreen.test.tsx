@@ -1,18 +1,18 @@
 import React from 'react';
 import {Alert, Linking, Text} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../../release';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
 import {ProfileScreen} from '../ProfileScreen';
 
 const mockNavigate = jest.fn();
 const mockClearAllLocalData = jest.fn();
 
-jest.mock('../../../shared/db/LessonRepository', () => ({
+jest.mock('@shared/db/LessonRepository', () => ({
   clearAllLocalData: () => mockClearAllLocalData(),
 }));
 
-jest.mock('../../../shared/api/appConfig', () => ({
+jest.mock('@shared/api/appConfig', () => ({
   getSupportEmail: () => 'support@lingobites.app',
 }));
 

@@ -1,7 +1,7 @@
 import {Platform} from 'react-native';
 import {createRequestId} from './requestId';
 import {getAppConfig} from './appConfig';
-import i18n from '../../i18n';
+import i18n from '@/i18n';
 import type {
   ApiErrorBody,
   OCRImageInput,

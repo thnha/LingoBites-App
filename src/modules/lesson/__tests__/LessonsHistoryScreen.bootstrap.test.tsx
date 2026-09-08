@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {LessonsHistoryScreen} from '../LessonsHistoryScreen';
-import {AppThemeProvider} from '../../../theme';
-import {FeatureFlagProvider} from '../../../release';
-import {bootstrapContentPackage} from '../../content/bootstrap';
-import {listActivePackageLessons} from '../../../shared/db/ContentRuntimeRepository';
+import {AppThemeProvider} from '@theme';
+import {FeatureFlagProvider} from '@/release';
+import {bootstrapContentPackage} from '@modules/content/bootstrap';
+import {listActivePackageLessons} from '@shared/db/ContentRuntimeRepository';
 
-jest.mock('../../content/bootstrap', () => ({
+jest.mock('@modules/content/bootstrap', () => ({
   bootstrapContentPackage: jest.fn(),
 }));
 
-jest.mock('../../../shared/db/ContentRuntimeRepository', () => ({
+jest.mock('@shared/db/ContentRuntimeRepository', () => ({
   listActivePackageLessons: jest.fn(),
 }));
 

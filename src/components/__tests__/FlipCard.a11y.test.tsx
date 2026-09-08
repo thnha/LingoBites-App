@@ -2,8 +2,8 @@ import React from 'react';
 import {Text} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FlipCard} from '../FlipCard';
-import {AppThemeProvider} from '../../theme';
-import {FeatureFlagProvider} from '../../release';
+import {AppThemeProvider} from '@theme';
+import {FeatureFlagProvider} from '@/release';
 import {
   findMaskedContent,
   getAnnouncedText,

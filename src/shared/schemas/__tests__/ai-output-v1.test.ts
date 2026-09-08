@@ -2,7 +2,7 @@ import {
   invalidMissingFieldOutput,
   validFullOutput,
   validMinimalOutput,
-} from '../../fixtures';
+} from '@shared/fixtures';
 import {validateAIOutput} from '../ai-output-v1';
 
 describe('validateAIOutput', () => {

@@ -11,7 +11,7 @@ import type {
   ContentActivityRow,
   ContentChunkRow,
   ContentLessonRow,
-} from '../../../shared/db/ContentRuntimeRepository';
+} from '@shared/db/ContentRuntimeRepository';
 import type {AudioAsset, DialogueTurn, QAItem, SrsItem} from '../schema';
 
 export type RuntimeStepKind =

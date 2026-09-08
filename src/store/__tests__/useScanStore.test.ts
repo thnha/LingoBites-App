@@ -1,10 +1,10 @@
-import i18n from '../../i18n';
-import {validFullOutput} from '../../shared/fixtures';
+import i18n from '@/i18n';
+import {validFullOutput} from '@shared/fixtures';
 import {useScanStore} from '../useScanStore';
 
 const mockAnalyzeText = jest.fn();
 
-jest.mock('../../services/ai', () => ({
+jest.mock('@/services/ai', () => ({
   analyzeLessonText: (...args: unknown[]) => mockAnalyzeText(...args),
 }));
 

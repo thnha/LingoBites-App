@@ -1,14 +1,14 @@
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
-import {resetDatabaseForTests} from '../../../shared/db/database';
+import {resetDatabaseForTests} from '@shared/db/database';
 import {open} from 'react-native-quick-sqlite';
-import {DB_NAME} from '../../../shared/db/constants';
+import {DB_NAME} from '@shared/db/constants';
 import {
   AUDIO_STATUS,
   insertPendingChapterAudioAsset,
   listChapterAudioAssets,
   markChapterAudioAssetReady,
-} from '../../../shared/db/AudioAssetRepository';
-import type {ChapterAudioAsset} from '../../../shared/db/types';
+} from '@shared/db/AudioAssetRepository';
+import type {ChapterAudioAsset} from '@shared/db/types';
 import {ensureChapterAudio} from '../chapterAudioCache';
 import type {
   ChapterAudioCacheDeps,

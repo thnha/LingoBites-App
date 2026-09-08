@@ -1,11 +1,11 @@
-import i18n from '../../i18n';
+import i18n from '@/i18n';
 import {
   invalidMissingFieldOutput,
   validFullOutput,
   validMinimalOutput,
-} from '../../shared/fixtures';
-import {validateAIOutput} from '../../shared/schemas/ai-output-v1';
-import type {AnalysisJobStage} from '../../shared/api/types';
+} from '@shared/fixtures';
+import {validateAIOutput} from '@shared/schemas/ai-output-v1';
+import type {AnalysisJobStage} from '@shared/api/types';
 import type {
   AnalyzeOptions,
   AnalyzeTextResult,

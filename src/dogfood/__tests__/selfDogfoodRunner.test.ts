@@ -1,28 +1,25 @@
 import {__resetMockDatabases} from '../../../test-utils/sqliteMock';
 import {open} from 'react-native-quick-sqlite';
-import {getDatabase, resetDatabaseForTests} from '../../shared/db/database';
-import {DB_NAME} from '../../shared/db/constants';
-import {
-  saveLearnerProfileData,
-  getLearnerStateSnapshot,
-} from '../../modules/today';
+import {getDatabase, resetDatabaseForTests} from '@shared/db/database';
+import {DB_NAME} from '@shared/db/constants';
+import {saveLearnerProfileData, getLearnerStateSnapshot} from '@modules/today';
 import {
   insertPackageRecord,
   swapActivePackage,
   getActivePackage,
-} from '../../shared/db/ContentPackageRepository';
+} from '@shared/db/ContentPackageRepository';
 import {
   insertSpeakingRecording,
   captureErrorEvent,
   listSpeakingRecordings,
   listErrorEvents,
-} from '../../shared/db/SpeakingRepository';
+} from '@shared/db/SpeakingRepository';
 import {
   getCapabilityProgressReport,
   exportPrivacySafeMetrics,
-} from '../../shared/db/PilotMetricsRepository';
-import {clearAllLocalData} from '../../shared/db/LessonRepository';
-import {listActivePackageLessons} from '../../shared/db/ContentRuntimeRepository';
+} from '@shared/db/PilotMetricsRepository';
+import {clearAllLocalData} from '@shared/db/LessonRepository';
+import {listActivePackageLessons} from '@shared/db/ContentRuntimeRepository';
 
 beforeEach(() => {
   __resetMockDatabases();

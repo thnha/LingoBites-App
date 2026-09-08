@@ -5,10 +5,10 @@
 
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {open} from 'react-native-quick-sqlite';
-import {DB_NAME} from '../../../shared/db/constants';
-import {resetDatabaseForTests} from '../../../shared/db/database';
-import {runMigrations} from '../../../shared/db/migrations';
-import {insertPackageRecord} from '../../../shared/db/ContentPackageRepository';
+import {DB_NAME} from '@shared/db/constants';
+import {resetDatabaseForTests} from '@shared/db/database';
+import {runMigrations} from '@shared/db/migrations';
+import {insertPackageRecord} from '@shared/db/ContentPackageRepository';
 import {getShadowingContent, listSpeakingRoomModes} from '../speakingModes';
 
 function setup() {

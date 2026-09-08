@@ -1,24 +1,24 @@
 import React, {useMemo, useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {Banner} from '../../components/Banner';
-import {ErrorCard} from '../../components/ErrorCard';
-import {FlipCard} from '../../components/FlipCard';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {Medallion} from '../../components/Medallion';
-import {RatingControl} from '../../components/RatingControl';
-import {useFeatureEnabled} from '../../release';
+import {AppButton} from '@components/AppButton';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {Banner} from '@components/Banner';
+import {ErrorCard} from '@components/ErrorCard';
+import {FlipCard} from '@components/FlipCard';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {Medallion} from '@components/Medallion';
+import {RatingControl} from '@components/RatingControl';
+import {useFeatureEnabled} from '@/release';
 import {requestSync} from '../sync';
 import {useFlashcardLibrary} from '../lesson';
-import type {FlashcardRecord, ReviewRating} from '../../shared/db/types';
+import type {FlashcardRecord, ReviewRating} from '@shared/db/types';
 import {startReviewSession} from '../engagement/reviewSession';
 import type {ReviewSession} from '../engagement/reviewSession';
 import {reconcileReminders} from '../engagement/reminderService';
-import {useAppTheme} from '../../theme';
+import {useAppTheme} from '@theme';
 
 const DEFAULT_SOFT_CAP = 10;
 

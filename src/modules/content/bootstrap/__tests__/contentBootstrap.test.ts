@@ -2,18 +2,21 @@ import {
   bootstrapContentPackage,
   getBundledPackageZipBytes,
 } from '../contentBootstrap';
-import {buildStoredZip} from '../../importer/_fixtures/testZip';
-import {makeManifest, makeLesson} from '../../importer/_fixtures/testLesson';
+import {buildStoredZip} from '@modules/content/importer/_fixtures/testZip';
+import {
+  makeManifest,
+  makeLesson,
+} from '@modules/content/importer/_fixtures/testLesson';
 import {
   getActivePackage,
   listPackages,
-} from '../../../../shared/db/ContentPackageRepository';
+} from '@shared/db/ContentPackageRepository';
 import {
   listActivePackageLessons,
   listContentReviewItems,
   insertContentReviewItems,
-} from '../../../../shared/db/ContentRuntimeRepository';
-import {sha256Hex} from '../../importer/packageChecksum';
+} from '@shared/db/ContentRuntimeRepository';
+import {sha256Hex} from '@modules/content/importer/packageChecksum';
 
 describe('contentBootstrap (SETE-114 / M9)', () => {
   it('installs bundled package on fresh install when active package is absent', async () => {

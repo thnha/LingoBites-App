@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {Text} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../release';
+import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '../ThemeProvider';
 import {THEME_STORAGE_KEY} from '../themeStorage';
 import {useAppTheme} from '../useAppTheme';

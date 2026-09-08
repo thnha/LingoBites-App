@@ -16,7 +16,7 @@
 
 import * as RNFS from '@dr.pogodin/react-native-fs';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
-import type {SpeakingMode} from '../../shared/db/types';
+import type {SpeakingMode} from '@shared/db/types';
 
 function nativeFsAvailable(): boolean {
   return (

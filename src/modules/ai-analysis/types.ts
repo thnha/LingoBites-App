@@ -1,9 +1,9 @@
-import type {AIOutput} from '../../shared/schemas/ai-output-v1';
+import type {AIOutput} from '@shared/schemas/ai-output-v1';
 import type {
   AnalyzeSourceType,
   ApiErrorCode,
   AnalysisJobStage,
-} from '../../shared/api/types';
+} from '@shared/api/types';
 
 export type {AnalyzeSourceType};
 

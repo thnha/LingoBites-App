@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {ActivityIndicator, Text} from 'react-native';
-import {FeatureFlagProvider} from '../../../release';
-import i18n from '../../../i18n';
-import type {AnalysisJobStage} from '../../../shared/api/types';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import i18n from '@/i18n';
+import type {AnalysisJobStage} from '@shared/api/types';
+import {AppThemeProvider} from '@theme';
 import {AnalyzingScreen} from '../AnalyzingScreen';
 import type {AnalysisProgress, AnalyzeTextResult} from '../types';
 

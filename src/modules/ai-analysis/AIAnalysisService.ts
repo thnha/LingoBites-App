@@ -1,5 +1,5 @@
-import {runAnalysisJob} from '../../shared/api/analysisJobClient';
-import {getAppConfig} from '../../shared/api/appConfig';
+import {runAnalysisJob} from '@shared/api/analysisJobClient';
+import {getAppConfig} from '@shared/api/appConfig';
 import {getTextLengthBucket, trackEvent} from '../analytics';
 import {simulateAnalysisJob} from './MockAIAnalysisService';
 import type {

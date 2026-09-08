@@ -3,12 +3,12 @@ import {
   listPendingSyncEvents,
   markSyncEventsFailed,
   markSyncEventsSynced,
-} from '../../shared/db/SyncOutboxRepository';
-import type {SyncOutboxRecord} from '../../shared/db/types';
+} from '@shared/db/SyncOutboxRepository';
+import type {SyncOutboxRecord} from '@shared/db/types';
 import {
   pushReviewEvents,
   type SyncReviewEvent,
-} from '../../shared/api/reviewEventsClient';
+} from '@shared/api/reviewEventsClient';
 import {SYNC_BATCH_LIMIT, isSyncStuck} from './syncPolicy';
 
 export type SyncDrainOutcome =

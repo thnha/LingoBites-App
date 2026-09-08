@@ -19,7 +19,7 @@
 import type {
   ContentActivityRow,
   ContentChunkRow,
-} from '../../../shared/db/ContentRuntimeRepository';
+} from '@shared/db/ContentRuntimeRepository';
 import type {QAItem} from '../schema';
 import type {LessonRuntimeData, RuntimeStep} from './types';
 

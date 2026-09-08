@@ -1,4 +1,4 @@
-import * as audioRepository from '../../shared/db/AudioAssetRepository';
+import * as audioRepository from '@shared/db/AudioAssetRepository';
 import {
   STALE_CHAPTER_DAYS,
   DEFAULT_MAX_BYTES_PER_CHAPTER,
@@ -7,7 +7,7 @@ import {
   selectStaleChapters,
   selectChaptersToEvict,
 } from './audioCachePolicy';
-import type {ChapterAudioAsset} from '../../shared/db/types';
+import type {ChapterAudioAsset} from '@shared/db/types';
 import type {ChapterAudioManifestResult} from './audioManifestClient';
 
 /**

@@ -1,8 +1,8 @@
 import React from 'react';
 import {Text, TextInput} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../../release';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
 import {OCRReviewScreen} from '../OCRReviewScreen';
 
 const mockNavigate = jest.fn();

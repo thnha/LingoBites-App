@@ -4,18 +4,18 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
-} from '../../app/navigation/types';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {HandoffProgressTrack} from '../../components/HandoffProgressTrack';
-import {IconButton} from '../../components/IconButton';
-import {ImagePlaceholder} from '../../components/ImagePlaceholder';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ScreenHeader} from '../../components/ScreenHeader';
+} from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
+import {IconButton} from '@components/IconButton';
+import {ImagePlaceholder} from '@components/ImagePlaceholder';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ScreenHeader} from '@components/ScreenHeader';
 import {useTranslation} from 'react-i18next';
-import {useAppTheme, type AppTheme} from '../../theme';
+import {useAppTheme, type AppTheme} from '@theme';
 import {useQuiz} from './useQuiz';
 
 type Props =

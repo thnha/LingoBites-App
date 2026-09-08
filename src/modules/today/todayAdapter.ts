@@ -1,14 +1,14 @@
-import {getDatabase} from '../../shared/db/database';
+import {getDatabase} from '@shared/db/database';
 import {
   getDueContentReviewItems,
   listActivePackageLessons,
   listContentReviewItems,
-} from '../../shared/db/ContentRuntimeRepository';
-import {getDueFlashcards} from '../../shared/db/FlashcardRepository';
+} from '@shared/db/ContentRuntimeRepository';
+import {getDueFlashcards} from '@shared/db/FlashcardRepository';
 import {
   listErrorEvents,
   listSpeakingRecordings,
-} from '../../shared/db/SpeakingRepository';
+} from '@shared/db/SpeakingRepository';
 import type {LearnerProfileData, LearnerStateSnapshot} from './types';
 
 export function getLearnerProfileData(): LearnerProfileData | null {

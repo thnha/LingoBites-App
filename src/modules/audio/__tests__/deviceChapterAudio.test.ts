@@ -1,13 +1,13 @@
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
-import {resetDatabaseForTests} from '../../../shared/db/database';
+import {resetDatabaseForTests} from '@shared/db/database';
 import {open} from 'react-native-quick-sqlite';
-import {DB_NAME} from '../../../shared/db/constants';
+import {DB_NAME} from '@shared/db/constants';
 import {
   insertPendingChapterAudioAsset,
   markChapterAudioAssetReady,
-} from '../../../shared/db/AudioAssetRepository';
-import type {ChapterAudioAsset} from '../../../shared/db/types';
-import {sha256Hex} from '../../../shared/utils/sha256';
+} from '@shared/db/AudioAssetRepository';
+import type {ChapterAudioAsset} from '@shared/db/types';
+import {sha256Hex} from '@shared/utils/sha256';
 import {bytesToBase64} from '../bytesToBase64';
 
 jest.mock('@dr.pogodin/react-native-fs', () => ({
@@ -303,7 +303,7 @@ describe('offline playback', () => {
     const {playReadyChapterAudio: playWithBrokenSound} =
       require('../deviceChapterAudio') as typeof import('../deviceChapterAudio');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const repository = require('../../../shared/db/AudioAssetRepository') as {
+    const repository = require('@shared/db/AudioAssetRepository') as {
       insertPendingChapterAudioAsset: (input: {
         chapterId: string;
         asset: ChapterAudioAsset;

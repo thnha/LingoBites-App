@@ -1,7 +1,7 @@
 import {Platform} from 'react-native';
 import Config from 'react-native-config';
-import {APP_VERSION} from '../../shared/appMetadata';
-import {getOrCreateAnonymousUserId} from '../../shared/db/anonymousUserId';
+import {APP_VERSION} from '@shared/appMetadata';
+import {getOrCreateAnonymousUserId} from '@shared/db/anonymousUserId';
 import {createConsoleAnalyticsAdapter} from './adapters/ConsoleAnalyticsAdapter';
 import {createFirebaseAnalyticsAdapter} from './adapters/FirebaseAnalyticsAdapter';
 import type {

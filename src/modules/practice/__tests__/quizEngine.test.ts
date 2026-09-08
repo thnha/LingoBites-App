@@ -1,4 +1,4 @@
-import type {PracticeQuestion} from '../../../shared/schemas/ai-output-v1';
+import type {PracticeQuestion} from '@shared/schemas/ai-output-v1';
 import {
   accuracyPercent,
   correctOptionIndex,

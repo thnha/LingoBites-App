@@ -1,17 +1,17 @@
 import React from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import {AppCard} from '../../components/AppCard';
-import {AppText} from '../../components/AppText';
-import {BottomActionBar} from '../../components/BottomActionBar';
-import {Chip} from '../../components/Chip';
-import {ImagePlaceholder} from '../../components/ImagePlaceholder';
-import {LessonExploreRow} from '../../components/LessonExploreRow';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {SectionHeader} from '../../components/SectionHeader';
-import {WordCard} from '../../components/WordCard';
+import {AppCard} from '@components/AppCard';
+import {AppText} from '@components/AppText';
+import {BottomActionBar} from '@components/BottomActionBar';
+import {Chip} from '@components/Chip';
+import {ImagePlaceholder} from '@components/ImagePlaceholder';
+import {LessonExploreRow} from '@components/LessonExploreRow';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {SectionHeader} from '@components/SectionHeader';
+import {WordCard} from '@components/WordCard';
 import {useTranslation} from 'react-i18next';
-import type {AIOutput, VocabularyItem} from '../../shared/schemas/ai-output-v1';
-import {useAppTheme, type AppTheme} from '../../theme';
+import type {AIOutput, VocabularyItem} from '@shared/schemas/ai-output-v1';
+import {useAppTheme, type AppTheme} from '@theme';
 import type {LessonSaveState} from './LessonResultView';
 
 type Props = {

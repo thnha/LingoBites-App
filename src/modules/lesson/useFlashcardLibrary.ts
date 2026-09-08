@@ -5,7 +5,7 @@ import {
   recordFlashcardRating,
   saveFlashcard,
   unsaveFlashcard,
-} from '../../shared/db/FlashcardRepository';
+} from '@shared/db/FlashcardRepository';
 
 /**
  * Public entry point for flashcard persistence. Screens call this instead of

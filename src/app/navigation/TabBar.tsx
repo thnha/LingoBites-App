@@ -2,10 +2,10 @@ import React from 'react';
 import {Pressable, View} from 'react-native';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {AppText} from '../../components/AppText';
-import type {HandoffIconName} from '../../components/icons/iconRegistry';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {useAppTheme} from '../../theme';
+import {AppText} from '@components/AppText';
+import type {HandoffIconName} from '@components/icons/iconRegistry';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {useAppTheme} from '@theme';
 
 const TAB_ITEMS: Record<string, {label: string; icon: HandoffIconName}> = {
   Home: {label: 'Trang chủ', icon: 'home'},

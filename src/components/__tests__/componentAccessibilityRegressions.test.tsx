@@ -1,8 +1,8 @@
 import React from 'react';
 import {Pressable, StyleSheet, TextInput} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../release';
-import {AppThemeProvider} from '../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
 import {AppButton} from '../AppButton';
 import {Chip} from '../Chip';
 import {HandoffDualActionBar} from '../HandoffDualActionBar';

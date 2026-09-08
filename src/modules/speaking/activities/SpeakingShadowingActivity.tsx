@@ -1,15 +1,15 @@
 import React, {useMemo, useState} from 'react';
 import {Alert, Pressable, ScrollView, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {LessonsStackParamList} from '../../../app/navigation/types';
-import {AppCard} from '../../../components/AppCard';
-import {AppScreen} from '../../../components/AppScreen';
-import {AppText} from '../../../components/AppText';
-import {IconButton} from '../../../components/IconButton';
-import {ScreenHeader} from '../../../components/ScreenHeader';
-import {useAppTheme} from '../../../theme';
-import {useContentLibrary} from '../../content';
-import {playContentAudio} from '../../content/runtime/contentAudioPlayer';
+import type {LessonsStackParamList} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {useAppTheme} from '@theme';
+import {useContentLibrary} from '@modules/content';
+import {playContentAudio} from '@modules/content/runtime/contentAudioPlayer';
 import {captureSpeakingErrorIfNeeded} from '../errorNotebookService';
 import {
   playRecording,

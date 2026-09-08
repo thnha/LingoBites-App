@@ -1,7 +1,7 @@
 import {
   countPendingSyncEvents,
   listPendingSyncEvents,
-} from '../../shared/db/SyncOutboxRepository';
+} from '@shared/db/SyncOutboxRepository';
 import {drainOutboxOnce} from './outboxSync';
 import {
   SYNC_MAX_ROUNDS_PER_REQUEST,

@@ -7,19 +7,19 @@ import {
   View,
 } from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList} from '../../app/navigation/types';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {BottomActionBar} from '../../components/BottomActionBar';
-import {ErrorCard} from '../../components/ErrorCard';
-import {ImagePlaceholder} from '../../components/ImagePlaceholder';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ScreenHeader} from '../../components/ScreenHeader';
-import {SectionHeader} from '../../components/SectionHeader';
+import type {HomeStackParamList} from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {BottomActionBar} from '@components/BottomActionBar';
+import {ErrorCard} from '@components/ErrorCard';
+import {ImagePlaceholder} from '@components/ImagePlaceholder';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {SectionHeader} from '@components/SectionHeader';
 import {useTranslation} from 'react-i18next';
-import {useAppTheme} from '../../theme';
+import {useAppTheme} from '@theme';
 import {extractText} from '../ocr';
 import {getImageSizeCategory, trackEvent} from '../analytics';
 import {

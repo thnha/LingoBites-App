@@ -1,7 +1,7 @@
-import {extractTextFromImage} from '../../shared/api/ocrClient';
-import {getAppConfig} from '../../shared/api/appConfig';
+import {extractTextFromImage} from '@shared/api/ocrClient';
+import {getAppConfig} from '@shared/api/appConfig';
 import {getTextLengthBucket, trackEvent} from '../analytics';
-import type {OCRImageInput, OCRTextResult} from '../../shared/api/types';
+import type {OCRImageInput, OCRTextResult} from '@shared/api/types';
 import {extractTextWithMock} from './MockOCRService';
 
 export async function extractText(

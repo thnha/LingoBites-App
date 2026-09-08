@@ -1,4 +1,4 @@
-import {listUpcomingReviewReminders} from '../../shared/db/FlashcardRepository';
+import {listUpcomingReviewReminders} from '@shared/db/FlashcardRepository';
 import {
   computeReminderPlan,
   REVIEW_REMINDER_BODY,

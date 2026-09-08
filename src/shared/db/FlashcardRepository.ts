@@ -1,5 +1,5 @@
 import {createRequestId} from '../api/requestId';
-import type {UpcomingReviewReminder} from '../../modules/engagement';
+import type {UpcomingReviewReminder} from '@modules/engagement';
 import {getOrCreateAnonymousUserId} from './anonymousUserId';
 import {getDatabase, withTransaction} from './database';
 import {enqueueSyncOutboxEvent} from './SyncOutboxRepository';
@@ -7,7 +7,7 @@ import {REVIEW_EVENT_SCHEMA_VERSION} from './types';
 import {
   DEFAULT_REVIEW_INTERVAL_DAYS,
   calculateNextReviewState,
-} from '../../modules/review';
+} from '@modules/review';
 import type {
   FlashcardRecord,
   GetDueFlashcardsOptions,

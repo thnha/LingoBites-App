@@ -1,5 +1,5 @@
-import i18n from '../../i18n';
-import type {OCRImageInput, OCRTextResult} from '../../shared/api/types';
+import i18n from '@/i18n';
+import type {OCRImageInput, OCRTextResult} from '@shared/api/types';
 
 const DEFAULT_MOCK_TEXT =
   'We are offering a special discount for new customers.';

@@ -5,7 +5,7 @@
  */
 
 import {buildLessonSteps} from '../buildLessonSteps';
-import type {ContentChunkRow} from '../../../../shared/db/ContentRuntimeRepository';
+import type {ContentChunkRow} from '@shared/db/ContentRuntimeRepository';
 import type {LessonRuntimeData} from '../types';
 
 function chunk(

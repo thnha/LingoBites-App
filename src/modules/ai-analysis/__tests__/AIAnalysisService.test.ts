@@ -1,4 +1,4 @@
-import i18n from '../../../i18n';
+import i18n from '@/i18n';
 import {analyzeText} from '../AIAnalysisService';
 
 const mockGetAppConfig = jest.fn();
@@ -6,7 +6,7 @@ const mockSimulateAnalysisJob = jest.fn();
 const mockRunAnalysisJob = jest.fn();
 const mockTrackEvent = jest.fn();
 
-jest.mock('../../../shared/api/appConfig', () => ({
+jest.mock('@shared/api/appConfig', () => ({
   getAppConfig: () => mockGetAppConfig(),
 }));
 
@@ -14,13 +14,13 @@ jest.mock('../MockAIAnalysisService', () => ({
   simulateAnalysisJob: (...args: unknown[]) => mockSimulateAnalysisJob(...args),
 }));
 
-jest.mock('../../analytics', () => ({
+jest.mock('@modules/analytics', () => ({
   trackEvent: (...args: unknown[]) => mockTrackEvent(...args),
   getTextLengthBucket: (length: number) =>
     length <= 100 ? '1-100' : '101-500',
 }));
 
-jest.mock('../../../shared/api/analysisJobClient', () => ({
+jest.mock('@shared/api/analysisJobClient', () => ({
   runAnalysisJob: (...args: unknown[]) => mockRunAnalysisJob(...args),
 }));
 

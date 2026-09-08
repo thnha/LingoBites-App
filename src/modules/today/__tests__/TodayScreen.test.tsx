@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
-import {FeatureFlagProvider} from '../../../release';
-import {DB_NAME} from '../../../shared/db/constants';
-import {resetDatabaseForTests} from '../../../shared/db/database';
-import {runMigrations} from '../../../shared/db/migrations';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {DB_NAME} from '@shared/db/constants';
+import {resetDatabaseForTests} from '@shared/db/database';
+import {runMigrations} from '@shared/db/migrations';
+import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {TodayScreen} from '../TodayScreen';
-import {captureErrorEvent} from '../../../shared/db/SpeakingRepository';
+import {captureErrorEvent} from '@shared/db/SpeakingRepository';
 
 const mockNavigate = jest.fn();
 

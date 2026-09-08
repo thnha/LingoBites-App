@@ -2,15 +2,15 @@ import React, {useState, useCallback} from 'react';
 import {Alert, ScrollView, View, StyleSheet} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {ProfileStackParamList} from '../../app/navigation/types';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {IconButton} from '../../components/IconButton';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {SectionHeader} from '../../components/SectionHeader';
-import {AppButton} from '../../components/AppButton';
-import {useAppTheme} from '../../theme';
+import type {ProfileStackParamList} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {SectionHeader} from '@components/SectionHeader';
+import {AppButton} from '@components/AppButton';
+import {useAppTheme} from '@theme';
 import {
   useProgressReport,
   type CapabilityProgressReport,

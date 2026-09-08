@@ -2,15 +2,15 @@ import React from 'react';
 import {ScrollView, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {ProfileStackParamList} from '../../app/navigation/types';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import type {HandoffIconName} from '../../components/icons/iconRegistry';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ScreenHeader} from '../../components/ScreenHeader';
+import type {ProfileStackParamList} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import type {HandoffIconName} from '@components/icons/iconRegistry';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ScreenHeader} from '@components/ScreenHeader';
 import {useTranslation} from 'react-i18next';
-import {useAppTheme} from '../../theme';
+import {useAppTheme} from '@theme';
 
 export function PrivacyNoteScreen() {
   const {theme} = useAppTheme();

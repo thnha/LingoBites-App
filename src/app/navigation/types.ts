@@ -4,8 +4,8 @@ import type {
   PracticeQuestion,
   Sentence,
   VocabularyItem,
-} from '../../shared/schemas/ai-output-v1';
-import type {AnalyzeSourceType, OCRSourceType} from '../../shared/api/types';
+} from '@shared/schemas/ai-output-v1';
+import type {AnalyzeSourceType, OCRSourceType} from '@shared/api/types';
 
 /**
  * Learning-mode drill-down screens shared by the Home and Lessons stacks.

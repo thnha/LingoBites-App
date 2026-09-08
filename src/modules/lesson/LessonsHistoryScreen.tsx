@@ -13,25 +13,25 @@ import {
 import type {
   LessonsStackParamList,
   RootTabParamList,
-} from '../../app/navigation/types';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {Chip} from '../../components/Chip';
-import {IconButton} from '../../components/IconButton';
-import {LibraryLessonCard} from '../../components/LibraryLessonCard';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {Medallion} from '../../components/Medallion';
-import {SectionHeader} from '../../components/SectionHeader';
-import {TextField} from '../../components/TextField';
+} from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {Chip} from '@components/Chip';
+import {IconButton} from '@components/IconButton';
+import {LibraryLessonCard} from '@components/LibraryLessonCard';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {Medallion} from '@components/Medallion';
+import {SectionHeader} from '@components/SectionHeader';
+import {TextField} from '@components/TextField';
 import {useTranslation} from 'react-i18next';
-import type {LibrarySubjectFilter} from '../../store/useLibraryStore';
+import type {LibrarySubjectFilter} from '@/store/useLibraryStore';
 import {
   useContentLibrary,
   type ContentLessonListItem,
 } from '../content';
-import {useAppTheme, type AppTheme} from '../../theme';
+import {useAppTheme, type AppTheme} from '@theme';
 import {bootstrapContentPackage} from '../content/bootstrap';
 import {useLessonLibrary} from './useLessonLibrary';
 

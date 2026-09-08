@@ -4,21 +4,21 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
-} from '../../app/navigation/types';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {Chip} from '../../components/Chip';
-import {HandoffDualActionBar} from '../../components/HandoffDualActionBar';
-import {HandoffProgressTrack} from '../../components/HandoffProgressTrack';
-import {IconButton} from '../../components/IconButton';
-import {ImagePlaceholder} from '../../components/ImagePlaceholder';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ScreenHeader} from '../../components/ScreenHeader';
-import {SectionHeader} from '../../components/SectionHeader';
-import {SentenceChunkCard} from '../../components/SentenceChunkCard';
+} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {Chip} from '@components/Chip';
+import {HandoffDualActionBar} from '@components/HandoffDualActionBar';
+import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
+import {IconButton} from '@components/IconButton';
+import {ImagePlaceholder} from '@components/ImagePlaceholder';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {SectionHeader} from '@components/SectionHeader';
+import {SentenceChunkCard} from '@components/SentenceChunkCard';
 import {useTranslation} from 'react-i18next';
-import {useAppTheme} from '../../theme';
+import {useAppTheme} from '@theme';
 
 type Props =
   | NativeStackScreenProps<HomeStackParamList, 'SentenceDetail'>

@@ -7,18 +7,18 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   RootTabParamList,
-} from '../../app/navigation/types';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {IconButton} from '../../components/IconButton';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {Medallion} from '../../components/Medallion';
-import {RecentLessonRow} from '../../components/RecentLessonRow';
-import {SectionHeader} from '../../components/SectionHeader';
-import {useFeatureEnabled} from '../../release';
+} from '@/app/navigation/types';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {Medallion} from '@components/Medallion';
+import {RecentLessonRow} from '@components/RecentLessonRow';
+import {SectionHeader} from '@components/SectionHeader';
+import {useFeatureEnabled} from '@/release';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
-import {useAppTheme, type AppTheme} from '../../theme';
-import type {LessonCardView} from '../../types/lesson';
+import {useAppTheme, type AppTheme} from '@theme';
+import type {LessonCardView} from '@/types/lesson';
 import {trackEvent} from '../analytics';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;

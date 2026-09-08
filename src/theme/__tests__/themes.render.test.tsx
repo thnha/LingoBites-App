@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppText} from '../../components/AppText';
-import {FeatureFlagProvider} from '../../release';
+import {AppButton} from '@components/AppButton';
+import {AppCard} from '@components/AppCard';
+import {AppText} from '@components/AppText';
+import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '../ThemeProvider';
 import {themeList} from '../themeRegistry';
 import {THEME_STORAGE_KEY} from '../themeStorage';

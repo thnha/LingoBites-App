@@ -8,13 +8,9 @@ import type {
   ProfileStackParamList,
   RootTabParamList,
 } from './types';
-import {
-  HomeScreen,
-  PasteTextScreen,
-  ImageCaptureScreen,
-} from '../../modules/input';
-import {OCRReviewScreen} from '../../modules/ocr';
-import {AnalyzingScreen} from '../../modules/ai-analysis';
+import {HomeScreen, PasteTextScreen, ImageCaptureScreen} from '@modules/input';
+import {OCRReviewScreen} from '@modules/ocr';
+import {AnalyzingScreen} from '@modules/ai-analysis';
 import {
   LessonResultScreen,
   LessonsHistoryScreen,
@@ -23,25 +19,22 @@ import {
   WordDetailScreen,
   GrammarDetailScreen,
   FlashcardListScreen,
-} from '../../modules/lesson';
-import {PracticeScreen} from '../../modules/practice';
-import {DailyReviewScreen} from '../../modules/review';
-import {TodayScreen} from '../../modules/today';
+} from '@modules/lesson';
+import {PracticeScreen} from '@modules/practice';
+import {DailyReviewScreen} from '@modules/review';
+import {TodayScreen} from '@modules/today';
 import {
   ContentLessonListScreen,
   ContentLessonDetailScreen,
   ContentLessonRuntimeScreen,
-} from '../../modules/content';
-import {
-  SpeakingRoomScreen,
-  SpeakingShadowingActivity,
-} from '../../modules/speaking';
+} from '@modules/content';
+import {SpeakingRoomScreen, SpeakingShadowingActivity} from '@modules/speaking';
 import {
   PrivacyNoteScreen,
   ProgressReportScreen,
   ProfileScreen,
-} from '../../modules/settings';
-import {useFeatureEnabled} from '../../release';
+} from '@modules/settings';
+import {useFeatureEnabled} from '@/release';
 import {TabBar} from './TabBar';
 import {isIngestionRouteHiddenForMvp} from './ingestionRouteGate';
 

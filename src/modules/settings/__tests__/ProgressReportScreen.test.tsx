@@ -1,10 +1,10 @@
 import React from 'react';
 import {Alert, Text} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../../release';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
 import {ProgressReportScreen} from '../ProgressReportScreen';
-import {clearAllLocalData} from '../../../shared/db/LessonRepository';
+import {clearAllLocalData} from '@shared/db/LessonRepository';
 
 const mockGoBack = jest.fn();
 

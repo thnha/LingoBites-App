@@ -4,7 +4,7 @@ import {createRequestId} from '../api/requestId';
 import {getOrCreateAnonymousUserId} from './anonymousUserId';
 import {getDatabase} from './database';
 import {computeLessonInputHash} from './lessonInputHash';
-import type {LessonSubjectKey} from '../../types/lesson';
+import type {LessonSubjectKey} from '@/types/lesson';
 import type {
   LessonListItem,
   SaveLessonInput,

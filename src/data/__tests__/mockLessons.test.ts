@@ -1,4 +1,4 @@
-import {validateAIOutput} from '../../shared/schemas/ai-output-v1';
+import {validateAIOutput} from '@shared/schemas/ai-output-v1';
 import {mockLessons} from '../mockLessons';
 
 describe('mockLessons', () => {

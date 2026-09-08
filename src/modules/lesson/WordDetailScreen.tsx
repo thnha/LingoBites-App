@@ -4,18 +4,18 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
-} from '../../app/navigation/types';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {BottomActionBar} from '../../components/BottomActionBar';
-import {Chip} from '../../components/Chip';
-import {IconButton} from '../../components/IconButton';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ScreenHeader} from '../../components/ScreenHeader';
-import {useFeatureEnabled} from '../../release';
-import type {FlashcardRecord} from '../../shared/db/types';
-import {useAppTheme, type AppTheme} from '../../theme';
+} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {BottomActionBar} from '@components/BottomActionBar';
+import {Chip} from '@components/Chip';
+import {IconButton} from '@components/IconButton';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {useFeatureEnabled} from '@/release';
+import type {FlashcardRecord} from '@shared/db/types';
+import {useAppTheme, type AppTheme} from '@theme';
 import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 import {useFlashcardLibrary} from './useFlashcardLibrary';
 

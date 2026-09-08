@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../release';
-import {AppThemeProvider} from '../../theme';
-import {defaultThemeId, themes} from '../../theme/themeRegistry';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
+import {defaultThemeId, themes} from '@theme/themeRegistry';
 import {AppButton} from '../AppButton';
 
 async function render(ui: React.ReactElement) {

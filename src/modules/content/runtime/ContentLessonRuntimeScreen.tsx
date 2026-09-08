@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {LessonsStackParamList} from '../../../app/navigation/types';
-import {AppScreen} from '../../../components/AppScreen';
-import {AppText} from '../../../components/AppText';
-import {ScreenHeader} from '../../../components/ScreenHeader';
-import {useAppTheme} from '../../../theme';
+import type {LessonsStackParamList} from '@/app/navigation/types';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {useAppTheme} from '@theme';
 import {createLessonRuntimeSession} from './ContentLessonRuntime';
 import {playContentAudio} from './contentAudioPlayer';
 import {ActiveRecallCard} from './activities/ActiveRecallCard';

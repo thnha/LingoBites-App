@@ -1,6 +1,6 @@
 import {Buffer} from 'buffer';
 import {importContentPackage} from '../importer/ContentPackageImporter';
-import {getActivePackage} from '../../../shared/db/ContentPackageRepository';
+import {getActivePackage} from '@shared/db/ContentPackageRepository';
 import {constantTimeEqualHex} from '../importer/packageChecksum';
 import {
   BUNDLED_PACKAGE_SLUG,
@@ -8,7 +8,7 @@ import {
   BUNDLED_PACKAGE_ZIP_BASE64,
 } from './bundledPackageData';
 import type {ContentPackageImportError} from '../importer/types';
-import type {getDatabase} from '../../../shared/db/database';
+import type {getDatabase} from '@shared/db/database';
 
 export type ContentBootstrapResult =
   | {

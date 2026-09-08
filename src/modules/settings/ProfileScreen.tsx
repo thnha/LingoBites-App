@@ -9,16 +9,16 @@ import {
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {ProfileStackParamList} from '../../app/navigation/types';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {IconButton} from '../../components/IconButton';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ProfileSettingsRow} from '../../components/ProfileSettingsRow';
-import {SectionHeader} from '../../components/SectionHeader';
-import {ThemePicker} from '../../components/ThemePicker';
-import {getSupportEmail} from '../../shared/api/appConfig';
+import type {ProfileStackParamList} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ProfileSettingsRow} from '@components/ProfileSettingsRow';
+import {SectionHeader} from '@components/SectionHeader';
+import {ThemePicker} from '@components/ThemePicker';
+import {getSupportEmail} from '@shared/api/appConfig';
 import {
   formatCacheBytes,
   playReadyChapterAudio,
@@ -28,7 +28,7 @@ import {getGamificationSnapshot} from '../engagement';
 import type {GamificationSnapshot} from '../engagement';
 import {useTranslation} from 'react-i18next';
 import {useLessonRepository} from '../lesson';
-import {useAppTheme, type AppTheme} from '../../theme';
+import {useAppTheme, type AppTheme} from '@theme';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
 
@@ -98,7 +98,7 @@ export function ProfileScreen({navigation}: Props) {
           onPress: async () => {
             const {
               clearSpeakingData,
-            } = require('../../shared/db/SpeakingRepository');
+            } = require('@shared/db/SpeakingRepository');
             const {
               deleteRecordingFile,
             } = require('../speaking/recordingService');

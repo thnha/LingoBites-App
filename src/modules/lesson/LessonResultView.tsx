@@ -1,20 +1,20 @@
 import React, {useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
-import {useFeatureEnabled} from '../../release';
-import {AppButton} from '../../components/AppButton';
-import {AppCard} from '../../components/AppCard';
-import {AppText} from '../../components/AppText';
-import {ChunkRow} from '../../components/ChunkRow';
-import {QuizOption} from '../../components/QuizOption';
-import {WordCard} from '../../components/WordCard';
+import {useFeatureEnabled} from '@/release';
+import {AppButton} from '@components/AppButton';
+import {AppCard} from '@components/AppCard';
+import {AppText} from '@components/AppText';
+import {ChunkRow} from '@components/ChunkRow';
+import {QuizOption} from '@components/QuizOption';
+import {WordCard} from '@components/WordCard';
 import {useTranslation} from 'react-i18next';
 import type {
   AIOutput,
   GrammarPoint,
   Sentence,
   VocabularyItem,
-} from '../../shared/schemas/ai-output-v1';
-import {useAppTheme} from '../../theme';
+} from '@shared/schemas/ai-output-v1';
+import {useAppTheme} from '@theme';
 
 const VISIBLE_VOCAB_LIMIT = 5;
 const VISIBLE_GRAMMAR_LIMIT = 3;

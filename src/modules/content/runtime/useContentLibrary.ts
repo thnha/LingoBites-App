@@ -2,11 +2,11 @@ import {
   getContentLessonById,
   getLessonAudioAssets,
   listActivePackageLessons,
-} from '../../../shared/db/ContentRuntimeRepository';
+} from '@shared/db/ContentRuntimeRepository';
 import type {
   ContentLessonListItem,
   ContentLessonRow,
-} from '../../../shared/db/ContentRuntimeRepository';
+} from '@shared/db/ContentRuntimeRepository';
 
 export type {ContentLessonListItem, ContentLessonRow};
 

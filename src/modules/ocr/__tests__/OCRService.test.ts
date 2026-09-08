@@ -1,6 +1,6 @@
 import {extractText} from '../OCRService';
 
-jest.mock('../../../shared/api/appConfig', () => ({
+jest.mock('@shared/api/appConfig', () => ({
   getAppConfig: () => ({
     apiBaseUrl: 'http://localhost:3001',
     useMockAi: true,
@@ -8,7 +8,7 @@ jest.mock('../../../shared/api/appConfig', () => ({
   }),
 }));
 
-jest.mock('../../analytics', () => ({
+jest.mock('@modules/analytics', () => ({
   trackEvent: jest.fn(),
   getTextLengthBucket: () => '101-500',
 }));

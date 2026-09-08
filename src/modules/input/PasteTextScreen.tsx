@@ -1,19 +1,19 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList} from '../../app/navigation/types';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {BottomActionBar} from '../../components/BottomActionBar';
-import {Chip} from '../../components/Chip';
-import {ErrorCard} from '../../components/ErrorCard';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {ScreenHeader} from '../../components/ScreenHeader';
-import {TextField} from '../../components/TextField';
+import type {HomeStackParamList} from '@/app/navigation/types';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {BottomActionBar} from '@components/BottomActionBar';
+import {Chip} from '@components/Chip';
+import {ErrorCard} from '@components/ErrorCard';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {TextField} from '@components/TextField';
 import {useTranslation} from 'react-i18next';
-import {useAppTheme} from '../../theme';
+import {useAppTheme} from '@theme';
 import {getTextLengthBucket, trackEvent} from '../analytics';
-import {validateConfirmedText} from '../../shared/utils/textValidation';
+import {validateConfirmedText} from '@shared/utils/textValidation';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'PasteText'>;
 

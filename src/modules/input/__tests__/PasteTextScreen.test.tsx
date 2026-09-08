@@ -1,14 +1,14 @@
 import React from 'react';
 import {Text, TextInput} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../../release';
-import i18n from '../../../i18n';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import i18n from '@/i18n';
+import {AppThemeProvider} from '@theme';
 import {PasteTextScreen} from '../PasteTextScreen';
 
 const mockNavigate = jest.fn();
 
-jest.mock('../../analytics', () => ({
+jest.mock('@modules/analytics', () => ({
   trackEvent: jest.fn(),
   getTextLengthBucket: () => '1-100',
 }));

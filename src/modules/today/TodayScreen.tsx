@@ -5,14 +5,14 @@ import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
-} from '../../app/navigation/types';
-import {AppCard} from '../../components/AppCard';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {Chip} from '../../components/Chip';
-import {MaterialIcon} from '../../components/MaterialIcon';
-import {SectionHeader} from '../../components/SectionHeader';
-import {useAppTheme, type AppTheme} from '../../theme';
+} from '@/app/navigation/types';
+import {AppCard} from '@components/AppCard';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {Chip} from '@components/Chip';
+import {MaterialIcon} from '@components/MaterialIcon';
+import {SectionHeader} from '@components/SectionHeader';
+import {useAppTheme, type AppTheme} from '@theme';
 import {generateStudyBlock} from './adaptationEngine';
 import {getLearnerStateSnapshot} from './todayAdapter';
 import type {StudyActivityItem, StudyBlockPlan, TodayMode} from './types';

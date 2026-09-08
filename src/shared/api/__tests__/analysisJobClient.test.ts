@@ -1,5 +1,5 @@
-import {validFullOutput} from '../../fixtures';
-import i18n from '../../../i18n';
+import {validFullOutput} from '@shared/fixtures';
+import i18n from '@/i18n';
 import {runAnalysisJob} from '../analysisJobClient';
 
 const mockFetch = jest.fn();

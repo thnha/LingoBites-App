@@ -1,8 +1,8 @@
 import React from 'react';
 import {View} from 'react-native';
-import {AppScreen} from '../../components/AppScreen';
-import {AppText} from '../../components/AppText';
-import {useAppTheme} from '../../theme';
+import {AppScreen} from '@components/AppScreen';
+import {AppText} from '@components/AppText';
+import {useAppTheme} from '@theme';
 
 type Props = {
   title: string;

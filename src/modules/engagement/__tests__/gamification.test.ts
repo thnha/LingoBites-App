@@ -1,7 +1,7 @@
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
-import {resetDatabaseForTests} from '../../../shared/db/database';
+import {resetDatabaseForTests} from '@shared/db/database';
 import {open} from 'react-native-quick-sqlite';
-import {DB_NAME} from '../../../shared/db/constants';
+import {DB_NAME} from '@shared/db/constants';
 import {
   addLocalDays,
   toLocalDayKey,

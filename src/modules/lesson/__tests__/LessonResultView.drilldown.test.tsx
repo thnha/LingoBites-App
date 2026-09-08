@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../../release';
-import {validFullOutput} from '../../../shared/fixtures';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {validFullOutput} from '@shared/fixtures';
+import {AppThemeProvider} from '@theme';
 import {LessonResultView} from '../LessonResultView';
 
 function render(node: React.ReactElement) {

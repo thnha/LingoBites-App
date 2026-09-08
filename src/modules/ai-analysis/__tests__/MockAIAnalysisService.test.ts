@@ -1,4 +1,4 @@
-import i18n from '../../../i18n';
+import i18n from '@/i18n';
 import {simulateAnalysisJob} from '../MockAIAnalysisService';
 import type {AnalysisProgress} from '../types';
 

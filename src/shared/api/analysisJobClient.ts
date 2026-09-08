@@ -2,7 +2,7 @@ import {Platform} from 'react-native';
 import {createRequestId} from './requestId';
 import {getAppConfig} from './appConfig';
 import {validateAIOutput} from '../schemas/ai-output-v1';
-import i18n from '../../i18n';
+import i18n from '@/i18n';
 import {MAX_INPUT_TEXT_LENGTH} from '../utils/textValidation';
 import type {
   AnalysisJobProgressBody,
@@ -15,7 +15,7 @@ import type {
   AnalysisProgress,
   AnalysisProgressCallback,
   AnalyzeTextResult,
-} from '../../modules/ai-analysis';
+} from '@modules/ai-analysis';
 
 const CREATE_PATH = '/v1/ai/analyses';
 const DEFAULT_PROMPT_VERSION = 'lesson-analysis-v1';

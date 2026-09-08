@@ -1,4 +1,4 @@
-import i18n from '../../i18n';
+import i18n from '@/i18n';
 
 export const MAX_INPUT_TEXT_LENGTH = 3000;
 

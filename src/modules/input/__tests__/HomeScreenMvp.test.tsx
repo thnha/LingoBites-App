@@ -2,10 +2,10 @@ import React from 'react';
 import {Text} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
-import {FeatureFlagProvider, type ReleaseConfigName} from '../../../release';
-import {DB_NAME} from '../../../shared/db/constants';
-import {resetDatabaseForTests} from '../../../shared/db/database';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider, type ReleaseConfigName} from '@/release';
+import {DB_NAME} from '@shared/db/constants';
+import {resetDatabaseForTests} from '@shared/db/database';
+import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {HomeScreen} from '../HomeScreen';
 

@@ -2,8 +2,8 @@ import {useCallback, useMemo, useState} from 'react';
 import {
   useLibraryStore,
   type LibrarySubjectFilter,
-} from '../../store/useLibraryStore';
-import type {LibraryLessonCardView} from '../../types/lesson';
+} from '@/store/useLibraryStore';
+import type {LibraryLessonCardView} from '@/types/lesson';
 import {getGamificationSnapshot} from '../engagement';
 
 export type LessonLibrarySummary = {

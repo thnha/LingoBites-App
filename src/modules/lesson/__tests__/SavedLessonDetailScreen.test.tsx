@@ -1,26 +1,23 @@
 import React from 'react';
 import {Alert} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../../release';
-import {validFullOutput} from '../../../shared/fixtures';
-import {AppThemeProvider} from '../../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {validFullOutput} from '@shared/fixtures';
+import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {open} from 'react-native-quick-sqlite';
-import {DB_NAME} from '../../../shared/db/constants';
-import {resetDatabaseForTests} from '../../../shared/db/database';
-import {
-  listFlashcards,
-  saveFlashcard,
-} from '../../../shared/db/FlashcardRepository';
-import {saveLesson} from '../../../shared/db/LessonRepository';
+import {DB_NAME} from '@shared/db/constants';
+import {resetDatabaseForTests} from '@shared/db/database';
+import {listFlashcards, saveFlashcard} from '@shared/db/FlashcardRepository';
+import {saveLesson} from '@shared/db/LessonRepository';
 import {SavedLessonDetailScreen} from '../SavedLessonDetailScreen';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {LessonsStackParamList} from '../../../app/navigation/types';
+import {LessonsStackParamList} from '@/app/navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const mockAnalyzeText = jest.fn();
 
-jest.mock('../../ai-analysis/AIAnalysisService', () => ({
+jest.mock('@modules/ai-analysis/AIAnalysisService', () => ({
   analyzeText: (...args: unknown[]) => mockAnalyzeText(...args),
 }));
 

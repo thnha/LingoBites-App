@@ -1,8 +1,8 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {FeatureFlagProvider} from '../../release';
-import {AppThemeProvider} from '../../theme';
+import {FeatureFlagProvider} from '@/release';
+import {AppThemeProvider} from '@theme';
 import {Banner} from '../Banner';
 import {RatingControl} from '../RatingControl';
 

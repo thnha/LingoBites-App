@@ -11,8 +11,8 @@ import {
   getLessonActivities,
   getLessonChunks,
   listActivePackageLessons,
-} from '../../shared/db/ContentRuntimeRepository';
-import type {SpeakingMode} from '../../shared/db/types';
+} from '@shared/db/ContentRuntimeRepository';
+import type {SpeakingMode} from '@shared/db/types';
 
 export type SpeakingModeInfo = {
   mode: SpeakingMode;
