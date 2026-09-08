@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
-import {AppButton} from '../../../../components/AppButton';
-import {useAppTheme} from '../../../../theme';
+import {AppButton} from '@components/AppButton';
+import {useAppTheme} from '@theme';
 
 type Props = {
   onComplete: () => void;

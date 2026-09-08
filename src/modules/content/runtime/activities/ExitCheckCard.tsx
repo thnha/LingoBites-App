@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
-import {AppCard} from '../../../../components/AppCard';
-import {AppButton} from '../../../../components/AppButton';
-import {AppText} from '../../../../components/AppText';
-import {useAppTheme} from '../../../../theme';
+import {AppCard} from '@components/AppCard';
+import {AppButton} from '@components/AppButton';
+import {AppText} from '@components/AppText';
+import {useAppTheme} from '@theme';
 import type {ExitCheckStepData} from '../types';
 import {StepActions} from './StepActions';
 

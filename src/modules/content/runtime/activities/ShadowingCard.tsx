@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
-import {AppCard} from '../../../../components/AppCard';
-import {AppText} from '../../../../components/AppText';
-import {IconButton} from '../../../../components/IconButton';
-import {useAppTheme} from '../../../../theme';
+import {AppCard} from '@components/AppCard';
+import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
+import {useAppTheme} from '@theme';
 import type {ShadowingStepData} from '../types';
 import {StepActions} from './StepActions';
 
