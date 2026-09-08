@@ -96,6 +96,10 @@ describe('LessonResultView', () => {
       savedTree!.root.findByProps({testID: 'save-lesson-disabled'}).props
         .disabled,
     ).toBe(true);
+    expect(
+      savedTree!.root.findByProps({testID: 'save-lesson-disabled'}).props
+        .accessibilityState,
+    ).toEqual({disabled: true});
     expect(JSON.stringify(savedTree!.toJSON())).toContain('Đã lưu');
   });
 
@@ -108,13 +112,29 @@ describe('LessonResultView', () => {
   });
 
   it('shows at most 5 vocabulary items with xem thêm', () => {
-    const text = renderLesson(buildLessonWithVocab(6));
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    ReactTestRenderer.act(() => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <LessonResultView lesson={buildLessonWithVocab(6)} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    const text = JSON.stringify(tree!.toJSON());
 
     expect(text).toContain('word-1');
     expect(text).toContain('word-5');
     expect(text).not.toContain('word-6');
     expect(text).toContain('xem thêm');
     expect(text).toContain('(1)');
+    expect(
+      tree!.root.findByProps({accessibilityLabel: 'Xem thêm 1 từ vựng'}).props
+        .accessibilityRole,
+    ).toBe('button');
   });
 
   it('shows at most 3 grammar points', () => {

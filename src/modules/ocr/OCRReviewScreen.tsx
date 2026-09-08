@@ -141,6 +141,7 @@ export function OCRReviewScreen({navigation, route}: Props) {
           }}
         >
           <Image
+            accessibilityIgnoresInvertColors
             resizeMode="cover"
             source={{uri: imageUri}}
             style={{height: 180, width: '100%'}}

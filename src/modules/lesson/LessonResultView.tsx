@@ -172,6 +172,9 @@ export function LessonResultView({
             ))}
             {!vocabExpanded && hiddenVocabCount > 0 ? (
               <Pressable
+                accessibilityHint="Hiển thị các từ vựng còn lại trong bài học."
+                accessibilityLabel={`Xem thêm ${hiddenVocabCount} từ vựng`}
+                accessibilityRole="button"
                 onPress={() => setVocabExpanded(true)}
                 style={{
                   alignSelf: 'flex-start',
@@ -272,6 +275,10 @@ export function LessonResultView({
             />
           ) : (
             <Pressable
+              accessibilityHint="Bài học này đã được lưu trong thư viện."
+              accessibilityLabel={saveLabel}
+              accessibilityRole="button"
+              accessibilityState={{disabled: saveDisabled}}
               disabled={saveDisabled}
               onPress={onSave}
               style={({pressed}) => [
@@ -329,7 +336,9 @@ function Section({title, children}: React.PropsWithChildren<{title: string}>) {
 
 function EmptyText({message}: {message?: string}) {
   const {t} = useTranslation();
-  return <AppText color="muted">{message ?? t('errors.empty_section')}</AppText>;
+  return (
+    <AppText color="muted">{message ?? t('errors.empty_section')}</AppText>
+  );
 }
 
 /**
@@ -352,6 +361,7 @@ function Tappable({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint="Mở chi tiết mục này."
       onPress={onPress}
       style={({pressed}) =>
         pressed ? {opacity: theme.states.pressedOpacity} : null

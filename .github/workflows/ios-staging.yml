@@ -46,6 +46,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Check lint warning budget
+        run: npm run lint:budget
+
       - name: Typecheck
         run: npm run typecheck
 

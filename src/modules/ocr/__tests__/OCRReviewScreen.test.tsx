@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TextInput} from 'react-native';
+import {Image, Text, TextInput} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
@@ -115,5 +115,23 @@ describe('OCRReviewScreen', () => {
 
     const input = tree!.root.findByType(TextInput);
     expect(input.props.value).toBe('');
+  });
+
+  it('marks the source preview image as exempt from smart invert', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <OCRReviewScreen navigation={navigation} route={route} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    expect(tree!.root.findByType(Image).props).toMatchObject({
+      accessibilityIgnoresInvertColors: true,
+    });
   });
 });

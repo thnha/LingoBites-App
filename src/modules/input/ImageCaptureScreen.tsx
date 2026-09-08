@@ -202,6 +202,7 @@ export function ImageCaptureScreen({navigation, route}: Props) {
         >
           {screenState.image ? (
             <Image
+              accessibilityIgnoresInvertColors
               resizeMode="contain"
               source={{uri: screenState.image.uri}}
               style={{
@@ -246,6 +247,7 @@ export function ImageCaptureScreen({navigation, route}: Props) {
           }}
         >
           <Image
+            accessibilityIgnoresInvertColors
             resizeMode="contain"
             source={{uri: screenState.image.uri}}
             style={{
