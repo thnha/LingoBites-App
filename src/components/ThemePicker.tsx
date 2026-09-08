@@ -3,7 +3,6 @@ import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useFeatureFlags} from '../release';
 import {useAppTheme} from '../theme';
 import {
-  defaultThemeId,
   themeIds,
   themeReleaseFlag,
   themes,
@@ -13,12 +12,11 @@ export function ThemePicker() {
   const {theme, themeId, setThemeId} = useAppTheme();
   const {isFeatureEnabled} = useFeatureFlags();
 
-  // The default theme is the baseline look, so it is not offered as a
-  // switchable option in the picker.
+  if (!isFeatureEnabled('themeSwitcher')) {
+    return null;
+  }
+
   const visibleIds = themeIds.filter(id => {
-    if (id === defaultThemeId) {
-      return false;
-    }
     const flag = themeReleaseFlag[id];
     return flag === undefined || isFeatureEnabled(flag);
   });

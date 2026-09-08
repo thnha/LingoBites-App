@@ -102,6 +102,27 @@ describe('AppThemeProvider', () => {
     );
   });
 
+  it('falls back to default when a persisted theme flag is disabled', async () => {
+    await AsyncStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    await act(async () => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider releaseName="close-beta-1">
+          <AppThemeProvider>
+            <ThemeProbe />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+      'default',
+    );
+    expect(await AsyncStorage.getItem(THEME_STORAGE_KEY)).toBe('default');
+  });
+
   it('setThemeId updates context and persists', async () => {
     const tree = await renderWithProviders();
     await act(async () => {

@@ -2,6 +2,13 @@
   "app": {
     "name": "LingoBites"
   },
+  "nav": {
+    "tab": {
+      "home": "Home",
+      "library": "Library",
+      "profile": "Profile"
+    }
+  },
   "home": {
     "title": "What do you want to learn from today?",
     "subtitle": "Choose how to extract vocabulary from any text you read.",
@@ -26,7 +33,25 @@
     "vocab_count": "{{count}} words",
     "daily_review_widget_title": "Review today",
     "daily_review_widget_due": "{{count}} cards due today",
-    "daily_review_widget_a11y": "Open today's review"
+    "daily_review_widget_none": "Nothing due today",
+    "daily_review_widget_a11y": "Open today's review",
+    "continue_learning": "Continue learning",
+    "continue_learning_body": "Pick up where you left off in your offline lesson.",
+    "continue_learning_a11y": "Continue your offline lesson",
+    "offline_section_title": "Learn from offline lessons",
+    "offline_section_body": "Practice a ready-to-use lesson without an internet connection.",
+    "offline_start": "Start an offline lesson",
+    "offline_start_a11y": "Start the first offline lesson",
+    "offline_browse": "Browse lessons",
+    "offline_browse_a11y": "Browse offline lessons",
+    "input_section_title": "Learn from an image or text",
+    "supplemental_title": "More ways to practice",
+    "speaking": "Speaking Room",
+    "speaking_a11y": "Open Speaking Room",
+    "practice": "Quick practice",
+    "practice_a11y": "Open quick practice status",
+    "open_feature_status": "View feature status",
+    "open_feature_status_a11y": "View feature availability status"
   },
   "review": {
     "title": "Review today",

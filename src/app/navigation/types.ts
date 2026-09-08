@@ -6,6 +6,7 @@ import type {
   VocabularyItem,
 } from '@shared/schemas/ai-output-v1';
 import type {AnalyzeSourceType, OCRSourceType} from '@shared/api/types';
+import type {NavigatorScreenParams} from '@react-navigation/native';
 
 /**
  * Learning-mode drill-down screens shared by the Home and Lessons stacks.
@@ -88,6 +89,6 @@ export type ProfileStackParamList = {
 
 export type RootTabParamList = {
   Home: undefined;
-  Lessons: undefined;
-  Profile: undefined;
+  Lessons: NavigatorScreenParams<LessonsStackParamList> | undefined;
+  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };

@@ -2,6 +2,13 @@
   "app": {
     "name": "LingoBites"
   },
+  "nav": {
+    "tab": {
+      "home": "Trang chủ",
+      "library": "Thư viện",
+      "profile": "Hồ sơ"
+    }
+  },
   "home": {
     "title": "Hôm nay bạn muốn học từ đâu?",
     "subtitle": "Chọn cách để lấy từ vựng từ bất cứ đoạn text nào bạn đọc.",
@@ -26,7 +33,25 @@
     "vocab_count": "{{count}} từ vựng",
     "daily_review_widget_title": "Ôn tập hôm nay",
     "daily_review_widget_due": "{{count}} thẻ đến hạn hôm nay",
-    "daily_review_widget_a11y": "Mở ôn tập hôm nay"
+    "daily_review_widget_none": "Hôm nay không có thẻ đến hạn",
+    "daily_review_widget_a11y": "Mở ôn tập hôm nay",
+    "continue_learning": "Tiếp tục học",
+    "continue_learning_body": "Tiếp tục bài học offline bạn đang học dở.",
+    "continue_learning_a11y": "Tiếp tục bài học offline",
+    "offline_section_title": "Học từ bài offline có sẵn",
+    "offline_section_body": "Học một bài có sẵn mà không cần kết nối internet.",
+    "offline_start": "Bắt đầu bài offline",
+    "offline_start_a11y": "Bắt đầu bài offline đầu tiên",
+    "offline_browse": "Xem danh sách bài",
+    "offline_browse_a11y": "Xem các bài học offline",
+    "input_section_title": "Học từ ảnh hoặc văn bản",
+    "supplemental_title": "Flow bổ sung",
+    "speaking": "Phòng luyện nói",
+    "speaking_a11y": "Mở Phòng luyện nói",
+    "practice": "Luyện tập nhanh",
+    "practice_a11y": "Mở trạng thái luyện tập nhanh",
+    "open_feature_status": "Xem trạng thái tính năng",
+    "open_feature_status_a11y": "Xem trạng thái khả dụng của tính năng"
   },
   "review": {
     "title": "Ôn tập hôm nay",

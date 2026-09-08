@@ -16,6 +16,25 @@ jest.mock('@shared/api/appConfig', () => ({
   getSupportEmail: () => 'support@lingobites.app',
 }));
 
+jest.mock('../useProgressReport', () => ({
+  useProgressReport: () => ({
+    getCapabilityProgressReport: () => ({
+      firstListenComprehensionRate: null,
+    }),
+  }),
+}));
+
+const mockGetSummary = jest.fn(() => ({lessonCount: 0, wordCount: 0}));
+
+jest.mock('@/store/useLibraryStore', () => ({
+  useLibraryStore: (
+    selector: (state: {getSummary: typeof mockGetSummary}) => unknown,
+  ) =>
+    selector({
+      getSummary: mockGetSummary,
+    }),
+}));
+
 const navigation = {
   navigate: mockNavigate,
 } as unknown as React.ComponentProps<typeof ProfileScreen>['navigation'];
@@ -74,6 +93,50 @@ describe('ProfileScreen', () => {
     const text = JSON.stringify(tree!.toJSON());
     expect(text).toContain('Beginner');
     expect(text).toContain('Chưa có chuỗi ngày');
+  });
+
+  it('does not show fake profile metrics or the dead edit affordance', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = renderProfileScreen();
+    });
+
+    const text = JSON.stringify(tree!.toJSON());
+    expect(text).not.toContain('4.2k');
+    expect(text).not.toContain('"85%"');
+    expect(text).toContain('Chưa có dữ liệu');
+    expect(text).not.toContain('Chỉnh sửa hồ sơ');
+  });
+
+  it('marks incomplete settings rows instead of fake values or chevrons', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = renderProfileScreen();
+    });
+
+    const text = JSON.stringify(tree!.toJSON());
+    expect(text).not.toContain('10 từ');
+    expect(text).not.toContain('Tiếng Việt');
+    expect(text.match(/Incomplete/g)?.length).toBe(4);
+  });
+
+  it('hides the theme picker card when themeSwitcher is disabled', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider releaseName="lingobites-mvp">
+          <AppThemeProvider>
+            <ProfileScreen navigation={navigation} route={route} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    const text = JSON.stringify(tree!.toJSON());
+    expect(text).not.toContain('Giao diện');
   });
 
   it('opens privacy detail screen (FR-SET-004)', async () => {

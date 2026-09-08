@@ -7,6 +7,8 @@ import {
   themes,
   type ThemeId,
 } from './themeRegistry';
+
+const disabledPersistedThemeFallbackId: ThemeId = 'default';
 import {getSavedThemeId, saveThemeId} from './themeStorage';
 import {ThemeContext} from './useAppTheme';
 
@@ -31,8 +33,13 @@ export function AppThemeProvider({children}: Props) {
       if (!active) {
         return;
       }
-      if (saved !== null && isThemeId(saved) && isThemeAllowed(saved)) {
-        setThemeIdState(saved);
+      if (saved !== null && isThemeId(saved)) {
+        if (isThemeAllowed(saved)) {
+          setThemeIdState(saved);
+        } else {
+          setThemeIdState(disabledPersistedThemeFallbackId);
+          void saveThemeId(disabledPersistedThemeFallbackId);
+        }
       } else {
         setThemeIdState(defaultThemeId);
       }

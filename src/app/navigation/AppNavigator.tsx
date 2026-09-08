@@ -35,9 +35,9 @@ import {
   ProfileScreen,
   FeatureStatusScreen,
 } from '@modules/settings';
-import {useFeatureEnabled} from '@/release';
+import {useFeatureFlags} from '@/release';
 import {TabBar} from './TabBar';
-import {isIngestionRouteHiddenForMvp} from './ingestionRouteGate';
+import {isIngestionRouteEnabled} from './ingestionRouteGate';
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const LessonsStack = createNativeStackNavigator<LessonsStackParamList>();
@@ -45,7 +45,9 @@ const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 function HomeStackNavigator() {
-  const mvpReviewFlowEnabled = useFeatureEnabled('lingobitesMvpReviewFlow');
+  const {config} = useFeatureFlags();
+  const canMount = (route: string) =>
+    isIngestionRouteEnabled(route, config.features);
 
   return (
     <HomeStack.Navigator>
@@ -54,28 +56,28 @@ function HomeStackNavigator() {
         name="HomeMain"
         options={{headerShown: false}}
       />
-      {!isIngestionRouteHiddenForMvp('PasteText', mvpReviewFlowEnabled) && (
+      {canMount('PasteText') && (
         <HomeStack.Screen
           component={PasteTextScreen}
           name="PasteText"
           options={{headerShown: false}}
         />
       )}
-      {!isIngestionRouteHiddenForMvp('ImageCapture', mvpReviewFlowEnabled) && (
+      {canMount('ImageCapture') && (
         <HomeStack.Screen
           component={ImageCaptureScreen}
           name="ImageCapture"
           options={{headerShown: false}}
         />
       )}
-      {!isIngestionRouteHiddenForMvp('OCRReview', mvpReviewFlowEnabled) && (
+      {canMount('OCRReview') && (
         <HomeStack.Screen
           component={OCRReviewScreen}
           name="OCRReview"
           options={{headerShown: false}}
         />
       )}
-      {!isIngestionRouteHiddenForMvp('Analyzing', mvpReviewFlowEnabled) && (
+      {canMount('Analyzing') && (
         <HomeStack.Screen
           component={AnalyzingScreen}
           name="Analyzing"

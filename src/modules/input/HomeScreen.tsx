@@ -10,12 +10,19 @@ import type {
 } from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
+import {AppButton} from '@components/AppButton';
 import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {Medallion} from '@components/Medallion';
 import {RecentLessonRow} from '@components/RecentLessonRow';
 import {SectionHeader} from '@components/SectionHeader';
-import {useFeatureEnabled} from '@/release';
+import {useFeatureEnabled, useFeatureFlags} from '@/release';
+import {isCapabilityChainEnabled} from '@/app/navigation/ingestionRouteGate';
+import {useContentLibrary} from '../content';
+import {
+  listStartedLessons,
+  startContentLesson,
+} from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '@theme';
 import type {LessonCardView} from '@/types/lesson';
@@ -29,12 +36,39 @@ export function HomeScreen({navigation}: Props) {
   const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const mvpReviewFlowEnabled = useFeatureEnabled('lingobitesMvpReviewFlow');
+  const {config} = useFeatureFlags();
   const tabNavigation =
     navigation.getParent<NavigationProp<RootTabParamList>>();
   const [recentLessons, setRecentLessons] = useState<LessonCardView[]>([]);
   const [dueReviewCount, setDueReviewCount] = useState(0);
+  const [offlineLessonId, setOfflineLessonId] = useState<string | null>(null);
+  const {listActivePackageLessons} = useContentLibrary();
   const {listLessons} = useLessonRepository();
   const {getDueFlashcards} = useFlashcardLibrary();
+  const canUseCamera = isCapabilityChainEnabled('imageInput', config.features);
+  const canUsePaste = isCapabilityChainEnabled(
+    'pasteTextInput',
+    config.features,
+  );
+
+  const openFeatureStatus = () =>
+    tabNavigation?.navigate('Profile', {screen: 'FeatureStatus'});
+
+  const openOfflineLesson = () => {
+    const lesson = listActivePackageLessons()[0];
+    if (!lesson) {
+      tabNavigation?.navigate('Lessons', {screen: 'ContentLessonList'});
+      return;
+    }
+    const result = startContentLesson({lessonId: lesson.id});
+    if (result.ok) {
+      setOfflineLessonId(lesson.id);
+      tabNavigation?.navigate('Lessons', {
+        screen: 'ContentLessonRuntime',
+        params: {lessonId: lesson.id},
+      });
+    }
+  };
 
   function selectInputMethod(method: 'camera' | 'gallery' | 'paste_text') {
     trackEvent('input_method_selected', {method, screen: 'Home'});
@@ -60,6 +94,8 @@ export function HomeScreen({navigation}: Props) {
         })),
       );
       setDueReviewCount(reviewSystemEnabled ? getDueFlashcards().length : 0);
+      const started = listStartedLessons()[0];
+      setOfflineLessonId(started?.lessonId ?? null);
     }, [getDueFlashcards, listLessons, reviewSystemEnabled, t]),
   );
 
@@ -100,7 +136,26 @@ export function HomeScreen({navigation}: Props) {
           </AppText>
         </View>
 
-        {reviewSystemEnabled && dueReviewCount > 0 ? (
+        {offlineLessonId ? (
+          <View testID="home-continue-section" style={themedStyles.sectionCard}>
+            <AppText variant="h3">{t('home.continue_learning')}</AppText>
+            <AppText color="secondary">
+              {t('home.continue_learning_body')}
+            </AppText>
+            <AppButton
+              accessibilityLabel={t('home.continue_learning_a11y')}
+              onPress={() =>
+                tabNavigation?.navigate('Lessons', {
+                  screen: 'ContentLessonRuntime',
+                  params: {lessonId: offlineLessonId},
+                })
+              }
+              title={t('home.continue_learning')}
+            />
+          </View>
+        ) : null}
+
+        {reviewSystemEnabled ? (
           <Pressable
             accessibilityLabel={t('home.daily_review_widget_a11y')}
             accessibilityRole="button"
@@ -123,7 +178,9 @@ export function HomeScreen({navigation}: Props) {
                 {t('home.daily_review_widget_title')}
               </AppText>
               <AppText color="secondary" variant="label">
-                {t('home.daily_review_widget_due', {count: dueReviewCount})}
+                {dueReviewCount > 0
+                  ? t('home.daily_review_widget_due', {count: dueReviewCount})
+                  : t('home.daily_review_widget_none')}
               </AppText>
             </View>
             <MaterialIcon
@@ -134,8 +191,38 @@ export function HomeScreen({navigation}: Props) {
           </Pressable>
         ) : null}
 
-        {mvpReviewFlowEnabled ? (
+        <View testID="home-offline-section" style={themedStyles.sectionCard}>
+          <AppText variant="h3">{t('home.offline_section_title')}</AppText>
+          <AppText color="secondary">{t('home.offline_section_body')}</AppText>
+          <View style={styles.sectionActions}>
+            <AppButton
+              accessibilityLabel={t('home.offline_start_a11y')}
+              onPress={openOfflineLesson}
+              title={t('home.offline_start')}
+              testID="home-offline-start"
+            />
+            <Pressable
+              accessibilityLabel={t('home.offline_browse_a11y')}
+              accessibilityRole="button"
+              onPress={() =>
+                tabNavigation?.navigate('Lessons', {
+                  screen: 'ContentLessonList',
+                })
+              }
+              style={styles.viewAllButton}
+            >
+              <AppText style={themedStyles.viewAllText}>
+                {t('home.offline_browse')}
+              </AppText>
+            </Pressable>
+          </View>
+        </View>
+
+        {!canUseCamera && !canUsePaste ? (
           <View style={themedStyles.mvpCard} testID="mvp-no-content-card">
+            <AppText testID="home-input-section" variant="h3">
+              {t('home.input_section_title')}
+            </AppText>
             <View style={themedStyles.mvpIcon}>
               <MaterialIcon
                 color={theme.colors.primary}
@@ -163,15 +250,28 @@ export function HomeScreen({navigation}: Props) {
                 {t('home.mvp_open_lessons')}
               </AppText>
             </Pressable>
+            <AppButton
+              accessibilityLabel={t('home.open_feature_status_a11y')}
+              onPress={openFeatureStatus}
+              title={t('home.open_feature_status')}
+              variant="secondary"
+            />
           </View>
         ) : (
           <>
+            <AppText testID="home-input-section" variant="h3">
+              {t('home.input_section_title')}
+            </AppText>
             <Pressable
               accessibilityLabel={t('home.capture_photo_a11y')}
               accessibilityRole="button"
-              onPress={() => selectInputMethod('camera')}
+              accessibilityState={{disabled: !canUseCamera}}
+              onPress={() =>
+                canUseCamera ? selectInputMethod('camera') : openFeatureStatus()
+              }
               style={({pressed}) => [
                 themedStyles.cameraButton,
+                !canUseCamera && themedStyles.disabled,
                 pressed && themedStyles.pressed,
               ]}
             >
@@ -194,9 +294,15 @@ export function HomeScreen({navigation}: Props) {
               <Pressable
                 accessibilityLabel={t('home.upload_image_a11y')}
                 accessibilityRole="button"
-                onPress={() => selectInputMethod('gallery')}
+                accessibilityState={{disabled: !canUseCamera}}
+                onPress={() =>
+                  canUseCamera
+                    ? selectInputMethod('gallery')
+                    : openFeatureStatus()
+                }
                 style={({pressed}) => [
                   themedStyles.galleryButton,
+                  !canUseCamera && themedStyles.disabled,
                   pressed && themedStyles.pressed,
                 ]}
               >
@@ -213,9 +319,15 @@ export function HomeScreen({navigation}: Props) {
               <Pressable
                 accessibilityLabel={t('home.paste_text_a11y')}
                 accessibilityRole="button"
-                onPress={() => selectInputMethod('paste_text')}
+                accessibilityState={{disabled: !canUsePaste}}
+                onPress={() =>
+                  canUsePaste
+                    ? selectInputMethod('paste_text')
+                    : openFeatureStatus()
+                }
                 style={({pressed}) => [
                   themedStyles.pasteButton,
+                  !canUsePaste && themedStyles.disabled,
                   pressed && themedStyles.pressed,
                 ]}
               >
@@ -231,6 +343,25 @@ export function HomeScreen({navigation}: Props) {
             </View>
           </>
         )}
+
+        <View
+          testID="home-supplemental-section"
+          style={themedStyles.sectionCard}
+        >
+          <AppText variant="h3">{t('home.supplemental_title')}</AppText>
+          <AppButton
+            accessibilityLabel={t('home.speaking_a11y')}
+            onPress={() =>
+              tabNavigation?.navigate('Lessons', {screen: 'SpeakingRoom'})
+            }
+            title={t('home.speaking')}
+          />
+          <AppButton
+            accessibilityLabel={t('home.practice_a11y')}
+            onPress={openFeatureStatus}
+            title={t('home.practice')}
+          />
+        </View>
 
         <View style={styles.recentSection}>
           <SectionHeader
@@ -306,6 +437,11 @@ const styles = StyleSheet.create({
   inputActions: {
     flexDirection: 'row',
     gap: 14,
+  },
+  sectionActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
   },
   recentSection: {
     gap: 10,
@@ -455,6 +591,15 @@ function makeStyles(theme: AppTheme) {
     },
     pressed: {
       opacity: theme.states.pressedOpacity,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    sectionCard: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.lg,
+      gap: theme.spacing.sm,
+      padding: theme.spacing.lg,
     },
     scrollContent: {
       gap: theme.spacing.lg,

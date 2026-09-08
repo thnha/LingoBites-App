@@ -13,7 +13,6 @@ import type {ProfileStackParamList} from '@/app/navigation/types';
 import {AppCard} from '@components/AppCard';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
-import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {ProfileSettingsRow} from '@components/ProfileSettingsRow';
 import {SectionHeader} from '@components/SectionHeader';
@@ -31,40 +30,65 @@ import {
 import {useTranslation} from 'react-i18next';
 import {useLessonRepository} from '@modules/lesson';
 import {deleteRecordingFile} from '@modules/speaking';
+import {useLibraryStore} from '@/store/useLibraryStore';
+import {useFeatureFlags} from '@/release';
 import {useAppTheme, type AppTheme} from '@theme';
+import {
+  formatProfileAccuracy,
+  formatProfileWordCount,
+} from './profileMetrics';
+import {useProgressReport} from './useProgressReport';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
 
-/** Phase 0 placeholders — visual parity with handoff mock until progress store ships. */
+/** Phase 0 placeholders — visual parity with handoff mock until profile store ships. */
 const PROFILE_PLACEHOLDER = {
   initials: 'HV',
   name: 'Học viên',
   subtitle: 'Học tiếng Anh · Trình độ Beginner',
-  wordsKnown: '4.2k',
-  accuracy: '85%',
 } as const;
+
+const INCOMPLETE_TRAILING = {chip: 'Incomplete', chipTone: 'neutral' as const};
 
 export function ProfileScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
+  const {isFeatureEnabled} = useFeatureFlags();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const supportEmail = getSupportEmail();
   const {getAudioCacheStats, listReadyAudioAssets} = useAudioLibrary();
   const {clearAllLocalData} = useLessonRepository();
+  const {getCapabilityProgressReport} = useProgressReport();
+  const getSummary = useLibraryStore(state => state.getSummary);
   const audioCacheStats = getAudioCacheStats();
   const audioCacheTrailingLabel = `${formatCacheBytes(
     audioCacheStats.readyBytes,
   )} · ${audioCacheStats.chapterCount} chương`;
+  const showThemePicker = isFeatureEnabled('themeSwitcher');
 
   // Streak / XP / badge / pet state is recomputed from the local gamification
   // event log on every focus so the screen never shows stale engagement data.
   const [gamification, setGamification] = useState<GamificationSnapshot>(() =>
     getGamificationSnapshot(),
   );
+  const [learningMetrics, setLearningMetrics] = useState(() => {
+    const summary = getSummary();
+    const report = getCapabilityProgressReport();
+    return {
+      wordsKnownLabel: formatProfileWordCount(summary.wordCount),
+      accuracyLabel: formatProfileAccuracy(report.firstListenComprehensionRate),
+    };
+  });
   useFocusEffect(
     useCallback(() => {
       setGamification(getGamificationSnapshot());
+      const summary = getSummary();
+      const report = getCapabilityProgressReport();
+      setLearningMetrics({
+        wordsKnownLabel: formatProfileWordCount(summary.wordCount),
+        accuracyLabel: formatProfileAccuracy(report.firstListenComprehensionRate),
+      });
     }, []),
   );
   const streak = gamification.currentStreak;
@@ -138,11 +162,6 @@ export function ProfileScreen({navigation}: Props) {
     <AppScreen>
       <View style={themedStyles.header}>
         <AppText style={themedStyles.headerTitle}>Hồ sơ</AppText>
-        <IconButton
-          accessibilityLabel="Chỉnh sửa hồ sơ"
-          icon="edit"
-          tone="surface"
-        />
       </View>
 
       <ScrollView
@@ -205,7 +224,7 @@ export function ProfileScreen({navigation}: Props) {
         <View style={styles.metricsRow}>
           <View style={[styles.metricCard, themedStyles.metricTertiary]}>
             <AppText style={themedStyles.metricValueTertiary}>
-              {PROFILE_PLACEHOLDER.wordsKnown}
+              {learningMetrics.wordsKnownLabel}
             </AppText>
             <AppText style={themedStyles.metricLabelTertiary}>
               Từ đã biết
@@ -213,7 +232,7 @@ export function ProfileScreen({navigation}: Props) {
           </View>
           <View style={[styles.metricCard, themedStyles.metricSecondary]}>
             <AppText style={themedStyles.metricValueSecondary}>
-              {PROFILE_PLACEHOLDER.accuracy}
+              {learningMetrics.accuracyLabel}
             </AppText>
             <AppText style={themedStyles.metricLabelSecondary}>
               Độ chính xác
@@ -227,25 +246,25 @@ export function ProfileScreen({navigation}: Props) {
             icon="flag"
             label="Mục tiêu hàng ngày"
             medallionTone="teal"
-            trailing={{chip: '10 từ', chipTone: 'accentSoft'}}
+            trailing={INCOMPLETE_TRAILING}
           />
           <ProfileSettingsRow
             icon="translate"
             label="Ngôn ngữ app"
             medallionTone="coral"
-            trailing={{text: 'Tiếng Việt'}}
+            trailing={INCOMPLETE_TRAILING}
           />
           <ProfileSettingsRow
             icon="subtitles"
             label="Dịch sang"
             medallionTone="gold"
-            trailing={{text: 'Tiếng Việt'}}
+            trailing={INCOMPLETE_TRAILING}
           />
           <ProfileSettingsRow
             icon="notifications"
             label="Nhắc nhở"
             medallionTone="teal"
-            trailing="chevron"
+            trailing={INCOMPLETE_TRAILING}
           />
           <ProfileSettingsRow
             accessibilityLabel="Dung lượng âm thanh chương học đã tải về máy — bấm để nghe thử clip đã tải"
@@ -289,13 +308,15 @@ export function ProfileScreen({navigation}: Props) {
           />
         </View>
 
-        <AppCard style={themedStyles.themeCard}>
-          <AppText variant="h3">Giao diện</AppText>
-          <AppText color="secondary" variant="caption">
-            Chọn theme — áp dụng ngay cho toàn app.
-          </AppText>
-          <ThemePicker />
-        </AppCard>
+        {showThemePicker ? (
+          <AppCard style={themedStyles.themeCard}>
+            <AppText variant="h3">Giao diện</AppText>
+            <AppText color="secondary" variant="caption">
+              Chọn theme — áp dụng ngay cho toàn app.
+            </AppText>
+            <ThemePicker />
+          </AppCard>
+        ) : null}
 
         <Pressable
           accessibilityLabel="Xóa dữ liệu luyện nói"

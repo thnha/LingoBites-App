@@ -13,6 +13,7 @@ export interface GrammarRowCardProps {
   onSave: () => void;
   onUnsave: () => void;
   onPress: () => void;
+  testID?: string;
 }
 
 function createStyles(theme: AppTheme) {
@@ -49,6 +50,7 @@ export function GrammarRowCard({
   onSave,
   onUnsave,
   onPress,
+  testID,
 }: GrammarRowCardProps) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -95,7 +97,7 @@ export function GrammarRowCard({
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${grammarTitle} - ${grammarContent}`}

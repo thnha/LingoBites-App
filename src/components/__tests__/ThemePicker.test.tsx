@@ -3,10 +3,10 @@ import {StyleSheet} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
-import {themes} from '@theme/themeRegistry';
+import {themeIds, themes} from '@theme/themeRegistry';
 import {ThemePicker} from '../ThemePicker';
 
-async function render(releaseName: 'theme-release' | 'close-beta-1') {
+async function render(releaseName: 'full-feature-showcase' | 'theme-release' | 'close-beta-1' | 'lingobites-mvp') {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
@@ -24,26 +24,35 @@ async function render(releaseName: 'theme-release' | 'close-beta-1') {
 }
 
 function labelsOf(tree: ReactTestRenderer.ReactTestRenderer): string[] {
+  const seen = new Set<string>();
   return tree.root
-    .findAll(node =>
-      String(node.props.testID ?? '').startsWith('theme-option-'),
-    )
+    .findAll(node => {
+      const testID = String(node.props.testID ?? '');
+      if (!testID.startsWith('theme-option-') || seen.has(testID)) {
+        return false;
+      }
+      seen.add(testID);
+      return true;
+    })
     .map(n => n.props.accessibilityLabel);
 }
 
 describe('ThemePicker', () => {
-  it('shows the enabled themes but hides the default (pastel-kids) in theme-release', async () => {
-    const labels = labelsOf(await render('theme-release'));
-    expect(labels).toContain(themes.default.name);
-    expect(labels).toContain(themes.dark.name);
-    // pastel-kids is the default theme, so it is not offered as an option.
-    expect(labels).not.toContain(themes['pastel-kids'].name);
+  it('renders nothing when themeSwitcher is disabled', async () => {
+    const tree = await render('lingobites-mvp');
+    expect(labelsOf(tree)).toEqual([]);
   });
 
-  it('hides the default (pastel-kids) and hides dark when its flag is off (close-beta-1)', async () => {
+  it('shows all seven themes in full-feature-showcase', async () => {
+    const labels = labelsOf(await render('full-feature-showcase'));
+    expect(labels).toHaveLength(7);
+    expect(labels).toEqual(themeIds.map(id => themes[id].name));
+  });
+
+  it('hides dark when its flag is off (close-beta-1)', async () => {
     const labels = labelsOf(await render('close-beta-1'));
     expect(labels).toContain(themes.default.name);
-    expect(labels).not.toContain(themes['pastel-kids'].name);
+    expect(labels).toContain(themes['pastel-kids'].name);
     expect(labels).not.toContain(themes.dark.name);
   });
 

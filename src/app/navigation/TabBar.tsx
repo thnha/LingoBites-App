@@ -6,16 +6,18 @@ import {AppText} from '@components/AppText';
 import type {HandoffIconName} from '@components/icons/iconRegistry';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {useAppTheme} from '@theme';
+import {useTranslation} from 'react-i18next';
 
-const TAB_ITEMS: Record<string, {label: string; icon: HandoffIconName}> = {
-  Home: {label: 'Trang chủ', icon: 'home'},
-  Lessons: {label: 'Bài học', icon: 'school'},
-  Profile: {label: 'Hồ sơ', icon: 'person'},
+const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
+  Home: {labelKey: 'nav.tab.home', icon: 'home'},
+  Lessons: {labelKey: 'nav.tab.library', icon: 'school'},
+  Profile: {labelKey: 'nav.tab.profile', icon: 'person'},
 };
 
 export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
   const {theme} = useAppTheme();
   const insets = useSafeAreaInsets();
+  const {t} = useTranslation();
 
   return (
     <View
@@ -36,14 +38,17 @@ export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
       {state.routes.map((route, index) => {
         const focused = state.index === index;
         const item = TAB_ITEMS[route.name] ?? {
-          label: descriptors[route.key].options.title ?? route.name,
+          labelKey: '',
           icon: 'circle',
         };
+        const label = item.labelKey
+          ? t(item.labelKey)
+          : descriptors[route.key].options.title ?? route.name;
 
         return (
           <Pressable
             key={route.key}
-            accessibilityLabel={item.label}
+            accessibilityLabel={label}
             accessibilityRole="button"
             accessibilityState={{selected: focused}}
             onPress={() => {
@@ -83,7 +88,7 @@ export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
                 fontWeight: focused ? '700' : '600',
               }}
             >
-              {item.label}
+              {label}
             </AppText>
           </Pressable>
         );

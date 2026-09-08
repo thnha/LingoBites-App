@@ -13,6 +13,7 @@ export interface VocabularyRowCardProps {
   onSave: () => void;
   onUnsave: () => void;
   onPress: () => void;
+  testID?: string;
 }
 
 function createStyles(theme: AppTheme) {
@@ -56,6 +57,7 @@ export function VocabularyRowCard({
   onSave,
   onUnsave,
   onPress,
+  testID,
 }: VocabularyRowCardProps) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -109,7 +111,7 @@ export function VocabularyRowCard({
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${flashcard.word} - ${flashcard.meaningVi}`}

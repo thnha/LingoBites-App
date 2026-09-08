@@ -75,11 +75,14 @@ describe('HomeScreen daily review widget', () => {
     expect(nav.navigate).toHaveBeenCalledWith('DailyReview');
   });
 
-  it('hides the widget when no cards are due or the flag is disabled', async () => {
+  it('shows a truthful zero-due state and hides it when the flag is disabled', async () => {
     const noDueTree = await renderHome();
     expect(
       noDueTree.root.findAllByProps({testID: 'daily-review-widget'}),
-    ).toHaveLength(0);
+    ).toHaveLength(3);
+    expect(
+      noDueTree.root.findAllByProps({children: 'Hôm nay không có thẻ đến hạn'}),
+    ).toHaveLength(3);
 
     seedDueCard();
     const flagOffTree = await renderHome(navigation(), 'close-beta-1');
