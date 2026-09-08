@@ -285,6 +285,40 @@ const MIGRATIONS = [
     ON error_events (lesson_id);`,
   `CREATE INDEX IF NOT EXISTS idx_error_events_created_at
     ON error_events (created_at DESC);`,
+  // ---- SETE-145 / M6: Library persistence (packaged lesson state + grammar bookmarks) ----
+  // One row per packaged content lesson to track saved/started state.
+  // `is_started` is marked when the user presses "Start" on the catalog (D1).
+  // This table is the single source of truth for which lessons appear in the
+  // "Saved" and "Started" segments of the Library (TASK-03 / TASK-04).
+  `CREATE TABLE IF NOT EXISTS content_lesson_state (
+    lesson_id TEXT PRIMARY KEY NOT NULL,
+    is_saved INTEGER NOT NULL DEFAULT 0,
+    is_started INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_content_lesson_state_is_saved
+    ON content_lesson_state (is_saved);`,
+  `CREATE INDEX IF NOT EXISTS idx_content_lesson_state_is_started
+    ON content_lesson_state (is_started);`,
+  // Grammar bookmarks: persistent, not in SRS, with upsert/reactivate pattern.
+  // `(lesson_id, grammar_id)` is the identity key. Unsave is recorded by setting
+  // `reactivated_at = null` (idempotent). The `reactivated_at` field supports a
+  // future "restore recently unsaved bookmarks" UI without re-reading tombstones.
+  `CREATE TABLE IF NOT EXISTS grammar_bookmarks (
+    lesson_id TEXT NOT NULL,
+    grammar_id TEXT NOT NULL,
+    package_id TEXT NOT NULL,
+    saved_at TEXT NOT NULL,
+    reactivated_at TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(lesson_id, grammar_id)
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_grammar_bookmarks_lesson_id
+    ON grammar_bookmarks (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_grammar_bookmarks_package_id
+    ON grammar_bookmarks (package_id);`,
 ];
 
 /**
@@ -320,6 +354,20 @@ const DOWN_MIGRATIONS_M5: string[] = [
   `DROP INDEX IF EXISTS idx_speaking_recordings_created_at;`,
   `DROP INDEX IF EXISTS idx_speaking_recordings_lesson_id;`,
   `DROP TABLE IF EXISTS speaking_recordings;`,
+];
+
+/**
+ * Reverse-order DROP statements for the M6 Library persistence tables
+ * (SETE-145 / TASK-03). Kept separate so M6's rollback stays independently
+ * addressable, matching the CHANGE-3 convention.
+ */
+const DOWN_MIGRATIONS_M6: string[] = [
+  `DROP INDEX IF EXISTS idx_grammar_bookmarks_package_id;`,
+  `DROP INDEX IF EXISTS idx_grammar_bookmarks_lesson_id;`,
+  `DROP TABLE IF EXISTS grammar_bookmarks;`,
+  `DROP INDEX IF EXISTS idx_content_lesson_state_is_started;`,
+  `DROP INDEX IF EXISTS idx_content_lesson_state_is_saved;`,
+  `DROP TABLE IF EXISTS content_lesson_state;`,
 ];
 
 const DOWN_MIGRATIONS_M2: string[] = [
@@ -397,6 +445,18 @@ export function downgradeSpeakingRoomMigrations(
   db: QuickSQLiteConnection,
 ): void {
   for (const sql of DOWN_MIGRATIONS_M5) {
+    db.execute(sql);
+  }
+}
+
+/**
+ * Reverse the M6 Library persistence schema migrations (SETE-145 / TASK-03).
+ * Used in tests; production code should call this only via an explicit operator action.
+ */
+export function downgradeLibraryPersistenceMigrations(
+  db: QuickSQLiteConnection,
+): void {
+  for (const sql of DOWN_MIGRATIONS_M6) {
     db.execute(sql);
   }
 }

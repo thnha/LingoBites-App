@@ -334,3 +334,47 @@ export type CaptureErrorEventInput = {
   reviewHintVi?: string | null;
   createdAt?: string;
 };
+
+/** Persisted state of a packaged content lesson (SETE-145 / M6). */
+export type ContentLessonState = {
+  lessonId: string;
+  isSaved: boolean;
+  isStarted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Input for saving a packaged content lesson state. */
+export type SaveContentLessonInput = {
+  lessonId: string;
+  now?: string;
+};
+
+/** Result of a save/unsave operation on packaged lesson state. */
+export type SaveContentLessonResult =
+  | {ok: true; duplicate: boolean}
+  | {ok: false; errorCode: 'LOCAL_DB_ERROR'};
+
+/** Bookmark of a grammar item (not in SRS). Upsert/reactivate pattern. */
+export type GrammarBookmark = {
+  lessonId: string;
+  grammarId: string;
+  packageId: string;
+  savedAt: string;
+  reactivatedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Input for saving a grammar bookmark. */
+export type SaveGrammarBookmarkInput = {
+  lessonId: string;
+  grammarId: string;
+  packageId: string;
+  now?: string;
+};
+
+/** Result of a save/unsave operation on grammar bookmarks. */
+export type SaveGrammarBookmarkResult =
+  | {ok: true; duplicate: boolean}
+  | {ok: false; errorCode: 'LOCAL_DB_ERROR'};

@@ -32,6 +32,9 @@ function createMockDatabase() {
   // SETE-110 / M5: Speaking Room recordings + Error Notebook
   const speakingRecordings = [];
   const errorEvents = [];
+  // SETE-145 / M6: Library persistence (packaged lesson state + grammar bookmarks)
+  const contentLessonState = [];
+  const grammarBookmarks = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -1042,6 +1045,213 @@ function createMockDatabase() {
       row.next_review_at = nextReviewAt;
       row.updated_at = updatedAt;
       return {rowsAffected: 1};
+    }
+
+    // ---- SETE-145 / M6 Library persistence ----
+    if (normalized.startsWith('insert into content_lesson_state')) {
+      contentLessonState.push({
+        lesson_id: params[0],
+        is_saved: params[1],
+        is_started: params[2],
+        created_at: params[3],
+        updated_at: params[4],
+      });
+      return {rowsAffected: 1, insertId: contentLessonState.length};
+    }
+
+    if (normalized.startsWith('update content_lesson_state set is_saved = 1')) {
+      const updatedAt = params[0];
+      const lessonId = params[1];
+      const row = contentLessonState.find(s => s.lesson_id === lessonId);
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.is_saved = 1;
+      row.updated_at = updatedAt;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('update content_lesson_state set is_saved = 0')) {
+      const updatedAt = params[0];
+      const lessonId = params[1];
+      const row = contentLessonState.find(s => s.lesson_id === lessonId);
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.is_saved = 0;
+      row.updated_at = updatedAt;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('update content_lesson_state set is_started = 1')) {
+      const updatedAt = params[0];
+      const lessonId = params[1];
+      const row = contentLessonState.find(s => s.lesson_id === lessonId);
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.is_started = 1;
+      row.updated_at = updatedAt;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('update content_lesson_state set is_started = 0')) {
+      const updatedAt = params[0];
+      const lessonId = params[1];
+      const row = contentLessonState.find(s => s.lesson_id === lessonId);
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.is_started = 0;
+      row.updated_at = updatedAt;
+      return {rowsAffected: 1};
+    }
+
+    if (
+      normalized.includes('from content_lesson_state') &&
+      normalized.includes('where lesson_id = ?')
+    ) {
+      const lessonId = params[0];
+      return toRows(contentLessonState.filter(s => s.lesson_id === lessonId));
+    }
+
+    if (
+      normalized.includes('from content_lesson_state') &&
+      normalized.includes('where is_saved = 1')
+    ) {
+      return toRows(
+        [...contentLessonState]
+          .filter(s => s.is_saved === 1)
+          .sort((a, b) =>
+            String(b.updated_at).localeCompare(String(a.updated_at)),
+          ),
+      );
+    }
+
+    if (
+      normalized.includes('from content_lesson_state') &&
+      normalized.includes('where is_started = 1')
+    ) {
+      return toRows(
+        [...contentLessonState]
+          .filter(s => s.is_started === 1)
+          .sort((a, b) =>
+            String(b.updated_at).localeCompare(String(a.updated_at)),
+          ),
+      );
+    }
+
+    if (normalized === 'delete from content_lesson_state;') {
+      const count = contentLessonState.length;
+      contentLessonState.length = 0;
+      return {rowsAffected: count};
+    }
+
+    if (normalized.startsWith('insert into grammar_bookmarks')) {
+      grammarBookmarks.push({
+        lesson_id: params[0],
+        grammar_id: params[1],
+        package_id: params[2],
+        saved_at: params[3],
+        reactivated_at: params[4],
+        created_at: params[5],
+        updated_at: params[6],
+      });
+      return {rowsAffected: 1, insertId: grammarBookmarks.length};
+    }
+
+    if (
+      normalized.includes('from grammar_bookmarks') &&
+      normalized.includes('where lesson_id = ? and grammar_id = ?')
+    ) {
+      const lessonId = params[0];
+      const grammarId = params[1];
+      return toRows(
+        grammarBookmarks.filter(
+          b => b.lesson_id === lessonId && b.grammar_id === grammarId,
+        ),
+      );
+    }
+
+    if (
+      normalized.startsWith('update grammar_bookmarks set reactivated_at = null')
+    ) {
+      const updatedAt = params[0];
+      const lessonId = params[1];
+      const grammarId = params[2];
+      const row = grammarBookmarks.find(
+        b => b.lesson_id === lessonId && b.grammar_id === grammarId,
+      );
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.reactivated_at = null;
+      row.updated_at = updatedAt;
+      return {rowsAffected: 1};
+    }
+
+    if (
+      normalized.startsWith('update grammar_bookmarks') &&
+      normalized.includes('reactivated_at') &&
+      normalized.includes('saved_at') &&
+      normalized.includes('where lesson_id = ? and grammar_id = ?')
+    ) {
+      const reactivatedAt = params[0];
+      const savedAt = params[1];
+      const updatedAt = params[2];
+      const lessonId = params[3];
+      const grammarId = params[4];
+      const row = grammarBookmarks.find(
+        b => b.lesson_id === lessonId && b.grammar_id === grammarId,
+      );
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.reactivated_at = reactivatedAt;
+      row.saved_at = savedAt;
+      row.updated_at = updatedAt;
+      return {rowsAffected: 1};
+    }
+
+    if (
+      normalized.includes('from grammar_bookmarks') &&
+      normalized.includes('where lesson_id = ? and reactivated_at is not null')
+    ) {
+      const lessonId = params[0];
+      return toRows(
+        [...grammarBookmarks]
+          .filter(b => b.lesson_id === lessonId && b.reactivated_at !== null)
+          .sort((a, b) =>
+            String(b.updated_at).localeCompare(String(a.updated_at)),
+          ),
+      );
+    }
+
+    if (
+      normalized.includes('from grammar_bookmarks') &&
+      normalized.includes('where reactivated_at is not null')
+    ) {
+      return toRows(
+        [...grammarBookmarks]
+          .filter(b => b.reactivated_at !== null)
+          .sort((a, b) =>
+            String(b.updated_at).localeCompare(String(a.updated_at)),
+          ),
+      );
+    }
+
+    if (normalized === 'delete from grammar_bookmarks;') {
+      const count = grammarBookmarks.length;
+      grammarBookmarks.length = 0;
+      return {rowsAffected: count};
+    }
+
+    if (normalized === 'select count(*) as count from content_lesson_state;') {
+      return toRows([{count: contentLessonState.length}]);
+    }
+
+    if (normalized === 'select count(*) as count from grammar_bookmarks;') {
+      return toRows([{count: grammarBookmarks.length}]);
     }
 
     return {rowsAffected: 0};
