@@ -198,6 +198,35 @@ export function findMaskedContent(root: ReactTestInstance): MaskedNode[] {
 }
 
 /**
+ * SETE-122 Việc 6.2 (warning mode): logs a readable report via
+ * console.warn when `findMaskedContent` finds candidates, but never throws
+ * or fails the test. Intended for a global regression scan across
+ * a11y-sensitive components — start in warning mode until Việc 5's known
+ * candidates are cleaned up, then switch call sites to assert
+ * `findMaskedContent(...)` is empty once they are.
+ */
+export function warnOnMaskedContent(
+  root: ReactTestInstance,
+  componentLabel: string,
+): void {
+  const masked = findMaskedContent(root);
+  if (masked.length === 0) {
+    return;
+  }
+  console.warn(
+    `[a11y-masking] ${componentLabel}: ${masked.length} candidate(s) found\n` +
+      masked
+        .map(
+          node =>
+            `  - ${node.path}\n    label: "${node.label}"\n    masked text: ${node.maskedText
+              .map(text => `"${text}"`)
+              .join(', ')}`,
+        )
+        .join('\n'),
+  );
+}
+
+/**
  * Checks if interactive component has both icon and text label (NFR-ACC-004)
  */
 export function hasIconAndTextLabel(instance: ReactTestInstance): {

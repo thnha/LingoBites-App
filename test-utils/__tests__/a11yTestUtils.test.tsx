@@ -5,6 +5,7 @@ import {
   findMaskedContent,
   getAnnouncedText,
   hasIconAndTextLabel,
+  warnOnMaskedContent,
 } from '../a11yTestUtils';
 import {MaterialIcon} from '../../src/components/MaterialIcon';
 import {AppThemeProvider} from '../../src/theme';
@@ -151,5 +152,43 @@ describe('findMaskedContent', () => {
     );
 
     expect(findMaskedContent(tree.root)).toHaveLength(0);
+  });
+});
+
+describe('warnOnMaskedContent', () => {
+  it('logs a readable report via console.warn when masking is found, without throwing', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const tree = await render(
+      <Pressable accessibilityLabel="Mặt trước flashcard" testID="flip-card">
+        <Text>hello</Text>
+      </Pressable>,
+    );
+
+    expect(() =>
+      warnOnMaskedContent(tree.root, 'FlipCard (test)'),
+    ).not.toThrow();
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    const [message] = warnSpy.mock.calls[0];
+    expect(message).toContain('FlipCard (test)');
+    expect(message).toContain('Mặt trước flashcard');
+    expect(message).toContain('hello');
+
+    warnSpy.mockRestore();
+  });
+
+  it('does not log anything when no masking is found', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const label = 'con mèo';
+    const tree = await render(
+      <Pressable accessibilityLabel={label} testID="quiz-option">
+        <Text>{label}</Text>
+      </Pressable>,
+    );
+
+    warnOnMaskedContent(tree.root, 'QuizOption (test)');
+
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });
