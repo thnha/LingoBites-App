@@ -56,6 +56,11 @@ function HomeStackNavigator() {
         name="HomeMain"
         options={{headerShown: false}}
       />
+      <HomeStack.Screen
+        component={ContentLessonRuntimeScreen}
+        name="ContentLessonRuntime"
+        options={{headerShown: false, gestureEnabled: false}}
+      />
       {canMount('PasteText') && (
         <HomeStack.Screen
           component={PasteTextScreen}

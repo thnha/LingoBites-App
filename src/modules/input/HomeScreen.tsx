@@ -1,8 +1,6 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import {useTranslation} from 'react-i18next';
 import {useFocusEffect} from '@react-navigation/native';
-import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
@@ -10,110 +8,95 @@ import type {
 } from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
-import {AppButton} from '@components/AppButton';
 import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
-import {Medallion} from '@components/Medallion';
-import {RecentLessonRow} from '@components/RecentLessonRow';
-import {SectionHeader} from '@components/SectionHeader';
-import {useFeatureEnabled, useFeatureFlags} from '@/release';
-import {isCapabilityChainEnabled} from '@/app/navigation/ingestionRouteGate';
-import {useContentLibrary} from '../content';
-import {
-  listStartedLessons,
-  startContentLesson,
-} from '@shared/db/ContentLessonStateRepository';
+import {useContentLibrary, type ContentLessonRow} from '../content';
+import {listStartedLessons} from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '@theme';
-import type {LessonCardView} from '@/types/lesson';
-import {trackEvent} from '../analytics';
+import {useTranslation} from 'react-i18next';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;
+type Shortcut = {
+  icon: 'refresh' | 'mic' | 'bolt' | 'school';
+  titleKey: string;
+  meta: string;
+  onPress: () => void;
+  testID: string;
+};
 
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
-  const themedStyles = useMemo(() => makeStyles(theme), [theme]);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
-  const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
-  const mvpReviewFlowEnabled = useFeatureEnabled('lingobitesMvpReviewFlow');
-  const {config} = useFeatureFlags();
   const tabNavigation =
-    navigation.getParent<NavigationProp<RootTabParamList>>();
-  const [recentLessons, setRecentLessons] = useState<LessonCardView[]>([]);
-  const [dueReviewCount, setDueReviewCount] = useState(0);
-  const [offlineLessonId, setOfflineLessonId] = useState<string | null>(null);
-  const {listActivePackageLessons} = useContentLibrary();
+    navigation.getParent<
+      import('@react-navigation/native').NavigationProp<RootTabParamList>
+    >();
+  const {getContentLessonById} = useContentLibrary();
   const {listLessons} = useLessonRepository();
   const {getDueFlashcards} = useFlashcardLibrary();
-  const canUseCamera = isCapabilityChainEnabled('imageInput', config.features);
-  const canUsePaste = isCapabilityChainEnabled(
-    'pasteTextInput',
-    config.features,
+  const [startedLesson, setStartedLesson] = useState<ContentLessonRow | null>(
+    null,
   );
-
-  const openFeatureStatus = () =>
-    tabNavigation?.navigate('Profile', {screen: 'FeatureStatus'});
-
-  const openOfflineLesson = () => {
-    const lesson = listActivePackageLessons()[0];
-    if (!lesson) {
-      tabNavigation?.navigate('Lessons', {screen: 'ContentLessonList'});
-      return;
-    }
-    const result = startContentLesson({lessonId: lesson.id});
-    if (result.ok) {
-      setOfflineLessonId(lesson.id);
-      tabNavigation?.navigate('Lessons', {
-        screen: 'ContentLessonRuntime',
-        params: {lessonId: lesson.id},
-      });
-    }
-  };
-
-  function selectInputMethod(method: 'camera' | 'gallery' | 'paste_text') {
-    trackEvent('input_method_selected', {method, screen: 'Home'});
-    if (method === 'camera') {
-      navigation.navigate('ImageCapture', {sourceType: 'camera'});
-      return;
-    }
-    if (method === 'gallery') {
-      navigation.navigate('ImageCapture', {sourceType: 'gallery'});
-      return;
-    }
-    navigation.navigate('PasteText');
-  }
+  const [dueCount, setDueCount] = useState(0);
+  const [libraryCount, setLibraryCount] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
-      setRecentLessons(
-        listLessons(3).map(item => ({
-          id: item.id,
-          title: item.title,
-          meta: t('home.vocab_count', {count: item.vocabularyCount}),
-          blurb: item.previewText,
-        })),
-      );
-      setDueReviewCount(reviewSystemEnabled ? getDueFlashcards().length : 0);
       const started = listStartedLessons()[0];
-      setOfflineLessonId(started?.lessonId ?? null);
-    }, [getDueFlashcards, listLessons, reviewSystemEnabled, t]),
+      setStartedLesson(started ? getContentLessonById(started.lessonId) : null);
+      setDueCount(getDueFlashcards().length);
+      setLibraryCount(listLessons().length);
+    }, [getContentLessonById, getDueFlashcards, listLessons]),
   );
 
-  const emptyRecent = useMemo(
-    () => recentLessons.length === 0,
-    [recentLessons],
-  );
+  const shortcuts: Shortcut[] = [
+    {
+      icon: 'refresh',
+      titleKey: 'home.shortcut_review',
+      meta: t('home.shortcut_review_meta', {count: dueCount}),
+      onPress: () => navigation.navigate('DailyReview'),
+      testID: 'home-shortcut-review',
+    },
+    {
+      icon: 'mic',
+      titleKey: 'home.shortcut_speaking',
+      meta: t('home.shortcut_speaking_meta'),
+      onPress: () =>
+        tabNavigation?.navigate('Lessons', {screen: 'SpeakingRoom'}),
+      testID: 'home-shortcut-speaking',
+    },
+    {
+      icon: 'bolt',
+      titleKey: 'home.shortcut_quick',
+      meta: t('home.shortcut_quick_meta'),
+      onPress: () =>
+        navigation.navigate('Practice', {
+          questions: [],
+          title: t('home.shortcut_quick'),
+        }),
+      testID: 'home-shortcut-quick',
+    },
+    {
+      icon: 'school',
+      titleKey: 'home.shortcut_library',
+      meta: t('home.shortcut_library_meta', {count: libraryCount}),
+      onPress: () => tabNavigation?.navigate('Lessons'),
+      testID: 'home-shortcut-library',
+    },
+  ];
 
   return (
     <AppScreen>
-      <View style={themedStyles.header}>
-        <View style={styles.headerTitleRow}>
+      <View style={styles.header}>
+        <View style={styles.brand}>
           <MaterialIcon
             color={theme.colors.primary}
             name="translate"
             size={26}
           />
-          <AppText numberOfLines={1} style={themedStyles.headerTitle}>
+          <AppText numberOfLines={1} style={styles.brandText}>
             {t('app.name')}
           </AppText>
         </View>
@@ -121,411 +104,132 @@ export function HomeScreen({navigation}: Props) {
           accessibilityLabel={t('home.settings_a11y')}
           icon="settings"
           onPress={() => tabNavigation?.navigate('Profile')}
+          testID="home-settings"
           tone="surface"
         />
       </View>
-
       <ScrollView
-        contentContainerStyle={themedStyles.scrollContent}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.heroCopy}>
-          <AppText variant="h1">{t('home.title')}</AppText>
-          <AppText color="secondary" variant="body">
-            {t(mvpReviewFlowEnabled ? 'home.mvp_subtitle' : 'home.subtitle')}
-          </AppText>
+        <View style={styles.intro}>
+          <AppText variant="h1">{t('home.title_option_c')}</AppText>
+          <AppText color="secondary">{t('home.subtitle_option_c')}</AppText>
         </View>
-
-        {offlineLessonId ? (
-          <View testID="home-continue-section" style={themedStyles.sectionCard}>
-            <AppText variant="h3">{t('home.continue_learning')}</AppText>
+        {startedLesson ? (
+          <View style={styles.hero} testID="home-continue-section">
+            <AppText variant="h2">{startedLesson.titleVi}</AppText>
             <AppText color="secondary">
-              {t('home.continue_learning_body')}
+              {t('home.continue_meta', {
+                duration: startedLesson.estimatedDurationMinutes,
+              })}
             </AppText>
-            <AppButton
-              accessibilityLabel={t('home.continue_learning_a11y')}
-              onPress={() =>
-                tabNavigation?.navigate('Lessons', {
-                  screen: 'ContentLessonRuntime',
-                  params: {lessonId: offlineLessonId},
-                })
-              }
-              title={t('home.continue_learning')}
-            />
-          </View>
-        ) : null}
-
-        {reviewSystemEnabled ? (
-          <Pressable
-            accessibilityLabel={t('home.daily_review_widget_a11y')}
-            accessibilityRole="button"
-            onPress={() => navigation.navigate('DailyReview')}
-            style={({pressed}) => [
-              themedStyles.dailyReviewCard,
-              pressed && themedStyles.pressed,
-            ]}
-            testID="daily-review-widget"
-          >
-            <View style={themedStyles.dailyReviewIcon}>
-              <MaterialIcon
-                color={theme.colors.primary}
-                name="refresh"
-                size={26}
-              />
-            </View>
-            <View style={styles.dailyReviewCopy}>
-              <AppText variant="h3">
-                {t('home.daily_review_widget_title')}
-              </AppText>
-              <AppText color="secondary" variant="label">
-                {dueReviewCount > 0
-                  ? t('home.daily_review_widget_due', {count: dueReviewCount})
-                  : t('home.daily_review_widget_none')}
-              </AppText>
-            </View>
-            <MaterialIcon
-              color={theme.colors.primary}
-              name="chevron_right"
-              size={24}
-            />
-          </Pressable>
-        ) : null}
-
-        <View testID="home-offline-section" style={themedStyles.sectionCard}>
-          <AppText variant="h3">{t('home.offline_section_title')}</AppText>
-          <AppText color="secondary">{t('home.offline_section_body')}</AppText>
-          <View style={styles.sectionActions}>
-            <AppButton
-              accessibilityLabel={t('home.offline_start_a11y')}
-              onPress={openOfflineLesson}
-              title={t('home.offline_start')}
-              testID="home-offline-start"
-            />
-            <Pressable
-              accessibilityLabel={t('home.offline_browse_a11y')}
-              accessibilityRole="button"
-              onPress={() =>
-                tabNavigation?.navigate('Lessons', {
-                  screen: 'ContentLessonList',
-                })
-              }
-              style={styles.viewAllButton}
-            >
-              <AppText style={themedStyles.viewAllText}>
-                {t('home.offline_browse')}
-              </AppText>
-            </Pressable>
-          </View>
-        </View>
-
-        {!canUseCamera && !canUsePaste ? (
-          <View style={themedStyles.mvpCard} testID="mvp-no-content-card">
-            <AppText testID="home-input-section" variant="h3">
-              {t('home.input_section_title')}
-            </AppText>
-            <View style={themedStyles.mvpIcon}>
-              <MaterialIcon
-                color={theme.colors.primary}
-                name="menu_book"
-                size={30}
-              />
-            </View>
-            <AppText style={styles.centerText} variant="h3">
-              {t('home.mvp_content_title')}
-            </AppText>
-            <AppText color="secondary" style={styles.centerText}>
-              {t('home.mvp_content_body')}
-            </AppText>
-            <Pressable
-              accessibilityLabel={t('home.mvp_open_lessons_a11y')}
-              accessibilityRole="button"
-              onPress={() => tabNavigation?.navigate('Lessons')}
-              style={({pressed}) => [
-                themedStyles.mvpButton,
-                pressed && themedStyles.pressed,
-              ]}
-              testID="mvp-open-lessons"
-            >
-              <AppText style={themedStyles.mvpButtonText}>
-                {t('home.mvp_open_lessons')}
-              </AppText>
-            </Pressable>
-            <AppButton
-              accessibilityLabel={t('home.open_feature_status_a11y')}
-              onPress={openFeatureStatus}
-              title={t('home.open_feature_status')}
-              variant="secondary"
-            />
-          </View>
-        ) : (
-          <>
-            <AppText testID="home-input-section" variant="h3">
-              {t('home.input_section_title')}
-            </AppText>
-            <Pressable
-              accessibilityLabel={t('home.capture_photo_a11y')}
-              accessibilityRole="button"
-              accessibilityState={{disabled: !canUseCamera}}
-              onPress={() =>
-                canUseCamera ? selectInputMethod('camera') : openFeatureStatus()
-              }
-              style={({pressed}) => [
-                themedStyles.cameraButton,
-                !canUseCamera && themedStyles.disabled,
-                pressed && themedStyles.pressed,
-              ]}
-            >
-              <View style={themedStyles.cameraIcon}>
-                <MaterialIcon
-                  color={theme.colors.accentInk}
-                  name="photo_camera"
-                  size={42}
-                />
+            <View style={styles.progressRow}>
+              <View style={styles.progressTrack}>
+                <View style={styles.progressFill} />
               </View>
-              <AppText style={themedStyles.cameraTitle}>
-                {t('home.capture_photo')}
+              <AppText color="secondary" variant="label">
+                0%
               </AppText>
-              <AppText style={themedStyles.cameraHint}>
-                {t('home.capture_photo_hint')}
+            </View>
+            <Pressable
+              accessibilityLabel={t('home.continue_learning_a11y')}
+              accessibilityRole="button"
+              onPress={() =>
+                navigation.navigate('ContentLessonRuntime', {
+                  lessonId: startedLesson.id,
+                })
+              }
+              style={({pressed}) => [
+                styles.primaryAction,
+                pressed && styles.pressed,
+              ]}
+              testID="home-continue-action"
+            >
+              <AppText style={styles.primaryActionText}>
+                {t('home.continue_learning')}
               </AppText>
             </Pressable>
-
-            <View style={styles.inputActions}>
-              <Pressable
-                accessibilityLabel={t('home.upload_image_a11y')}
-                accessibilityRole="button"
-                accessibilityState={{disabled: !canUseCamera}}
-                onPress={() =>
-                  canUseCamera
-                    ? selectInputMethod('gallery')
-                    : openFeatureStatus()
-                }
-                style={({pressed}) => [
-                  themedStyles.galleryButton,
-                  !canUseCamera && themedStyles.disabled,
-                  pressed && themedStyles.pressed,
-                ]}
-              >
-                <MaterialIcon
-                  color={theme.colors.text.inverse}
-                  name="upload_file"
-                  size={30}
-                />
-                <AppText style={themedStyles.galleryButtonText}>
-                  {t('home.upload_image')}
-                </AppText>
-              </Pressable>
-
-              <Pressable
-                accessibilityLabel={t('home.paste_text_a11y')}
-                accessibilityRole="button"
-                accessibilityState={{disabled: !canUsePaste}}
-                onPress={() =>
-                  canUsePaste
-                    ? selectInputMethod('paste_text')
-                    : openFeatureStatus()
-                }
-                style={({pressed}) => [
-                  themedStyles.pasteButton,
-                  !canUsePaste && themedStyles.disabled,
-                  pressed && themedStyles.pressed,
-                ]}
-              >
+          </View>
+        ) : null}
+        <AppText variant="h2">{t('home.shortcuts_title')}</AppText>
+        <View style={styles.shortcutGrid}>
+          {shortcuts.map(shortcut => (
+            <Pressable
+              accessibilityLabel={`${t(shortcut.titleKey)}. ${shortcut.meta}`}
+              accessibilityRole="button"
+              key={shortcut.testID}
+              onPress={shortcut.onPress}
+              style={({pressed}) => [
+                styles.shortcut,
+                pressed && styles.pressed,
+              ]}
+              testID={shortcut.testID}
+            >
+              <View style={styles.shortcutIcon}>
                 <MaterialIcon
                   color={theme.colors.primary}
-                  name="content_paste"
-                  size={30}
+                  name={shortcut.icon}
+                  size={20}
                 />
-                <AppText style={themedStyles.pasteButtonText}>
-                  {t('home.paste_text')}
+              </View>
+              <View style={styles.shortcutCopy}>
+                <AppText variant="h3" style={styles.shortcutTitle}>
+                  {t(shortcut.titleKey)}
                 </AppText>
-              </Pressable>
-            </View>
-          </>
-        )}
-
-        <View
-          testID="home-supplemental-section"
-          style={themedStyles.sectionCard}
-        >
-          <AppText variant="h3">{t('home.supplemental_title')}</AppText>
-          <AppButton
-            accessibilityLabel={t('home.speaking_a11y')}
-            onPress={() =>
-              tabNavigation?.navigate('Lessons', {screen: 'SpeakingRoom'})
-            }
-            title={t('home.speaking')}
-          />
-          <AppButton
-            accessibilityLabel={t('home.practice_a11y')}
-            onPress={openFeatureStatus}
-            title={t('home.practice')}
-          />
-        </View>
-
-        <View style={styles.recentSection}>
-          <SectionHeader
-            title={t('home.recent_lessons')}
-            action={
-              <Pressable
-                accessibilityLabel={t('home.view_all_a11y')}
-                accessibilityRole="button"
-                onPress={() => tabNavigation?.navigate('Lessons')}
-                style={styles.viewAllButton}
-              >
-                <AppText style={themedStyles.viewAllText}>
-                  {t('home.view_all')}
+                <AppText color="secondary" variant="label">
+                  {shortcut.meta}
                 </AppText>
-              </Pressable>
-            }
-          />
-          {emptyRecent ? (
-            <View style={themedStyles.emptyRecent}>
-              <Medallion label="📚" />
-              <AppText color="secondary">
-                {mvpReviewFlowEnabled
-                  ? t('home.mvp_empty_lessons')
-                  : t('lesson.no_lessons')}
-              </AppText>
-            </View>
-          ) : (
-            recentLessons.map((item, index) => (
-              <RecentLessonRow
-                key={item.id}
-                index={index}
-                lesson={item}
-                onPress={() =>
-                  navigation.navigate('SavedLessonDetail', {lessonId: item.id})
-                }
+              </View>
+              <MaterialIcon
+                color={theme.colors.text.secondary}
+                name="chevron_right"
+                size={20}
               />
-            ))
-          )}
+            </Pressable>
+          ))}
         </View>
-
-        {!mvpReviewFlowEnabled ? (
-          <View style={themedStyles.tipCard}>
+        <View accessibilityRole="text" style={styles.comingSoon}>
+          <View style={styles.comingSoonIcon}>
             <MaterialIcon
-              color={theme.colors.tertiary}
-              name="lightbulb"
-              size={22}
+              color={theme.colors.primary}
+              name="description"
+              size={18}
             />
-            <AppText style={themedStyles.tipText}>{t('home.tip')}</AppText>
           </View>
-        ) : null}
+          <AppText color="secondary" variant="label">
+            {t('home.coming_soon')}
+          </AppText>
+        </View>
       </ScrollView>
     </AppScreen>
   );
 }
 
-const styles = StyleSheet.create({
-  centerText: {
-    textAlign: 'center',
-  },
-  dailyReviewCopy: {
-    flex: 1,
-    gap: 2,
-  },
-  headerTitleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 10,
-    minWidth: 0,
-  },
-  heroCopy: {
-    gap: 6,
-  },
-  inputActions: {
-    flexDirection: 'row',
-    gap: 14,
-  },
-  sectionActions: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 12,
-  },
-  recentSection: {
-    gap: 10,
-  },
-  viewAllButton: {
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-});
-
 function makeStyles(theme: AppTheme) {
   return StyleSheet.create({
-    cameraButton: {
+    brand: {alignItems: 'center', flexDirection: 'row', gap: 10, minWidth: 0},
+    brandText: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.size.lg,
+      fontWeight: theme.typography.weight.medium,
+    },
+    comingSoon: {
       alignItems: 'center',
-      backgroundColor: theme.colors.accent,
-      borderRadius: theme.radius.xl,
-      elevation: 8,
-      gap: 10,
-      opacity: 1,
-      paddingHorizontal: theme.spacing.xl,
-      paddingVertical: theme.spacing.xxl,
-      shadowColor: theme.colors.primary,
-      shadowOffset: {width: 0, height: 16},
-      shadowOpacity: 0.16,
-      shadowRadius: 34,
+      backgroundColor: theme.colors.accentSoft,
+      borderRadius: theme.radius.lg,
+      flexDirection: 'row',
+      gap: theme.spacing.md,
+      minHeight: 52,
+      paddingHorizontal: theme.spacing.md,
     },
-    cameraHint: {
-      color: theme.colors.accentInk,
-      fontSize: theme.typography.size.xs,
-      opacity: 0.85,
-    },
-    cameraIcon: {
+    comingSoonIcon: {
       alignItems: 'center',
       backgroundColor: theme.colors.overlayLight,
       borderRadius: theme.radius.pill,
-      height: 84,
+      height: 32,
       justifyContent: 'center',
-      width: 84,
-    },
-    cameraTitle: {
-      color: theme.colors.accentInk,
-      fontSize: theme.typography.presets.h2.fontSize,
-      fontWeight: theme.typography.weight.medium,
-    },
-    dailyReviewCard: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.accent,
-      borderRadius: theme.radius.lg,
-      borderWidth: 1.5,
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-      opacity: 1,
-      padding: theme.spacing.lg,
-      ...theme.shadow.soft,
-    },
-    dailyReviewIcon: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.accentSoft,
-      borderRadius: theme.radius.pill,
-      height: 48,
-      justifyContent: 'center',
-      width: 48,
-    },
-    emptyRecent: {
-      alignItems: 'center',
-      gap: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-    },
-    galleryButton: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.secondaryContainer,
-      borderRadius: theme.radius.lg,
-      flex: 1,
-      gap: 10,
-      opacity: 1,
-      paddingHorizontal: 14,
-      paddingVertical: 22,
-      ...theme.shadow.strong,
-    },
-    galleryButtonText: {
-      color: theme.colors.text.inverse,
-      fontSize: theme.typography.size.sm,
-      fontWeight: theme.typography.weight.medium,
+      width: 32,
     },
     header: {
       alignItems: 'center',
@@ -534,96 +238,73 @@ function makeStyles(theme: AppTheme) {
       justifyContent: 'space-between',
       paddingHorizontal: theme.gutter,
     },
-    headerTitle: {
-      color: theme.colors.primary,
-      fontSize: theme.typography.size.lg,
-      fontWeight: theme.typography.weight.medium,
-    },
-    mvpButton: {
-      alignItems: 'center',
+    hero: {
       backgroundColor: theme.colors.surface,
-      borderRadius: theme.radius.pill,
-      marginTop: theme.spacing.sm,
-      opacity: 1,
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-    },
-    mvpButtonText: {
-      color: theme.colors.primary,
-      fontWeight: theme.typography.weight.medium,
-    },
-    mvpCard: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.accentSoft,
       borderRadius: theme.radius.xl,
-      gap: theme.spacing.sm,
-      padding: theme.spacing.xl,
-    },
-    mvpIcon: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.radius.pill,
-      height: 64,
-      justifyContent: 'center',
-      width: 64,
-    },
-    pasteButton: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.accentSoft,
-      borderRadius: theme.radius.lg,
-      borderWidth: 2,
-      elevation: 2,
-      flex: 1,
-      gap: 10,
-      opacity: 1,
-      paddingHorizontal: 14,
-      paddingVertical: 22,
-      shadowColor: theme.colors.primary,
-      shadowOffset: {width: 0, height: 8},
-      shadowOpacity: 0.05,
-      shadowRadius: 22,
-    },
-    pasteButtonText: {
-      color: theme.colors.primary,
-      fontSize: theme.typography.size.sm,
-      fontWeight: theme.typography.weight.medium,
-    },
-    pressed: {
-      opacity: theme.states.pressedOpacity,
-    },
-    disabled: {
-      opacity: 0.5,
-    },
-    sectionCard: {
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.radius.lg,
-      gap: theme.spacing.sm,
+      gap: theme.spacing.md,
       padding: theme.spacing.lg,
     },
+    intro: {gap: theme.spacing.xs},
+    primaryAction: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.radius.pill,
+      justifyContent: 'center',
+      minHeight: 52,
+      paddingHorizontal: theme.spacing.lg,
+    },
+    primaryActionText: {
+      color: theme.colors.text.inverse,
+      fontWeight: theme.typography.weight.bold,
+    },
+    progressFill: {
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.radius.pill,
+      height: '100%',
+      width: '0%',
+    },
+    progressRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+    },
+    progressTrack: {
+      backgroundColor: theme.colors.outlineVariant,
+      borderRadius: theme.radius.pill,
+      flex: 1,
+      height: 8,
+      overflow: 'hidden',
+    },
+    pressed: {opacity: theme.states.pressedOpacity},
     scrollContent: {
       gap: theme.spacing.lg,
       paddingBottom: 28,
       paddingHorizontal: theme.gutter,
       paddingTop: theme.spacing.sm,
     },
-    tipCard: {
+    shortcut: {
       alignItems: 'center',
-      backgroundColor: theme.colors.tertiarySoft,
-      borderRadius: theme.radius.lg,
+      backgroundColor: theme.colors.surface,
       flexDirection: 'row',
-      gap: theme.spacing.md,
-      padding: theme.spacing.lg,
+      gap: theme.spacing.sm,
+      minHeight: 88,
+      padding: theme.spacing.md,
+      width: '50%',
     },
-    tipText: {
-      color: theme.colors.tertiary,
-      flex: 1,
-      fontSize: 13,
-      fontWeight: theme.typography.weight.medium,
+    shortcutCopy: {flex: 1, gap: 2, minWidth: 0},
+    shortcutGrid: {
+      backgroundColor: theme.colors.surface,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
     },
-    viewAllText: {
-      color: theme.colors.primary,
-      fontWeight: theme.typography.weight.medium,
+    shortcutIcon: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.accentSoft,
+      borderRadius: theme.radius.pill,
+      height: 36,
+      justifyContent: 'center',
+      width: 36,
     },
+    shortcutTitle: {fontSize: theme.typography.size.md},
   });
 }

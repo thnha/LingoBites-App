@@ -36,6 +36,7 @@ export type LearningDetailParamList = {
 
 export type HomeStackParamList = {
   HomeMain: undefined;
+  ContentLessonRuntime: {lessonId: string};
   PasteText: {analyzeError?: string} | undefined;
   ImageCapture: {sourceType: OCRSourceType};
   OCRReview: {

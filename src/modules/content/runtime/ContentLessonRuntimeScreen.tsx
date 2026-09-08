@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {LessonsStackParamList} from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {ErrorCard} from '@components/ErrorCard';
@@ -18,10 +16,10 @@ import {RolePlayCard} from './activities/RolePlayCard';
 import {ShadowingCard} from './activities/ShadowingCard';
 import type {FeedbackStepData} from './types';
 
-type Props = NativeStackScreenProps<
-  LessonsStackParamList,
-  'ContentLessonRuntime'
->;
+type Props = {
+  navigation: {goBack: () => void};
+  route: {params: {lessonId: string}};
+};
 
 export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
