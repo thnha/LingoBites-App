@@ -16,18 +16,14 @@ import {
   OPEN_LESSON_ERROR_MESSAGE,
 } from '../../shared/copy/userMessages';
 import {useFeatureEnabled} from '../../release';
-import {
-  listFlashcards,
-  saveFlashcard,
-  unsaveFlashcard,
-} from '../../shared/db/FlashcardRepository';
-import {deleteLesson, getLessonById} from '../../shared/db/LessonRepository';
 import type {SavedLessonRecord} from '../../shared/db/types';
 import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {useAppTheme} from '../../theme';
 import {trackEvent} from '../analytics';
 import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 import {LessonHubView} from './LessonHubView';
+import {useFlashcardLibrary} from './useFlashcardLibrary';
+import {useLessonRepository} from './useLessonRepository';
 
 type HomeProps = NativeStackScreenProps<
   HomeStackParamList,
@@ -51,12 +47,18 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
   const [savedVocabularyIds, setSavedVocabularyIds] = useState<Set<string>>(
     () => new Set(),
   );
+  const {listFlashcards, saveFlashcard, unsaveFlashcard} =
+    useFlashcardLibrary();
+  const {deleteLesson, getLessonById} = useLessonRepository();
 
-  const refreshSavedVocabulary = useCallback((lessonId: string) => {
-    setSavedVocabularyIds(
-      new Set(listFlashcards({lessonId}).map(card => card.vocabularyId)),
-    );
-  }, []);
+  const refreshSavedVocabulary = useCallback(
+    (lessonId: string) => {
+      setSavedVocabularyIds(
+        new Set(listFlashcards({lessonId}).map(card => card.vocabularyId)),
+      );
+    },
+    [listFlashcards],
+  );
 
   const loadLesson = useCallback(() => {
     setLoading(true);
@@ -79,7 +81,7 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
       });
     }
     setLoading(false);
-  }, [refreshSavedVocabulary, route.params.lessonId]);
+  }, [getLessonById, refreshSavedVocabulary, route.params.lessonId]);
 
   useFocusEffect(
     useCallback(() => {

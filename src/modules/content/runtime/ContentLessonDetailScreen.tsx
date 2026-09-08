@@ -8,9 +8,9 @@ import {AppCard} from '../../../components/AppCard';
 import {AppScreen} from '../../../components/AppScreen';
 import {AppText} from '../../../components/AppText';
 import {ScreenHeader} from '../../../components/ScreenHeader';
-import {getContentLessonById} from '../../../shared/db/ContentRuntimeRepository';
-import type {ContentLessonRow} from '../../../shared/db/ContentRuntimeRepository';
 import {useAppTheme} from '../../../theme';
+import {useContentLibrary} from './useContentLibrary';
+import type {ContentLessonRow} from './useContentLibrary';
 
 type Props = NativeStackScreenProps<
   LessonsStackParamList,
@@ -20,11 +20,12 @@ type Props = NativeStackScreenProps<
 export function ContentLessonDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const [lesson, setLesson] = useState<ContentLessonRow | null>(null);
+  const {getContentLessonById} = useContentLibrary();
 
   useFocusEffect(
     useCallback(() => {
       setLesson(getContentLessonById(route.params.lessonId));
-    }, [route.params.lessonId]),
+    }, [getContentLessonById, route.params.lessonId]),
   );
 
   if (!lesson) {

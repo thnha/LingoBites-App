@@ -19,11 +19,7 @@ import {ProfileSettingsRow} from '../../components/ProfileSettingsRow';
 import {SectionHeader} from '../../components/SectionHeader';
 import {ThemePicker} from '../../components/ThemePicker';
 import {getSupportEmail} from '../../shared/api/appConfig';
-import {
-  getAudioCacheStats,
-  listReadyAudioAssets,
-} from '../../shared/db/AudioAssetRepository';
-import {formatCacheBytes, playReadyChapterAudio} from '../audio';
+import {formatCacheBytes, playReadyChapterAudio, useAudioLibrary} from '../audio';
 import {getGamificationSnapshot} from '../engagement';
 import type {GamificationSnapshot} from '../engagement';
 import {
@@ -31,7 +27,7 @@ import {
   CLEAR_DATA_DONE_MESSAGE,
 } from '../../shared/copy/userMessages';
 import {PET_STAGE_LABELS} from '../../shared/copy/gamificationCopy';
-import {clearAllLocalData} from '../../shared/db/LessonRepository';
+import {useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '../../theme';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
@@ -50,6 +46,8 @@ export function ProfileScreen({navigation}: Props) {
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const supportEmail = getSupportEmail();
+  const {getAudioCacheStats, listReadyAudioAssets} = useAudioLibrary();
+  const {clearAllLocalData} = useLessonRepository();
   const audioCacheStats = getAudioCacheStats();
   const audioCacheTrailingLabel = `${formatCacheBytes(
     audioCacheStats.readyBytes,

@@ -8,8 +8,7 @@ import {AppText} from '../../../components/AppText';
 import {IconButton} from '../../../components/IconButton';
 import {ScreenHeader} from '../../../components/ScreenHeader';
 import {useAppTheme} from '../../../theme';
-import {getLessonAudioAssets} from '../../../shared/db/ContentRuntimeRepository';
-import {insertSpeakingRecording} from '../../../shared/db/SpeakingRepository';
+import {useContentLibrary} from '../../content';
 import {playContentAudio} from '../../content/runtime/contentAudioPlayer';
 import {captureSpeakingErrorIfNeeded} from '../errorNotebookService';
 import {
@@ -18,6 +17,7 @@ import {
   stopRecording,
 } from '../recordingService';
 import {getShadowingContent} from '../speakingModes';
+import {useSpeakingRepository} from '../useSpeakingRepository';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'SpeakingShadowing'>;
 
@@ -31,12 +31,14 @@ type RecordingPhase = 'idle' | 'recording' | 'recorded';
  */
 export function SpeakingShadowingActivity({navigation}: Props) {
   const {theme} = useAppTheme();
+  const {getLessonAudioAssets} = useContentLibrary();
+  const {insertSpeakingRecording} = useSpeakingRepository();
   const content = useMemo(() => getShadowingContent(), []);
   const lesson = content[0] ?? null;
   const line = lesson?.lines[0] ?? null;
   const audioAssets = useMemo(
     () => (lesson ? getLessonAudioAssets(lesson.lessonId) : new Map()),
-    [lesson],
+    [getLessonAudioAssets, lesson],
   );
 
   const [phase, setPhase] = useState<RecordingPhase>('idle');

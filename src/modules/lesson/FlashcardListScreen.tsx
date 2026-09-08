@@ -23,12 +23,9 @@ import {FlipCard} from '../../components/FlipCard';
 import {IconButton} from '../../components/IconButton';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {useFeatureEnabled} from '../../release';
-import {
-  listFlashcards,
-  unsaveFlashcard,
-} from '../../shared/db/FlashcardRepository';
-import {listLessons} from '../../shared/db/LessonRepository';
 import type {FlashcardRecord, LessonListItem} from '../../shared/db/types';
+import {useFlashcardLibrary} from './useFlashcardLibrary';
+import {useLessonRepository} from './useLessonRepository';
 import {useAppTheme} from '../../theme';
 
 type HomeProps = Partial<
@@ -52,6 +49,8 @@ export function FlashcardListScreen({navigation, route}: Props) {
 
   const [cards, setCards] = useState<FlashcardRecord[]>([]);
   const [lessons, setLessons] = useState<LessonListItem[]>([]);
+  const {listFlashcards, unsaveFlashcard} = useFlashcardLibrary();
+  const {listLessons} = useLessonRepository();
 
   const refreshData = useCallback(() => {
     const allLessons = listLessons();
@@ -61,7 +60,7 @@ export function FlashcardListScreen({navigation, route}: Props) {
       lessonId: selectedLessonId,
     });
     setCards(fetchedCards);
-  }, [selectedLessonId]);
+  }, [listFlashcards, listLessons, selectedLessonId]);
 
   useFocusEffect(
     useCallback(() => {

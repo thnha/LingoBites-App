@@ -13,12 +13,7 @@ import {Medallion} from '../../components/Medallion';
 import {RatingControl} from '../../components/RatingControl';
 import {useFeatureEnabled} from '../../release';
 import {requestSync} from '../sync';
-import {
-  getCardDueAt,
-  getDueFlashcards,
-  listFlashcards,
-  recordFlashcardRating,
-} from '../../shared/db/FlashcardRepository';
+import {useFlashcardLibrary} from '../lesson';
 import type {FlashcardRecord, ReviewRating} from '../../shared/db/types';
 import {startReviewSession} from '../engagement/reviewSession';
 import type {ReviewSession} from '../engagement/reviewSession';
@@ -98,6 +93,8 @@ export function DailyReviewScreen({
   const {theme} = useAppTheme();
   const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
+  const {getCardDueAt, getDueFlashcards, listFlashcards, recordFlashcardRating} =
+    useFlashcardLibrary();
   const [allDueCount] = useState(() => getDueFlashcards().length);
   const [sessionCards] = useState(() => getDueFlashcards({limit: softCap}));
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -114,7 +111,10 @@ export function DailyReviewScreen({
   const [session] = useState<ReviewSession>(() => startReviewSession());
   const [sessionXpEarned, setSessionXpEarned] = useState<number | null>(null);
 
-  const savedCardCount = useMemo(() => listFlashcards().length, []);
+  const savedCardCount = useMemo(
+    () => listFlashcards().length,
+    [listFlashcards],
+  );
   const carryOverCount = Math.max(0, allDueCount - sessionCards.length);
   const activeCard = sessionCards[currentIndex] ?? null;
 

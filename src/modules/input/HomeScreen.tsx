@@ -17,8 +17,7 @@ import {RecentLessonRow} from '../../components/RecentLessonRow';
 import {SectionHeader} from '../../components/SectionHeader';
 import {useFeatureEnabled} from '../../release';
 import {NO_LESSONS_MESSAGE} from '../../shared/copy/userMessages';
-import {getDueFlashcards} from '../../shared/db/FlashcardRepository';
-import {listLessons} from '../../shared/db/LessonRepository';
+import {useFlashcardLibrary, useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '../../theme';
 import type {LessonCardView} from '../../types/lesson';
 import {trackEvent} from '../analytics';
@@ -35,6 +34,8 @@ export function HomeScreen({navigation}: Props) {
     navigation.getParent<NavigationProp<RootTabParamList>>();
   const [recentLessons, setRecentLessons] = useState<LessonCardView[]>([]);
   const [dueReviewCount, setDueReviewCount] = useState(0);
+  const {listLessons} = useLessonRepository();
+  const {getDueFlashcards} = useFlashcardLibrary();
 
   function selectInputMethod(method: 'camera' | 'gallery' | 'paste_text') {
     trackEvent('input_method_selected', {method, screen: 'Home'});
@@ -60,7 +61,7 @@ export function HomeScreen({navigation}: Props) {
         })),
       );
       setDueReviewCount(reviewSystemEnabled ? getDueFlashcards().length : 0);
-    }, [reviewSystemEnabled, t]),
+    }, [getDueFlashcards, listLessons, reviewSystemEnabled, t]),
   );
 
   const emptyRecent = useMemo(

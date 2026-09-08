@@ -10,18 +10,18 @@ import {IconButton} from '../../components/IconButton';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {SectionHeader} from '../../components/SectionHeader';
 import {AppButton} from '../../components/AppButton';
-import {
-  getCapabilityProgressReport,
-  exportPrivacySafeMetrics,
-  formatPercentage,
-  type CapabilityProgressReport,
-} from '../../shared/db/PilotMetricsRepository';
 import {useAppTheme} from '../../theme';
+import {
+  useProgressReport,
+  type CapabilityProgressReport,
+} from './useProgressReport';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProgressReport'>;
 
 export function ProgressReportScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const {getCapabilityProgressReport, exportPrivacySafeMetrics, formatPercentage} =
+    useProgressReport();
   const [report, setReport] = useState<CapabilityProgressReport>(() =>
     getCapabilityProgressReport(),
   );
@@ -30,7 +30,7 @@ export function ProgressReportScreen({navigation}: Props) {
   useFocusEffect(
     useCallback(() => {
       setReport(getCapabilityProgressReport());
-    }, []),
+    }, [getCapabilityProgressReport]),
   );
 
   function handleExportMetrics() {

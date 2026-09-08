@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {HomeStackParamList} from '../../app/navigation/types';
@@ -10,21 +10,14 @@ import {
   SAVE_LESSON_ERROR_MESSAGE,
   SAVE_LESSON_INVALID_DATA_MESSAGE,
 } from '../../shared/copy/userMessages';
-import {
-  listFlashcards,
-  saveFlashcard,
-  unsaveFlashcard,
-} from '../../shared/db/FlashcardRepository';
-import {
-  findLessonByInputHash,
-  saveLesson,
-} from '../../shared/db/LessonRepository';
 import {computeLessonInputHash} from '../../shared/db/lessonInputHash';
 import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {trackEvent} from '../analytics';
 import {confirmFirstFlashcardSave} from './flashcardDisclosure';
 import {LessonHubView} from './LessonHubView';
 import type {LessonSaveState} from './LessonResultView';
+import {useFlashcardLibrary} from './useFlashcardLibrary';
+import {useLessonRepository} from './useLessonRepository';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'LessonResult'>;
 
@@ -44,6 +37,9 @@ export function LessonResultScreen({navigation, route}: Props) {
     () => new Set(),
   );
   const viewedAtRef = useRef<number>(Date.now());
+  const {listFlashcards, saveFlashcard, unsaveFlashcard} =
+    useFlashcardLibrary();
+  const {findLessonByInputHash, saveLesson} = useLessonRepository();
 
   useEffect(() => {
     trackEvent('result_viewed', {
@@ -60,6 +56,19 @@ export function LessonResultScreen({navigation, route}: Props) {
     vocabulary.length,
   ]);
 
+  const refreshSavedVocabulary = useCallback(
+    (nextLessonId: string) => {
+      setSavedVocabularyIds(
+        new Set(
+          listFlashcards({lessonId: nextLessonId}).map(
+            card => card.vocabularyId,
+          ),
+        ),
+      );
+    },
+    [listFlashcards],
+  );
+
   useEffect(() => {
     const hash = computeLessonInputHash({
       confirmedText,
@@ -71,15 +80,7 @@ export function LessonResultScreen({navigation, route}: Props) {
       setSaveState('saved');
       refreshSavedVocabulary(existing.id);
     }
-  }, [confirmedText, lesson.level]);
-
-  function refreshSavedVocabulary(nextLessonId: string) {
-    setSavedVocabularyIds(
-      new Set(
-        listFlashcards({lessonId: nextLessonId}).map(card => card.vocabularyId),
-      ),
-    );
-  }
+  }, [confirmedText, findLessonByInputHash, lesson.level, refreshSavedVocabulary]);
 
   function persistLesson(): string | null {
     if (lessonId) {

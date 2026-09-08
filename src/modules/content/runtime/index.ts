@@ -2,6 +2,11 @@ export {ContentLessonListScreen} from './ContentLessonListScreen';
 export {ContentLessonDetailScreen} from './ContentLessonDetailScreen';
 export {ContentLessonRuntimeScreen} from './ContentLessonRuntimeScreen';
 export {buildLessonSteps} from './buildLessonSteps';
+export {useContentLibrary} from './useContentLibrary';
+export type {
+  ContentLessonListItem,
+  ContentLessonRow,
+} from './useContentLibrary';
 export {
   LessonRuntimeSession,
   createLessonRuntimeSession,

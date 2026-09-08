@@ -26,11 +26,11 @@ import {Medallion} from '../../components/Medallion';
 import {SectionHeader} from '../../components/SectionHeader';
 import {TextField} from '../../components/TextField';
 import {NO_LESSONS_MESSAGE} from '../../shared/copy/userMessages';
-import {
-  listActivePackageLessons,
-  type ContentLessonListItem,
-} from '../../shared/db/ContentRuntimeRepository';
 import type {LibrarySubjectFilter} from '../../store/useLibraryStore';
+import {
+  useContentLibrary,
+  type ContentLessonListItem,
+} from '../content';
 import {useAppTheme, type AppTheme} from '../../theme';
 import {bootstrapContentPackage} from '../content/bootstrap';
 import {useLessonLibrary} from './useLessonLibrary';
@@ -58,6 +58,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
     summary,
     refresh,
   } = useLessonLibrary();
+  const {listActivePackageLessons} = useContentLibrary();
 
   const [packagedLessons, setPackagedLessons] = useState<
     ContentLessonListItem[]
@@ -95,7 +96,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
         );
       }
     }
-  }, []);
+  }, [listActivePackageLessons]);
 
   useFocusEffect(
     useCallback(() => {

@@ -5,3 +5,5 @@ export {LessonsHistoryScreen} from './LessonsHistoryScreen';
 export {SavedLessonDetailScreen} from './SavedLessonDetailScreen';
 export {SentenceDetailScreen} from './SentenceDetailScreen';
 export {WordDetailScreen} from './WordDetailScreen';
+export {useFlashcardLibrary} from './useFlashcardLibrary';
+export {useLessonRepository} from './useLessonRepository';

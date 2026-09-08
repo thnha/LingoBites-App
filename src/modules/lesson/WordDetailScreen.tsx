@@ -14,14 +14,10 @@ import {IconButton} from '../../components/IconButton';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {useFeatureEnabled} from '../../release';
-import {
-  listFlashcards,
-  saveFlashcard,
-  unsaveFlashcard,
-} from '../../shared/db/FlashcardRepository';
 import type {FlashcardRecord} from '../../shared/db/types';
 import {useAppTheme, type AppTheme} from '../../theme';
 import {confirmFirstFlashcardSave} from './flashcardDisclosure';
+import {useFlashcardLibrary} from './useFlashcardLibrary';
 
 type Props =
   | NativeStackScreenProps<HomeStackParamList, 'WordDetail'>
@@ -41,6 +37,8 @@ export function WordDetailScreen({navigation, route}: Props) {
   const [savedFlashcard, setSavedFlashcard] = useState<FlashcardRecord | null>(
     null,
   );
+  const {listFlashcards, saveFlashcard, unsaveFlashcard} =
+    useFlashcardLibrary();
 
   const refreshSavedFlashcard = useCallback(() => {
     if (!lessonId) {
@@ -52,7 +50,7 @@ export function WordDetailScreen({navigation, route}: Props) {
       listFlashcards({lessonId}).find(card => card.vocabularyId === word.id) ??
         null,
     );
-  }, [lessonId, word.id]);
+  }, [lessonId, listFlashcards, word.id]);
 
   useEffect(() => {
     refreshSavedFlashcard();

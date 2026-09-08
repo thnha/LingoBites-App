@@ -10,10 +10,10 @@ import {AppText} from '../../../components/AppText';
 import {IconButton} from '../../../components/IconButton';
 import {ScreenHeader} from '../../../components/ScreenHeader';
 import {Medallion} from '../../../components/Medallion';
-import {listActivePackageLessons} from '../../../shared/db/ContentRuntimeRepository';
-import type {ContentLessonListItem} from '../../../shared/db/ContentRuntimeRepository';
 import {useAppTheme} from '../../../theme';
 import {bootstrapContentPackage} from '../bootstrap';
+import {useContentLibrary} from './useContentLibrary';
+import type {ContentLessonListItem} from './useContentLibrary';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'ContentLessonList'>;
 
@@ -22,6 +22,7 @@ export function ContentLessonListScreen({navigation}: Props) {
   const [lessons, setLessons] = useState<ContentLessonListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const {listActivePackageLessons} = useContentLibrary();
 
   const loadLessons = useCallback(async () => {
     let items = listActivePackageLessons();
@@ -44,7 +45,7 @@ export function ContentLessonListScreen({navigation}: Props) {
       }
     }
     setLessons(items);
-  }, []);
+  }, [listActivePackageLessons]);
 
   useFocusEffect(
     useCallback(() => {
