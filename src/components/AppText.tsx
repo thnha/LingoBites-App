@@ -28,6 +28,7 @@ export function AppText({
   variant = 'body',
   color = 'primary',
   style,
+  maxFontSizeMultiplier,
   ...rest
 }: Props) {
   const {theme} = useAppTheme();
@@ -43,6 +44,7 @@ export function AppText({
 
   return (
     <Text
+      maxFontSizeMultiplier={maxFontSizeMultiplier ?? preset.maxFontSizeMultiplier}
       style={StyleSheet.flatten([
         {color: colorValue, fontFamily: theme.typography.fontFamily.primary},
         variantStyle,

@@ -6,6 +6,8 @@ export type TypographyPreset = {
   fontSize: number;
   lineHeight: number;
   fontWeight: FontWeight;
+  /** Ceiling for RN's `allowFontScaling` — see docs/implementation-notes/font-scaling-policy.notes.md. */
+  maxFontSizeMultiplier: number;
 };
 
 export type ColorScale = {
