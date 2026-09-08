@@ -23,21 +23,66 @@ export const fontWeight = {
 // headings 1.5x, body copy 2.0x, labels/captions 1.3x — see
 // docs/implementation-notes/font-scaling-policy.notes.md for rationale.
 export const typographyPresets = {
-  display: {fontSize: 32, lineHeight: 38, fontWeight: '700' as const, maxFontSizeMultiplier: 1.5},
-  h1: {fontSize: 28, lineHeight: 34, fontWeight: '700' as const, maxFontSizeMultiplier: 1.5},
-  h2: {fontSize: 22, lineHeight: 28, fontWeight: '600' as const, maxFontSizeMultiplier: 1.5},
-  h3: {fontSize: 18, lineHeight: 24, fontWeight: '600' as const, maxFontSizeMultiplier: 1.5},
-  title: {fontSize: fontSize.xxl, lineHeight: 36, fontWeight: '800' as const, maxFontSizeMultiplier: 1.5},
+  display: {
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: '700' as const,
+    maxFontSizeMultiplier: 1.5,
+  },
+  h1: {
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '700' as const,
+    maxFontSizeMultiplier: 1.5,
+  },
+  h2: {
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '600' as const,
+    maxFontSizeMultiplier: 1.5,
+  },
+  h3: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '600' as const,
+    maxFontSizeMultiplier: 1.5,
+  },
+  title: {
+    fontSize: fontSize.xxl,
+    lineHeight: 36,
+    fontWeight: '800' as const,
+    maxFontSizeMultiplier: 1.5,
+  },
   subtitle: {
     fontSize: fontSize.md,
     lineHeight: 24,
     fontWeight: '400' as const,
     maxFontSizeMultiplier: 2.0,
   },
-  bodyLg: {fontSize: 18, lineHeight: 28, fontWeight: '500' as const, maxFontSizeMultiplier: 2.0},
-  body: {fontSize: 16, lineHeight: 24, fontWeight: '500' as const, maxFontSizeMultiplier: 2.0},
-  label: {fontSize: 14, lineHeight: 18, fontWeight: '600' as const, maxFontSizeMultiplier: 1.3},
-  caption: {fontSize: 12, lineHeight: 16, fontWeight: '600' as const, maxFontSizeMultiplier: 1.3},
+  bodyLg: {
+    fontSize: 18,
+    lineHeight: 28,
+    fontWeight: '500' as const,
+    maxFontSizeMultiplier: 2.0,
+  },
+  body: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: '500' as const,
+    maxFontSizeMultiplier: 2.0,
+  },
+  label: {
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: '600' as const,
+    maxFontSizeMultiplier: 1.3,
+  },
+  caption: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '600' as const,
+    maxFontSizeMultiplier: 1.3,
+  },
 };
 
 export const gutter = 16;

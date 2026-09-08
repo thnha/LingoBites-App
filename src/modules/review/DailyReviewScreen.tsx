@@ -89,8 +89,12 @@ export function DailyReviewScreen({
   const {theme} = useAppTheme();
   const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
-  const {getCardDueAt, getDueFlashcards, listFlashcards, recordFlashcardRating} =
-    useFlashcardLibrary();
+  const {
+    getCardDueAt,
+    getDueFlashcards,
+    listFlashcards,
+    recordFlashcardRating,
+  } = useFlashcardLibrary();
   const [allDueCount] = useState(() => getDueFlashcards().length);
   const [sessionCards] = useState(() => getDueFlashcards({limit: softCap}));
   const [currentIndex, setCurrentIndex] = useState(0);

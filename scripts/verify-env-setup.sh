@@ -9,7 +9,7 @@ if [ -d "$HOME/.nvm/versions/node/v22.13.1/bin" ]; then
 fi
 
 echo "== Mobile unit tests =="
-npm test -- --passWithNoTests
+yarn test --passWithNoTests
 
 echo "== Android assemble variants =="
 (cd android && ./gradlew :app:assembleDevelopmentDebug :app:assembleStagingDebug :app:assembleProductionRelease --console=plain)

@@ -66,7 +66,8 @@ describe('getAnnouncedText', () => {
       <View
         accessible={true}
         importantForAccessibility="no-hide-descendants"
-        testID="target">
+        testID="target"
+      >
         <Text>hidden</Text>
       </View>,
     );
@@ -131,7 +132,8 @@ describe('findMaskedContent', () => {
       <Pressable
         accessible={false}
         accessibilityLabel="label only"
-        testID="target">
+        testID="target"
+      >
         <Text>hello</Text>
       </Pressable>,
     );
@@ -146,7 +148,8 @@ describe('findMaskedContent', () => {
     const tree = await render(
       <Pressable
         accessibilityLabel="Đã nhớ - lên lịch ôn sau"
-        testID="rating-remembered">
+        testID="rating-remembered"
+      >
         <Text>Nhớ</Text>
       </Pressable>,
     );

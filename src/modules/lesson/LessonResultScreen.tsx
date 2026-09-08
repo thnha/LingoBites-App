@@ -78,7 +78,12 @@ export function LessonResultScreen({navigation, route}: Props) {
       setSaveState('saved');
       refreshSavedVocabulary(existing.id);
     }
-  }, [confirmedText, findLessonByInputHash, lesson.level, refreshSavedVocabulary]);
+  }, [
+    confirmedText,
+    findLessonByInputHash,
+    lesson.level,
+    refreshSavedVocabulary,
+  ]);
 
   function persistLesson(): string | null {
     if (lessonId) {

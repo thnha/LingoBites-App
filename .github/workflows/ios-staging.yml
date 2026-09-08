@@ -28,6 +28,9 @@ jobs:
           node-version: '22.13.1'
           cache: yarn
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Ruby (bundler)
         uses: ruby/setup-ruby@v1
         with:
@@ -44,19 +47,19 @@ jobs:
         run: bundle exec pod install --project-directory=ios
 
       - name: Lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Check lint warning budget
-        run: npm run lint:budget
+        run: yarn lint:budget
 
       - name: Typecheck
-        run: npm run typecheck
+        run: yarn typecheck
 
       - name: Check formatting
-        run: npm run format:check
+        run: yarn format:check
 
       - name: Test
-        run: npm test -- --passWithNoTests
+        run: yarn test --passWithNoTests
 
       - name: Verify required secrets and vars are present
         run: |

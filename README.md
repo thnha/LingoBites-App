@@ -21,13 +21,18 @@ Ensure you have completed the [React Native Set Up Your Environment](https://rea
 git clone <repo-url> LingoBites-App
 cd LingoBites-App
 
-# Install npm dependencies
-npm install
+# Install JavaScript dependencies with the canonical package manager
+corepack enable
+yarn install --frozen-lockfile
 
 # For iOS, install CocoaPods
 bundle install
 bundle exec pod install
 ```
+
+Yarn Classic is the canonical package manager for this repository. Keep
+`yarn.lock` as the only JavaScript dependency lockfile; do not commit npm or
+pnpm lockfiles.
 
 ### Step 2: Configure Environment Variables
 
@@ -47,19 +52,19 @@ Edit `.env.development` and set:
 First, start Metro (the JavaScript bundler):
 
 ```sh
-npm start
+yarn start
 ```
 
 In a new terminal window/pane, build and run the app:
 
 #### iOS
 ```sh
-npm run ios
+yarn ios
 ```
 
 #### Android
 ```sh
-npm run android
+yarn android
 ```
 
 ---

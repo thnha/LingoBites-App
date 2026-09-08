@@ -20,8 +20,11 @@ type Props = NativeStackScreenProps<ProfileStackParamList, 'ProgressReport'>;
 
 export function ProgressReportScreen({navigation}: Props) {
   const {theme} = useAppTheme();
-  const {getCapabilityProgressReport, exportPrivacySafeMetrics, formatPercentage} =
-    useProgressReport();
+  const {
+    getCapabilityProgressReport,
+    exportPrivacySafeMetrics,
+    formatPercentage,
+  } = useProgressReport();
   const [report, setReport] = useState<CapabilityProgressReport>(() =>
     getCapabilityProgressReport(),
   );

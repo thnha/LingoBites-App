@@ -218,7 +218,9 @@ export function warnOnMaskedContent(
       masked
         .map(
           node =>
-            `  - ${node.path}\n    label: "${node.label}"\n    masked text: ${node.maskedText
+            `  - ${node.path}\n    label: "${
+              node.label
+            }"\n    masked text: ${node.maskedText
               .map(text => `"${text}"`)
               .join(', ')}`,
         )

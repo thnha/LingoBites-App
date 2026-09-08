@@ -27,10 +27,7 @@ import {SectionHeader} from '@components/SectionHeader';
 import {TextField} from '@components/TextField';
 import {useTranslation} from 'react-i18next';
 import type {LibrarySubjectFilter} from '@/store/useLibraryStore';
-import {
-  useContentLibrary,
-  type ContentLessonListItem,
-} from '../content';
+import {useContentLibrary, type ContentLessonListItem} from '../content';
 import {useAppTheme, type AppTheme} from '@theme';
 import {bootstrapContentPackage} from '../content/bootstrap';
 import {useLessonLibrary} from './useLessonLibrary';

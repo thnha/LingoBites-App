@@ -44,7 +44,9 @@ export function AppText({
 
   return (
     <Text
-      maxFontSizeMultiplier={maxFontSizeMultiplier ?? preset.maxFontSizeMultiplier}
+      maxFontSizeMultiplier={
+        maxFontSizeMultiplier ?? preset.maxFontSizeMultiplier
+      }
       style={StyleSheet.flatten([
         {color: colorValue, fontFamily: theme.typography.fontFamily.primary},
         variantStyle,

@@ -2,6 +2,7 @@
   "name": "ScanLearnEnglish",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "android": "react-native run-android --mode developmentDebug",
     "ios": "cross-env ENVFILE=.env.development ruby ./node_modules/react-native-config/ios/ReactNativeConfig/BuildXCConfig.rb . ios/tmp.xcconfig && cp .env.development .env && cross-env ENVFILE=.env.development react-native run-ios --scheme Development --mode DebugDev --simulator \"iPhone 17\"",
@@ -25,7 +26,7 @@
     "android:build:production": "scripts/android-local-build.sh production",
     "pod": "bundle exec pod install --project-directory=ios",
     "pod:clean": "cd ios && pod deintegrate && rm -rf ~/Library/Caches/CocoaPods && rm -rf Pods && rm -rf ~/Library/Developer/Xcode/DerivedData/* && rm -rf Podfile.lock",
-    "clean": "rm -rf node_modules && rm -rf yarn.lock && rm -rf package-lock.json && watchman watch-del-all",
+    "clean": "rm -rf node_modules && watchman watch-del-all",
     "clean:ios": "cd ios && xcodebuild clean && cd ../",
     "clean:android": "cd android && ./gradlew clean && cd ../",
     "open:ios": "xed -b ios",

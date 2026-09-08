@@ -4,10 +4,7 @@ export {
   ContentLessonRuntimeScreen,
   useContentLibrary,
 } from './runtime';
-export type {
-  ContentLessonListItem,
-  ContentLessonRow,
-} from './runtime';
+export type {ContentLessonListItem, ContentLessonRow} from './runtime';
 export type {AudioAsset, DialogueTurn, QAItem, SrsItem} from './schema';
 export {
   calculateNextContentReviewState,

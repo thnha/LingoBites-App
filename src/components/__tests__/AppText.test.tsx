@@ -31,8 +31,8 @@ describe('AppText font scaling', () => {
     const bodyTree = await render(<AppText variant="body">Body</AppText>);
     const labelTree = await render(<AppText variant="label">Label</AppText>);
     const bodyCap = bodyTree.root.findByType(Text).props.maxFontSizeMultiplier;
-    const labelCap = labelTree.root.findByType(Text).props
-      .maxFontSizeMultiplier;
+    const labelCap =
+      labelTree.root.findByType(Text).props.maxFontSizeMultiplier;
     expect(bodyCap).toBeGreaterThan(labelCap);
   });
 

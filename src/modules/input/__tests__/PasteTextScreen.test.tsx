@@ -107,6 +107,8 @@ describe('PasteTextScreen', () => {
     });
 
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(JSON.stringify(tree!.toJSON())).toContain(i18n.t('errors.empty_input'));
+    expect(JSON.stringify(tree!.toJSON())).toContain(
+      i18n.t('errors.empty_input'),
+    );
   });
 });
