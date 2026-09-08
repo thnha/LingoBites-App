@@ -4,6 +4,7 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {LessonsStackParamList} from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
+import {ErrorCard} from '@components/ErrorCard';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {useAppTheme} from '@theme';
 import {createLessonRuntimeSession} from './ContentLessonRuntime';
@@ -30,6 +31,10 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   // place, so a simple render-tick counter is enough to reflect its state.
   const [, forceRerender] = useState(0);
   const [finished, setFinished] = useState<FeedbackStepData | null>(null);
+  const [audioError, setAudioError] = useState<{
+    assetId: string | null;
+    message: string;
+  } | null>(null);
 
   const step = session?.getCurrentStep() ?? null;
 
@@ -37,7 +42,8 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
     if (!session) {
       return;
     }
-    playContentAudio(assetId, session.data.audioAssets);
+    const result = playContentAudio(assetId, session.data.audioAssets);
+    setAudioError(result.ok ? null : {assetId, message: result.message});
   }
 
   function advance(state: 'completed' | 'skipped') {
@@ -89,6 +95,13 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
       <ScrollView
         contentContainerStyle={{gap: theme.spacing.lg, padding: theme.gutter}}
       >
+        {audioError ? (
+          <ErrorCard
+            message={audioError.message}
+            onRetry={() => handlePlayAudio(audioError.assetId)}
+            retryLabel="Thử lại"
+          />
+        ) : null}
         {finished ? (
           <FeedbackCard data={finished} onFinish={() => navigation.goBack()} />
         ) : step?.kind === 'context' ? (
