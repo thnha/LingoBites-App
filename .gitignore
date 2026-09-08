@@ -92,7 +92,6 @@ description.md
 reply.md
 artifacts/
 workdir/
-attachments/
 
 .vscode/*
 .vibeguard/*
