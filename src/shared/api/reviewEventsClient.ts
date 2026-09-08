@@ -1,4 +1,4 @@
-import {NETWORK_LOST_MESSAGE, SYNC_FAILED_MESSAGE} from '../copy/userMessages';
+import i18n from '../../i18n';
 import type {ReviewEventPayload} from '../db/types';
 import {getAppConfig} from './appConfig';
 
@@ -74,7 +74,7 @@ export async function pushReviewEvents(
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
       retryable: true,
     };
   }
@@ -86,7 +86,7 @@ export async function pushReviewEvents(
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
       retryable: true,
     };
   }
@@ -96,7 +96,7 @@ export async function pushReviewEvents(
     return {
       ok: false,
       errorCode: errorBody?.error.code ?? 'REVIEW_EVENTS_REJECTED',
-      message: errorBody?.error.message?.trim() || SYNC_FAILED_MESSAGE,
+      message: errorBody?.error.message?.trim() || i18n.t('errors.sync_failed'),
       retryable: response.status >= 500 || response.status === 429,
     };
   }
@@ -105,7 +105,7 @@ export async function pushReviewEvents(
     return {
       ok: false,
       errorCode: 'REVIEW_EVENTS_INVALID_RESPONSE',
-      message: SYNC_FAILED_MESSAGE,
+      message: i18n.t('errors.sync_failed'),
       retryable: true,
     };
   }

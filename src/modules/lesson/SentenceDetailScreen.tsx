@@ -17,7 +17,7 @@ import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {SectionHeader} from '../../components/SectionHeader';
 import {SentenceChunkCard} from '../../components/SentenceChunkCard';
-import {EMPTY_SECTION_MESSAGE} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '../../theme';
 
 type Props =
@@ -26,6 +26,7 @@ type Props =
 
 export function SentenceDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const nav = navigation as NativeStackScreenProps<
     HomeStackParamList,
     'SentenceDetail'
@@ -102,7 +103,7 @@ export function SentenceDetailScreen({navigation, route}: Props) {
         />
 
         {chunks.length === 0 ? (
-          <AppText color="muted">{EMPTY_SECTION_MESSAGE}</AppText>
+          <AppText color="muted">{t('errors.empty_section')}</AppText>
         ) : (
           <View style={{gap: 10}}>
             {chunks.map((chunk, chunkIndex) => (

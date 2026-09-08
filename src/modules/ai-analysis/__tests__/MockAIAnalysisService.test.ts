@@ -1,4 +1,4 @@
-import {AI_ANALYSIS_FAILED_MESSAGE} from '../../../shared/copy/userMessages';
+import i18n from '../../../i18n';
 import {simulateAnalysisJob} from '../MockAIAnalysisService';
 import type {AnalysisProgress} from '../types';
 
@@ -47,7 +47,7 @@ describe('simulateAnalysisJob', () => {
     expect(result).toEqual({
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
   });
 

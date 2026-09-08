@@ -1,4 +1,4 @@
-import {OCR_FAILED_MESSAGE} from '../../shared/copy/userMessages';
+import i18n from '../../i18n';
 import type {OCRImageInput, OCRTextResult} from '../../shared/api/types';
 
 const DEFAULT_MOCK_TEXT =
@@ -11,7 +11,7 @@ export async function extractTextWithMock(
     return {
       ok: false,
       errorCode: 'OCR_NO_TEXT',
-      message: OCR_FAILED_MESSAGE,
+      message: i18n.t('errors.ocr_failed'),
       retryable: true,
     };
   }

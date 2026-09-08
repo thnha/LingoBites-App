@@ -2,8 +2,8 @@ import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import {FeatureFlagProvider} from '../../../release';
 import {AppThemeProvider} from '../../../theme';
+import i18n from '../../../i18n';
 import {PrivacyNoteScreen} from '../PrivacyNoteScreen';
-import {PRIVACY_NOTE_BODY} from '../privacyCopy';
 
 describe('PrivacyNoteScreen', () => {
   it('shows canonical in-app privacy note copy', async () => {
@@ -20,7 +20,7 @@ describe('PrivacyNoteScreen', () => {
     });
 
     const text = JSON.stringify(tree!.toJSON());
-    expect(text).toContain(PRIVACY_NOTE_BODY);
-    expect(text).toContain('Quyền riêng tư');
+    expect(text).toContain(i18n.t('settings.privacy_note_body'));
+    expect(text).toContain(i18n.t('settings.privacy_title'));
   });
 });

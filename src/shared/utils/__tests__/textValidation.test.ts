@@ -1,5 +1,4 @@
-import {MAX_INPUT_TEXT_LENGTH} from '../../copy/userMessages';
-import {validateConfirmedText} from '../textValidation';
+import {MAX_INPUT_TEXT_LENGTH, validateConfirmedText} from '../textValidation';
 
 describe('validateConfirmedText', () => {
   it('rejects empty input', () => {

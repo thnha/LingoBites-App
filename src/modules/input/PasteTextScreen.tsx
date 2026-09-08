@@ -10,7 +10,7 @@ import {ErrorCard} from '../../components/ErrorCard';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {TextField} from '../../components/TextField';
-import {RETRY_ACTION_LABEL} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '../../theme';
 import {getTextLengthBucket, trackEvent} from '../analytics';
 import {validateConfirmedText} from '../../shared/utils/textValidation';
@@ -29,6 +29,7 @@ function countWords(text: string): number {
 
 export function PasteTextScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const [text, setText] = useState(
     'We are offering a special discount for new customers.',
   );
@@ -121,7 +122,7 @@ export function PasteTextScreen({navigation, route}: Props) {
           <ErrorCard
             message={screenState.message}
             onRetry={handleAnalyze}
-            retryLabel={RETRY_ACTION_LABEL}
+            retryLabel={t('common.retry')}
           />
         ) : null}
       </ScrollView>

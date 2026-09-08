@@ -52,5 +52,76 @@
     "remembered_a11y": "Đã nhớ - lên lịch ôn sau",
     "skip_label": "Bỏ qua",
     "skip_a11y": "Bỏ qua thẻ này"
+  },
+  "common": {
+    "retry": "Thử lại"
+  },
+  "errors": {
+    "empty_vocabulary": "Đoạn này khá đơn giản, app chưa tìm thấy từ vựng khó đáng học.",
+    "empty_grammar": "Đoạn này không có cấu trúc ngữ pháp nổi bật.",
+    "empty_section": "Chưa có nội dung cho phần này.",
+    "empty_input": "Vui lòng nhập hoặc dán đoạn tiếng Anh.",
+    "text_too_long": "Đoạn văn quá dài. Vui lòng rút ngắn còn tối đa {{max}} ký tự.",
+    "ai_analysis_failed": "App chưa tạo được bài học. Vui lòng thử lại.",
+    "network_lost": "Mất kết nối mạng. Vui lòng thử lại sau khi có mạng.",
+    "sync_failed": "Chưa thể đồng bộ lịch sử ôn tập. App sẽ tự thử lại khi có mạng.",
+    "ocr_failed": "App chưa nhận diện được chữ trong ảnh. Hãy thử ảnh rõ hơn hoặc nhập text thủ công.",
+    "ocr_low_confidence": "Ảnh có thể hơi mờ. Hãy kiểm tra lại chữ trước khi phân tích.",
+    "ocr_not_english": "Đoạn này có thể không phải tiếng Anh. Bạn vẫn có thể tiếp tục nếu muốn.",
+    "permission_denied": "Yêu cầu cấp quyền camera/photo để chụp hoặc chọn ảnh.",
+    "save_lesson_failed": "Không thể lưu bài học. Vui lòng thử lại.",
+    "save_lesson_invalid_data": "Không thể lưu bài học vì dữ liệu không hợp lệ.",
+    "flashcard_not_found": "Không tìm thấy flashcard để ôn tập.",
+    "flashcard_rating_save_failed": "Không thể lưu kết quả ôn tập. Vui lòng thử lại.",
+    "open_lesson_failed": "Không thể mở bài học đã lưu. Vui lòng thử lại.",
+    "delete_lesson_failed": "Không thể xóa bài học. Vui lòng thử lại."
+  },
+  "lesson": {
+    "no_lessons": "Bạn chưa có bài học nào. Hãy chụp một đoạn tiếng Anh để bắt đầu.",
+    "save_label": "Lưu bài học",
+    "saved_label": "Đã lưu"
+  },
+  "settings": {
+    "clear_data_confirm": "Xóa toàn bộ bài học đã lưu trên thiết bị này?",
+    "clear_data_done": "Đã xóa dữ liệu học trên máy.",
+    "clear_speaking_data_confirm": "Xóa toàn bộ bản ghi âm luyện nói và lịch sử lỗi/ôn tập từ Phòng luyện nói trên thiết bị này?",
+    "clear_speaking_data_done": "Đã xóa dữ liệu luyện nói trên máy.",
+    "privacy_title": "Quyền riêng tư",
+    "privacy_provided_data_title": "Dữ liệu bạn cung cấp",
+    "privacy_local_storage_title": "Lưu trữ trên thiết bị",
+    "privacy_ai_note_title": "Lưu ý về AI",
+    "privacy_note_body": "Ảnh hoặc văn bản bạn chọn có thể được gửi tới hệ thống OCR/AI để tạo bài học. Ứng dụng không lưu ảnh gốc mặc định và không gửi nội dung đầy đủ vào analytics. Không nên upload nội dung quá nhạy cảm.",
+    "ai_disclaimer_body": "Kết quả phân tích được tạo bởi AI và có thể chưa chính xác hoàn toàn. Hãy dùng như công cụ hỗ trợ học tập, không phải nguồn đánh giá tiếng Anh chính thức.",
+    "local_data_note": "Bài học được lưu cục bộ trên thiết bị. Bạn có thể xóa dữ liệu học bất cứ lúc nào trong Hồ sơ.",
+    "support_prompt": "Gửi góp ý hoặc báo lỗi qua email. App không gửi nội dung bài học trong email — hãy mô tả vấn đề bằng lời."
+  },
+  "gamification": {
+    "pet_stage": {
+      "seed": "Hạt mầm",
+      "sprout": "Mầm non",
+      "sapling": "Cây con",
+      "tree": "Cây trưởng thành",
+      "bloom": "Cây nở hoa"
+    },
+    "badge_label": {
+      "first_review": "Cú hích đầu tiên",
+      "streak_3": "Chuỗi 3 ngày",
+      "streak_7": "Chuỗi 7 ngày",
+      "streak_30": "Chuỗi 30 ngày",
+      "xp_100": "Trăm điểm",
+      "xp_500": "Năm trăm điểm",
+      "water_10": "Tưới 10 lần",
+      "water_50": "Tưới 50 lần"
+    },
+    "badge_description": {
+      "first_review": "Hoàn thành phiên ôn tập đầu tiên",
+      "streak_3": "Ôn tập 3 ngày liên tiếp",
+      "streak_7": "Ôn tập 7 ngày liên tiếp",
+      "streak_30": "Ôn tập 30 ngày liên tiếp",
+      "xp_100": "Tích lũy 100 XP",
+      "xp_500": "Tích lũy 500 XP",
+      "water_10": "10 lượt ôn đúng hạn",
+      "water_50": "50 lượt ôn đúng hạn"
+    }
   }
 }

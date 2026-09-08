@@ -10,15 +10,13 @@ import {ErrorCard} from '../../components/ErrorCard';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {TextField} from '../../components/TextField';
-import {
-  MAX_INPUT_TEXT_LENGTH,
-  OCR_LOW_CONFIDENCE_MESSAGE,
-  OCR_NOT_ENGLISH_MESSAGE,
-  RETRY_ACTION_LABEL,
-} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '../../theme';
 import {getTextLengthBucket, trackEvent} from '../analytics';
-import {validateConfirmedText} from '../../shared/utils/textValidation';
+import {
+  MAX_INPUT_TEXT_LENGTH,
+  validateConfirmedText,
+} from '../../shared/utils/textValidation';
 import {extractText} from './OCRService';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'OCRReview'>;
@@ -35,6 +33,7 @@ function countWords(text: string): number {
 
 export function OCRReviewScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const {
     imageUri,
     fileName,
@@ -64,13 +63,13 @@ export function OCRReviewScreen({navigation, route}: Props) {
   const advisoryMessages = useMemo(() => {
     const messages: string[] = [];
     if (warnings.includes('low_confidence_image')) {
-      messages.push(OCR_LOW_CONFIDENCE_MESSAGE);
+      messages.push(t('errors.ocr_low_confidence'));
     }
     if (warnings.includes('may_not_be_english')) {
-      messages.push(OCR_NOT_ENGLISH_MESSAGE);
+      messages.push(t('errors.ocr_not_english'));
     }
     return messages;
-  }, [warnings]);
+  }, [warnings, t]);
 
   function handleAnalyze() {
     const validation = validateConfirmedText(text);
@@ -198,7 +197,7 @@ export function OCRReviewScreen({navigation, route}: Props) {
           <ErrorCard
             message={screenState.message}
             onRetry={handleAnalyze}
-            retryLabel={RETRY_ACTION_LABEL}
+            retryLabel={t('common.retry')}
           />
         ) : null}
 

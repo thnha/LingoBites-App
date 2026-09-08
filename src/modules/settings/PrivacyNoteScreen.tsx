@@ -9,15 +9,12 @@ import {AppText} from '../../components/AppText';
 import type {HandoffIconName} from '../../components/icons/iconRegistry';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
+import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '../../theme';
-import {
-  AI_DISCLAIMER_BODY,
-  LOCAL_DATA_NOTE,
-  PRIVACY_NOTE_BODY,
-} from './privacyCopy';
 
 export function PrivacyNoteScreen() {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const navigation =
     useNavigation<
       NativeStackNavigationProp<ProfileStackParamList, 'PrivacyNote'>
@@ -25,7 +22,10 @@ export function PrivacyNoteScreen() {
 
   return (
     <AppScreen>
-      <ScreenHeader onBack={() => navigation.goBack()} title="Quyền riêng tư" />
+      <ScreenHeader
+        onBack={() => navigation.goBack()}
+        title={t('settings.privacy_title')}
+      />
       <ScrollView
         contentContainerStyle={{
           gap: theme.spacing.lg,
@@ -36,18 +36,29 @@ export function PrivacyNoteScreen() {
         showsVerticalScrollIndicator={false}
       >
         <AppCard style={{gap: theme.spacing.sm}}>
-          <SectionTitle icon="shield" title="Dữ liệu bạn cung cấp" />
-          <AppText color="secondary">{PRIVACY_NOTE_BODY}</AppText>
+          <SectionTitle
+            icon="shield"
+            title={t('settings.privacy_provided_data_title')}
+          />
+          <AppText color="secondary">{t('settings.privacy_note_body')}</AppText>
         </AppCard>
 
         <AppCard style={{gap: theme.spacing.sm}}>
-          <SectionTitle icon="smartphone" title="Lưu trữ trên thiết bị" />
-          <AppText color="secondary">{LOCAL_DATA_NOTE}</AppText>
+          <SectionTitle
+            icon="smartphone"
+            title={t('settings.privacy_local_storage_title')}
+          />
+          <AppText color="secondary">{t('settings.local_data_note')}</AppText>
         </AppCard>
 
         <AppCard style={{gap: theme.spacing.sm}}>
-          <SectionTitle icon="psychology" title="Lưu ý về AI" />
-          <AppText color="secondary">{AI_DISCLAIMER_BODY}</AppText>
+          <SectionTitle
+            icon="psychology"
+            title={t('settings.privacy_ai_note_title')}
+          />
+          <AppText color="secondary">
+            {t('settings.ai_disclaimer_body')}
+          </AppText>
         </AppCard>
       </ScrollView>
     </AppScreen>

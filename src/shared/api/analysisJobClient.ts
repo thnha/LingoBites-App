@@ -2,12 +2,8 @@ import {Platform} from 'react-native';
 import {createRequestId} from './requestId';
 import {getAppConfig} from './appConfig';
 import {validateAIOutput} from '../schemas/ai-output-v1';
-import {
-  AI_ANALYSIS_FAILED_MESSAGE,
-  EMPTY_INPUT_MESSAGE,
-  NETWORK_LOST_MESSAGE,
-  TEXT_TOO_LONG_MESSAGE,
-} from '../copy/userMessages';
+import i18n from '../../i18n';
+import {MAX_INPUT_TEXT_LENGTH} from '../utils/textValidation';
 import type {
   AnalysisJobProgressBody,
   AnalysisJobStatusBody,
@@ -138,11 +134,11 @@ function buildRequestBody(
 function mapApiErrorToMessage(code: string): string {
   switch (code) {
     case 'VALIDATION_EMPTY_TEXT':
-      return EMPTY_INPUT_MESSAGE;
+      return i18n.t('errors.empty_input');
     case 'VALIDATION_TEXT_TOO_LONG':
-      return TEXT_TOO_LONG_MESSAGE;
+      return i18n.t('errors.text_too_long', {max: MAX_INPUT_TEXT_LENGTH});
     case 'NETWORK_ERROR':
-      return NETWORK_LOST_MESSAGE;
+      return i18n.t('errors.network_lost');
     case 'VALIDATION_MISSING_IDEMPOTENCY_KEY':
     case 'IDEMPOTENCY_CONFLICT':
     case 'AI_TIMEOUT':
@@ -155,9 +151,9 @@ function mapApiErrorToMessage(code: string): string {
     case 'AI_FINAL_VALIDATION_FAILED':
     case 'AI_JOB_NOT_FOUND':
     case 'AI_POLL_GIVE_UP':
-      return AI_ANALYSIS_FAILED_MESSAGE;
+      return i18n.t('errors.ai_analysis_failed');
     default:
-      return AI_ANALYSIS_FAILED_MESSAGE;
+      return i18n.t('errors.ai_analysis_failed');
   }
 }
 
@@ -284,7 +280,7 @@ export async function runAnalysisJob(
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
     };
   }
   if (isAborted(signal)) return cancelledResult();
@@ -297,7 +293,7 @@ export async function runAnalysisJob(
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
     };
   }
   if (isAborted(signal)) return cancelledResult();
@@ -312,7 +308,7 @@ export async function runAnalysisJob(
     return {
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     };
   }
 
@@ -400,7 +396,7 @@ export async function runAnalysisJob(
         return {
           ok: false,
           errorCode: 'AI_INVALID_OUTPUT',
-          message: AI_ANALYSIS_FAILED_MESSAGE,
+          message: i18n.t('errors.ai_analysis_failed'),
         };
       }
       return {ok: true, lesson: validation.data};
@@ -411,7 +407,7 @@ export async function runAnalysisJob(
       return {
         ok: false,
         errorCode: 'AI_INVALID_OUTPUT',
-        message: AI_ANALYSIS_FAILED_MESSAGE,
+        message: i18n.t('errors.ai_analysis_failed'),
       };
     }
 
@@ -427,6 +423,6 @@ export async function runAnalysisJob(
   return {
     ok: false,
     errorCode: 'AI_POLL_GIVE_UP',
-    message: AI_ANALYSIS_FAILED_MESSAGE,
+    message: i18n.t('errors.ai_analysis_failed'),
   };
 }

@@ -11,10 +11,7 @@ import {AppScreen} from '../../components/AppScreen';
 import {AppText} from '../../components/AppText';
 import {IconButton} from '../../components/IconButton';
 import {ScreenHeader} from '../../components/ScreenHeader';
-import {
-  DELETE_LESSON_ERROR_MESSAGE,
-  OPEN_LESSON_ERROR_MESSAGE,
-} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import {useFeatureEnabled} from '../../release';
 import type {SavedLessonRecord} from '../../shared/db/types';
 import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
@@ -37,6 +34,7 @@ type Props = HomeProps | LessonsProps;
 
 export function SavedLessonDetailScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const practiceEnabled = useFeatureEnabled('shortPractice');
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const drilldownNav = navigation as HomeProps['navigation'];
@@ -66,7 +64,7 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
     const record = getLessonById(route.params.lessonId);
     if (!record) {
       setLesson(null);
-      setErrorMessage(OPEN_LESSON_ERROR_MESSAGE);
+      setErrorMessage(t('errors.open_lesson_failed'));
     } else {
       setLesson(record);
       refreshSavedVocabulary(record.id);
@@ -81,7 +79,7 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
       });
     }
     setLoading(false);
-  }, [getLessonById, refreshSavedVocabulary, route.params.lessonId]);
+  }, [getLessonById, refreshSavedVocabulary, route.params.lessonId, t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -112,7 +110,7 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
 
     const removed = deleteLesson(route.params.lessonId);
     if (!removed) {
-      setDeleteError(DELETE_LESSON_ERROR_MESSAGE);
+      setDeleteError(t('errors.delete_lesson_failed'));
       return;
     }
 
@@ -166,7 +164,7 @@ export function SavedLessonDetailScreen({navigation, route}: Props) {
           }}
         >
           <AppText color="danger">
-            {errorMessage ?? OPEN_LESSON_ERROR_MESSAGE}
+            {errorMessage ?? t('errors.open_lesson_failed')}
           </AppText>
           <AppButton
             title="Quay lại"

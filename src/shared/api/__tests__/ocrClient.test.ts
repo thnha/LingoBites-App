@@ -1,4 +1,4 @@
-import {OCR_FAILED_MESSAGE} from '../../copy/userMessages';
+import i18n from '../../../i18n';
 import {extractTextFromImage} from '../ocrClient';
 
 const mockFetch = jest.fn();
@@ -68,7 +68,7 @@ describe('extractTextFromImage', () => {
     expect(result).toEqual({
       ok: false,
       errorCode: 'OCR_NO_TEXT',
-      message: OCR_FAILED_MESSAGE,
+      message: i18n.t('errors.ocr_failed'),
       retryable: true,
     });
   });

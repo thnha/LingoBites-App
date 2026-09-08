@@ -1,7 +1,7 @@
 import {Platform} from 'react-native';
 import {createRequestId} from './requestId';
 import {getAppConfig} from './appConfig';
-import {NETWORK_LOST_MESSAGE, OCR_FAILED_MESSAGE} from '../copy/userMessages';
+import i18n from '../../i18n';
 import type {
   ApiErrorBody,
   OCRImageInput,
@@ -13,11 +13,11 @@ function mapOcrErrorToMessage(code: string, serverMessage?: string): string {
   switch (code) {
     case 'OCR_NO_TEXT':
     case 'OCR_PROVIDER_ERROR':
-      return OCR_FAILED_MESSAGE;
+      return i18n.t('errors.ocr_failed');
     case 'IMAGE_TOO_LARGE':
-      return serverMessage?.trim() || OCR_FAILED_MESSAGE;
+      return serverMessage?.trim() || i18n.t('errors.ocr_failed');
     default:
-      return serverMessage?.trim() || OCR_FAILED_MESSAGE;
+      return serverMessage?.trim() || i18n.t('errors.ocr_failed');
   }
 }
 
@@ -85,7 +85,7 @@ export async function extractTextFromImage(
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
     };
   }
 
@@ -96,7 +96,7 @@ export async function extractTextFromImage(
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
     };
   }
 
@@ -115,7 +115,7 @@ export async function extractTextFromImage(
     return {
       ok: false,
       errorCode: 'OCR_PROVIDER_ERROR',
-      message: OCR_FAILED_MESSAGE,
+      message: i18n.t('errors.ocr_failed'),
     };
   }
 

@@ -1,4 +1,4 @@
-import {AI_ANALYSIS_FAILED_MESSAGE} from '../../shared/copy/userMessages';
+import i18n from '../../i18n';
 import {validFullOutput} from '../../shared/fixtures';
 import {useScanStore} from '../useScanStore';
 
@@ -36,14 +36,14 @@ describe('useScanStore', () => {
     mockAnalyzeText.mockResolvedValue({
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
 
     await useScanStore.getState().scanFromText('Hello');
 
     expect(useScanStore.getState().job).toEqual({
       status: 'error',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
   });
 

@@ -1,7 +1,4 @@
-import {
-  NETWORK_LOST_MESSAGE,
-  SYNC_FAILED_MESSAGE,
-} from '../../copy/userMessages';
+import i18n from '../../../i18n';
 import {pushReviewEvents} from '../reviewEventsClient';
 import type {ReviewEventPayload} from '../../db/types';
 
@@ -100,7 +97,7 @@ describe('pushReviewEvents', () => {
     await expect(pushReviewEvents(events)).resolves.toEqual({
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
       retryable: true,
     });
   });
@@ -115,7 +112,7 @@ describe('pushReviewEvents', () => {
     await expect(pushReviewEvents(events)).resolves.toEqual({
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
       retryable: true,
     });
   });
@@ -166,7 +163,7 @@ describe('pushReviewEvents', () => {
     await expect(pushReviewEvents(events)).resolves.toEqual({
       ok: false,
       errorCode: 'REVIEW_EVENTS_INVALID_RESPONSE',
-      message: SYNC_FAILED_MESSAGE,
+      message: i18n.t('errors.sync_failed'),
       retryable: true,
     });
   });

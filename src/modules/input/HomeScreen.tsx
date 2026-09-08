@@ -16,7 +16,6 @@ import {Medallion} from '../../components/Medallion';
 import {RecentLessonRow} from '../../components/RecentLessonRow';
 import {SectionHeader} from '../../components/SectionHeader';
 import {useFeatureEnabled} from '../../release';
-import {NO_LESSONS_MESSAGE} from '../../shared/copy/userMessages';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '../../theme';
 import type {LessonCardView} from '../../types/lesson';
@@ -255,7 +254,7 @@ export function HomeScreen({navigation}: Props) {
               <AppText color="secondary">
                 {mvpReviewFlowEnabled
                   ? t('home.mvp_empty_lessons')
-                  : NO_LESSONS_MESSAGE}
+                  : t('lesson.no_lessons')}
               </AppText>
             </View>
           ) : (

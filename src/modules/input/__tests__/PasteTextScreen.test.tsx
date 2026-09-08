@@ -2,7 +2,7 @@ import React from 'react';
 import {Text, TextInput} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
 import {FeatureFlagProvider} from '../../../release';
-import {EMPTY_INPUT_MESSAGE} from '../../../shared/copy/userMessages';
+import i18n from '../../../i18n';
 import {AppThemeProvider} from '../../../theme';
 import {PasteTextScreen} from '../PasteTextScreen';
 
@@ -107,6 +107,6 @@ describe('PasteTextScreen', () => {
     });
 
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(JSON.stringify(tree!.toJSON())).toContain(EMPTY_INPUT_MESSAGE);
+    expect(JSON.stringify(tree!.toJSON())).toContain(i18n.t('errors.empty_input'));
   });
 });

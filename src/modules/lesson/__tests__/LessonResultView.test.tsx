@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import {FeatureFlagProvider} from '../../../release';
-import {
-  EMPTY_GRAMMAR_MESSAGE,
-  EMPTY_VOCABULARY_MESSAGE,
-} from '../../../shared/copy/userMessages';
+import i18n from '../../../i18n';
 import {validFullOutput, validMinimalOutput} from '../../../shared/fixtures';
 import type {
   AIOutput,
@@ -105,8 +102,8 @@ describe('LessonResultView', () => {
   it('renders valid-minimal without crash and shows canonical empty copy', () => {
     const text = renderLesson(validMinimalOutput);
 
-    expect(text).toContain(EMPTY_VOCABULARY_MESSAGE);
-    expect(text).toContain(EMPTY_GRAMMAR_MESSAGE);
+    expect(text).toContain(i18n.t('errors.empty_vocabulary'));
+    expect(text).toContain(i18n.t('errors.empty_grammar'));
     expect(text).toContain('Staff only.');
   });
 

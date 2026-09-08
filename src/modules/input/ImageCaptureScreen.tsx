@@ -18,10 +18,7 @@ import {ImagePlaceholder} from '../../components/ImagePlaceholder';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
 import {SectionHeader} from '../../components/SectionHeader';
-import {
-  OCR_FAILED_MESSAGE,
-  PERMISSION_DENIED_MESSAGE,
-} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '../../theme';
 import {extractText} from '../ocr';
 import {getImageSizeCategory, trackEvent} from '../analytics';
@@ -45,6 +42,7 @@ const RECENT_PLACEHOLDERS = ['flyer.jpg', 'menu.png', 'sign.jpg'] as const;
 
 export function ImageCaptureScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const {sourceType} = route.params;
   const isGallery = sourceType === 'gallery';
   const [screenState, setScreenState] = useState<ScreenState>(
@@ -75,7 +73,7 @@ export function ImageCaptureScreen({navigation, route}: Props) {
 
       setScreenState({
         type: 'error',
-        message: result.message ?? OCR_FAILED_MESSAGE,
+        message: result.message ?? t('errors.ocr_failed'),
       });
       return;
     }
@@ -89,7 +87,7 @@ export function ImageCaptureScreen({navigation, route}: Props) {
       ),
       has_permission: true,
     });
-  }, [isGallery, navigation, sourceType]);
+  }, [isGallery, navigation, sourceType, t]);
 
   useEffect(() => {
     if (!isGallery) {
@@ -179,7 +177,7 @@ export function ImageCaptureScreen({navigation, route}: Props) {
           }}
         >
           <ErrorCard
-            message={PERMISSION_DENIED_MESSAGE}
+            message={t('errors.permission_denied')}
             onRetry={() => void launchPicker()}
           />
           <AppButton

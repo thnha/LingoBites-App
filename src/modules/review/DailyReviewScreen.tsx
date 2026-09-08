@@ -19,10 +19,6 @@ import {startReviewSession} from '../engagement/reviewSession';
 import type {ReviewSession} from '../engagement/reviewSession';
 import {reconcileReminders} from '../engagement/reminderService';
 import {useAppTheme} from '../../theme';
-import {
-  FLASHCARD_NOT_FOUND_MESSAGE,
-  FLASHCARD_RATING_SAVE_FAILED_MESSAGE,
-} from '../../shared/copy/userMessages';
 
 const DEFAULT_SOFT_CAP = 10;
 
@@ -158,8 +154,8 @@ export function DailyReviewScreen({
       // translated error instead of silently advancing the session.
       setRatingError(
         result.errorCode === 'FLASHCARD_NOT_FOUND'
-          ? FLASHCARD_NOT_FOUND_MESSAGE
-          : FLASHCARD_RATING_SAVE_FAILED_MESSAGE,
+          ? t('errors.flashcard_not_found')
+          : t('errors.flashcard_rating_save_failed'),
       );
       return;
     }

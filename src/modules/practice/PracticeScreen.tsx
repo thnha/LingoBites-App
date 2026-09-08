@@ -14,7 +14,7 @@ import {IconButton} from '../../components/IconButton';
 import {ImagePlaceholder} from '../../components/ImagePlaceholder';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {ScreenHeader} from '../../components/ScreenHeader';
-import {EMPTY_SECTION_MESSAGE} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import {useAppTheme, type AppTheme} from '../../theme';
 import {useQuiz} from './useQuiz';
 
@@ -24,6 +24,7 @@ type Props =
 
 export function PracticeScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const {questions, title} = route.params;
   const quiz = useQuiz(questions);
@@ -48,7 +49,7 @@ export function PracticeScreen({navigation, route}: Props) {
         />
         <View style={themedStyles.emptyState}>
           <AppText color="muted" style={styles.centerText}>
-            {EMPTY_SECTION_MESSAGE}
+            {t('errors.empty_section')}
           </AppText>
         </View>
       </AppScreen>

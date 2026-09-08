@@ -7,14 +7,7 @@ import {AppText} from '../../components/AppText';
 import {ChunkRow} from '../../components/ChunkRow';
 import {QuizOption} from '../../components/QuizOption';
 import {WordCard} from '../../components/WordCard';
-import {
-  EMPTY_GRAMMAR_MESSAGE,
-  EMPTY_SECTION_MESSAGE,
-  EMPTY_VOCABULARY_MESSAGE,
-  SAVE_LESSON_ERROR_MESSAGE,
-  SAVE_LESSON_LABEL,
-  SAVE_LESSON_SAVED_LABEL,
-} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import type {
   AIOutput,
   GrammarPoint,
@@ -61,6 +54,7 @@ export function LessonResultView({
   onToggleWordSave,
 }: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const reviewSystemEnabled = useFeatureEnabled('reviewSystem');
   const [vocabExpanded, setVocabExpanded] = useState(false);
 
@@ -85,7 +79,7 @@ export function LessonResultView({
 
   const saveDisabled = saveState === 'saving' || saveState === 'saved';
   const saveLabel =
-    saveState === 'saved' ? SAVE_LESSON_SAVED_LABEL : SAVE_LESSON_LABEL;
+    saveState === 'saved' ? t('lesson.saved_label') : t('lesson.save_label');
 
   const saveBackground =
     saveState === 'saved'
@@ -153,7 +147,7 @@ export function LessonResultView({
 
       <Section title={`Từ vựng (${vocabulary.length})`}>
         {vocabulary.length === 0 ? (
-          <EmptyText message={EMPTY_VOCABULARY_MESSAGE} />
+          <EmptyText message={t('errors.empty_vocabulary')} />
         ) : (
           <>
             {visibleVocabulary.map(item => (
@@ -200,7 +194,7 @@ export function LessonResultView({
 
       <Section title={`Ngữ pháp (${grammarPoints.length})`}>
         {grammarPoints.length === 0 ? (
-          <EmptyText message={EMPTY_GRAMMAR_MESSAGE} />
+          <EmptyText message={t('errors.empty_grammar')} />
         ) : (
           visibleGrammar.map(item => (
             <Tappable
@@ -309,7 +303,7 @@ export function LessonResultView({
           )}
           {saveState === 'error' ? (
             <AppText color="danger" style={{textAlign: 'center'}}>
-              {saveErrorMessage ?? SAVE_LESSON_ERROR_MESSAGE}
+              {saveErrorMessage ?? t('errors.save_lesson_failed')}
             </AppText>
           ) : null}
         </>
@@ -333,8 +327,9 @@ function Section({title, children}: React.PropsWithChildren<{title: string}>) {
   );
 }
 
-function EmptyText({message = EMPTY_SECTION_MESSAGE}: {message?: string}) {
-  return <AppText color="muted">{message}</AppText>;
+function EmptyText({message}: {message?: string}) {
+  const {t} = useTranslation();
+  return <AppText color="muted">{message ?? t('errors.empty_section')}</AppText>;
 }
 
 /**

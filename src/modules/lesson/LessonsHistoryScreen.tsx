@@ -25,7 +25,7 @@ import {MaterialIcon} from '../../components/MaterialIcon';
 import {Medallion} from '../../components/Medallion';
 import {SectionHeader} from '../../components/SectionHeader';
 import {TextField} from '../../components/TextField';
-import {NO_LESSONS_MESSAGE} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import type {LibrarySubjectFilter} from '../../store/useLibraryStore';
 import {
   useContentLibrary,
@@ -46,6 +46,7 @@ const FILTER_CHIPS: Array<{key: LibrarySubjectFilter; label: string}> = [
 
 export function LessonsHistoryScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const themedStyles = useMemo(() => makeStyles(theme), [theme]);
   const tabNavigation =
     navigation.getParent<NavigationProp<RootTabParamList>>();
@@ -169,7 +170,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
               <AppText color="secondary" style={styles.centerText}>
                 {query || subjectFilter !== 'all'
                   ? 'Không tìm thấy bài học phù hợp.'
-                  : NO_LESSONS_MESSAGE}
+                  : t('lesson.no_lessons')}
               </AppText>
             </View>
           ) : null

@@ -1,9 +1,5 @@
 import {validFullOutput} from '../../fixtures';
-import {
-  AI_ANALYSIS_FAILED_MESSAGE,
-  EMPTY_INPUT_MESSAGE,
-  NETWORK_LOST_MESSAGE,
-} from '../../copy/userMessages';
+import i18n from '../../../i18n';
 import {runAnalysisJob} from '../analysisJobClient';
 
 const mockFetch = jest.fn();
@@ -183,9 +179,9 @@ describe('runAnalysisJob - create + happy-path polling', () => {
 
 describe('runAnalysisJob - terminal create errors', () => {
   it.each([
-    ['VALIDATION_EMPTY_TEXT', EMPTY_INPUT_MESSAGE],
-    ['VALIDATION_MISSING_IDEMPOTENCY_KEY', AI_ANALYSIS_FAILED_MESSAGE],
-    ['IDEMPOTENCY_CONFLICT', AI_ANALYSIS_FAILED_MESSAGE],
+    ['VALIDATION_EMPTY_TEXT', i18n.t('errors.empty_input')],
+    ['VALIDATION_MISSING_IDEMPOTENCY_KEY', i18n.t('errors.ai_analysis_failed')],
+    ['IDEMPOTENCY_CONFLICT', i18n.t('errors.ai_analysis_failed')],
   ])('maps create error %s', async (code, message) => {
     mockFetch.mockResolvedValue(
       response(
@@ -208,7 +204,7 @@ describe('runAnalysisJob - terminal create errors', () => {
     await expect(runAnalysisJob('Sample text.')).resolves.toEqual({
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
     });
   });
 
@@ -223,7 +219,7 @@ describe('runAnalysisJob - terminal create errors', () => {
     await expect(runAnalysisJob('Sample text.')).resolves.toEqual({
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
     });
   });
 });
@@ -248,7 +244,7 @@ describe('runAnalysisJob - terminal poll errors', () => {
     await expect(pending).resolves.toEqual({
       ok: false,
       errorCode: 'AI_JOB_NOT_FOUND',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
@@ -272,7 +268,7 @@ describe('runAnalysisJob - terminal poll errors', () => {
     await expect(pending).resolves.toEqual({
       ok: false,
       errorCode: 'AI_FINAL_VALIDATION_FAILED',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
@@ -287,7 +283,7 @@ describe('runAnalysisJob - terminal poll errors', () => {
     await expect(pending).resolves.toEqual({
       ok: false,
       errorCode: 'AI_PROVIDER_ERROR',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
@@ -388,7 +384,7 @@ describe('runAnalysisJob - malformed successful bodies', () => {
     await expect(pending).resolves.toEqual({
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
@@ -405,7 +401,7 @@ describe('runAnalysisJob - malformed successful bodies', () => {
     await expect(pending).resolves.toEqual({
       ok: false,
       errorCode: 'AI_INVALID_OUTPUT',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
   });
 });
@@ -422,7 +418,7 @@ describe('runAnalysisJob - poll deadline', () => {
     await expect(pending).resolves.toEqual({
       ok: false,
       errorCode: 'AI_POLL_GIVE_UP',
-      message: AI_ANALYSIS_FAILED_MESSAGE,
+      message: i18n.t('errors.ai_analysis_failed'),
     });
 
     const callsAtDeadline = mockFetch.mock.calls.length;

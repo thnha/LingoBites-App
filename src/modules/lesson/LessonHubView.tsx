@@ -9,11 +9,7 @@ import {LessonExploreRow} from '../../components/LessonExploreRow';
 import {MaterialIcon} from '../../components/MaterialIcon';
 import {SectionHeader} from '../../components/SectionHeader';
 import {WordCard} from '../../components/WordCard';
-import {
-  SAVE_LESSON_ERROR_MESSAGE,
-  SAVE_LESSON_LABEL,
-  SAVE_LESSON_SAVED_LABEL,
-} from '../../shared/copy/userMessages';
+import {useTranslation} from 'react-i18next';
 import type {AIOutput, VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {useAppTheme, type AppTheme} from '../../theme';
 import type {LessonSaveState} from './LessonResultView';
@@ -52,6 +48,7 @@ export function LessonHubView({
   onToggleWordSave,
 }: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const sentences = lesson.sentences ?? [];
   const vocabulary = lesson.vocabulary ?? [];
@@ -63,7 +60,7 @@ export function LessonHubView({
 
   const saveDisabled = saveState === 'saving' || saveState === 'saved';
   const saveLabel =
-    saveState === 'saved' ? SAVE_LESSON_SAVED_LABEL : SAVE_LESSON_LABEL;
+    saveState === 'saved' ? t('lesson.saved_label') : t('lesson.save_label');
 
   return (
     <View style={styles.container}>
@@ -243,7 +240,7 @@ export function LessonHubView({
         ) : null}
         {saveState === 'error' ? (
           <AppText color="danger" style={styles.centerText}>
-            {saveErrorMessage ?? SAVE_LESSON_ERROR_MESSAGE}
+            {saveErrorMessage ?? t('errors.save_lesson_failed')}
           </AppText>
         ) : null}
       </BottomActionBar>

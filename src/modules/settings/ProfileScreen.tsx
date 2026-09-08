@@ -26,11 +26,7 @@ import {
 } from '../audio';
 import {getGamificationSnapshot} from '../engagement';
 import type {GamificationSnapshot} from '../engagement';
-import {
-  CLEAR_DATA_CONFIRM_MESSAGE,
-  CLEAR_DATA_DONE_MESSAGE,
-} from '../../shared/copy/userMessages';
-import {PET_STAGE_LABELS} from '../../shared/copy/gamificationCopy';
+import {useTranslation} from 'react-i18next';
 import {useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '../../theme';
 
@@ -47,6 +43,7 @@ const PROFILE_PLACEHOLDER = {
 
 export function ProfileScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const {t} = useTranslation();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const supportEmail = getSupportEmail();
@@ -76,14 +73,14 @@ export function ProfileScreen({navigation}: Props) {
       : 'Hoàn thành một phiên ôn tập để bắt đầu chuỗi.';
 
   function handleClearData() {
-    Alert.alert('Xóa dữ liệu local', CLEAR_DATA_CONFIRM_MESSAGE, [
+    Alert.alert('Xóa dữ liệu local', t('settings.clear_data_confirm'), [
       {text: 'Hủy', style: 'cancel'},
       {
         text: 'Xóa',
         style: 'destructive',
         onPress: () => {
           clearAllLocalData();
-          setStatusMessage(CLEAR_DATA_DONE_MESSAGE);
+          setStatusMessage(t('settings.clear_data_done'));
         },
       },
     ]);
@@ -199,7 +196,7 @@ export function ProfileScreen({navigation}: Props) {
           </View>
           <View style={[styles.metricCard, themedStyles.metricAccent]}>
             <AppText style={themedStyles.petMetricValue}>
-              {PET_STAGE_LABELS[gamification.pet.stageId]}
+              {t(`gamification.pet_stage.${gamification.pet.stageId}`)}
             </AppText>
             <AppText style={themedStyles.metricLabelPrimary}>Cây ảo</AppText>
           </View>

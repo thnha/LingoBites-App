@@ -2,7 +2,7 @@ import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {ActivityIndicator, Text} from 'react-native';
 import {FeatureFlagProvider} from '../../../release';
-import {NETWORK_LOST_MESSAGE} from '../../../shared/copy/userMessages';
+import i18n from '../../../i18n';
 import type {AnalysisJobStage} from '../../../shared/api/types';
 import {AppThemeProvider} from '../../../theme';
 import {AnalyzingScreen} from '../AnalyzingScreen';
@@ -155,7 +155,7 @@ describe('AnalyzingScreen', () => {
     mockAnalyzeText.mockResolvedValue({
       ok: false,
       errorCode: 'NETWORK_ERROR',
-      message: NETWORK_LOST_MESSAGE,
+      message: i18n.t('errors.network_lost'),
     });
 
     await act(async () => {
@@ -173,7 +173,7 @@ describe('AnalyzingScreen', () => {
     expect(action.payload).toEqual(
       expect.objectContaining({
         name: 'OCRReview',
-        params: {analyzeError: NETWORK_LOST_MESSAGE},
+        params: {analyzeError: i18n.t('errors.network_lost')},
         merge: true,
       }),
     );

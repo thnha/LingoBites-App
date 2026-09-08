@@ -5,11 +5,8 @@ import type {HomeStackParamList} from '../../app/navigation/types';
 import {AppScreen} from '../../components/AppScreen';
 import {IconButton} from '../../components/IconButton';
 import {ScreenHeader} from '../../components/ScreenHeader';
+import {useTranslation} from 'react-i18next';
 import {useFeatureEnabled} from '../../release';
-import {
-  SAVE_LESSON_ERROR_MESSAGE,
-  SAVE_LESSON_INVALID_DATA_MESSAGE,
-} from '../../shared/copy/userMessages';
 import {computeLessonInputHash} from '../../shared/db/lessonInputHash';
 import type {VocabularyItem} from '../../shared/schemas/ai-output-v1';
 import {trackEvent} from '../analytics';
@@ -22,6 +19,7 @@ import {useLessonRepository} from './useLessonRepository';
 type Props = NativeStackScreenProps<HomeStackParamList, 'LessonResult'>;
 
 export function LessonResultScreen({navigation, route}: Props) {
+  const {t} = useTranslation();
   const {lesson, confirmedText, sourceType} = route.params;
   const practiceEnabled = useFeatureEnabled('shortPractice');
   const practice = lesson.practice ?? [];
@@ -98,8 +96,8 @@ export function LessonResultScreen({navigation, route}: Props) {
       setSaveState('error');
       setSaveErrorMessage(
         result.errorCode === 'AI_INVALID_OUTPUT'
-          ? SAVE_LESSON_INVALID_DATA_MESSAGE
-          : SAVE_LESSON_ERROR_MESSAGE,
+          ? t('errors.save_lesson_invalid_data')
+          : t('errors.save_lesson_failed'),
       );
       return null;
     }
