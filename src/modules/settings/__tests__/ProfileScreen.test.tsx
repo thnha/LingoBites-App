@@ -16,11 +16,13 @@ jest.mock('@shared/api/appConfig', () => ({
   getSupportEmail: () => 'support@lingobites.app',
 }));
 
+const mockGetCapabilityProgressReport = jest.fn(() => ({
+  firstListenComprehensionRate: null,
+}));
+
 jest.mock('../useProgressReport', () => ({
   useProgressReport: () => ({
-    getCapabilityProgressReport: () => ({
-      firstListenComprehensionRate: null,
-    }),
+    getCapabilityProgressReport: mockGetCapabilityProgressReport,
   }),
 }));
 

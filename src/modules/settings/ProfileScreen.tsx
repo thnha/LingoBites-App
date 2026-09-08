@@ -89,7 +89,7 @@ export function ProfileScreen({navigation}: Props) {
         wordsKnownLabel: formatProfileWordCount(summary.wordCount),
         accuracyLabel: formatProfileAccuracy(report.firstListenComprehensionRate),
       });
-    }, []),
+    }, [getSummary, getCapabilityProgressReport]),
   );
   const streak = gamification.currentStreak;
   const streakTitle =
