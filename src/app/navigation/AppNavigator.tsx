@@ -33,6 +33,7 @@ import {
   PrivacyNoteScreen,
   ProgressReportScreen,
   ProfileScreen,
+  FeatureStatusScreen,
 } from '@modules/settings';
 import {useFeatureEnabled} from '@/release';
 import {TabBar} from './TabBar';
@@ -218,6 +219,11 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen
         component={ProgressReportScreen}
         name="ProgressReport"
+        options={{headerShown: false}}
+      />
+      <ProfileStack.Screen
+        component={FeatureStatusScreen}
+        name="FeatureStatus"
         options={{headerShown: false}}
       />
     </ProfileStack.Navigator>

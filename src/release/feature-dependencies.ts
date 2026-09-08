@@ -1,33 +1,42 @@
 import type {FeatureKey} from './feature-registry';
 
-export const featureDependencies: Record<FeatureKey, string[]> = {
+// Each array represents an "OR" condition.
+// Inside each array, the strings represent "AND" conditions.
+// e.g. [['A', 'B'], ['C']] means (A and B) OR (C).
+export type DependencyGroup = FeatureKey[];
+
+export const featureDependencies: Record<FeatureKey, DependencyGroup[]> = {
   pasteTextInput: [],
   imageInput: [],
-  ocrScanner: ['imageInput'],
-  ocrReviewEdit: ['ocrScanner'],
-  aiLessonAnalysis: ['pasteTextInput'],
+  ocrScanner: [['imageInput']],
+  ocrReviewEdit: [['ocrScanner']],
+  aiLessonAnalysis: [['pasteTextInput'], ['ocrReviewEdit']],
   lessonResultView: [],
-  lessonSave: ['lessonResultView'],
-  lessonHistory: ['lessonSave'],
+  lessonSave: [['lessonResultView']],
+  lessonHistory: [['lessonSave']],
   lingobitesMvpReviewFlow: [],
-  shortPractice: ['lessonResultView'],
-  pronunciationSupport: ['lessonResultView'],
+  shortPractice: [['lessonResultView']],
+  pronunciationSupport: [['lessonResultView']],
 
   themeSystem: [],
-  themeSwitcher: ['themeSystem'],
-  darkTheme: ['themeSystem'],
-  pastelKidsTheme: ['themeSystem'],
+  themeSwitcher: [['themeSystem']],
+  darkTheme: [['themeSystem']],
+  pastelKidsTheme: [['themeSystem']],
+  coreTheme: [['themeSystem']],
+  neoTheme: [['themeSystem']],
+  comicTheme: [['themeSystem']],
+  cartoonTheme: [['themeSystem']],
 
-  reviewSystem: ['lessonSave'],
-  miniGame: ['lessonSave', 'reviewSystem'],
-  wordMatchGame: ['miniGame', 'lessonSave'],
-  fillBlankGame: ['miniGame', 'lessonSave'],
-  tenseQuizGame: ['miniGame', 'lessonSave'],
-  sentenceOrderGame: ['miniGame', 'lessonSave'],
-  flashcardChallenge: ['miniGame', 'reviewSystem'],
+  reviewSystem: [['lessonSave']],
+  miniGame: [['lessonSave', 'reviewSystem']],
+  wordMatchGame: [['miniGame', 'lessonSave']],
+  fillBlankGame: [['miniGame', 'lessonSave']],
+  tenseQuizGame: [['miniGame', 'lessonSave']],
+  sentenceOrderGame: [['miniGame', 'lessonSave']],
+  flashcardChallenge: [['miniGame', 'reviewSystem']],
 
-  situationLearning: ['aiLessonAnalysis', 'lessonSave'],
-  dialogueGenerator: ['situationLearning'],
-  phraseExtractor: ['situationLearning'],
-  situationPractice: ['situationLearning', 'reviewSystem'],
+  situationLearning: [['aiLessonAnalysis', 'lessonSave']],
+  dialogueGenerator: [['situationLearning']],
+  phraseExtractor: [['situationLearning']],
+  situationPractice: [['situationLearning', 'reviewSystem']],
 };

@@ -93,7 +93,9 @@
     "privacy_note_body": "Ảnh hoặc văn bản bạn chọn có thể được gửi tới hệ thống OCR/AI để tạo bài học. Ứng dụng không lưu ảnh gốc mặc định và không gửi nội dung đầy đủ vào analytics. Không nên upload nội dung quá nhạy cảm.",
     "ai_disclaimer_body": "Kết quả phân tích được tạo bởi AI và có thể chưa chính xác hoàn toàn. Hãy dùng như công cụ hỗ trợ học tập, không phải nguồn đánh giá tiếng Anh chính thức.",
     "local_data_note": "Bài học được lưu cục bộ trên thiết bị. Bạn có thể xóa dữ liệu học bất cứ lúc nào trong Hồ sơ.",
-    "support_prompt": "Gửi góp ý hoặc báo lỗi qua email. App không gửi nội dung bài học trong email — hãy mô tả vấn đề bằng lời."
+    "support_prompt": "Gửi góp ý hoặc báo lỗi qua email. App không gửi nội dung bài học trong email — hãy mô tả vấn đề bằng lời.",
+    "feature_status": "Tính năng hệ thống (Feature Status)",
+    "feature_status_desc": "Tình trạng và hạn chế của các tính năng"
   },
   "gamification": {
     "pet_stage": {

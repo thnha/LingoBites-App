@@ -12,7 +12,7 @@
     "lessonHistory": true,
     "lingobitesMvpReviewFlow": false,
     "shortPractice": true,
-    "pronunciationSupport": true,
+    "pronunciationSupport": false,
     "themeSystem": true,
     "themeSwitcher": true,
     "darkTheme": true,
@@ -28,9 +28,9 @@
     "tenseQuizGame": false,
     "sentenceOrderGame": false,
     "flashcardChallenge": false,
-    "situationLearning": true,
-    "dialogueGenerator": true,
-    "phraseExtractor": true,
-    "situationPractice": true
+    "situationLearning": false,
+    "dialogueGenerator": false,
+    "phraseExtractor": false,
+    "situationPractice": false
   }
 }

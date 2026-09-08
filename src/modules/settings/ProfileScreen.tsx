@@ -279,6 +279,14 @@ export function ProfileScreen({navigation}: Props) {
             onPress={handleSupport}
             trailing="chevron"
           />
+          <ProfileSettingsRow
+            accessibilityLabel={t('settings.feature_status')}
+            icon="bolt"
+            label={t('settings.feature_status')}
+            medallionTone="teal"
+            onPress={() => navigation.navigate('FeatureStatus')}
+            trailing="chevron"
+          />
         </View>
 
         <AppCard style={themedStyles.themeCard}>

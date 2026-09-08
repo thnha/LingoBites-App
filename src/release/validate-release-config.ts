@@ -1,4 +1,5 @@
 import {featureKeys} from './feature-registry';
+import type {DependencyGroup} from './feature-dependencies';
 import type {
   FeatureRegistryEntry,
   ReleaseConfig,
@@ -7,8 +8,8 @@ import type {
 
 export function validateReleaseConfig(
   config: ReleaseConfig,
-  registry: FeatureRegistryEntry[],
-  dependencies: Record<string, string[]>,
+  registry: readonly FeatureRegistryEntry[],
+  dependencies: Record<string, DependencyGroup[]>,
 ): ReleaseValidationResult {
   const errors: string[] = [];
   const enabled = config.features;
@@ -31,11 +32,22 @@ export function validateReleaseConfig(
       continue;
     }
 
-    const deps = dependencies[key] ?? [];
-    for (const dep of deps) {
-      if (!enabled[dep]) {
+    const entry = registry.find(e => e.key === key);
+    if (entry && entry.status === 'not_implemented') {
+      errors.push(`Cannot enable feature "${key}" because its status is "not_implemented".`);
+    }
+
+    const depGroups = dependencies[key] ?? [];
+    if (depGroups.length > 0) {
+      // At least one group must be fully satisfied
+      const isSatisfied = depGroups.some(group => 
+        group.every(dep => enabled[dep])
+      );
+      
+      if (!isSatisfied) {
+        const reqStr = depGroups.map(group => group.join(' AND ')).join(' OR ');
         errors.push(
-          `Invalid release config: "${key}" requires "${dep}" to be enabled.`,
+          `Invalid release config: "${key}" requires (${reqStr}) to be enabled.`,
         );
       }
     }

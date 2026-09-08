@@ -126,3 +126,11 @@ describe('validateReleaseConfig', () => {
     );
   });
 });
+
+import {DEFAULT_RELEASE_NAME} from '../release-manifest';
+
+describe('DEFAULT_RELEASE_NAME', () => {
+  it('remains lingobites-mvp', () => {
+    expect(DEFAULT_RELEASE_NAME).toBe('lingobites-mvp');
+  });
+});

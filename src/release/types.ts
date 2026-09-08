@@ -4,12 +4,17 @@ export type FeatureReleaseGroup =
   | 'practice'
   | 'expansion';
 
+export type FeatureStatus = 'not_implemented' | 'experimental' | 'stable';
+
 export type FeatureRegistryEntry = {
   key: string;
   module: string;
   required: boolean;
   releaseGroup: FeatureReleaseGroup;
   description?: string;
+  status: FeatureStatus;
+  entryPoint?: string;
+  limitations?: string[];
 };
 
 export type ReleaseConfig = {

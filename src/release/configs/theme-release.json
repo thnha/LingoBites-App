@@ -12,7 +12,7 @@
     "lessonHistory": true,
     "lingobitesMvpReviewFlow": false,
     "shortPractice": true,
-    "pronunciationSupport": true,
+    "pronunciationSupport": false,
     "themeSystem": true,
     "themeSwitcher": true,
     "darkTheme": true,
