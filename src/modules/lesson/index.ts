@@ -7,3 +7,5 @@ export {SentenceDetailScreen} from './SentenceDetailScreen';
 export {WordDetailScreen} from './WordDetailScreen';
 export {useFlashcardLibrary} from './useFlashcardLibrary';
 export {useLessonRepository} from './useLessonRepository';
+export {useLibrarySegments} from './useLibrarySegments';
+export type {SegmentFilterState, UseLibrarySegmentsResult} from './useLibrarySegments';
