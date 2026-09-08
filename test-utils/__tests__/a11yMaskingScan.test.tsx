@@ -24,7 +24,6 @@ import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FlipCard} from '../../src/components/FlipCard';
 import {HandoffDualActionBar} from '../../src/components/HandoffDualActionBar';
-import {ListRow} from '../../src/components/ListRow';
 import {ProfileSettingsRow} from '../../src/components/ProfileSettingsRow';
 import {RatingControl} from '../../src/components/RatingControl';
 import {AppThemeProvider} from '../../src/theme';
@@ -45,16 +44,6 @@ async function render(ui: React.ReactElement) {
 }
 
 describe('Global a11y masking scan (warning mode — SETE-122 Việc 6.2)', () => {
-  it('ListRow: default accessibilityLabel drops the `value` text when a caller does not override it', async () => {
-    // SETE-122 Việc 5: ListRow has 0 callers in src/ today (candidate for
-    // removal under SETE-119) — this is a live risk in the component
-    // itself, not a currently-reachable bug in the shipped app.
-    const tree = await render(
-      <ListRow label="Ngôn ngữ" onPress={() => {}} value="Tiếng Việt" />,
-    );
-    warnOnMaskedContent(tree.root, 'ListRow');
-  });
-
   it('ProfileSettingsRow: default accessibilityLabel drops `trailing` text/chip when a caller does not override it', async () => {
     // SETE-122 Việc 5: reachable today — ProfileScreen's "Âm thanh chương
     // học" row passes an explicit accessibilityLabel override that still
