@@ -6,6 +6,7 @@ import {extractTextWithMock} from './MockOCRService';
 
 export async function extractText(
   image: OCRImageInput,
+  signal?: AbortSignal,
 ): Promise<OCRTextResult> {
   const {useMockOcr} = getAppConfig();
   const provider = useMockOcr ? 'mock' : 'api';
@@ -16,8 +17,12 @@ export async function extractText(
   });
 
   const result = useMockOcr
-    ? await extractTextWithMock(image)
-    : await extractTextFromImage(image);
+    ? await extractTextWithMock(image, signal)
+    : await extractTextFromImage(image, signal);
+
+  if (!result.ok && result.cancelled) {
+    return result;
+  }
 
   if (result.ok) {
     trackEvent('ocr_completed', {

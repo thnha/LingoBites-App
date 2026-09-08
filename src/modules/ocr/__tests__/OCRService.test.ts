@@ -13,7 +13,14 @@ jest.mock('@modules/analytics', () => ({
   getTextLengthBucket: () => '101-500',
 }));
 
+const {trackEvent} = jest.requireMock('@modules/analytics') as {
+  trackEvent: jest.Mock;
+};
+
 describe('OCRService', () => {
+  beforeEach(() => {
+    trackEvent.mockClear();
+  });
   it('uses mock OCR path when USE_MOCK_OCR is true', async () => {
     const result = await extractText({
       uri: 'file:///sample.jpg',
@@ -33,8 +40,28 @@ describe('OCRService', () => {
     });
 
     expect(result.ok).toBe(false);
-    if (!result.ok) {
+    if (!result.ok && !result.cancelled) {
       expect(result.errorCode).toBe('OCR_NO_TEXT');
     }
+  });
+
+  it('returns cancelled without emitting a completion analytics event', async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    const result = await extractText(
+      {
+        uri: 'file:///sample.jpg',
+        sourceType: 'camera',
+      },
+      controller.signal,
+    );
+
+    expect(result).toEqual({ok: false, cancelled: true});
+    expect(trackEvent).toHaveBeenCalledTimes(1);
+    expect(trackEvent).toHaveBeenCalledWith('ocr_started', {
+      provider: 'mock',
+      source: 'camera',
+    });
   });
 });

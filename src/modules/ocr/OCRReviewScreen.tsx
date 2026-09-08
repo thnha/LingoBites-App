@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Image, Pressable, ScrollView, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {HomeStackParamList} from '@/app/navigation/types';
@@ -49,8 +49,16 @@ export function OCRReviewScreen({navigation, route}: Props) {
   const [text, setText] = useState(extractedText ?? '');
   const [screenState, setScreenState] = useState<ScreenState>({type: 'input'});
   const [isRetryingOcr, setIsRetryingOcr] = useState(false);
+  const ocrAbortRef = useRef<AbortController | null>(null);
+  const ocrRequestIdRef = useRef(0);
   const initialExtractedText = extractedText ?? '';
   const wordCount = useMemo(() => countWords(text), [text]);
+
+  useEffect(() => {
+    return () => {
+      ocrAbortRef.current?.abort();
+    };
+  }, []);
 
   // Lỗi phân tích được màn "Đang phân tích" trả về qua param khi quay lại đây.
   useEffect(() => {
@@ -93,21 +101,37 @@ export function OCRReviewScreen({navigation, route}: Props) {
   }
 
   async function handleRetryOcr() {
+    ocrAbortRef.current?.abort();
+    const controller = new AbortController();
+    ocrAbortRef.current = controller;
+    const requestId = ++ocrRequestIdRef.current;
+
     setIsRetryingOcr(true);
     setScreenState({type: 'input'});
 
-    const result = await extractText({
-      uri: imageUri,
-      fileName,
-      type: mimeType,
-      width,
-      height,
-      sourceType,
-    });
+    const result = await extractText(
+      {
+        uri: imageUri,
+        fileName,
+        type: mimeType,
+        width,
+        height,
+        sourceType,
+      },
+      controller.signal,
+    );
+
+    if (requestId !== ocrRequestIdRef.current) {
+      return;
+    }
 
     setIsRetryingOcr(false);
 
     if (!result.ok) {
+      if (result.cancelled) {
+        return;
+      }
+
       setScreenState({type: 'error', message: result.message});
       return;
     }

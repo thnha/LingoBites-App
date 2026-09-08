@@ -91,6 +91,7 @@
     "network_lost": "Network connection lost. Please try again once you're back online.",
     "sync_failed": "Couldn't sync review history. The app will retry automatically once online.",
     "ocr_failed": "The app couldn't recognize text in the photo. Try a clearer photo or type the text manually.",
+    "ocr_timeout": "Text recognition took too long. Please try again.",
     "ocr_low_confidence": "The photo may be a bit blurry. Double-check the text before analyzing.",
     "ocr_not_english": "This passage may not be in English. You can still continue if you'd like.",
     "permission_denied": "Camera/photo permission is required to take or pick a photo.",

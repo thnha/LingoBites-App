@@ -5,6 +5,7 @@ export type ApiErrorCode =
   | 'VALIDATION_TEXT_TOO_LONG'
   | 'IMAGE_TOO_LARGE'
   | 'OCR_NO_TEXT'
+  | 'OCR_TIMEOUT'
   | 'OCR_PROVIDER_ERROR'
   | 'AI_TIMEOUT'
   | 'AI_INVALID_OUTPUT'
@@ -85,7 +86,14 @@ export type OCRTextResult =
       quality: OCRQualityBody;
       confidence?: number;
     }
-  | {ok: false; errorCode: ApiErrorCode; message: string; retryable?: boolean};
+  | {ok: false; cancelled: true}
+  | {
+      ok: false;
+      cancelled?: false;
+      errorCode: ApiErrorCode;
+      message: string;
+      retryable?: boolean;
+    };
 
 export type AnalyzeTextRequestBody = {
   request_id: string;

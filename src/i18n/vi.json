@@ -91,6 +91,7 @@
     "network_lost": "Mất kết nối mạng. Vui lòng thử lại sau khi có mạng.",
     "sync_failed": "Chưa thể đồng bộ lịch sử ôn tập. App sẽ tự thử lại khi có mạng.",
     "ocr_failed": "App chưa nhận diện được chữ trong ảnh. Hãy thử ảnh rõ hơn hoặc nhập text thủ công.",
+    "ocr_timeout": "Nhận diện chữ mất quá nhiều thời gian. Vui lòng thử lại.",
     "ocr_low_confidence": "Ảnh có thể hơi mờ. Hãy kiểm tra lại chữ trước khi phân tích.",
     "ocr_not_english": "Đoạn này có thể không phải tiếng Anh. Bạn vẫn có thể tiếp tục nếu muốn.",
     "permission_denied": "Yêu cầu cấp quyền camera/photo để chụp hoặc chọn ảnh.",

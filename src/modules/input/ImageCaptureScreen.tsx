@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -48,6 +48,14 @@ export function ImageCaptureScreen({navigation, route}: Props) {
   const [screenState, setScreenState] = useState<ScreenState>(
     isGallery ? {type: 'upload_idle'} : {type: 'picking'},
   );
+  const ocrAbortRef = useRef<AbortController | null>(null);
+  const ocrRequestIdRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      ocrAbortRef.current?.abort();
+    };
+  }, []);
 
   const launchPicker = useCallback(async () => {
     setScreenState({type: 'picking'});
@@ -96,18 +104,34 @@ export function ImageCaptureScreen({navigation, route}: Props) {
   }, [isGallery, launchPicker]);
 
   async function handleContinue(image: PickedImage) {
+    ocrAbortRef.current?.abort();
+    const controller = new AbortController();
+    ocrAbortRef.current = controller;
+    const requestId = ++ocrRequestIdRef.current;
+
     setScreenState({type: 'ocr_loading', image});
 
-    const result = await extractText({
-      uri: image.uri,
-      fileName: image.fileName,
-      type: image.type,
-      width: image.width,
-      height: image.height,
-      sourceType,
-    });
+    const result = await extractText(
+      {
+        uri: image.uri,
+        fileName: image.fileName,
+        type: image.type,
+        width: image.width,
+        height: image.height,
+        sourceType,
+      },
+      controller.signal,
+    );
+
+    if (requestId !== ocrRequestIdRef.current) {
+      return;
+    }
 
     if (!result.ok) {
+      if (result.cancelled) {
+        return;
+      }
+
       setScreenState({
         type: 'error',
         message: result.message,

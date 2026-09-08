@@ -9,11 +9,36 @@ import type {
   OCRTextResult,
 } from './types';
 
+const OCR_FETCH_TIMEOUT_MS = 30_000;
+
+const cancelledResult = (): OCRTextResult => ({ok: false, cancelled: true});
+
+function isAborted(signal?: AbortSignal): boolean {
+  return signal?.aborted === true;
+}
+
+function withTimeout(
+  timeoutMs: number,
+  externalSignal: AbortSignal | undefined,
+): {signal: AbortSignal; cleanup: () => void} {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const onExternalAbort = () => controller.abort();
+  externalSignal?.addEventListener('abort', onExternalAbort, {once: true});
+  const cleanup = () => {
+    clearTimeout(timer);
+    externalSignal?.removeEventListener('abort', onExternalAbort);
+  };
+  return {signal: controller.signal, cleanup};
+}
+
 function mapOcrErrorToMessage(code: string, serverMessage?: string): string {
   switch (code) {
     case 'OCR_NO_TEXT':
     case 'OCR_PROVIDER_ERROR':
       return i18n.t('errors.ocr_failed');
+    case 'OCR_TIMEOUT':
+      return i18n.t('errors.ocr_timeout');
     case 'IMAGE_TOO_LARGE':
       return serverMessage?.trim() || i18n.t('errors.ocr_failed');
     default:
@@ -40,9 +65,18 @@ function isSuccessBody(body: unknown): body is OCRSuccessBody {
   );
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
+}
+
 export async function extractTextFromImage(
   image: OCRImageInput,
+  signal?: AbortSignal,
 ): Promise<OCRTextResult> {
+  if (isAborted(signal)) {
+    return cancelledResult();
+  }
+
   const {apiBaseUrl} = getAppConfig();
   const requestId = createRequestId();
   const platform =
@@ -74,14 +108,34 @@ export async function extractTextFromImage(
 
   let response: Response;
   try {
-    response = await fetch(`${apiBaseUrl}/v1/ocr`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-      },
-      body: formData,
-    });
-  } catch {
+    const {signal: fetchSignal, cleanup} = withTimeout(
+      OCR_FETCH_TIMEOUT_MS,
+      signal,
+    );
+    try {
+      response = await fetch(`${apiBaseUrl}/v1/ocr`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+        body: formData,
+        signal: fetchSignal,
+      });
+    } finally {
+      cleanup();
+    }
+  } catch (error) {
+    if (isAborted(signal)) {
+      return cancelledResult();
+    }
+    if (isAbortError(error)) {
+      return {
+        ok: false,
+        errorCode: 'OCR_TIMEOUT',
+        message: i18n.t('errors.ocr_timeout'),
+        retryable: true,
+      };
+    }
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
@@ -89,15 +143,26 @@ export async function extractTextFromImage(
     };
   }
 
+  if (isAborted(signal)) {
+    return cancelledResult();
+  }
+
   let body: unknown;
   try {
     body = await response.json();
   } catch {
+    if (isAborted(signal)) {
+      return cancelledResult();
+    }
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
       message: i18n.t('errors.network_lost'),
     };
+  }
+
+  if (isAborted(signal)) {
+    return cancelledResult();
   }
 
   if (!response.ok || isFailedBody(body)) {

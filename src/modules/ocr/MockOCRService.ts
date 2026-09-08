@@ -6,7 +6,12 @@ const DEFAULT_MOCK_TEXT =
 
 export async function extractTextWithMock(
   image: OCRImageInput,
+  signal?: AbortSignal,
 ): Promise<OCRTextResult> {
+  if (signal?.aborted) {
+    return {ok: false, cancelled: true};
+  }
+
   if (image.uri.includes('no-text')) {
     return {
       ok: false,
