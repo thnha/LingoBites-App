@@ -11,10 +11,12 @@ describe('lessonV2 feature flag (SETE-159 T17 / AC24)', () => {
     expect(entry?.status).toBe('beta');
   });
 
-  it('keeps lessonV2 disabled in legacy presets and enables only lesson-v2-beta', () => {
+  it('keeps lessonV2 disabled in legacy presets and enables only lesson-v2-beta and all-features', () => {
     for (const name of listReleaseConfigNames()) {
       const config = getReleaseConfig(name);
-      expect(config.features.lessonV2).toBe(name === 'lesson-v2-beta');
+      expect(config.features.lessonV2).toBe(
+        name === 'lesson-v2-beta' || name === 'all-features',
+      );
       const result = validateReleaseConfig(
         config,
         featureRegistry,

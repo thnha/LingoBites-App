@@ -68,6 +68,28 @@ describe('validateReleaseConfig', () => {
     expect(config.features.aiLessonAnalysis).toBe(false);
   });
 
+  it('accepts all-features preset with every implemented feature enabled', () => {
+    const config = getReleaseConfig('all-features');
+    const result = validateReleaseConfig(
+      config,
+      featureRegistry,
+      featureDependencies,
+    );
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+
+    // Every ready/beta feature is on; not_implemented stays off so the
+    // validator never reports "Cannot enable ... not_implemented".
+    for (const entry of featureRegistry) {
+      if (entry.status === 'not_implemented') {
+        expect(config.features[entry.key]).toBe(false);
+      } else {
+        expect(config.features[entry.key]).toBe(true);
+      }
+    }
+    expect(config.features.lessonV2).toBe(true);
+  });
+
   it('rejects miniGame when lessonSave is disabled', () => {
     const config = getReleaseConfig('close-beta-1');
     const result = validateReleaseConfig(

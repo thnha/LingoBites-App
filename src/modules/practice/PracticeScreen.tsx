@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
@@ -13,6 +13,7 @@ import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
 import {IconButton} from '@components/IconButton';
 import {ImagePlaceholder} from '@components/ImagePlaceholder';
 import {MaterialIcon} from '@components/MaterialIcon';
+import {QuizOption, type QuizOptionState} from '@components/QuizOption';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme, type AppTheme} from '@theme';
@@ -116,16 +117,26 @@ function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
 
       {isMultipleChoice && current.options ? (
         <View style={styles.optionList}>
-          {current.options.map((option, optionIndex) => (
-            <OptionButton
-              key={`${optionIndex}-${option}`}
-              answered={answered}
-              isCorrect={optionIndex === correctIndex}
-              isSelected={optionIndex === state.selectedIndex}
-              label={option}
-              onPress={() => quiz.select(optionIndex)}
-            />
-          ))}
+          {current.options.map((option, optionIndex) => {
+            let optionState: QuizOptionState = 'default';
+            if (answered) {
+              if (optionIndex === correctIndex) {
+                optionState = 'correct';
+              } else if (optionIndex === state.selectedIndex) {
+                optionState = 'wrong';
+              }
+            }
+            return (
+              <QuizOption
+                key={`${optionIndex}-${option}`}
+                disabled={answered}
+                label={option}
+                onPress={() => quiz.select(optionIndex)}
+                optionKey={String.fromCharCode(65 + optionIndex)}
+                state={optionState}
+              />
+            );
+          })}
         </View>
       ) : (
         <AppCard style={themedStyles.answerCard}>
@@ -174,55 +185,6 @@ function QuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
         </View>
       ) : null}
     </View>
-  );
-}
-
-function OptionButton({
-  label,
-  answered,
-  isCorrect,
-  isSelected,
-  onPress,
-}: {
-  label: string;
-  answered: boolean;
-  isCorrect: boolean;
-  isSelected: boolean;
-  onPress: () => void;
-}) {
-  const {theme} = useAppTheme();
-
-  let background = theme.colors.surface;
-  let border = theme.colors.border;
-  let textColor = theme.colors.text.primary;
-  if (answered && isCorrect) {
-    background = theme.colors.accentSoft;
-    border = theme.colors.primary;
-    textColor = theme.colors.primary;
-  } else if (answered && isSelected) {
-    background = theme.colors.secondarySoft;
-    border = theme.colors.danger;
-    textColor = theme.colors.secondary;
-  }
-  const themedStyles = React.useMemo(
-    () => makeOptionStyles(theme, background, border, textColor),
-    [background, border, textColor, theme],
-  );
-
-  return (
-    <Pressable
-      accessibilityLabel={label}
-      accessibilityRole="button"
-      accessibilityState={{disabled: answered, selected: isSelected}}
-      disabled={answered}
-      onPress={onPress}
-      style={({pressed}) => [
-        themedStyles.button,
-        pressed && !answered && themedStyles.pressed,
-      ]}
-    >
-      <AppText style={themedStyles.label}>{label}</AppText>
-    </Pressable>
   );
 }
 
@@ -314,33 +276,6 @@ function makeStyles(theme: AppTheme) {
       paddingBottom: theme.spacing.xxl,
       paddingHorizontal: theme.gutter,
       paddingTop: theme.spacing.sm,
-    },
-  });
-}
-
-function makeOptionStyles(
-  theme: AppTheme,
-  backgroundColor: string,
-  borderColor: string,
-  color: string,
-) {
-  return StyleSheet.create({
-    button: {
-      backgroundColor,
-      borderColor,
-      borderRadius: 18,
-      borderWidth: 2,
-      justifyContent: 'center',
-      minHeight: 52,
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.sm,
-    },
-    label: {
-      color,
-      fontWeight: theme.typography.weight.medium,
-    },
-    pressed: {
-      opacity: theme.states.pressedOpacity,
     },
   });
 }
