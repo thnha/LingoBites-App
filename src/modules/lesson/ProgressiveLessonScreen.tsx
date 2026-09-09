@@ -785,11 +785,13 @@ export function ProgressiveLessonScreen({
                 {saveError}
               </AppText>
             ) : null}
-            {!isSaved ? (
-              <AppButton
-                title="Lưu vào Thư viện"
-                loading={saving}
-                onPress={() => {
+            <AppButton
+              title={isSaved ? "Về Thư viện" : "Lưu vào Thư viện"}
+              loading={!isSaved && saving}
+              onPress={() => {
+                if (isSaved) {
+                  (navigation as any).navigate('Lessons');
+                } else {
                   setSaveError(null);
                   setSaving(true);
                   setTimeout(() => {
@@ -801,37 +803,31 @@ export function ProgressiveLessonScreen({
                     }
                     setSaving(false);
                   }, 0);
+                }
+              }}
+              testID="lesson-ready-cta"
+            />
+            {isSaved ? (
+              <AppButton
+                title="Bỏ lưu"
+                variant="secondary"
+                loading={saving}
+                onPress={() => {
+                  setSaveError(null);
+                  setSaving(true);
+                  setTimeout(() => {
+                    const success = setLessonV2Saved(lesson.lesson_id, false);
+                    if (success) {
+                      setIsSaved(false);
+                    } else {
+                      setSaveError('Bỏ lưu thất bại. Vui lòng thử lại.');
+                    }
+                    setSaving(false);
+                  }, 0);
                 }}
-                testID="lesson-save-button"
+                testID="lesson-unsave-button"
               />
-            ) : (
-              <View style={{gap: theme.spacing.md}}>
-                <AppButton
-                  title="Về Thư viện"
-                  onPress={() => (navigation as any).navigate('Lessons')}
-                  testID="lesson-ready-cta"
-                />
-                <AppButton
-                  title="Bỏ lưu"
-                  variant="secondary"
-                  loading={saving}
-                  onPress={() => {
-                    setSaveError(null);
-                    setSaving(true);
-                    setTimeout(() => {
-                      const success = setLessonV2Saved(lesson.lesson_id, false);
-                      if (success) {
-                        setIsSaved(false);
-                      } else {
-                        setSaveError('Bỏ lưu thất bại. Vui lòng thử lại.');
-                      }
-                      setSaving(false);
-                    }, 0);
-                  }}
-                  testID="lesson-unsave-button"
-                />
-              </View>
-            )}
+            ) : null}
           </View>
         ) : (isOffline || !isTerminalLesson(lesson) ? (
           <AppButton
