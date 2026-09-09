@@ -380,7 +380,7 @@ describe('ProgressiveLessonScreen', () => {
     const tree = await renderScreen(routeFor(lesson.lesson_id));
     
     const card = tree.root.findByProps({testID: `sentence-card-${lesson.sentences[0].id}`});
-    const texts = card.findAll(node => node.props.testID === undefined && typeof node.type !== 'string' && node.type.name === 'AppText' && typeof node.props.children === 'string' && node.props.children.trim() === 'Xin chào');
+    const texts = card.findAll(node => node.props.testID === undefined && typeof node.type !== 'string' && (node.type as any).name === 'AppText' && typeof node.props.children === 'string' && node.props.children.trim() === 'Xin chào');
     expect(texts.length).toBe(1);
   });
 
@@ -480,11 +480,11 @@ describe('ProgressiveLessonScreen', () => {
     expect(vocabTts.props.icon).toBe('play_circle');
 
     const vocabCard = tree.root.findByProps({testID: 'vocab-card-v1'});
-    const exampleTexts = vocabCard.findAll(node => node.type.name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('She works at a small cafe.'));
+    const exampleTexts = vocabCard.findAll(node => typeof node.type !== 'string' && (node.type as any).name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('She works at a small cafe.'));
     expect(exampleTexts.length).toBe(0);
 
     const grammarCard = tree.root.findByProps({testID: 'grammar-card-g1'});
-    const nameViTexts = grammarCard.findAll(node => node.type.name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('Thì Present Simple'));
+    const nameViTexts = grammarCard.findAll(node => typeof node.type !== 'string' && (node.type as any).name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('Thì Present Simple'));
     // 1 match expected because it should render `name` but NOT `name_vi`.
     expect(nameViTexts.length).toBe(1);
   });
