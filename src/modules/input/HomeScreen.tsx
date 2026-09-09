@@ -10,6 +10,7 @@ import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
+import {RecentLessonRow} from '@components/RecentLessonRow';
 import {useContentLibrary, type ContentLessonRow} from '../content';
 import {listStartedLessons} from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
@@ -27,6 +28,15 @@ type Shortcut = {
   testID: string;
 };
 
+type RecentItem = {
+  kind: 'personal' | 'packaged';
+  id: string;
+  title: string;
+  meta: string;
+};
+
+const RECENT_LIMIT = 3;
+
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
@@ -36,7 +46,7 @@ export function HomeScreen({navigation}: Props) {
     navigation.getParent<
       import('@react-navigation/native').NavigationProp<RootTabParamList>
     >();
-  const {getContentLessonById} = useContentLibrary();
+  const {getContentLessonById, listActivePackageLessons} = useContentLibrary();
   const {listLessons} = useLessonRepository();
   const {getDueFlashcards} = useFlashcardLibrary();
   const [startedLesson, setStartedLesson] = useState<ContentLessonRow | null>(
@@ -44,6 +54,7 @@ export function HomeScreen({navigation}: Props) {
   );
   const [dueCount, setDueCount] = useState(0);
   const [libraryCount, setLibraryCount] = useState(0);
+  const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
   const imageInputEnabled =
     config.features.imageInput &&
     config.features.ocrScanner &&
@@ -59,7 +70,32 @@ export function HomeScreen({navigation}: Props) {
       const v1Count = listLessons().length;
       const v2Count = isLessonV2Enabled ? listSavedLessonV2Summaries().length : 0;
       setLibraryCount(v1Count + v2Count);
-    }, [getContentLessonById, getDueFlashcards, listLessons, isLessonV2Enabled]),
+      const personal: RecentItem[] = listLessons(RECENT_LIMIT).map(item => ({
+        kind: 'personal',
+        id: item.id,
+        title: item.title,
+        meta: t('home.vocab_count', {count: item.vocabularyCount}),
+      }));
+      const packaged: RecentItem[] =
+        personal.length < RECENT_LIMIT
+          ? listActivePackageLessons()
+              .slice(0, RECENT_LIMIT - personal.length)
+              .map(item => ({
+                kind: 'packaged',
+                id: item.id,
+                title: item.titleVi,
+                meta: `${item.level} · ${item.estimatedDurationMinutes} phút`,
+              }))
+          : [];
+      setRecentItems([...personal, ...packaged]);
+    }, [
+      getContentLessonById,
+      getDueFlashcards,
+      listActivePackageLessons,
+      listLessons,
+      isLessonV2Enabled,
+      t,
+    ]),
   );
 
   const shortcuts: Shortcut[] = [
@@ -163,6 +199,145 @@ export function HomeScreen({navigation}: Props) {
             </Pressable>
           </View>
         ) : null}
+        <View style={styles.inputSection} testID="home-input-source-section">
+          <AppText variant="h2">{t('home.coming_soon')}</AppText>
+          {imageInputEnabled ? (
+            <Pressable
+              accessibilityLabel={t('home.capture_photo_a11y')}
+              accessibilityRole="button"
+              onPress={() =>
+                navigation.navigate('ImageCapture', {sourceType: 'camera'})
+              }
+              style={({pressed}) => [
+                styles.heroCamera,
+                pressed && styles.pressed,
+              ]}
+              testID="home-input-camera"
+            >
+              <View style={styles.heroCameraIcon}>
+                <MaterialIcon
+                  color={theme.colors.onPrimaryContainer}
+                  name="photo_camera"
+                  size={28}
+                />
+              </View>
+              <AppText
+                variant="h2"
+                style={styles.heroCameraTitle}
+                numberOfLines={2}
+              >
+                {t('home.capture_photo')}
+              </AppText>
+              <AppText
+                style={styles.heroCameraHint}
+                numberOfLines={2}
+              >
+                {t('home.capture_photo_hint')}
+              </AppText>
+            </Pressable>
+          ) : null}
+          <View style={styles.inputSourceGrid}>
+            {imageInputEnabled ? (
+              <Pressable
+                accessibilityLabel={t('home.upload_image_a11y')}
+                accessibilityRole="button"
+                onPress={() =>
+                  navigation.navigate('ImageCapture', {sourceType: 'gallery'})
+                }
+                style={({pressed}) => [
+                  styles.inputSourceSecondary,
+                  styles.inputSourceGallery,
+                  pressed && styles.pressed,
+                ]}
+                testID="home-input-gallery"
+              >
+                <MaterialIcon
+                  color={theme.colors.onOverlay}
+                  name="add_photo_alternate"
+                  size={22}
+                />
+                <AppText
+                  variant="h3"
+                  style={styles.inputSourceGalleryText}
+                  numberOfLines={1}
+                >
+                  {t('home.upload_image')}
+                </AppText>
+              </Pressable>
+            ) : null}
+            {config.features.pasteTextInput ? (
+              <Pressable
+                accessibilityLabel={t('home.paste_text_a11y')}
+                accessibilityRole="button"
+                onPress={() => navigation.navigate('PasteText')}
+                style={({pressed}) => [
+                  styles.inputSourceSecondary,
+                  styles.inputSourcePaste,
+                  pressed && styles.pressed,
+                ]}
+                testID="home-input-paste"
+              >
+                <MaterialIcon
+                  color={theme.colors.primary}
+                  name="content_paste"
+                  size={22}
+                />
+                <AppText
+                  variant="h3"
+                  style={styles.inputSourcePasteText}
+                  numberOfLines={1}
+                >
+                  {t('home.paste_text')}
+                </AppText>
+              </Pressable>
+            ) : null}
+          </View>
+        </View>
+        {recentItems.length > 0 ? (
+          <View style={styles.recentSection} testID="home-recent-section">
+            <View style={styles.recentHeader}>
+              <AppText variant="h2">{t('home.recent_lessons')}</AppText>
+              <Pressable
+                accessibilityLabel={t('home.view_all_a11y')}
+                accessibilityRole="button"
+                onPress={() => tabNavigation?.navigate('Lessons')}
+                testID="home-recent-view-all"
+              >
+                <AppText
+                  variant="label"
+                  style={styles.recentViewAll}
+                  numberOfLines={1}
+                >
+                  {t('home.view_all')}
+                </AppText>
+              </Pressable>
+            </View>
+            <View style={styles.recentList}>
+              {recentItems.map((item, index) => (
+                <View
+                  key={item.id}
+                  testID={`home-recent-item-${item.id}`}
+                >
+                  <RecentLessonRow
+                    index={index}
+                    lesson={{id: item.id, title: item.title, meta: item.meta}}
+                    onPress={() => {
+                      if (item.kind === 'personal') {
+                        navigation.navigate('SavedLessonDetail', {
+                          lessonId: item.id,
+                        });
+                      } else {
+                        navigation.navigate('ContentLessonRuntime', {
+                          lessonId: item.id,
+                        });
+                      }
+                    }}
+                  />
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
         <AppText variant="h2">{t('home.shortcuts_title')}</AppText>
         <View style={styles.shortcutGrid}>
           {shortcuts.map(shortcut => (
@@ -185,10 +360,14 @@ export function HomeScreen({navigation}: Props) {
                 />
               </View>
               <View style={styles.shortcutCopy}>
-                <AppText variant="h3" style={styles.shortcutTitle}>
+                <AppText
+                  variant="h3"
+                  style={styles.shortcutTitle}
+                  numberOfLines={1}
+                >
                   {t(shortcut.titleKey)}
                 </AppText>
-                <AppText color="secondary" variant="label">
+                <AppText color="secondary" variant="label" numberOfLines={1}>
                   {shortcut.meta}
                 </AppText>
               </View>
@@ -199,64 +378,6 @@ export function HomeScreen({navigation}: Props) {
               />
             </Pressable>
           ))}
-        </View>
-        <View style={styles.inputSection} testID="home-input-source-section">
-          <AppText variant="h2">{t('home.coming_soon')}</AppText>
-          <View style={styles.inputSourceGrid}>
-            {imageInputEnabled ? (
-              <>
-                <Pressable
-                  accessibilityLabel={t('home.capture_photo_a11y')}
-                  accessibilityRole="button"
-                  onPress={() =>
-                    navigation.navigate('ImageCapture', {sourceType: 'camera'})
-                  }
-                  style={({pressed}) => [
-                    styles.inputSource,
-                    pressed && styles.pressed,
-                  ]}
-                  testID="home-input-camera"
-                >
-                  <MaterialIcon color={theme.colors.primary} name="photo_camera" size={22} />
-                  <AppText variant="h3">{t('home.capture_photo')}</AppText>
-                </Pressable>
-                <Pressable
-                  accessibilityLabel={t('home.upload_image_a11y')}
-                  accessibilityRole="button"
-                  onPress={() =>
-                    navigation.navigate('ImageCapture', {sourceType: 'gallery'})
-                  }
-                  style={({pressed}) => [
-                    styles.inputSource,
-                    pressed && styles.pressed,
-                  ]}
-                  testID="home-input-gallery"
-                >
-                  <MaterialIcon
-                    color={theme.colors.primary}
-                    name="add_photo_alternate"
-                    size={22}
-                  />
-                  <AppText variant="h3">{t('home.upload_image')}</AppText>
-                </Pressable>
-              </>
-            ) : null}
-            {config.features.pasteTextInput ? (
-              <Pressable
-                accessibilityLabel={t('home.paste_text_a11y')}
-                accessibilityRole="button"
-                onPress={() => navigation.navigate('PasteText')}
-                style={({pressed}) => [
-                  styles.inputSource,
-                  pressed && styles.pressed,
-                ]}
-                testID="home-input-paste"
-              >
-                <MaterialIcon color={theme.colors.primary} name="content_paste" size={22} />
-                <AppText variant="h3">{t('home.paste_text')}</AppText>
-              </Pressable>
-            ) : null}
-          </View>
         </View>
       </ScrollView>
     </AppScreen>
@@ -286,17 +407,67 @@ function makeStyles(theme: AppTheme) {
     },
     intro: {gap: theme.spacing.xs},
     inputSection: {gap: theme.spacing.sm},
-    inputSource: {
+    heroCamera: {
       alignItems: 'center',
-      backgroundColor: theme.colors.surface,
+      backgroundColor: theme.colors.primaryContainer,
+      borderRadius: theme.radius.xl,
+      gap: theme.spacing.sm,
+      justifyContent: 'center',
+      minHeight: 196,
+      padding: theme.spacing.lg,
+    },
+    heroCameraIcon: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.overlayLight,
+      borderRadius: theme.radius.pill,
+      height: 64,
+      justifyContent: 'center',
+      width: 64,
+    },
+    heroCameraTitle: {
+      color: theme.colors.onPrimaryContainer,
+      textAlign: 'center',
+    },
+    heroCameraHint: {
+      color: theme.colors.onPrimaryContainer,
+      textAlign: 'center',
+    },
+    inputSourceSecondary: {
+      alignItems: 'center',
       borderRadius: theme.radius.lg,
       flex: 1,
+      flexShrink: 1,
       gap: theme.spacing.sm,
       justifyContent: 'center',
       minHeight: 96,
+      minWidth: 0,
       padding: theme.spacing.md,
     },
+    inputSourceGallery: {
+      backgroundColor: theme.colors.secondaryContainer,
+    },
+    inputSourceGalleryText: {
+      color: theme.colors.onOverlay,
+    },
+    inputSourcePaste: {
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.outlineVariant,
+      borderWidth: 1,
+    },
+    inputSourcePasteText: {
+      color: theme.colors.primary,
+    },
     inputSourceGrid: {flexDirection: 'row', gap: theme.spacing.sm},
+    recentSection: {gap: theme.spacing.sm},
+    recentHeader: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    recentViewAll: {
+      color: theme.colors.primary,
+    },
+    recentList: {gap: theme.spacing.sm},
     primaryAction: {
       alignItems: 'center',
       backgroundColor: theme.colors.primary,
@@ -337,17 +508,19 @@ function makeStyles(theme: AppTheme) {
     shortcut: {
       alignItems: 'center',
       backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.lg,
+      flexBasis: '47%',
       flexDirection: 'row',
+      flexGrow: 1,
       gap: theme.spacing.sm,
       minHeight: 88,
       padding: theme.spacing.md,
-      width: '50%',
     },
     shortcutCopy: {flex: 1, gap: 2, minWidth: 0},
     shortcutGrid: {
-      backgroundColor: theme.colors.surface,
       flexDirection: 'row',
       flexWrap: 'wrap',
+      gap: theme.spacing.sm,
     },
     shortcutIcon: {
       alignItems: 'center',
