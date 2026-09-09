@@ -35,6 +35,13 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
+jest.mock('react-native-keychain', () => ({
+  STORAGE_TYPE: {AES_GCM_NO_AUTH: 'KeystoreAESGCM_NoAuth'},
+  setGenericPassword: jest.fn().mockResolvedValue({service: 'mock'}),
+  getGenericPassword: jest.fn().mockResolvedValue(false),
+  resetGenericPassword: jest.fn().mockResolvedValue(true),
+}));
+
 jest.mock('react-native-config', () => ({
   __esModule: true,
   default: {

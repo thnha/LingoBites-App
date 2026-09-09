@@ -4,6 +4,10 @@ import {createRequestId} from '../api/requestId';
 import {getOrCreateAnonymousUserId} from './anonymousUserId';
 import {getDatabase} from './database';
 import {computeLessonInputHash} from './lessonInputHash';
+import {
+  clearLessonTokens,
+  deleteLessonToken,
+} from '../security/lessonTokenStore';
 import type {LessonSubjectKey} from '@/types/lesson';
 import type {
   LessonListItem,
@@ -207,14 +211,32 @@ export function deleteLesson(lessonId: string): boolean {
   try {
     const db = getDatabase();
     const result = db.execute('DELETE FROM lessons WHERE id = ?;', [lessonId]);
+    deleteLessonToken(lessonId).catch(() => undefined);
     return (result.rowsAffected ?? 0) > 0;
   } catch {
     return false;
   }
 }
 
-export function clearAllLocalData(): void {
+export function clearAllLocalData(): Promise<void> {
   const db = getDatabase();
+  const lessonIds = new Set<string>();
+  for (const table of ['lessons', 'lesson_v2']) {
+    try {
+      const rows = db.execute(
+        `SELECT ${
+          table === 'lessons' ? 'id' : 'lesson_id'
+        } AS lesson_id FROM ${table};`,
+      ).rows;
+      for (let index = 0; index < (rows?.length ?? 0); index += 1) {
+        const row = rows?.item(index) as {lesson_id?: string} | undefined;
+        if (row?.lesson_id) lessonIds.add(row.lesson_id);
+      }
+    } catch {
+      // Older databases may not have the v2 table yet.
+    }
+  }
+  const tokenCleanup = clearLessonTokens([...lessonIds]);
   db.execute('DELETE FROM review_sessions;');
   db.execute('DELETE FROM review_schedule;');
   db.execute('DELETE FROM flashcards;');
@@ -229,4 +251,5 @@ export function clearAllLocalData(): void {
   db.execute('DELETE FROM grammar_bookmarks;');
   db.execute('DELETE FROM content_lesson_state;');
   db.execute('DELETE FROM lesson_v2;');
+  return tokenCleanup;
 }

@@ -51,7 +51,7 @@ export async function clearAllLocalDataWithFiles(
   const filePaths = [...recordingFilePaths, ...audioFilePaths];
 
   try {
-    clearAllLocalDatabaseRows();
+    await clearAllLocalDatabaseRows();
   } catch {
     return buildResult({dbCleared: false, failedFilePaths: []});
   }
