@@ -196,6 +196,14 @@ function createMockDatabase() {
     ) {
       return toRows(lessonV2.filter(row => row.lesson_id === params[0]));
     }
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from lesson_v2 where is_saved = 1')
+    ) {
+      const rows = lessonV2.filter(row => row.is_saved === 1);
+      rows.sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)));
+      return toRows(rows);
+    }
     for (const [table, collection] of Object.entries({
       lesson_v2_sentences: lessonV2Sentences,
       lesson_v2_chunks: lessonV2Chunks,
@@ -217,6 +225,19 @@ function createMockDatabase() {
       const index = lessonV2.findIndex(row => row.lesson_id === params[0]);
       if (index === -1) return {rowsAffected: 0};
       lessonV2.splice(index, 1);
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('update lesson_v2 set is_saved = ?')) {
+      const isSaved = params[0];
+      const updatedAt = params[1];
+      const lessonId = params[2];
+      const row = lessonV2.find(row => row.lesson_id === lessonId);
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.is_saved = isSaved;
+      row.updated_at = updatedAt;
       return {rowsAffected: 1};
     }
     if (normalized === 'delete from lesson_v2;') {

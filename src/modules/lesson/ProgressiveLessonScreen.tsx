@@ -21,6 +21,8 @@ import {
 import {
   getLessonV2ById,
   upsertLessonV2,
+  isLessonV2Saved,
+  setLessonV2Saved,
 } from '@shared/db/LessonV2Repository';
 import type {
   ChunkV2,
@@ -200,6 +202,9 @@ export function ProgressiveLessonScreen({
   const [voiceAvailable, setVoiceAvailable] = useState(false);
   const [retryingChunkId, setRetryingChunkId] = useState<string | null>(null);
   const [retryingUnit, setRetryingUnit] = useState<UnitKey | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
 
@@ -211,6 +216,10 @@ export function ProgressiveLessonScreen({
       fireAndForget(stop());
     };
   }, []);
+
+  useEffect(() => {
+    setIsSaved(isLessonV2Saved(lessonId));
+  }, [lessonId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -771,11 +780,58 @@ export function ProgressiveLessonScreen({
         {lesson.status === 'ready' || lesson.status === 'ready_with_warnings' ? (
           <View style={{gap: theme.spacing.md}}>
             <Banner message="Bài học đã hoàn tất!" />
-            <AppButton
-              title="Về Thư viện"
-              onPress={() => (navigation as any).navigate('Lessons')}
-              testID="lesson-ready-cta"
-            />
+            {saveError ? (
+              <AppText color="danger" testID="lesson-save-error">
+                {saveError}
+              </AppText>
+            ) : null}
+            {!isSaved ? (
+              <AppButton
+                title="Lưu vào Thư viện"
+                loading={saving}
+                onPress={() => {
+                  setSaveError(null);
+                  setSaving(true);
+                  setTimeout(() => {
+                    const success = setLessonV2Saved(lesson.lesson_id, true);
+                    if (success) {
+                      setIsSaved(true);
+                    } else {
+                      setSaveError('Lưu bài học thất bại. Vui lòng thử lại.');
+                    }
+                    setSaving(false);
+                  }, 0);
+                }}
+                testID="lesson-save-button"
+              />
+            ) : (
+              <View style={{gap: theme.spacing.md}}>
+                <AppButton
+                  title="Về Thư viện"
+                  onPress={() => (navigation as any).navigate('Lessons')}
+                  testID="lesson-ready-cta"
+                />
+                <AppButton
+                  title="Bỏ lưu"
+                  variant="secondary"
+                  loading={saving}
+                  onPress={() => {
+                    setSaveError(null);
+                    setSaving(true);
+                    setTimeout(() => {
+                      const success = setLessonV2Saved(lesson.lesson_id, false);
+                      if (success) {
+                        setIsSaved(false);
+                      } else {
+                        setSaveError('Bỏ lưu thất bại. Vui lòng thử lại.');
+                      }
+                      setSaving(false);
+                    }, 0);
+                  }}
+                  testID="lesson-unsave-button"
+                />
+              </View>
+            )}
           </View>
         ) : (isOffline || !isTerminalLesson(lesson) ? (
           <AppButton

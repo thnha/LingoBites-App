@@ -2,8 +2,9 @@ import fixture from '@shared/schemas/__tests__/fixtures/lesson-v2-envelope.json'
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {open} from 'react-native-quick-sqlite';
 import {DB_NAME} from '../constants';
-import {resetDatabaseForTests} from '../database';
-import {getLessonV2ById, upsertLessonV2} from '../LessonV2Repository';
+import {runMigrations} from '../migrations';
+import {resetDatabaseForTests, getDatabase} from '../database';
+import {getLessonV2ById, upsertLessonV2, isLessonV2Saved, setLessonV2Saved, listSavedLessonV2Summaries} from '../LessonV2Repository';
 
 const lesson = fixture.lesson;
 
@@ -11,6 +12,7 @@ describe('LessonV2Repository', () => {
   beforeEach(() => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
+    runMigrations(getDatabase());
   });
 
   it('persists and reconstructs a partial lesson with normalized entities', () => {
@@ -96,5 +98,51 @@ describe('LessonV2Repository', () => {
     expect(
       db.execute('SELECT * FROM lessons WHERE id = ?;', ['v1']).rows?.length,
     ).toBe(1);
+  });
+
+  describe('save actions', () => {
+    it('returns false when checking unsaved lesson', () => {
+      upsertLessonV2(lesson);
+      expect(isLessonV2Saved(lesson.lesson_id)).toBe(false);
+    });
+
+    it('can set and get saved status', () => {
+      upsertLessonV2(lesson);
+      expect(setLessonV2Saved(lesson.lesson_id, true)).toBe(true);
+      expect(isLessonV2Saved(lesson.lesson_id)).toBe(true);
+
+      expect(setLessonV2Saved(lesson.lesson_id, false)).toBe(true);
+      expect(isLessonV2Saved(lesson.lesson_id)).toBe(false);
+    });
+
+    it('lists saved lessons with limited hydration', () => {
+      upsertLessonV2(lesson);
+      expect(listSavedLessonV2Summaries()).toHaveLength(0);
+
+      setLessonV2Saved(lesson.lesson_id, true);
+      const summaries = listSavedLessonV2Summaries();
+      expect(summaries).toHaveLength(1);
+      expect(summaries[0]).toMatchObject({
+        lesson_id: lesson.lesson_id,
+        title: lesson.title,
+        source_text: lesson.source.text,
+        word_count: lesson.source.word_count,
+        status: lesson.status,
+      });
+    });
+
+    it('preserves is_saved flag across upserts', () => {
+      upsertLessonV2(lesson);
+      setLessonV2Saved(lesson.lesson_id, true);
+
+      // Modify revision and upsert again
+      const newRevision = {
+        ...lesson,
+        revision: lesson.revision + 1,
+      };
+      upsertLessonV2(newRevision);
+
+      expect(isLessonV2Saved(lesson.lesson_id)).toBe(true);
+    });
   });
 });

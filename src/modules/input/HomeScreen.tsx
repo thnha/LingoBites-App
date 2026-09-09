@@ -13,6 +13,7 @@ import {MaterialIcon} from '@components/MaterialIcon';
 import {useContentLibrary, type ContentLessonRow} from '../content';
 import {listStartedLessons} from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
+import {listSavedLessonV2Summaries} from '@shared/db/LessonV2Repository';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useTranslation} from 'react-i18next';
 import {useFeatureFlags} from '@/release';
@@ -30,7 +31,7 @@ export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
-  const {config} = useFeatureFlags();
+  const {config, isFeatureEnabled} = useFeatureFlags();
   const tabNavigation =
     navigation.getParent<
       import('@react-navigation/native').NavigationProp<RootTabParamList>
@@ -48,13 +49,17 @@ export function HomeScreen({navigation}: Props) {
     config.features.ocrScanner &&
     config.features.ocrReviewEdit;
 
+  const isLessonV2Enabled = isFeatureEnabled('lessonV2');
+
   useFocusEffect(
     useCallback(() => {
       const started = listStartedLessons()[0];
       setStartedLesson(started ? getContentLessonById(started.lessonId) : null);
       setDueCount(getDueFlashcards().length);
-      setLibraryCount(listLessons().length);
-    }, [getContentLessonById, getDueFlashcards, listLessons]),
+      const v1Count = listLessons().length;
+      const v2Count = isLessonV2Enabled ? listSavedLessonV2Summaries().length : 0;
+      setLibraryCount(v1Count + v2Count);
+    }, [getContentLessonById, getDueFlashcards, listLessons, isLessonV2Enabled]),
   );
 
   const shortcuts: Shortcut[] = [

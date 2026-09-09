@@ -19,7 +19,7 @@ interface LessonItem {
   id: string;
   title: string;
   summary: string | null;
-  type: 'personal' | 'packaged';
+  type: 'personal' | 'personal_v2' | 'packaged';
 }
 
 interface LessonSection {
@@ -73,7 +73,7 @@ export function LessonsTabContent({
         id: lesson.id,
         title: lesson.title,
         summary: lesson.summary,
-        type: 'personal' as const,
+        type: lesson.type === 'personal_v2' ? 'personal_v2' : 'personal',
       }));
 
       result.push({
@@ -105,6 +105,8 @@ export function LessonsTabContent({
   const handleLessonPress = (item: LessonItem) => {
     if (item.type === 'personal') {
       navigation.navigate('SavedLessonDetail', {lessonId: item.id});
+    } else if (item.type === 'personal_v2') {
+      navigation.navigate('ProgressiveLesson', {lessonId: item.id});
     } else {
       navigation.navigate('ContentLessonRuntime', {lessonId: item.id});
     }
@@ -114,7 +116,7 @@ export function LessonsTabContent({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={item.title}
-      accessibilityHint={`${item.type === 'personal' ? 'Bài học cá nhân' : 'Bài học theo lộ trình'}. Chạm để xem chi tiết.`}
+      accessibilityHint={`${item.type === 'personal' || item.type === 'personal_v2' ? 'Bài học cá nhân' : 'Bài học theo lộ trình'}. Chạm để xem chi tiết.`}
       onPress={() => handleLessonPress(item)}
       testID={`lesson-item-${item.id}`}
       style={styles.pressable}

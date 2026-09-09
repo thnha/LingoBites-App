@@ -443,3 +443,64 @@ export function deleteLessonV2(lessonId: string): boolean {
     return false;
   }
 }
+
+export function isLessonV2Saved(lessonId: string): boolean {
+  const db = getDatabase();
+  const result = db.execute(
+    'SELECT is_saved FROM lesson_v2 WHERE lesson_id = ? LIMIT 1;',
+    [lessonId]
+  );
+  const row = result.rows?.item(0) as {is_saved: number} | undefined;
+  return row?.is_saved === 1;
+}
+
+export function setLessonV2Saved(lessonId: string, saved: boolean, updatedAt = new Date().toISOString()): boolean {
+  try {
+    const db = getDatabase();
+    const result = db.execute(
+      'UPDATE lesson_v2 SET is_saved = ?, updated_at = ? WHERE lesson_id = ?;',
+      [saved ? 1 : 0, updatedAt, lessonId]
+    );
+    return (result.rowsAffected ?? 0) > 0;
+  } catch (err) {
+    console.error('setLessonV2Saved error:', err);
+    return false;
+  }
+}
+
+export type SavedLessonV2Summary = {
+  lesson_id: string;
+  title: string | null;
+  source_text: string;
+  word_count: number;
+  status: LessonV2['status'];
+  updated_at: string;
+};
+
+export function listSavedLessonV2Summaries(): SavedLessonV2Summary[] {
+  const db = getDatabase();
+  const result = db.execute(
+    'SELECT lesson_id, title, source_text, word_count, status, updated_at FROM lesson_v2 WHERE is_saved = 1 ORDER BY datetime(updated_at) DESC;',
+    []
+  );
+
+  const items: SavedLessonV2Summary[] = [];
+  const rows = result.rows;
+  if (!rows) {
+    return items;
+  }
+
+  for (let index = 0; index < rows.length; index += 1) {
+    const row = rows.item(index) as SavedLessonV2Summary;
+    items.push({
+      lesson_id: row.lesson_id,
+      title: row.title,
+      source_text: row.source_text,
+      word_count: row.word_count,
+      status: row.status,
+      updated_at: row.updated_at,
+    });
+  }
+
+  return items;
+}

@@ -9,6 +9,8 @@ import {listAllBookmarkedGrammar} from '@shared/db/GrammarBookmarkRepository';
 import {listFlashcards} from '@shared/db/FlashcardRepository';
 import type {FlashcardRecord, GrammarBookmark} from '@shared/db/types';
 import type {LibraryLessonCardView} from '@/types/lesson';
+import {listSavedLessonV2Summaries} from '@shared/db/LessonV2Repository';
+import {useFeatureEnabled} from '@/release';
 
 export interface SegmentFilterState {
   searchQuery: string;
@@ -51,12 +53,36 @@ export function useLibrarySegments(): UseLibrarySegmentsResult {
     setRefreshVersion(v => v + 1);
   }, []);
 
-  // Personal lessons (from useLibraryStore)
+  // Personal lessons (from useLibraryStore + LessonV2Repository)
+  const isLessonV2Enabled = useFeatureEnabled('lessonV2');
   const personalLessons = useMemo(() => {
     const allLessons = getLibraryCards();
-    return filterLessonsByQueryAndSource(allLessons, lessonsFilter);
+    const v1Cards = filterLessonsByQueryAndSource(allLessons, lessonsFilter);
+    
+    if (!isLessonV2Enabled) {
+      return v1Cards;
+    }
+
+    const savedV2 = listSavedLessonV2Summaries();
+    const v2Cards = savedV2.map(v2 => ({
+      id: v2.lesson_id,
+      title: v2.title || 'Bài học tự tạo',
+      summary: v2.source_text ? v2.source_text.slice(0, 100) + '...' : null,
+      sourceType: 'paste_text', // Fallback or proper mapping if available
+      type: 'personal_v2' as const,
+      updatedAt: v2.updated_at,
+    }));
+    
+    const v2Filtered = filterLessonsByQueryAndSource(v2Cards, lessonsFilter);
+    
+    // Mix and sort by time descending
+    return [...v1Cards, ...v2Filtered].sort((a, b) => {
+      const timeA = new Date(a.updatedAt || a.created_at || 0).getTime();
+      const timeB = new Date(b.updatedAt || b.created_at || 0).getTime();
+      return timeB - timeA;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonsFilter, refreshVersion]);
+  }, [lessonsFilter, refreshVersion, isLessonV2Enabled]);
 
   // Packaged lessons (from ContentLessonStateRepository)
   const packagedLessons = useMemo(() => {
