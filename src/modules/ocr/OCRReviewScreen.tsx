@@ -18,6 +18,11 @@ import {
   validateConfirmedText,
 } from '@shared/utils/textValidation';
 import {extractText} from './OCRService';
+import {useFeatureFlags} from '@/release';
+import {
+  resolveLessonDestination,
+  startLessonFromConfirmedText,
+} from '@shared/lesson/startLessonFromConfirmedText';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'OCRReview'>;
 
@@ -34,6 +39,7 @@ function countWords(text: string): number {
 export function OCRReviewScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
+  const {config} = useFeatureFlags();
   const {
     imageUri,
     fileName,
@@ -49,6 +55,7 @@ export function OCRReviewScreen({navigation, route}: Props) {
   const [text, setText] = useState(extractedText ?? '');
   const [screenState, setScreenState] = useState<ScreenState>({type: 'input'});
   const [isRetryingOcr, setIsRetryingOcr] = useState(false);
+  const [creating, setCreating] = useState(false);
   const ocrAbortRef = useRef<AbortController | null>(null);
   const ocrRequestIdRef = useRef(0);
   const initialExtractedText = extractedText ?? '';
@@ -79,25 +86,42 @@ export function OCRReviewScreen({navigation, route}: Props) {
     return messages;
   }, [warnings, t]);
 
-  function handleAnalyze() {
+  async function handleAnalyze() {
+    if (creating) return;
     const validation = validateConfirmedText(text);
     if (!validation.valid) {
       setScreenState({type: 'error', message: validation.message});
       return;
     }
 
-    setScreenState({type: 'input'});
     trackEvent('text_confirmed', {
       source_type: sourceType,
       text_length_bucket: getTextLengthBucket(validation.value.length),
       edited_after_ocr: validation.value.trim() !== initialExtractedText.trim(),
     });
 
-    navigation.navigate('Analyzing', {
+    const destination = resolveLessonDestination(config.features);
+    setScreenState({type: 'input'});
+    setCreating(destination === 'v2_progressive');
+
+    const result = await startLessonFromConfirmedText({
       confirmedText: validation.value,
       sourceType,
+      destination,
       origin: 'OCRReview',
+      navigate: (screen, params) => {
+        if (screen === 'Analyzing' && 'confirmedText' in params) {
+          navigation.navigate('Analyzing', params);
+        } else if (screen === 'ProgressiveLesson' && 'lessonId' in params) {
+          navigation.navigate('ProgressiveLesson', params);
+        }
+      },
     });
+
+    if (!result.ok) {
+      setScreenState({type: 'error', message: result.message});
+    }
+    setCreating(false);
   }
 
   async function handleRetryOcr() {
@@ -221,7 +245,7 @@ export function OCRReviewScreen({navigation, route}: Props) {
         {screenState.type === 'error' ? (
           <ErrorCard
             message={screenState.message}
-            onRetry={handleAnalyze}
+            onRetry={() => void handleAnalyze()}
             retryLabel={t('common.retry')}
           />
         ) : null}
@@ -263,8 +287,8 @@ export function OCRReviewScreen({navigation, route}: Props) {
         <Pressable
           accessibilityLabel="Phân tích & học ngay"
           accessibilityRole="button"
-          disabled={busy}
-          onPress={handleAnalyze}
+          disabled={busy || creating}
+          onPress={() => void handleAnalyze()}
           style={({pressed}) => [
             {
               alignItems: 'center',
@@ -274,7 +298,8 @@ export function OCRReviewScreen({navigation, route}: Props) {
               gap: 8,
               justifyContent: 'center',
               minHeight: 52,
-              opacity: busy || pressed ? theme.states.pressedOpacity : 1,
+              opacity:
+                busy || creating || pressed ? theme.states.pressedOpacity : 1,
             },
           ]}
         >
@@ -290,7 +315,7 @@ export function OCRReviewScreen({navigation, route}: Props) {
               fontWeight: '600',
             }}
           >
-            Phân tích & học ngay
+            {creating ? 'Đang khởi tạo bài học…' : 'Phân tích & học ngay'}
           </AppText>
         </Pressable>
       </BottomActionBar>

@@ -15,6 +15,7 @@ import {listStartedLessons} from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useTranslation} from 'react-i18next';
+import {useFeatureFlags} from '@/release';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;
 type Shortcut = {
@@ -29,6 +30,7 @@ export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
+  const {config} = useFeatureFlags();
   const tabNavigation =
     navigation.getParent<
       import('@react-navigation/native').NavigationProp<RootTabParamList>
@@ -41,6 +43,10 @@ export function HomeScreen({navigation}: Props) {
   );
   const [dueCount, setDueCount] = useState(0);
   const [libraryCount, setLibraryCount] = useState(0);
+  const imageInputEnabled =
+    config.features.imageInput &&
+    config.features.ocrScanner &&
+    config.features.ocrReviewEdit;
 
   useFocusEffect(
     useCallback(() => {
@@ -189,36 +195,64 @@ export function HomeScreen({navigation}: Props) {
             </Pressable>
           ))}
         </View>
-        <Pressable
-          accessibilityLabel={`${t('home.coming_soon')}. Trải nghiệm Lesson V2 (Beta)`}
-          accessibilityRole="button"
-          onPress={() => navigation.navigate('LessonV2Create')}
-          style={({pressed}) => [
-            styles.comingSoon,
-            pressed && styles.pressed,
-          ]}
-          testID="home-lesson-v2-beta"
-        >
-          <View style={styles.comingSoonIcon}>
-            <MaterialIcon
-              color={theme.colors.primary}
-              name="school"
-              size={18}
-            />
+        <View style={styles.inputSection} testID="home-input-source-section">
+          <AppText variant="h2">{t('home.coming_soon')}</AppText>
+          <View style={styles.inputSourceGrid}>
+            {imageInputEnabled ? (
+              <>
+                <Pressable
+                  accessibilityLabel={t('home.capture_photo_a11y')}
+                  accessibilityRole="button"
+                  onPress={() =>
+                    navigation.navigate('ImageCapture', {sourceType: 'camera'})
+                  }
+                  style={({pressed}) => [
+                    styles.inputSource,
+                    pressed && styles.pressed,
+                  ]}
+                  testID="home-input-camera"
+                >
+                  <MaterialIcon color={theme.colors.primary} name="photo_camera" size={22} />
+                  <AppText variant="h3">{t('home.capture_photo')}</AppText>
+                </Pressable>
+                <Pressable
+                  accessibilityLabel={t('home.upload_image_a11y')}
+                  accessibilityRole="button"
+                  onPress={() =>
+                    navigation.navigate('ImageCapture', {sourceType: 'gallery'})
+                  }
+                  style={({pressed}) => [
+                    styles.inputSource,
+                    pressed && styles.pressed,
+                  ]}
+                  testID="home-input-gallery"
+                >
+                  <MaterialIcon
+                    color={theme.colors.primary}
+                    name="add_photo_alternate"
+                    size={22}
+                  />
+                  <AppText variant="h3">{t('home.upload_image')}</AppText>
+                </Pressable>
+              </>
+            ) : null}
+            {config.features.pasteTextInput ? (
+              <Pressable
+                accessibilityLabel={t('home.paste_text_a11y')}
+                accessibilityRole="button"
+                onPress={() => navigation.navigate('PasteText')}
+                style={({pressed}) => [
+                  styles.inputSource,
+                  pressed && styles.pressed,
+                ]}
+                testID="home-input-paste"
+              >
+                <MaterialIcon color={theme.colors.primary} name="content_paste" size={22} />
+                <AppText variant="h3">{t('home.paste_text')}</AppText>
+              </Pressable>
+            ) : null}
           </View>
-          <View style={{flex: 1, gap: 2}}>
-            <AppText color="secondary" variant="label">
-              {t('home.coming_soon')}
-            </AppText>
-            <AppText
-              color="primary"
-              variant="caption"
-              style={{fontWeight: '600'}}
-            >
-              Chạm để thử nghiệm Lesson V2 (Beta) →
-            </AppText>
-          </View>
-        </Pressable>
+        </View>
       </ScrollView>
     </AppScreen>
   );
@@ -231,23 +265,6 @@ function makeStyles(theme: AppTheme) {
       color: theme.colors.primary,
       fontSize: theme.typography.size.lg,
       fontWeight: theme.typography.weight.medium,
-    },
-    comingSoon: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.accentSoft,
-      borderRadius: theme.radius.lg,
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-      minHeight: 52,
-      paddingHorizontal: theme.spacing.md,
-    },
-    comingSoonIcon: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.overlayLight,
-      borderRadius: theme.radius.pill,
-      height: 32,
-      justifyContent: 'center',
-      width: 32,
     },
     header: {
       alignItems: 'center',
@@ -263,6 +280,18 @@ function makeStyles(theme: AppTheme) {
       padding: theme.spacing.lg,
     },
     intro: {gap: theme.spacing.xs},
+    inputSection: {gap: theme.spacing.sm},
+    inputSource: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.lg,
+      flex: 1,
+      gap: theme.spacing.sm,
+      justifyContent: 'center',
+      minHeight: 96,
+      padding: theme.spacing.md,
+    },
+    inputSourceGrid: {flexDirection: 'row', gap: theme.spacing.sm},
     primaryAction: {
       alignItems: 'center',
       backgroundColor: theme.colors.primary,

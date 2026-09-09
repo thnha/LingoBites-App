@@ -26,6 +26,7 @@ import type {
   ChunkV2,
   LessonV2,
   SentenceV2,
+  UnitState,
   VocabularyV2,
 } from '@shared/schemas/lesson-v2';
 import {useAppTheme, type AppTheme} from '@theme';
@@ -56,6 +57,22 @@ const SENTENCE_STATUS_LABEL: Record<SentenceV2['status'], string> = {
   processing: 'Đang tạo',
   ready: 'Xong',
   failed: 'Lỗi',
+};
+
+const LESSON_STATUS_LABEL: Record<LessonV2['status'], string> = {
+  skeleton_ready: 'Đang tạo',
+  partially_ready: 'Đang tạo',
+  ready: 'Xong',
+  ready_with_warnings: 'Xong',
+  failed: 'Lỗi',
+};
+
+const UNIT_STATUS_LABEL: Record<UnitState['status'], string> = {
+  pending: 'Chờ',
+  processing: 'Đang tạo',
+  ready: 'Xong',
+  failed: 'Lỗi',
+  skipped: 'Bỏ qua',
 };
 
 function isTerminalLesson(lesson: LessonV2): boolean {
@@ -110,6 +127,7 @@ function createStyles(theme: AppTheme) {
       gap: theme.spacing.xs,
     },
     statusBadge: {
+      alignSelf: 'flex-start',
       backgroundColor: theme.colors.surfaceMuted,
       borderRadius: theme.radius.pill,
       paddingHorizontal: theme.spacing.sm,
@@ -411,7 +429,7 @@ export function ProgressiveLessonScreen({
     <AppScreen>
       <ScreenHeader
         onBack={() => navigation.goBack()}
-        title={lesson.title ?? 'Bài học đang tạo…'}
+        title={lesson.title ?? (isTerminalLesson(lesson) ? 'Bài học' : 'Bài học đang tạo…')}
         rightAction={
           isPolling ? (
             <ActivityIndicator
@@ -422,6 +440,9 @@ export function ProgressiveLessonScreen({
         }
       />
       <ScrollView contentContainerStyle={styles.content}>
+        <AppText color="secondary" variant="caption" style={{textAlign: 'center'}} testID="lesson-progress-header">
+          Câu ({LESSON_STATUS_LABEL[lesson.status]}) · Từ vựng ({UNIT_STATUS_LABEL[lesson.units.vocabulary.status]}) · Ngữ pháp ({UNIT_STATUS_LABEL[lesson.units.grammar.status]}) · Bài tập ({UNIT_STATUS_LABEL[lesson.units.practice.status]})
+        </AppText>
         {isOffline ? (
           <View testID="offline-banner" accessibilityRole="alert">
             <Banner message="Bạn đang ngoại tuyến. Bài học đã lưu vẫn đọc được; kết nối lại để tiếp tục cập nhật." />
@@ -476,6 +497,12 @@ export function ProgressiveLessonScreen({
           </AppText>
         ) : null}
 
+        {voiceChecked && !voiceAvailable ? (
+          <AppText color="secondary" testID="tts-unavailable-hint" style={{marginBottom: theme.spacing.sm}}>
+            Thiết bị chưa cài giọng en-US nên các nút phát âm đang tắt. Phần còn lại của bài học vẫn dùng bình thường.
+          </AppText>
+        ) : null}
+
         <View style={styles.section}>
           <AppText variant="h2" style={styles.sectionTitle}>
             Câu ({readyCount}/{lesson.sentences.length})
@@ -513,7 +540,7 @@ export function ProgressiveLessonScreen({
                           {sentence.translation ? (
                             <AppText>{sentence.translation}</AppText>
                           ) : null}
-                          {sentence.simple_meaning ? (
+                          {sentence.simple_meaning && sentence.simple_meaning.trim() !== sentence.translation?.trim() ? (
                             <AppText color="secondary">
                               {sentence.simple_meaning}
                             </AppText>
@@ -646,7 +673,7 @@ export function ProgressiveLessonScreen({
                     </AppText>
                   ) : null}
                   <AppText color="secondary">{vocabulary.meaning_vi}</AppText>
-                  {vocabulary.example ? (
+                  {vocabulary.example && vocabulary.example.trim() !== lesson.sentences.find(s => s.id === vocabulary.source_sentence_id)?.text.trim() ? (
                     <AppText color="secondary" variant="caption">
                       {vocabulary.example}
                       {vocabulary.example_translation
@@ -657,7 +684,7 @@ export function ProgressiveLessonScreen({
                 </View>
                 <IconButton
                   accessibilityLabel={`Phát âm từ ${vocabulary.word}`}
-                  icon="record_voice_over"
+                  icon="play_circle"
                   onPress={() => handleSpeakVocabulary(vocabulary)}
                   disabled={ttsDisabled}
                   testID={`vocab-tts-${vocabulary.id}`}
@@ -682,7 +709,9 @@ export function ProgressiveLessonScreen({
             <AppCard key={grammar.id}>
               <View testID={`grammar-card-${grammar.id}`}>
                 <AppText variant="h3">{grammar.name}</AppText>
-                <AppText color="secondary">{grammar.name_vi}</AppText>
+                {grammar.name_vi && !grammar.name.toLowerCase().includes(grammar.name_vi.toLowerCase()) ? (
+                  <AppText color="secondary">{grammar.name_vi}</AppText>
+                ) : null}
                 <AppText>{grammar.explanation_vi}</AppText>
                 {grammar.beginner_tip ? (
                   <AppText color="secondary" variant="caption">
@@ -694,18 +723,61 @@ export function ProgressiveLessonScreen({
           ))}
         </View>
 
-        {voiceChecked && !voiceAvailable ? (
-          <AppText color="secondary" testID="tts-unavailable-hint">
-            Thiết bị chưa cài giọng en-US nên các nút phát âm đang tắt. Phần còn
-            lại của bài học vẫn dùng bình thường.
+        <View style={styles.section}>
+          <AppText variant="h2" style={styles.sectionTitle}>
+            Bài tập ({lesson.practice.length})
           </AppText>
-        ) : null}
+          {lesson.units.practice.status === 'pending' || lesson.units.practice.status === 'processing' ? (
+            <View style={styles.skeletonColumn} testID="practice-skeleton">
+              <View style={styles.skeletonBox} />
+              <View style={styles.skeletonBox} />
+              <View style={[styles.skeletonBox, styles.skeletonNarrow]} />
+            </View>
+          ) : null}
+          {lesson.units.practice.status === 'ready' && lesson.practice.length === 0 ? (
+            <AppText color="secondary" testID="practice-empty">
+              Bài này không có bài tập riêng.
+            </AppText>
+          ) : null}
+          {lesson.practice.map(practice => (
+            <AppCard key={practice.id}>
+              <View testID={`practice-card-${practice.id}`}>
+                <AppText variant="h3">{practice.question}</AppText>
+                {practice.type === 'multiple_choice' && practice.options ? (
+                  <View style={{gap: theme.spacing.xs, marginTop: theme.spacing.xs}}>
+                    {practice.options.map((opt, i) => (
+                      <AppText key={i} color="secondary">• {opt}</AppText>
+                    ))}
+                  </View>
+                ) : null}
+                <AppText color="secondary" style={{marginTop: theme.spacing.xs}}>
+                  Đáp án: {practice.answer}
+                </AppText>
+                {practice.explanation_vi ? (
+                  <AppText color="secondary" variant="caption">
+                    Giải thích: {practice.explanation_vi}
+                  </AppText>
+                ) : null}
+              </View>
+            </AppCard>
+          ))}
+        </View>
+
         {ttsMessage ? (
           <AppText color="danger" testID="tts-error">
             {ttsMessage}
           </AppText>
         ) : null}
-        {isOffline || !isTerminalLesson(lesson) ? (
+        {lesson.status === 'ready' || lesson.status === 'ready_with_warnings' ? (
+          <View style={{gap: theme.spacing.md}}>
+            <Banner message="Bài học đã hoàn tất!" />
+            <AppButton
+              title="Về Thư viện"
+              onPress={() => (navigation as any).navigate('Lessons')}
+              testID="lesson-ready-cta"
+            />
+          </View>
+        ) : (isOffline || !isTerminalLesson(lesson) ? (
           <AppButton
             title={isPolling ? 'Đang cập nhật…' : 'Tải lại bài học'}
             variant="secondary"
@@ -713,7 +785,7 @@ export function ProgressiveLessonScreen({
             onPress={handleRefresh}
             testID="lesson-refresh"
           />
-        ) : null}
+        ) : null)}
       </ScrollView>
     </AppScreen>
   );

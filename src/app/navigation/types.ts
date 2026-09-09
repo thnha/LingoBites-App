@@ -64,7 +64,6 @@ export type HomeStackParamList = {
   };
   SavedLessonDetail: {lessonId: string};
   ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
-  LessonV2Create: undefined;
   FlashcardList: {lessonId?: string} | undefined;
   DailyReview: undefined;
   Today: undefined;
@@ -74,7 +73,6 @@ export type LessonsStackParamList = {
   LessonsList: undefined;
   SavedLessonDetail: {lessonId: string};
   ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
-  LessonV2Create: undefined;
   FlashcardList: {lessonId?: string} | undefined;
   /** Imported content-package lessons (M1-M3), separate from the OCR flow above. */
   ContentLessonList: undefined;
@@ -92,7 +90,6 @@ export type ProfileStackParamList = {
   ProgressReport: undefined;
   FeatureStatus: undefined;
   TtsSpike: undefined;
-  LessonV2Create: undefined;
   ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
 };
 

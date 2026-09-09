@@ -186,14 +186,11 @@ describe('Feature Flag: reviewSystem', () => {
   });
 
   describe('HomeScreen integration', () => {
-    it('does not mount OCR or Lesson V2 routes when their flags are OFF', () => {
+    it('does not mount OCR or Progressive Lesson routes when their flags are OFF', () => {
       const mvpFeatures = getReleaseConfig('lingobites-mvp').features;
 
       expect(isIngestionRouteEnabled('ImageCapture', mvpFeatures)).toBe(false);
       expect(isIngestionRouteEnabled('OCRReview', mvpFeatures)).toBe(false);
-      expect(isIngestionRouteEnabled('LessonV2Create', mvpFeatures)).toBe(
-        false,
-      );
       expect(isIngestionRouteEnabled('ProgressiveLesson', mvpFeatures)).toBe(
         false,
       );

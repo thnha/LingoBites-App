@@ -14,6 +14,11 @@ import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '@theme';
 import {getTextLengthBucket, trackEvent} from '../analytics';
 import {validateConfirmedText} from '@shared/utils/textValidation';
+import {useFeatureFlags} from '@/release';
+import {
+  resolveLessonDestination,
+  startLessonFromConfirmedText,
+} from '@shared/lesson/startLessonFromConfirmedText';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'PasteText'>;
 
@@ -30,10 +35,12 @@ function countWords(text: string): number {
 export function PasteTextScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
+  const {config} = useFeatureFlags();
   const [text, setText] = useState(
     'We are offering a special discount for new customers.',
   );
   const [screenState, setScreenState] = useState<ScreenState>({type: 'input'});
+  const [creating, setCreating] = useState(false);
   const wordCount = useMemo(() => countWords(text), [text]);
 
   // Lỗi phân tích được màn "Đang phân tích" trả về qua param khi quay lại đây.
@@ -45,14 +52,14 @@ export function PasteTextScreen({navigation, route}: Props) {
     }
   }, [analyzeError, navigation]);
 
-  function handleAnalyze() {
+  async function handleAnalyze() {
+    if (creating) return;
     const validation = validateConfirmedText(text);
     if (!validation.valid) {
       setScreenState({type: 'error', message: validation.message});
       return;
     }
 
-    setScreenState({type: 'input'});
     trackEvent('text_entered', {
       text_length_bucket: getTextLengthBucket(validation.value.length),
     });
@@ -62,11 +69,32 @@ export function PasteTextScreen({navigation, route}: Props) {
       edited_after_ocr: false,
     });
 
-    navigation.navigate('Analyzing', {
+    const destination = resolveLessonDestination(config.features);
+    if (destination === 'v1_analyze') {
+      setScreenState({type: 'input'});
+    } else {
+      setCreating(true);
+      setScreenState({type: 'input'});
+    }
+
+    const result = await startLessonFromConfirmedText({
       confirmedText: validation.value,
       sourceType: 'paste_text',
+      destination,
       origin: 'PasteText',
+      navigate: (screen, params) => {
+        if (screen === 'Analyzing' && 'confirmedText' in params) {
+          navigation.navigate('Analyzing', params);
+        } else if (screen === 'ProgressiveLesson' && 'lessonId' in params) {
+          navigation.navigate('ProgressiveLesson', params);
+        }
+      },
     });
+
+    if (!result.ok) {
+      setScreenState({type: 'error', message: result.message});
+    }
+    setCreating(false);
   }
 
   return (
@@ -121,7 +149,7 @@ export function PasteTextScreen({navigation, route}: Props) {
         {screenState.type === 'error' ? (
           <ErrorCard
             message={screenState.message}
-            onRetry={handleAnalyze}
+            onRetry={() => void handleAnalyze()}
             retryLabel={t('common.retry')}
           />
         ) : null}
@@ -137,7 +165,8 @@ export function PasteTextScreen({navigation, route}: Props) {
         <Pressable
           accessibilityLabel="Trích xuất từ vựng"
           accessibilityRole="button"
-          onPress={handleAnalyze}
+          disabled={creating}
+          onPress={() => void handleAnalyze()}
           style={({pressed}) => [
             {
               alignItems: 'center',
@@ -147,7 +176,7 @@ export function PasteTextScreen({navigation, route}: Props) {
               gap: 8,
               justifyContent: 'center',
               minHeight: 52,
-              opacity: pressed ? theme.states.pressedOpacity : 1,
+              opacity: creating || pressed ? theme.states.pressedOpacity : 1,
             },
           ]}
         >
@@ -163,7 +192,7 @@ export function PasteTextScreen({navigation, route}: Props) {
               fontWeight: '600',
             }}
           >
-            Trích xuất từ vựng
+            {creating ? 'Đang khởi tạo bài học…' : 'Trích xuất từ vựng'}
           </AppText>
         </Pressable>
       </BottomActionBar>

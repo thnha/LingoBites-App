@@ -6,7 +6,6 @@ export const INGESTION_ROUTE_REQUIREMENTS = {
   ImageCapture: 'imageInput',
   OCRReview: 'ocrReviewEdit',
   Analyzing: 'aiLessonAnalysis',
-  LessonV2Create: 'lessonV2',
   ProgressiveLesson: 'lessonV2',
 } as const satisfies Record<string, FeatureKey>;
 

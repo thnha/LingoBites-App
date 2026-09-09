@@ -16,6 +16,7 @@ import {
   getLessonToken,
   saveLessonToken,
 } from '../security/lessonTokenStore';
+import type {AnalyzeSourceType} from './types';
 
 const CREATE_PATH = '/v2/lessons';
 const DEFAULT_LEVEL = 'Beginner';
@@ -29,7 +30,7 @@ export type LessonV2CreateInput = {
   confirmedText: string;
   level?: string;
   promptVersion?: string;
-  sourceType?: 'paste_text' | 'camera' | 'gallery';
+  sourceType?: AnalyzeSourceType;
   idempotencyKey?: string;
   anonymousUserId?: string;
 };

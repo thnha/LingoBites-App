@@ -363,4 +363,129 @@ describe('ProgressiveLessonScreen', () => {
       ),
     ).toHaveLength(0);
   });
+  it('deduplicates simple_meaning if it matches translation (AC-14)', async () => {
+    const lesson = {
+      ...baseLesson,
+      sentences: [
+        {
+          ...baseLesson.sentences[0],
+          status: 'ready' as const,
+          translation: ' Xin chào ',
+          simple_meaning: 'Xin chào',
+          phrases: [],
+        }
+      ]
+    };
+    expect(upsertLessonV2(lesson).ok).toBe(true);
+    const tree = await renderScreen(routeFor(lesson.lesson_id));
+    
+    const card = tree.root.findByProps({testID: `sentence-card-${lesson.sentences[0].id}`});
+    const texts = card.findAll(node => node.props.testID === undefined && typeof node.type !== 'string' && node.type.name === 'AppText' && typeof node.props.children === 'string' && node.props.children.trim() === 'Xin chào');
+    expect(texts.length).toBe(1);
+  });
+
+  it('renders correctly for status ready (AC-16, AC-17)', async () => {
+    const lesson = {
+      ...baseLesson,
+      status: 'ready' as const,
+      title: 'My Lesson',
+    };
+    expect(upsertLessonV2(lesson).ok).toBe(true);
+    const tree = await renderScreen(routeFor(lesson.lesson_id));
+
+    expect(tree.root.findByProps({testID: 'lesson-ready-cta'})).toBeTruthy();
+
+    const header = tree.root.findByProps({testID: 'lesson-progress-header'});
+    expect(header.props.children.join('')).toContain('Câu (Xong)');
+  });
+
+  it('renders practice section with data (AC-18)', async () => {
+    const lesson = {
+      ...baseLesson,
+      units: {
+        ...baseLesson.units,
+        practice: { status: 'ready' as const, attempts: 1, error_code: null, retryable: false }
+      },
+      practice: [
+        {
+          id: 'p1',
+          type: 'multiple_choice' as const,
+          question: 'What is 1+1?',
+          options: ['1', '2'],
+          answer: '2',
+        }
+      ]
+    };
+    expect(upsertLessonV2(lesson).ok).toBe(true);
+    const tree = await renderScreen(routeFor(lesson.lesson_id));
+
+    expect(tree.root.findByProps({testID: 'practice-card-p1'})).toBeTruthy();
+  });
+
+  it('renders practice section skeleton when pending/processing (AC-18)', async () => {
+    const lesson = {
+      ...baseLesson,
+      units: {
+        ...baseLesson.units,
+        practice: { status: 'processing' as const, attempts: 1, error_code: null, retryable: false }
+      },
+      practice: []
+    };
+    expect(upsertLessonV2(lesson).ok).toBe(true);
+    const tree = await renderScreen(routeFor(lesson.lesson_id));
+
+    expect(tree.root.findByProps({testID: 'practice-skeleton'})).toBeTruthy();
+  });
+
+  it('renders practice section empty state when ready but empty (AC-18)', async () => {
+    const lesson = {
+      ...baseLesson,
+      units: {
+        ...baseLesson.units,
+        practice: { status: 'ready' as const, attempts: 1, error_code: null, retryable: false }
+      },
+      practice: []
+    };
+    expect(upsertLessonV2(lesson).ok).toBe(true);
+    const tree = await renderScreen(routeFor(lesson.lesson_id));
+
+    expect(tree.root.findByProps({testID: 'practice-empty'})).toBeTruthy();
+  });
+
+  it('asserts style badge, icon name, and string deduplication (AC-15, AC-19, AC-20)', async () => {
+    const lesson = {
+      ...vocabLesson(),
+      grammar: [
+        {
+          id: 'g1',
+          name: 'Thì Present Simple',
+          name_vi: 'Thì Present Simple',
+          pattern: '',
+          found_in_sentence_id: 's0',
+          found_in_text: '',
+          explanation_vi: '...',
+          beginner_tip: '',
+          examples: [],
+        }
+      ]
+    };
+    lesson.sentences[0].text = 'She works at a small cafe.';
+    expect(upsertLessonV2(lesson).ok).toBe(true);
+    const tree = await renderScreen(routeFor(lesson.lesson_id));
+
+    const badge = tree.root.findByProps({testID: `sentence-status-${lesson.sentences[0].id}`}).parent;
+    expect(badge?.props.style).toEqual(expect.objectContaining({ alignSelf: 'flex-start' }));
+
+    const vocabTts = tree.root.findByProps({testID: 'vocab-tts-v1'});
+    expect(vocabTts.props.icon).toBe('play_circle');
+
+    const vocabCard = tree.root.findByProps({testID: 'vocab-card-v1'});
+    const exampleTexts = vocabCard.findAll(node => node.type.name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('She works at a small cafe.'));
+    expect(exampleTexts.length).toBe(0);
+
+    const grammarCard = tree.root.findByProps({testID: 'grammar-card-g1'});
+    const nameViTexts = grammarCard.findAll(node => node.type.name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('Thì Present Simple'));
+    // 1 match expected because it should render `name` but NOT `name_vi`.
+    expect(nameViTexts.length).toBe(1);
+  });
 });

@@ -1,4 +1,9 @@
-import {MAX_INPUT_TEXT_LENGTH, validateConfirmedText} from '../textValidation';
+import {
+  MAX_INPUT_TEXT_LENGTH,
+  MAX_LESSON_V2_WORDS,
+  validateConfirmedText,
+  validateLessonV2InputText,
+} from '../textValidation';
 
 describe('validateConfirmedText', () => {
   it('rejects empty input', () => {
@@ -26,5 +31,32 @@ describe('validateConfirmedText', () => {
   it('trims surrounding whitespace', () => {
     const result = validateConfirmedText('  hello world  ');
     expect(result).toEqual({valid: true, value: 'hello world'});
+  });
+});
+
+describe('validateLessonV2InputText', () => {
+  it('rejects empty input', () => {
+    expect(validateLessonV2InputText('   ').valid).toBe(false);
+  });
+
+  it('rejects text over the V2 word limit', () => {
+    const result = validateLessonV2InputText(
+      Array.from({length: MAX_LESSON_V2_WORDS + 1}, () => 'word').join(' '),
+    );
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.message).toContain('500');
+    }
+  });
+
+  it('accepts and trims text at the V2 word limit', () => {
+    const value = Array.from({length: MAX_LESSON_V2_WORDS}, () => 'word').join(
+      ' ',
+    );
+    expect(validateLessonV2InputText(` ${value} `)).toEqual({
+      valid: true,
+      value,
+    });
   });
 });

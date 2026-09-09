@@ -33,7 +33,7 @@ describe('HomeScreen Option C', () => {
     resetDatabaseForTests(open({name: DB_NAME}));
   });
 
-  it('renders the four full-card shortcuts and the coming-soon banner', async () => {
+  it('renders the four shortcuts and source entries', async () => {
     const tree = await renderHome();
     expect(
       tree.root.findAll(node => node.props.testID === 'home-shortcut-review')
@@ -53,12 +53,18 @@ describe('HomeScreen Option C', () => {
     ).toBeGreaterThan(0);
     expect(
       tree.root.findAllByProps({
-        children: 'Học từ ảnh hoặc văn bản · Sắp ra mắt',
+        children: 'Học từ ảnh hoặc văn bản',
       }).length,
     ).toBeGreaterThan(0);
     expect(
-      tree.root.findAllByProps({children: 'Chụp ảnh học ngay'}).length,
-    ).toBe(0);
+      tree.root.findAllByProps({testID: 'home-input-camera'}).length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAllByProps({testID: 'home-input-gallery'}).length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAllByProps({testID: 'home-input-paste'}).length,
+    ).toBeGreaterThan(0);
   });
 
   it('routes shortcut actions to their existing destinations', async () => {

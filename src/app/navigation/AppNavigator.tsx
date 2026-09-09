@@ -13,7 +13,6 @@ import {OCRReviewScreen} from '@modules/ocr';
 import {AnalyzingScreen} from '@modules/ai-analysis';
 import {
   LessonResultScreen,
-  LessonV2CreateScreen,
   LessonsHistoryScreen,
   ProgressiveLessonScreen,
   SavedLessonDetailScreen,
@@ -109,13 +108,6 @@ function HomeStackNavigator() {
           options={{headerShown: false}}
         />
       )}
-      {canMount('LessonV2Create') && (
-        <HomeStack.Screen
-          component={LessonV2CreateScreen}
-          name="LessonV2Create"
-          options={{headerShown: false}}
-        />
-      )}
       <HomeStack.Screen
         component={FlashcardListScreen}
         name="FlashcardList"
@@ -176,13 +168,6 @@ function LessonsStackNavigator() {
         <LessonsStack.Screen
           component={ProgressiveLessonScreen}
           name="ProgressiveLesson"
-          options={{headerShown: false}}
-        />
-      )}
-      {canMount('LessonV2Create') && (
-        <LessonsStack.Screen
-          component={LessonV2CreateScreen}
-          name="LessonV2Create"
           options={{headerShown: false}}
         />
       )}
@@ -277,13 +262,6 @@ function ProfileStackNavigator() {
         name="TtsSpike"
         options={{headerShown: false}}
       />
-      {canMount('LessonV2Create') && (
-        <ProfileStack.Screen
-          component={LessonV2CreateScreen}
-          name="LessonV2Create"
-          options={{headerShown: false}}
-        />
-      )}
       {canMount('ProgressiveLesson') && (
         <ProfileStack.Screen
           component={ProgressiveLessonScreen}

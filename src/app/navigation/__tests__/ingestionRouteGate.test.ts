@@ -79,9 +79,9 @@ describe('isIngestionRouteHiddenForMvp', () => {
     expect(isIngestionRouteEnabled('Unknown', enabled())).toBe(false);
   });
 
-  it('gates Lesson V2 routes by the lessonV2 capability', () => {
+  it('gates Progressive Lesson by the lessonV2 capability', () => {
     expect(
-      isIngestionRouteEnabled('LessonV2Create', {
+      isIngestionRouteEnabled('ProgressiveLesson', {
         ...enabled(),
         lessonV2: true,
       }),
