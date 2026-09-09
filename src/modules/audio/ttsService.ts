@@ -29,7 +29,8 @@ function getNativeTts(): TtsModule | null {
   }
 
   try {
-    nativeTts = require('react-native-tts').default as TtsModule;
+    const mod = require('react-native-tts');
+    nativeTts = (mod.default ?? mod) as TtsModule;
   } catch {
     nativeTts = null;
   }
