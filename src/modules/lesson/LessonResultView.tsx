@@ -98,7 +98,7 @@ export function LessonResultView({
       contentContainerStyle={{
         padding: theme.spacing.xl,
         gap: theme.spacing.lg,
-        paddingBottom: theme.spacing.xxl,
+        paddingBottom: theme.spacing.xxxl,
       }}
     >
       <AppText variant="title">{lesson.title}</AppText>

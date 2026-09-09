@@ -250,7 +250,7 @@ function makeStyles(theme: AppTheme) {
       flex: 1,
       gap: theme.spacing.xl,
       justifyContent: 'center',
-      paddingBottom: theme.spacing.xxl,
+      paddingBottom: theme.spacing.xxxl,
       paddingHorizontal: theme.gutter,
     },
     doneStepText: {

@@ -4,7 +4,15 @@ import type {AppTheme} from '../types';
 // Ported from LingoScan standalone [data-theme="comic"]: comic-book ink. Warm
 // paper, bold blue + red, near-black 3px borders, hard offset shadows, modest
 // rounding.
-const handoffSpacing = {xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 48};
+const handoffSpacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  xxxl: 48,
+};
 
 export const comicTheme: AppTheme = {
   id: 'comic',

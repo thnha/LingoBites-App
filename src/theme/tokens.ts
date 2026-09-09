@@ -1,6 +1,14 @@
-import type {RadiusScale, SixStep} from './types';
+import type {RadiusScale, SixStep, SpacingScale} from './types';
 
-export const spacing: SixStep = {xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32};
+export const spacing: SpacingScale = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  xxxl: 48,
+};
 
 export const radius: RadiusScale = {sm: 6, md: 8, lg: 12, xl: 20, pill: 999};
 

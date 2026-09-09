@@ -1,7 +1,15 @@
 import {fontSize, gutter, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
 
-const handoffSpacing = {xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 48};
+const handoffSpacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  xxxl: 48,
+};
 
 export const pastelKidsTheme: AppTheme = {
   id: 'pastel-kids',
@@ -22,16 +30,16 @@ export const pastelKidsTheme: AppTheme = {
     onPrimaryContainer: '#00574d',
     secondary: '#a93349',
     secondaryContainer: '#fe7488',
-    secondarySoft: 'rgba(254,116,136,0.16)',
+    secondarySoft: 'rgba(254,116,136,0.18)',
     onSecondaryContainer: '#730425',
     tertiary: '#6d5e00',
     tertiaryContainer: '#d8bd23',
     tertiaryFixed: '#ffe24c',
-    tertiarySoft: 'rgba(255,226,76,0.22)',
+    tertiarySoft: 'rgba(255,226,76,0.30)',
     onTertiaryContainer: '#594c00',
     accent: '#2dd4bf',
     accentInk: '#00574d',
-    accentSoft: '#ddf8f5',
+    accentSoft: 'rgba(45,212,191,0.16)',
     danger: '#ba1a1a',
     overlayLight: 'rgba(255,255,255,0.34)',
     overlay: 'rgba(0,0,0,0.55)',
@@ -61,6 +69,13 @@ export const pastelKidsTheme: AppTheme = {
       shadowOpacity: 0.12,
       shadowRadius: 6,
       elevation: 2,
+    },
+    card: {
+      shadowColor: '#006b5f',
+      shadowOffset: {width: 0, height: 8},
+      shadowOpacity: 0.07,
+      shadowRadius: 30,
+      elevation: 8,
     },
     medium: {
       shadowColor: '#2dd4bf',
@@ -135,7 +150,7 @@ export const pastelKidsTheme: AppTheme = {
         shadow: 'buttonDeep',
       },
     },
-    card: {background: '#ffffff', radius: 24, padding: 16, shadow: 'soft'},
+    card: {background: '#ffffff', radius: 24, padding: 24, shadow: 'card'},
     input: {
       background: '#ffffff',
       text: '#1c1c10',

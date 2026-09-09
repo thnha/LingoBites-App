@@ -273,7 +273,7 @@ function makeStyles(theme: AppTheme) {
     },
     scrollContent: {
       gap: theme.spacing.lg,
-      paddingBottom: theme.spacing.xxl,
+      paddingBottom: theme.spacing.xxxl,
       paddingHorizontal: theme.gutter,
       paddingTop: theme.spacing.sm,
     },

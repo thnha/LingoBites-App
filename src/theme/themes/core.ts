@@ -3,7 +3,15 @@ import type {AppTheme} from '../types';
 
 // Ported from LingoScan standalone [data-theme="core"]: clean blue, cool
 // off-white surfaces, soft blurred shadows, generously rounded corners.
-const handoffSpacing = {xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 48};
+const handoffSpacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  xxxl: 48,
+};
 
 export const coreTheme: AppTheme = {
   id: 'core',

@@ -278,21 +278,65 @@ export function hasIconAndTextLabel(instance: ReactTestInstance): {
   };
 }
 
+function parseRgbChannel(value: string): number {
+  const trimmed = value.trim();
+  if (trimmed.endsWith('%')) {
+    return (parseFloat(trimmed) / 100) * 255;
+  }
+  return parseFloat(trimmed);
+}
+
+/**
+ * Resolves a CSS color to opaque 0-255 RGB channels. `rgb()`/`rgba()`
+ * tints are composited over white: soft theme colors (e.g. pastel-kids
+ * `accentSoft`) are drawn over light surfaces, matching design/app.css
+ * where e.g. `rgba(45,212,191,.16)` over white ≈ `#ddf8f5`.
+ */
+function toOpaqueRgb(color: string): {r: number; g: number; b: number} {
+  const c = color.trim().toLowerCase();
+  if (c.startsWith('rgb')) {
+    const parts = c.slice(c.indexOf('(') + 1, c.indexOf(')')).split(',');
+    const alpha = parts.length > 3 ? parseFloat(parts[3]) : 1;
+    const blend = (channel: number) => channel * alpha + 255 * (1 - alpha);
+    return {
+      r: blend(parseRgbChannel(parts[0] ?? '0')),
+      g: blend(parseRgbChannel(parts[1] ?? '0')),
+      b: blend(parseRgbChannel(parts[2] ?? '0')),
+    };
+  }
+  // Parse hex color (#rgb or #rrggbb)
+  const hex = c.replace('#', '');
+  const full =
+    hex.length === 3
+      ? hex
+          .split('')
+          .map(ch => ch + ch)
+          .join('')
+      : hex;
+  return {
+    r: parseInt(full.substring(0, 2), 16),
+    g: parseInt(full.substring(2, 4), 16),
+    b: parseInt(full.substring(4, 6), 16),
+  };
+}
+
 /**
  * Calculate relative luminance for a color
  * https://www.w3.org/TR/WCAG20/#relativeluminancedef
  */
 function getRelativeLuminance(color: string): number {
-  // Parse hex color
-  const hex = color.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16) / 255;
-  const g = parseInt(hex.substring(2, 4), 16) / 255;
-  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  const {r, g, b} = toOpaqueRgb(color);
+  const rn = r / 255;
+  const gn = g / 255;
+  const bn = b / 255;
 
   // Apply gamma correction
-  const rsRGB = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
-  const gsRGB = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
-  const bsRGB = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+  const rsRGB =
+    rn <= 0.03928 ? rn / 12.92 : Math.pow((rn + 0.055) / 1.055, 2.4);
+  const gsRGB =
+    gn <= 0.03928 ? gn / 12.92 : Math.pow((gn + 0.055) / 1.055, 2.4);
+  const bsRGB =
+    bn <= 0.03928 ? bn / 12.92 : Math.pow((bn + 0.055) / 1.055, 2.4);
 
   return 0.2126 * rsRGB + 0.7152 * gsRGB + 0.0722 * bsRGB;
 }

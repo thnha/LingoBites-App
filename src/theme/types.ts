@@ -62,6 +62,16 @@ export type SixStep = {
   xxl: number;
 };
 
+/**
+ * 7-step spacing scale matching `design/app.css` (4/8/12/16/24/32/48).
+ * `xxl` is 32 and the legacy 48 value moved to `xxxl` so existing
+ * `xxl` call sites had to opt into `xxxl` explicitly (see pastelKids
+ * handoff notes) instead of silently shrinking.
+ */
+export type SpacingScale = SixStep & {
+  xxxl: number;
+};
+
 export type RadiusScale = {
   sm: number;
   md: number;
@@ -100,7 +110,7 @@ export type AppTheme = {
     };
   };
   gutter: number;
-  spacing: SixStep;
+  spacing: SpacingScale;
   radius: RadiusScale;
   shadow: ShadowScale;
   components: {
