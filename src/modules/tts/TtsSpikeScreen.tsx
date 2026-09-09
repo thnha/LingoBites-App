@@ -62,14 +62,18 @@ export function TtsSpikeScreen() {
     Tts.addEventListener('tts-start', onStart);
     Tts.addEventListener('tts-finish', onFinish);
     Tts.addEventListener('tts-cancel', onCancel);
-    Tts.addEventListener('tts-error', onError);
+    if (Platform.OS === 'android') {
+      Tts.addEventListener('tts-error', onError);
+    }
 
     return () => {
       mounted = false;
       Tts.removeEventListener('tts-start', onStart);
       Tts.removeEventListener('tts-finish', onFinish);
       Tts.removeEventListener('tts-cancel', onCancel);
-      Tts.removeEventListener('tts-error', onError);
+      if (Platform.OS === 'android') {
+        Tts.removeEventListener('tts-error', onError);
+      }
       void Tts.stop();
     };
   }, []);
