@@ -6,6 +6,7 @@ import type {
   HomeStackParamList,
   RootTabParamList,
 } from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
@@ -179,24 +180,17 @@ export function HomeScreen({navigation}: Props) {
                 0%
               </AppText>
             </View>
-            <Pressable
+            <AppButton
               accessibilityLabel={t('home.continue_learning_a11y')}
-              accessibilityRole="button"
+              title={t('home.continue_learning')}
+              variant="primary-accent"
               onPress={() =>
                 navigation.navigate('ContentLessonRuntime', {
                   lessonId: startedLesson.id,
                 })
               }
-              style={({pressed}) => [
-                styles.primaryAction,
-                pressed && styles.pressed,
-              ]}
               testID="home-continue-action"
-            >
-              <AppText style={styles.primaryActionText}>
-                {t('home.continue_learning')}
-              </AppText>
-            </Pressable>
+            />
           </View>
         ) : null}
         <View style={styles.inputSection} testID="home-input-source-section">

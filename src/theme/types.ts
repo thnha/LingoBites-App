@@ -74,6 +74,7 @@ export type ShadowScale = {
   soft: ViewStyle;
   medium: ViewStyle;
   strong: ViewStyle;
+  [key: string]: ViewStyle;
 };
 
 export type AppTheme = {
@@ -103,26 +104,22 @@ export type AppTheme = {
   radius: RadiusScale;
   shadow: ShadowScale;
   components: {
-    button: {
-      primary: {
+    button: Record<
+      string,
+      {
         background: string;
         text: string;
+        border?: string;
         height: number;
         radius: number;
-      };
-      secondary: {
-        background: string;
-        text: string;
-        border: string;
-        height: number;
-        radius: number;
-      };
-    };
+        shadow?: string;
+      }
+    >;
     card: {
       background: string;
       radius: number;
       padding: number;
-      shadow: keyof ShadowScale;
+      shadow: string;
     };
     input: {
       background: string;

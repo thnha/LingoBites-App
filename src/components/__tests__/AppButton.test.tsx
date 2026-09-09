@@ -18,7 +18,7 @@ async function render(ui: React.ReactElement) {
 }
 
 describe('AppButton', () => {
-  it('primary variant uses components.button.primary background', async () => {
+  it('primary variant uses components.button.primary-accent background', async () => {
     const tree = await render(<AppButton title="Go" onPress={() => {}} />);
     const pressable = tree.root.findByProps({testID: 'app-button'});
     const flattened = Object.assign(
@@ -26,13 +26,13 @@ describe('AppButton', () => {
       ...[].concat(pressable.props.style({pressed: false})),
     );
     expect(flattened.backgroundColor).toBe(
-      themes[defaultThemeId].components.button.primary.background,
+      themes[defaultThemeId].components.button['primary-accent'].background,
     );
   });
 
-  it('secondary variant uses a border', async () => {
+  it('outline variant uses a border', async () => {
     const tree = await render(
-      <AppButton title="Back" variant="secondary" onPress={() => {}} />,
+      <AppButton title="Back" variant="outline" onPress={() => {}} />,
     );
     const pressable = tree.root.findByProps({testID: 'app-button'});
     const flattened = Object.assign(
@@ -40,9 +40,9 @@ describe('AppButton', () => {
       ...[].concat(pressable.props.style({pressed: false})),
     );
     expect(flattened.borderColor).toBe(
-      themes[defaultThemeId].components.button.secondary.border,
+      themes[defaultThemeId].components.button.outline.border,
     );
-    expect(flattened.borderWidth).toBe(1);
+    expect(flattened.borderWidth).toBe(2);
   });
 
   it('fires onPress', async () => {

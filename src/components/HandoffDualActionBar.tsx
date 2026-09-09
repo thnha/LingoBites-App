@@ -1,8 +1,7 @@
 import React from 'react';
-import {Pressable, View} from 'react-native';
-import {AppText} from './AppText';
+import {View} from 'react-native';
 import {BottomActionBar} from './BottomActionBar';
-import {MaterialIcon} from './MaterialIcon';
+import {AppButton} from './AppButton';
 import {useAppTheme} from '../theme';
 
 type Props = {
@@ -31,66 +30,24 @@ export function HandoffDualActionBar({
       }}
     >
       <View style={{flexDirection: 'row', gap: theme.spacing.sm}}>
-        <Pressable
+        <AppButton
           accessibilityLabel={backLabel}
-          accessibilityRole="button"
+          title={backLabel}
+          variant="ghost"
+          iconLeft="chevron_left"
           onPress={onBack}
-          style={({pressed}) => [
-            {
-              alignItems: 'center',
-              backgroundColor: theme.colors.surfaceHigh,
-              borderRadius: theme.radius.lg,
-              flex: 1,
-              flexDirection: 'row',
-              gap: 4,
-              justifyContent: 'center',
-              minHeight: 52,
-              opacity: pressed ? theme.states.pressedOpacity : 1,
-            },
-          ]}
-        >
-          <MaterialIcon
-            color={theme.colors.primary}
-            name="chevron_left"
-            size={22}
-          />
-          <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
-            {backLabel}
-          </AppText>
-        </Pressable>
+          style={{flex: 1}}
+        />
         {onContinue ? (
-          <Pressable
+          <AppButton
             accessibilityLabel={continueLabel}
-            accessibilityRole="button"
-            accessibilityState={{disabled: continueDisabled}}
+            title={continueLabel}
+            variant="primary-accent"
+            iconRight="chevron_right"
             disabled={continueDisabled}
             onPress={onContinue}
-            style={({pressed}) => [
-              {
-                alignItems: 'center',
-                backgroundColor: theme.colors.primary,
-                borderRadius: theme.radius.lg,
-                flex: 1.6,
-                flexDirection: 'row',
-                gap: 4,
-                justifyContent: 'center',
-                minHeight: 52,
-                opacity:
-                  continueDisabled || pressed ? theme.states.pressedOpacity : 1,
-              },
-            ]}
-          >
-            <AppText
-              style={{color: theme.colors.text.inverse, fontWeight: '600'}}
-            >
-              {continueLabel}
-            </AppText>
-            <MaterialIcon
-              color={theme.colors.text.inverse}
-              name="chevron_right"
-              size={22}
-            />
-          </Pressable>
+            style={{flex: 1.6}}
+          />
         ) : null}
       </View>
     </BottomActionBar>

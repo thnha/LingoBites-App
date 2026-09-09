@@ -43,6 +43,9 @@
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Lexend-SemiBold.ttf</string>
+		<string>Quicksand-Medium.ttf</string>
+		<string>Lexend-Bold.ttf</string>
 		<string>MaterialIcons.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

@@ -42,13 +42,26 @@ export function AppText({
   const colorValue =
     color === 'danger' ? theme.colors.danger : theme.colors.text[color];
 
+  const isDisplay = [
+    'display',
+    'h1',
+    'h2',
+    'h3',
+    'title',
+    'label',
+    'caption',
+  ].includes(variant);
+  const resolvedFontFamily = isDisplay
+    ? theme.typography.fontFamily.display
+    : theme.typography.fontFamily.primary;
+
   return (
     <Text
       maxFontSizeMultiplier={
         maxFontSizeMultiplier ?? preset.maxFontSizeMultiplier
       }
       style={StyleSheet.flatten([
-        {color: colorValue, fontFamily: theme.typography.fontFamily.primary},
+        {color: colorValue, fontFamily: resolvedFontFamily},
         variantStyle,
         style,
       ])}

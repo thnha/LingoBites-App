@@ -9,20 +9,33 @@ import {
   type ViewStyle,
 } from 'react-native';
 import {useAppTheme} from '../theme';
+import type {HandoffIconName} from './icons/iconRegistry';
+import {MaterialIcon} from './MaterialIcon';
 
-type Variant = 'primary' | 'secondary';
+export type AppButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'primary-accent'
+  | 'secondary-coral'
+  | 'outline'
+  | 'ghost'
+  | 'deep';
 
 type Props = Omit<PressableProps, 'style' | 'children'> & {
   title: string;
-  variant?: Variant;
+  variant?: AppButtonVariant;
   loading?: boolean;
+  iconLeft?: HandoffIconName;
+  iconRight?: HandoffIconName;
   style?: StyleProp<ViewStyle>;
 };
 
 export function AppButton({
   title,
-  variant = 'primary',
+  variant = 'primary-accent',
   loading = false,
+  iconLeft,
+  iconRight,
   disabled,
   style,
   accessibilityLabel,
@@ -31,11 +44,17 @@ export function AppButton({
   ...rest
 }: Props) {
   const {theme} = useAppTheme();
-  const spec = theme.components.button[variant];
+  const spec =
+    theme.components.button[variant] ||
+    theme.components.button['primary-accent'] ||
+    theme.components.button['primary'] ||
+    Object.values(theme.components.button)[0];
   const isDisabled = disabled || loading;
   const buttonAccessibilityState = loading
     ? {disabled: true, busy: true}
     : {...accessibilityState, disabled: isDisabled};
+
+  const shadowStyle = spec.shadow ? theme.shadow[spec.shadow] : undefined;
 
   return (
     <Pressable
@@ -51,10 +70,11 @@ export function AppButton({
           height: spec.height,
           borderRadius: spec.radius,
         },
-        variant === 'secondary' && {
-          borderColor: theme.components.button.secondary.border,
-          borderWidth: 1,
+        spec.border && {
+          borderColor: spec.border,
+          borderWidth: 2,
         },
+        shadowStyle,
         pressed && !isDisabled && {opacity: theme.states.pressedOpacity},
         isDisabled && {opacity: theme.states.disabledOpacity},
         style,
@@ -68,16 +88,24 @@ export function AppButton({
           importantForAccessibility="no"
         />
       ) : (
-        <Text
-          style={{
-            color: spec.text,
-            fontSize: theme.typography.size.md,
-            fontWeight: theme.typography.weight.bold,
-            fontFamily: theme.typography.fontFamily.primary,
-          }}
-        >
-          {title}
-        </Text>
+        <>
+          {iconLeft && (
+            <MaterialIcon color={spec.text} name={iconLeft} size={22} />
+          )}
+          <Text
+            style={{
+              color: spec.text,
+              fontSize: theme.typography.size.md,
+              fontWeight: theme.typography.weight.bold,
+              fontFamily: theme.typography.fontFamily.primary,
+            }}
+          >
+            {title}
+          </Text>
+          {iconRight && (
+            <MaterialIcon color={spec.text} name={iconRight} size={22} />
+          )}
+        </>
       )}
     </Pressable>
   );
@@ -87,6 +115,8 @@ const styles = StyleSheet.create({
   base: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 18,
+    paddingHorizontal: 22,
+    flexDirection: 'row',
+    gap: 8,
   },
 });

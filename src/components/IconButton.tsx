@@ -73,7 +73,7 @@ export function IconButton({
   const buttonStyle: ViewStyle = {
     alignItems: 'center',
     backgroundColor: colors.background,
-    borderRadius: tone === 'bare' ? theme.radius.md : theme.radius.pill,
+    borderRadius: theme.radius.pill,
     height: targetSize,
     justifyContent: 'center',
     minHeight: 44,
