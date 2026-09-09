@@ -95,10 +95,10 @@ function makeStyles(theme: AppTheme) {
       borderRadius: 12,
     },
     badgeEnabled: {
-      backgroundColor: theme.colors.successSoft || '#E8F5E9',
+      backgroundColor: '#E8F5E9',
     },
     badgeDisabled: {
-      backgroundColor: theme.colors.surfaceMid || '#F5F5F5',
+      backgroundColor: theme.colors.surfaceMuted || '#F5F5F5',
     },
     badgeText: {
       fontSize: 12,
@@ -110,7 +110,7 @@ function makeStyles(theme: AppTheme) {
     launchContainer: {
       marginTop: 8,
       padding: 8,
-      backgroundColor: theme.colors.surfaceMid,
+      backgroundColor: theme.colors.surfaceContainer,
       borderRadius: 4,
     },
   });

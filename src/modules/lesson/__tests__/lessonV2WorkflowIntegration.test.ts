@@ -18,6 +18,8 @@ import type {AIOutput} from '@shared/schemas/ai-output-v1';
 import {validFullOutput} from '@shared/fixtures';
 import type {LessonV2} from '@shared/schemas/lesson-v2';
 
+const baseLesson = fixture.lesson as unknown as LessonV2;
+
 const makeResponse = (
   body: unknown,
   status = 202,
@@ -80,12 +82,12 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
   // 1. Happy path: paragraph in -> skeleton immediately -> progressive fill -> ready
   it('TC-E2E-01: Happy Path - persists skeleton immediately, polls revision, and reaches ready', async () => {
     const skeletonLesson: LessonV2 = {
-      ...fixture.lesson,
+      ...baseLesson,
       status: 'skeleton_ready',
       revision: 1,
       sentences: [
         {
-          ...fixture.lesson.sentences[0],
+          ...baseLesson.sentences[0],
           status: 'pending',
           translation: null,
           simple_meaning: null,
@@ -94,14 +96,14 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
       ],
       chunks: [
         {
-          ...fixture.lesson.chunks[0],
+          ...baseLesson.chunks[0],
           status: 'pending',
         },
       ],
     };
 
     const readyLesson: LessonV2 = {
-      ...fixture.lesson,
+      ...baseLesson,
       status: 'ready',
       revision: 2,
     };
@@ -165,7 +167,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
   // 2. Partial failure: one chunk fails -> ready_with_warnings, others unaffected
   it('TC-E2E-02: Partial Failure - chunk failure degrades lesson to ready_with_warnings without failing other chunks', async () => {
     const degradedLesson: LessonV2 = {
-      ...fixture.lesson,
+      ...baseLesson,
       status: 'ready_with_warnings',
       revision: 3,
       chunks: [
@@ -234,10 +236,10 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
 
   // 3. Retry: retry a failed chunk/unit, confirm state reset without disturbing unrelated IDs
   it('TC-E2E-03: Retry Chunk - retrying failed chunk resets status to pending and preserves unrelated chunks', async () => {
-    tokenStoreMap.set(fixture.lesson.lesson_id, 'token-for-retry');
+    tokenStoreMap.set(baseLesson.lesson_id, 'token-for-retry');
 
     const retriedLesson: LessonV2 = {
-      ...fixture.lesson,
+      ...baseLesson,
       revision: 5,
       chunks: [
         {
@@ -257,7 +259,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
     );
 
     const retryResult = await retryLessonV2Chunk(
-      fixture.lesson.lesson_id,
+      baseLesson.lesson_id,
       'c0',
       {fetchImpl},
     );
@@ -270,7 +272,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
     }
 
     expect(fetchImpl).toHaveBeenCalledWith(
-      expect.stringContaining(`/v2/lessons/${fixture.lesson.lesson_id}/chunks/c0/retry`),
+      expect.stringContaining(`/v2/lessons/${baseLesson.lesson_id}/chunks/c0/retry`),
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
@@ -282,11 +284,11 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
 
   // 4. Idempotency: same key+input (reuse), same key+different input (409), different key (new lesson)
   it('TC-E2E-04: Idempotency - reused: true replaces token atomically in Keychain', async () => {
-    const lessonId = fixture.lesson.lesson_id;
+    const lessonId = baseLesson.lesson_id;
     tokenStoreMap.set(lessonId, 'old-capability-token');
 
     const reusedEnvelope = {
-      lesson: fixture.lesson,
+      lesson: baseLesson,
       access_token: 'new-reissued-token',
       token_type: 'Bearer',
       reused: true,
@@ -308,11 +310,11 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
 
   // 5. Resume / offline resilience
   it('TC-E2E-05: Offline & Resume - reads partial lesson from SQLite and resumes polling from Keychain token', async () => {
-    const lessonId = fixture.lesson.lesson_id;
+    const lessonId = baseLesson.lesson_id;
     tokenStoreMap.set(lessonId, 'persisted-keychain-token');
 
     const partialLesson: LessonV2 = {
-      ...fixture.lesson,
+      ...baseLesson,
       status: 'partially_ready',
       revision: 2,
     };
@@ -325,7 +327,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
     expect(cached?.status).toBe('partially_ready');
 
     const completedLesson: LessonV2 = {
-      ...fixture.lesson,
+      ...baseLesson,
       status: 'ready',
       revision: 3,
     };
@@ -356,7 +358,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
     const fetchImpl = jest.fn().mockResolvedValueOnce(
       makeResponse(
         {
-          lesson: fixture.lesson,
+          lesson: baseLesson,
           access_token: secretToken,
           token_type: 'Bearer',
         },
@@ -370,18 +372,18 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
     );
 
     // Token must be stored in Keychain
-    expect(tokenStoreMap.get(fixture.lesson.lesson_id)).toBe(secretToken);
+    expect(tokenStoreMap.get(baseLesson.lesson_id)).toBe(secretToken);
 
     // SQLite database must NOT contain the secret token anywhere
     const db = getDatabase();
     const rows = db.execute(
       'SELECT * FROM lesson_v2 WHERE lesson_id = ?;',
-      [fixture.lesson.lesson_id],
+      [baseLesson.lesson_id],
     );
     const rowJson = JSON.stringify(rows.rows?.item(0) ?? {});
     expect(rowJson).not.toContain(secretToken);
 
-    const localObj = getLessonV2ById(fixture.lesson.lesson_id);
+    const localObj = getLessonV2ById(baseLesson.lesson_id);
     expect(JSON.stringify(localObj)).not.toContain(secretToken);
   });
 
@@ -406,7 +408,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
 
   // 8. Delete & Purge: deleteLessonV2 purges local SQLite and Keychain token
   it('TC-E2E-08: Deletion - deleteLessonV2 clears local SQLite row and removes Keychain credential', async () => {
-    const lessonId = fixture.lesson.lesson_id;
+    const lessonId = baseLesson.lesson_id;
     tokenStoreMap.set(lessonId, 'token-to-delete');
 
     const fetchImpl = jest.fn().mockResolvedValueOnce(

@@ -85,7 +85,7 @@ describe('LocalDataDeletionService', () => {
       });
     const clearDbSpy = jest
       .spyOn(LessonRepository, 'clearAllLocalData')
-      .mockImplementation(() => {
+      .mockImplementation(async () => {
         callOrder.push('clear-db');
       });
 
