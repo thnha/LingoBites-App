@@ -39,4 +39,7 @@ export const featureDependencies: Record<FeatureKey, DependencyGroup[]> = {
   dialogueGenerator: [['situationLearning']],
   phraseExtractor: [['situationLearning']],
   situationPractice: [['situationLearning', 'reviewSystem']],
+
+  // Standalone v2 flow; when OFF the app keeps using the v1 lesson path (AC24).
+  lessonV2: [],
 };

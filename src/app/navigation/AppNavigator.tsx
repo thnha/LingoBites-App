@@ -14,6 +14,7 @@ import {AnalyzingScreen} from '@modules/ai-analysis';
 import {
   LessonResultScreen,
   LessonsHistoryScreen,
+  ProgressiveLessonScreen,
   SavedLessonDetailScreen,
   SentenceDetailScreen,
   WordDetailScreen,
@@ -101,6 +102,11 @@ function HomeStackNavigator() {
         options={{headerShown: false}}
       />
       <HomeStack.Screen
+        component={ProgressiveLessonScreen}
+        name="ProgressiveLesson"
+        options={{headerShown: false}}
+      />
+      <HomeStack.Screen
         component={FlashcardListScreen}
         name="FlashcardList"
         options={{headerShown: false}}
@@ -150,6 +156,11 @@ function LessonsStackNavigator() {
       <LessonsStack.Screen
         component={SavedLessonDetailScreen}
         name="SavedLessonDetail"
+        options={{headerShown: false}}
+      />
+      <LessonsStack.Screen
+        component={ProgressiveLessonScreen}
+        name="ProgressiveLesson"
         options={{headerShown: false}}
       />
       <LessonsStack.Screen

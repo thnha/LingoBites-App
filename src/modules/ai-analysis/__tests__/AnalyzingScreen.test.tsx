@@ -320,6 +320,31 @@ describe('AnalyzingScreen', () => {
       expect(checkMarks.length).toBe(2);
     });
 
+    it('renders optional practice as done when the backend reports failed', () => {
+      act(() => {
+        onProgress({
+          percent: 90,
+          stage: 'finalizing',
+          message: null,
+          stages: [
+            stage('source_analysis', 'completed'),
+            stage('sentence_analysis', 'completed'),
+            stage('learning_points', 'completed'),
+            stage('pronunciation', 'completed'),
+            stage('practice', 'failed'),
+            stage('finalizing', 'processing'),
+          ],
+        });
+      });
+
+      const activeIndicators = renderer.root.findAllByType(ActivityIndicator);
+      expect(activeIndicators.length).toBe(1);
+      const checkMarks = renderer.root
+        .findAllByType(Text)
+        .filter(node => node.props.children === '✓');
+      expect(checkMarks.length).toBe(5);
+    });
+
     it('renders active indicators (ActivityIndicator) for processing, retrying, and failed stages, allowing more than one active at once', () => {
       act(() => {
         onProgress({

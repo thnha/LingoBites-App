@@ -31,6 +31,7 @@
     "situationLearning": false,
     "dialogueGenerator": false,
     "phraseExtractor": false,
-    "situationPractice": false
+    "situationPractice": false,
+    "lessonV2": false
   }
 }

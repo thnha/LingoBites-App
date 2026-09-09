@@ -23,12 +23,12 @@ const FALLBACK_SUBTITLE =
   'App đang phân tích đoạn text bạn xác nhận. Giữ app mở một chút nhé.';
 
 const STAGES = [
-  {key: 'source_analysis', label: 'Đang dịch và sắp xếp nội dung'},
-  {key: 'sentence_analysis', label: 'Đang phân tích từng câu'},
-  {key: 'learning_points', label: 'Đang tìm ngữ pháp và từ vựng'},
-  {key: 'pronunciation', label: 'Đang chuẩn bị hướng dẫn phát âm'},
-  {key: 'practice', label: 'Đang tạo bài luyện tập'},
-  {key: 'finalizing', label: 'Đang kiểm tra bài học'},
+  {key: 'source_analysis', label: 'Đang dịch và sắp xếp nội dung', optional: false},
+  {key: 'sentence_analysis', label: 'Đang phân tích từng câu', optional: false},
+  {key: 'learning_points', label: 'Đang tìm ngữ pháp và từ vựng', optional: false},
+  {key: 'pronunciation', label: 'Đang chuẩn bị hướng dẫn phát âm', optional: false},
+  {key: 'practice', label: 'Đang tạo bài luyện tập', optional: true},
+  {key: 'finalizing', label: 'Đang kiểm tra bài học', optional: false},
 ] as const;
 
 type StepState = 'done' | 'active' | 'pending';
@@ -37,10 +37,12 @@ function getStepState(
   stageName: string,
   stages: AnalysisJobStage[],
   done: boolean,
+  optional: boolean,
 ): StepState {
   if (done) return 'done';
   const status = stages.find(stage => stage.name === stageName)?.status;
   if (status === 'completed' || status === 'skipped') return 'done';
+  if (optional && status === 'failed') return 'done';
   if (status === 'processing' || status === 'retrying' || status === 'failed') {
     return 'active';
   }
@@ -163,7 +165,12 @@ export function AnalyzingScreen({navigation, route}: Props) {
 
         <View style={themedStyles.stepList}>
           {STAGES.map(step => {
-            const stepState = getStepState(step.key, progress.stages, done);
+            const stepState = getStepState(
+              step.key,
+              progress.stages,
+              done,
+              step.optional,
+            );
             return (
               <View key={step.key} style={styles.stepRow}>
                 <StepIndicator state={stepState} theme={theme} />

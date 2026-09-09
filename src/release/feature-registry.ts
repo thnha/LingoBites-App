@@ -241,6 +241,15 @@ export const featureRegistry = [
     status: 'not_implemented',
     limitations: ["Not implemented yet"],
   },
+  {
+    key: 'lessonV2',
+    module: 'modules/lesson',
+    required: false,
+    releaseGroup: 'foundation',
+    status: 'beta',
+    entryPoint: 'HomeScreen -> ProgressiveLesson',
+    limitations: ["Disabled until T16 corpus thresholds and T17 operations evidence pass (SETE-159)."],
+  },
 ] as const satisfies readonly FeatureRegistryEntry[];
 
 export type FeatureKey = (typeof featureRegistry)[number]['key'];

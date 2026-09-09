@@ -5,6 +5,7 @@ import type {
   Sentence,
   VocabularyItem,
 } from '@shared/schemas/ai-output-v1';
+import type {LessonV2} from '@shared/schemas/lesson-v2';
 import type {AnalyzeSourceType, OCRSourceType} from '@shared/api/types';
 import type {NavigatorScreenParams} from '@react-navigation/native';
 
@@ -62,6 +63,7 @@ export type HomeStackParamList = {
     ocrRawText?: string;
   };
   SavedLessonDetail: {lessonId: string};
+  ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
   FlashcardList: {lessonId?: string} | undefined;
   DailyReview: undefined;
   Today: undefined;
@@ -70,6 +72,7 @@ export type HomeStackParamList = {
 export type LessonsStackParamList = {
   LessonsList: undefined;
   SavedLessonDetail: {lessonId: string};
+  ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
   FlashcardList: {lessonId?: string} | undefined;
   /** Imported content-package lessons (M1-M3), separate from the OCR flow above. */
   ContentLessonList: undefined;
