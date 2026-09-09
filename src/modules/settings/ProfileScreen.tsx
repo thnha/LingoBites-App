@@ -325,6 +325,14 @@ export function ProfileScreen({navigation}: Props) {
             onPress={() => navigation.navigate('TtsSpike')}
             trailing="chevron"
           />
+          <ProfileSettingsRow
+            accessibilityLabel="Trải nghiệm Lesson V2"
+            icon="school"
+            label="Trải nghiệm Lesson V2 (Beta)"
+            medallionTone="teal"
+            onPress={() => navigation.navigate('LessonV2Create')}
+            trailing="chevron"
+          />
         </View>
 
         {showThemePicker ? (

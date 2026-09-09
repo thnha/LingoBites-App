@@ -189,18 +189,36 @@ export function HomeScreen({navigation}: Props) {
             </Pressable>
           ))}
         </View>
-        <View accessibilityRole="text" style={styles.comingSoon}>
+        <Pressable
+          accessibilityLabel={`${t('home.coming_soon')}. Trải nghiệm Lesson V2 (Beta)`}
+          accessibilityRole="button"
+          onPress={() => navigation.navigate('LessonV2Create')}
+          style={({pressed}) => [
+            styles.comingSoon,
+            pressed && styles.pressed,
+          ]}
+          testID="home-lesson-v2-beta"
+        >
           <View style={styles.comingSoonIcon}>
             <MaterialIcon
               color={theme.colors.primary}
-              name="description"
+              name="school"
               size={18}
             />
           </View>
-          <AppText color="secondary" variant="label">
-            {t('home.coming_soon')}
-          </AppText>
-        </View>
+          <View style={{flex: 1, gap: 2}}>
+            <AppText color="secondary" variant="label">
+              {t('home.coming_soon')}
+            </AppText>
+            <AppText
+              color="primary"
+              variant="caption"
+              style={{fontWeight: '600'}}
+            >
+              Chạm để thử nghiệm Lesson V2 (Beta) →
+            </AppText>
+          </View>
+        </Pressable>
       </ScrollView>
     </AppScreen>
   );

@@ -215,10 +215,10 @@ async function persistLesson(
       };
 }
 
-export async function createLessonV2(
+export async function createLessonV2Skeleton(
   input: LessonV2CreateInput,
-  options: ClientOptions & {onLesson?: ProgressListener} = {},
-): Promise<LessonV2ClientResult> {
+  options: ClientOptions = {},
+): Promise<{ok: true; lesson: LessonV2; initialPollDelayMs?: number} | LessonV2ClientError> {
   const {apiBaseUrl} = getAppConfig();
   const requestId = createRequestId();
   const idempotencyKey = input.idempotencyKey ?? createRequestId();
@@ -273,18 +273,33 @@ export async function createLessonV2(
     };
   const persistError = await persistLesson(parsed.data.lesson);
   if (persistError) return persistError;
-  options.onLesson?.(parsed.data.lesson);
-  if (
-    parsed.data.lesson.status === 'ready' ||
-    parsed.data.lesson.status === 'ready_with_warnings' ||
-    parsed.data.lesson.status === 'failed'
-  ) {
-    return {ok: true, lesson: parsed.data.lesson, completed: true};
-  }
-  return pollLessonV2(parsed.data.lesson.lesson_id, {
-    ...options,
-    initialLesson: parsed.data.lesson,
+
+  return {
+    ok: true,
+    lesson: parsed.data.lesson,
     initialPollDelayMs: parsePollDelay(response.headers, parsed.data.lesson),
+  };
+}
+
+export async function createLessonV2(
+  input: LessonV2CreateInput,
+  options: ClientOptions & {onLesson?: ProgressListener} = {},
+): Promise<LessonV2ClientResult> {
+  const skeletonResult = await createLessonV2Skeleton(input, options);
+  if (!skeletonResult.ok) return skeletonResult;
+
+  options.onLesson?.(skeletonResult.lesson);
+  if (
+    skeletonResult.lesson.status === 'ready' ||
+    skeletonResult.lesson.status === 'ready_with_warnings' ||
+    skeletonResult.lesson.status === 'failed'
+  ) {
+    return {ok: true, lesson: skeletonResult.lesson, completed: true};
+  }
+  return pollLessonV2(skeletonResult.lesson.lesson_id, {
+    ...options,
+    initialLesson: skeletonResult.lesson,
+    initialPollDelayMs: skeletonResult.initialPollDelayMs,
   });
 }
 
