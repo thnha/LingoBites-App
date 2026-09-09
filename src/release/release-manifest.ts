@@ -9,7 +9,8 @@ import type {ReleaseConfig} from './types';
 
 // export const DEFAULT_RELEASE_NAME = 'close-beta-1';
 // export const DEFAULT_RELEASE_NAME = 'situation-learning-release';
-export const DEFAULT_RELEASE_NAME = 'lingobites-mvp';
+// export const DEFAULT_RELEASE_NAME = 'lingobites-mvp';
+export const DEFAULT_RELEASE_NAME = 'lesson-v2-beta';
 
 export type ReleaseConfigName =
   | 'close-beta-1'
