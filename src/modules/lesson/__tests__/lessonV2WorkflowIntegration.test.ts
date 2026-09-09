@@ -14,7 +14,6 @@ import {resetDatabaseForTests, getDatabase} from '@shared/db/database';
 import {runMigrations} from '@shared/db/migrations';
 import {getLessonV2ById, upsertLessonV2} from '@shared/db/LessonV2Repository';
 import {saveLesson, getLessonById} from '@shared/db/LessonRepository';
-import type {AIOutput} from '@shared/schemas/ai-output-v1';
 import {validFullOutput} from '@shared/fixtures';
 import type {LessonV2} from '@shared/schemas/lesson-v2';
 

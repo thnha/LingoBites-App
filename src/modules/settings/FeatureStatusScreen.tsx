@@ -95,10 +95,10 @@ function makeStyles(theme: AppTheme) {
       borderRadius: 12,
     },
     badgeEnabled: {
-      backgroundColor: '#E8F5E9',
+      backgroundColor: theme.colors.secondarySoft,
     },
     badgeDisabled: {
-      backgroundColor: theme.colors.surfaceMuted || '#F5F5F5',
+      backgroundColor: theme.colors.surfaceMuted,
     },
     badgeText: {
       fontSize: 12,
