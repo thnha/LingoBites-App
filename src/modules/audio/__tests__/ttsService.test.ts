@@ -35,6 +35,11 @@ describe('ttsService', () => {
     expect(mockTts.speak).toHaveBeenCalledWith('Hello world.');
   });
 
+  it('normalizes rate 1.0 to default 0.5 to keep within native iOS limits', async () => {
+    await expect(speak('Hello world.', 'en-US', 1.0)).resolves.toEqual({ok: true});
+    expect(mockTts.setDefaultRate).toHaveBeenCalledWith(0.5);
+  });
+
   it('reports a missing en-US voice without attempting speech', async () => {
     mockTts.voices.mockResolvedValue([]);
 

@@ -1,6 +1,8 @@
+import {Platform} from 'react-native';
 import type {Voice} from 'react-native-tts';
 
 export const TTS_LOCALE = 'en-US';
+export const DEFAULT_TTS_RATE = 0.5;
 
 export type TtsVoiceAvailabilityResult =
   | {ok: true; available: boolean}
@@ -65,11 +67,18 @@ export async function isEnUsVoiceAvailable(): Promise<TtsVoiceAvailabilityResult
   }
 }
 
+function normalizeRate(rate: number): number {
+  if (rate >= 1.0 || rate <= 0) {
+    return DEFAULT_TTS_RATE;
+  }
+  return rate;
+}
+
 /** Speaks confirmed English text using the device's en-US TTS voice. */
 export async function speak(
   text: string,
   locale: string = TTS_LOCALE,
-  rate: number = 1.0,
+  rate: number = DEFAULT_TTS_RATE,
 ): Promise<TtsSpeakResult> {
   if (locale.toLowerCase() !== TTS_LOCALE.toLowerCase()) {
     return {ok: false, errorCode: 'VOICE_UNAVAILABLE', message: voiceUnavailableMessage()};
@@ -89,8 +98,19 @@ export async function speak(
   }
 
   try {
+    if (Platform.OS === 'ios' && typeof tts.setIgnoreSilentSwitch === 'function') {
+      try {
+        await tts.setIgnoreSilentSwitch('ignore');
+      } catch {
+        // Safe to ignore if unsupported
+      }
+    }
     await tts.setDefaultLanguage(TTS_LOCALE);
-    await tts.setDefaultRate(rate);
+    try {
+      await tts.setDefaultRate(normalizeRate(rate));
+    } catch {
+      // If setting rate fails, continue speaking with default rate
+    }
     tts.speak(text);
     return {ok: true};
   } catch {
