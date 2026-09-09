@@ -102,16 +102,20 @@ function HomeStackNavigator() {
         name="SavedLessonDetail"
         options={{headerShown: false}}
       />
-      <HomeStack.Screen
-        component={ProgressiveLessonScreen}
-        name="ProgressiveLesson"
-        options={{headerShown: false}}
-      />
-      <HomeStack.Screen
-        component={LessonV2CreateScreen}
-        name="LessonV2Create"
-        options={{headerShown: false}}
-      />
+      {canMount('ProgressiveLesson') && (
+        <HomeStack.Screen
+          component={ProgressiveLessonScreen}
+          name="ProgressiveLesson"
+          options={{headerShown: false}}
+        />
+      )}
+      {canMount('LessonV2Create') && (
+        <HomeStack.Screen
+          component={LessonV2CreateScreen}
+          name="LessonV2Create"
+          options={{headerShown: false}}
+        />
+      )}
       <HomeStack.Screen
         component={FlashcardListScreen}
         name="FlashcardList"
@@ -152,6 +156,10 @@ function HomeStackNavigator() {
 }
 
 function LessonsStackNavigator() {
+  const {config} = useFeatureFlags();
+  const canMount = (route: string) =>
+    isIngestionRouteEnabled(route, config.features);
+
   return (
     <LessonsStack.Navigator>
       <LessonsStack.Screen
@@ -164,16 +172,20 @@ function LessonsStackNavigator() {
         name="SavedLessonDetail"
         options={{headerShown: false}}
       />
-      <LessonsStack.Screen
-        component={ProgressiveLessonScreen}
-        name="ProgressiveLesson"
-        options={{headerShown: false}}
-      />
-      <LessonsStack.Screen
-        component={LessonV2CreateScreen}
-        name="LessonV2Create"
-        options={{headerShown: false}}
-      />
+      {canMount('ProgressiveLesson') && (
+        <LessonsStack.Screen
+          component={ProgressiveLessonScreen}
+          name="ProgressiveLesson"
+          options={{headerShown: false}}
+        />
+      )}
+      {canMount('LessonV2Create') && (
+        <LessonsStack.Screen
+          component={LessonV2CreateScreen}
+          name="LessonV2Create"
+          options={{headerShown: false}}
+        />
+      )}
       <LessonsStack.Screen
         component={FlashcardListScreen}
         name="FlashcardList"
@@ -234,6 +246,10 @@ function LessonsStackNavigator() {
 }
 
 function ProfileStackNavigator() {
+  const {config} = useFeatureFlags();
+  const canMount = (route: string) =>
+    isIngestionRouteEnabled(route, config.features);
+
   return (
     <ProfileStack.Navigator>
       <ProfileStack.Screen
@@ -261,16 +277,20 @@ function ProfileStackNavigator() {
         name="TtsSpike"
         options={{headerShown: false}}
       />
-      <ProfileStack.Screen
-        component={LessonV2CreateScreen}
-        name="LessonV2Create"
-        options={{headerShown: false}}
-      />
-      <ProfileStack.Screen
-        component={ProgressiveLessonScreen}
-        name="ProgressiveLesson"
-        options={{headerShown: false}}
-      />
+      {canMount('LessonV2Create') && (
+        <ProfileStack.Screen
+          component={LessonV2CreateScreen}
+          name="LessonV2Create"
+          options={{headerShown: false}}
+        />
+      )}
+      {canMount('ProgressiveLesson') && (
+        <ProfileStack.Screen
+          component={ProgressiveLessonScreen}
+          name="ProgressiveLesson"
+          options={{headerShown: false}}
+        />
+      )}
     </ProfileStack.Navigator>
   );
 }

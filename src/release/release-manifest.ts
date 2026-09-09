@@ -4,6 +4,7 @@ import miniGameRelease from './configs/mini-game-release.json';
 import situationLearningRelease from './configs/situation-learning-release.json';
 import themeRelease from './configs/theme-release.json';
 import fullFeatureShowcase from './configs/full-feature-showcase.json';
+import lessonV2Beta from './configs/lesson-v2-beta.json';
 import type {ReleaseConfig} from './types';
 
 // export const DEFAULT_RELEASE_NAME = 'close-beta-1';
@@ -16,7 +17,8 @@ export type ReleaseConfigName =
   | 'mini-game-release'
   | 'situation-learning-release'
   | 'lingobites-mvp'
-  | 'full-feature-showcase';
+  | 'full-feature-showcase'
+  | 'lesson-v2-beta';
 
 const releaseConfigs: Record<ReleaseConfigName, ReleaseConfig> = {
   'close-beta-1': closeBeta1 as ReleaseConfig,
@@ -25,6 +27,7 @@ const releaseConfigs: Record<ReleaseConfigName, ReleaseConfig> = {
   'situation-learning-release': situationLearningRelease as ReleaseConfig,
   'lingobites-mvp': lingobitensMvp as ReleaseConfig,
   'full-feature-showcase': fullFeatureShowcase as ReleaseConfig,
+  'lesson-v2-beta': lessonV2Beta as ReleaseConfig,
 };
 
 export function getReleaseConfig(

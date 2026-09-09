@@ -79,6 +79,21 @@ describe('isIngestionRouteHiddenForMvp', () => {
     expect(isIngestionRouteEnabled('Unknown', enabled())).toBe(false);
   });
 
+  it('gates Lesson V2 routes by the lessonV2 capability', () => {
+    expect(
+      isIngestionRouteEnabled('LessonV2Create', {
+        ...enabled(),
+        lessonV2: true,
+      }),
+    ).toBe(true);
+    expect(
+      isIngestionRouteEnabled('ProgressiveLesson', {
+        ...enabled(),
+        lessonV2: false,
+      }),
+    ).toBe(false);
+  });
+
   it('supports OR dependency groups without allowing a disabled capability', () => {
     const dependencies = {
       pasteTextInput: [],

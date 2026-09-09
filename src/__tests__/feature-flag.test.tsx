@@ -8,7 +8,7 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
-import {FeatureFlagProvider} from '../release';
+import {FeatureFlagProvider, getReleaseConfig} from '../release';
 import {DB_NAME} from '../shared/db/constants';
 import {resetDatabaseForTests} from '../shared/db/database';
 import {saveFlashcard} from '../shared/db/FlashcardRepository';
@@ -18,6 +18,7 @@ import {AppThemeProvider} from '../theme';
 import {__resetMockDatabases} from '../../test-utils/sqliteMock';
 import {DailyReviewScreen} from '../modules/review';
 import {FlashcardListScreen} from '../modules/lesson';
+import {isIngestionRouteEnabled} from '../app/navigation/ingestionRouteGate';
 
 const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
 
@@ -185,6 +186,19 @@ describe('Feature Flag: reviewSystem', () => {
   });
 
   describe('HomeScreen integration', () => {
+    it('does not mount OCR or Lesson V2 routes when their flags are OFF', () => {
+      const mvpFeatures = getReleaseConfig('lingobites-mvp').features;
+
+      expect(isIngestionRouteEnabled('ImageCapture', mvpFeatures)).toBe(false);
+      expect(isIngestionRouteEnabled('OCRReview', mvpFeatures)).toBe(false);
+      expect(isIngestionRouteEnabled('LessonV2Create', mvpFeatures)).toBe(
+        false,
+      );
+      expect(isIngestionRouteEnabled('ProgressiveLesson', mvpFeatures)).toBe(
+        false,
+      );
+    });
+
     it('hides due review count when reviewSystem flag is OFF', async () => {
       // Note: This test documents expected behavior
       // The actual HomeScreen uses useFeatureEnabled('reviewSystem')
