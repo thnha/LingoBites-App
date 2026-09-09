@@ -35,6 +35,7 @@ import {
   ProfileScreen,
   FeatureStatusScreen,
 } from '@modules/settings';
+import {TtsSpikeScreen} from '@modules/tts';
 import {useFeatureFlags} from '@/release';
 import {TabBar} from './TabBar';
 import {isIngestionRouteEnabled} from './ingestionRouteGate';
@@ -231,6 +232,11 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen
         component={FeatureStatusScreen}
         name="FeatureStatus"
+        options={{headerShown: false}}
+      />
+      <ProfileStack.Screen
+        component={TtsSpikeScreen}
+        name="TtsSpike"
         options={{headerShown: false}}
       />
     </ProfileStack.Navigator>

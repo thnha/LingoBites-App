@@ -86,6 +86,7 @@ export type ProfileStackParamList = {
   PrivacyNote: undefined;
   ProgressReport: undefined;
   FeatureStatus: undefined;
+  TtsSpike: undefined;
 };
 
 export type RootTabParamList = {

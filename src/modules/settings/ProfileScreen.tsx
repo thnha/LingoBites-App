@@ -317,6 +317,14 @@ export function ProfileScreen({navigation}: Props) {
             onPress={() => navigation.navigate('FeatureStatus')}
             trailing="chevron"
           />
+          <ProfileSettingsRow
+            accessibilityLabel="Mở bản demo native TTS"
+            icon="volume_up"
+            label="Demo native TTS"
+            medallionTone="coral"
+            onPress={() => navigation.navigate('TtsSpike')}
+            trailing="chevron"
+          />
         </View>
 
         {showThemePicker ? (
