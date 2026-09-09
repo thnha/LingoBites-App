@@ -18,4 +18,27 @@ describe('lesson-v2 schema', () => {
     expect(parsed.lesson.sentences[0].tts.locale).toBe('en-US');
     expect(parsed.lesson.sentences[0].tts.text).toBe(parsed.lesson.sentences[0].text);
   });
+
+  it('parses a detached-practice lesson envelope with practice: []', () => {
+    const parsed = LessonV2CreateEnvelopeSchema.parse({
+      ...fixture,
+      lesson: {
+        ...fixture.lesson,
+        practice: [],
+        units: {
+          ...fixture.lesson.units,
+          practice: {
+            status: 'ready',
+            attempts: 0,
+            error_code: null,
+            retryable: true,
+          },
+        },
+      },
+    });
+
+    expect(parsed.lesson.schema_version).toBe('lesson-v2');
+    expect(parsed.lesson.practice).toEqual([]);
+    expect(parsed.lesson.units.practice.status).toBe('ready');
+  });
 });
