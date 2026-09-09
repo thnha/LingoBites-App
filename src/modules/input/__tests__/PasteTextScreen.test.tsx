@@ -68,6 +68,13 @@ describe('PasteTextScreen', () => {
       tree = renderPasteTextScreen();
     });
 
+    const input = tree!.root.findByType(TextInput);
+    await ReactTestRenderer.act(async () => {
+      input.props.onChangeText(
+        'We are offering a special discount for new customers.',
+      );
+    });
+
     const analyzeButton = findPressableByLabel(
       tree!.root,
       'Trích xuất từ vựng',
@@ -83,6 +90,29 @@ describe('PasteTextScreen', () => {
       sourceType: 'paste_text',
       origin: 'PasteText',
     });
+  });
+
+  it('starts empty with a placeholder and clears entered text', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = renderPasteTextScreen();
+    });
+
+    const input = tree!.root.findByType(TextInput);
+    expect(input.props.value).toBe('');
+    expect(input.props.placeholder).toBe('Dán đoạn text của bạn vào đây…');
+
+    await ReactTestRenderer.act(async () => {
+      input.props.onChangeText('Text to clear');
+    });
+    await ReactTestRenderer.act(async () => {
+      tree!.root
+        .findByProps({accessibilityLabel: 'Xóa văn bản'})
+        .props.onPress();
+    });
+
+    expect(tree!.root.findByType(TextInput).props.value).toBe('');
   });
 
   it('blocks empty submission and does not navigate (TC-008)', async () => {

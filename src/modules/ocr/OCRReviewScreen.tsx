@@ -8,6 +8,7 @@ import {BottomActionBar} from '@components/BottomActionBar';
 import {Chip} from '@components/Chip';
 import {ErrorCard} from '@components/ErrorCard';
 import {MaterialIcon} from '@components/MaterialIcon';
+import {PrimaryActionButton} from '@components/PrimaryActionButton';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
 import {useTranslation} from 'react-i18next';
@@ -284,40 +285,12 @@ export function OCRReviewScreen({navigation, route}: Props) {
           paddingBottom: theme.spacing.lg,
         }}
       >
-        <Pressable
+        <PrimaryActionButton
           accessibilityLabel="Phân tích & học ngay"
-          accessibilityRole="button"
           disabled={busy || creating}
           onPress={() => void handleAnalyze()}
-          style={({pressed}) => [
-            {
-              alignItems: 'center',
-              backgroundColor: theme.colors.primary,
-              borderRadius: theme.radius.lg,
-              flexDirection: 'row',
-              gap: 8,
-              justifyContent: 'center',
-              minHeight: 52,
-              opacity:
-                busy || creating || pressed ? theme.states.pressedOpacity : 1,
-            },
-          ]}
-        >
-          <MaterialIcon
-            color={theme.colors.text.inverse}
-            name="auto_stories"
-            size={22}
-          />
-          <AppText
-            style={{
-              color: theme.colors.text.inverse,
-              fontSize: 18,
-              fontWeight: '600',
-            }}
-          >
-            {creating ? 'Đang khởi tạo bài học…' : 'Phân tích & học ngay'}
-          </AppText>
-        </Pressable>
+          label={creating ? 'Đang khởi tạo bài học…' : 'Phân tích & học ngay'}
+        />
       </BottomActionBar>
     </AppScreen>
   );

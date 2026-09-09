@@ -8,6 +8,7 @@ import {BottomActionBar} from '@components/BottomActionBar';
 import {Chip} from '@components/Chip';
 import {ErrorCard} from '@components/ErrorCard';
 import {MaterialIcon} from '@components/MaterialIcon';
+import {PrimaryActionButton} from '@components/PrimaryActionButton';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
 import {useTranslation} from 'react-i18next';
@@ -36,9 +37,7 @@ export function PasteTextScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
   const {config} = useFeatureFlags();
-  const [text, setText] = useState(
-    'We are offering a special discount for new customers.',
-  );
+  const [text, setText] = useState('');
   const [screenState, setScreenState] = useState<ScreenState>({type: 'input'});
   const [creating, setCreating] = useState(false);
   const wordCount = useMemo(() => countWords(text), [text]);
@@ -134,6 +133,30 @@ export function PasteTextScreen({navigation, route}: Props) {
           value={text}
         />
 
+        <Pressable
+          accessibilityLabel="Xóa văn bản"
+          accessibilityRole="button"
+          disabled={!text}
+          onPress={() => {
+            setText('');
+            setScreenState({type: 'input'});
+          }}
+          style={({pressed}) => ({
+            alignItems: 'center',
+            alignSelf: 'flex-end',
+            flexDirection: 'row',
+            gap: 6,
+            minHeight: 44,
+            opacity: !text || pressed ? theme.states.pressedOpacity : 1,
+            paddingHorizontal: theme.spacing.sm,
+          })}
+        >
+          <MaterialIcon color={theme.colors.primary} name="delete" size={20} />
+          <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
+            Xóa văn bản
+          </AppText>
+        </Pressable>
+
         <View
           style={{
             alignItems: 'center',
@@ -144,6 +167,7 @@ export function PasteTextScreen({navigation, route}: Props) {
         >
           <Chip label="Phát hiện: Tiếng Anh" tone="accentSoft" />
           <Chip label={`${wordCount} từ`} tone="neutral" />
+          <Chip label={`${text.trim().length} ký tự`} tone="neutral" />
         </View>
 
         {screenState.type === 'error' ? (
@@ -162,39 +186,12 @@ export function PasteTextScreen({navigation, route}: Props) {
           paddingBottom: theme.spacing.lg,
         }}
       >
-        <Pressable
+        <PrimaryActionButton
           accessibilityLabel="Trích xuất từ vựng"
-          accessibilityRole="button"
           disabled={creating}
           onPress={() => void handleAnalyze()}
-          style={({pressed}) => [
-            {
-              alignItems: 'center',
-              backgroundColor: theme.colors.primary,
-              borderRadius: theme.radius.lg,
-              flexDirection: 'row',
-              gap: 8,
-              justifyContent: 'center',
-              minHeight: 52,
-              opacity: creating || pressed ? theme.states.pressedOpacity : 1,
-            },
-          ]}
-        >
-          <MaterialIcon
-            color={theme.colors.text.inverse}
-            name="auto_stories"
-            size={22}
-          />
-          <AppText
-            style={{
-              color: theme.colors.text.inverse,
-              fontSize: 18,
-              fontWeight: '600',
-            }}
-          >
-            {creating ? 'Đang khởi tạo bài học…' : 'Trích xuất từ vựng'}
-          </AppText>
-        </Pressable>
+          label={creating ? 'Đang khởi tạo bài học…' : 'Trích xuất từ vựng'}
+        />
       </BottomActionBar>
     </AppScreen>
   );
