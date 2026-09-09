@@ -35,6 +35,12 @@ function createMockDatabase() {
   // SETE-145 / M6: Library persistence (packaged lesson state + grammar bookmarks)
   const contentLessonState = [];
   const grammarBookmarks = [];
+  const lessonV2 = [];
+  const lessonV2Sentences = [];
+  const lessonV2Chunks = [];
+  const lessonV2Vocabulary = [];
+  const lessonV2Grammar = [];
+  const lessonV2Units = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -44,6 +50,184 @@ function createMockDatabase() {
       normalized.startsWith('create index')
     ) {
       return {rowsAffected: 0};
+    }
+
+    if (
+      normalized === 'begin' ||
+      normalized === 'commit' ||
+      normalized === 'rollback'
+    ) {
+      return {rowsAffected: 0};
+    }
+
+    if (normalized.startsWith('insert or replace into lesson_v2')) {
+      const index = lessonV2.findIndex(row => row.lesson_id === params[0]);
+      const previous = index === -1 ? null : lessonV2[index];
+      const row = {
+        lesson_id: params[0],
+        anonymous_user_id: params[1],
+        input_hash: params[2],
+        schema_version: params[3],
+        request_id: params[4],
+        status: params[5],
+        revision: params[6],
+        source_text: params[7],
+        word_count: params[8],
+        char_count: params[9],
+        detected_language: params[10],
+        title: params[11],
+        level: params[12],
+        prompt_version: params[13],
+        is_saved: previous ? previous.is_saved : 0,
+        warnings_json: params[15],
+        error_json: params[16],
+        practice_json: params[17],
+        expires_at: params[18],
+        created_at: previous ? previous.created_at : params[20],
+        updated_at: params[21],
+      };
+      if (index === -1) lessonV2.push(row);
+      else lessonV2[index] = row;
+      return {rowsAffected: 1};
+    }
+
+    if (
+      normalized.startsWith('delete from lesson_v2_') &&
+      normalized.includes('where lesson_id')
+    ) {
+      const match = normalized.match(/^delete from (lesson_v2_[a-z]+)/);
+      const collections = {
+        lesson_v2_sentences: lessonV2Sentences,
+        lesson_v2_chunks: lessonV2Chunks,
+        lesson_v2_vocabulary: lessonV2Vocabulary,
+        lesson_v2_grammar: lessonV2Grammar,
+        lesson_v2_units: lessonV2Units,
+      };
+      const collection = collections[match[1]];
+      const remaining = collection.filter(row => row.lesson_id !== params[0]);
+      const removed = collection.length - remaining.length;
+      collection.length = 0;
+      collection.push(...remaining);
+      return {rowsAffected: removed};
+    }
+
+    if (normalized.startsWith('insert into lesson_v2_sentences')) {
+      lessonV2Sentences.push({
+        lesson_id: params[0],
+        sentence_id: params[1],
+        idx: params[2],
+        text: params[3],
+        char_start: params[4],
+        char_end: params[5],
+        chunk_id: params[6],
+        status: params[7],
+        translation: params[8],
+        simple_meaning: params[9],
+        phrases_json: params[10],
+        tts_json: params[11],
+        related_vocabulary_ids_json: params[12],
+        related_grammar_ids_json: params[13],
+      });
+      return {rowsAffected: 1};
+    }
+    if (normalized.startsWith('insert into lesson_v2_chunks')) {
+      lessonV2Chunks.push({
+        lesson_id: params[0],
+        chunk_id: params[1],
+        idx: params[2],
+        sentence_ids_json: params[3],
+        status: params[4],
+        attempts: params[5],
+        error_code: params[6],
+        retryable: params[7],
+      });
+      return {rowsAffected: 1};
+    }
+    if (normalized.startsWith('insert into lesson_v2_vocabulary')) {
+      lessonV2Vocabulary.push({
+        lesson_id: params[0],
+        vocab_id: params[1],
+        word: params[2],
+        phrase_from_text: params[3],
+        word_type: params[4],
+        meaning_vi: params[5],
+        ipa: params[6],
+        ipa_source: params[7],
+        source_sentence_id: params[8],
+        example: params[9],
+        example_translation: params[10],
+        tts_json: params[11],
+      });
+      return {rowsAffected: 1};
+    }
+    if (normalized.startsWith('insert into lesson_v2_grammar')) {
+      lessonV2Grammar.push({
+        lesson_id: params[0],
+        grammar_id: params[1],
+        name: params[2],
+        name_vi: params[3],
+        pattern: params[4],
+        found_in_sentence_id: params[5],
+        found_in_text: params[6],
+        explanation_vi: params[7],
+        beginner_tip: params[8],
+        examples_json: params[9],
+      });
+      return {rowsAffected: 1};
+    }
+    if (normalized.startsWith('insert into lesson_v2_units')) {
+      lessonV2Units.push({
+        lesson_id: params[0],
+        unit_key: params[1],
+        status: params[2],
+        attempts: params[3],
+        error_code: params[4],
+        retryable: params[5],
+      });
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('select revision from lesson_v2')) {
+      return toRows(lessonV2.filter(row => row.lesson_id === params[0]));
+    }
+    if (
+      normalized.startsWith('select') &&
+      normalized.includes('from lesson_v2 where lesson_id')
+    ) {
+      return toRows(lessonV2.filter(row => row.lesson_id === params[0]));
+    }
+    for (const [table, collection] of Object.entries({
+      lesson_v2_sentences: lessonV2Sentences,
+      lesson_v2_chunks: lessonV2Chunks,
+      lesson_v2_vocabulary: lessonV2Vocabulary,
+      lesson_v2_grammar: lessonV2Grammar,
+      lesson_v2_units: lessonV2Units,
+    })) {
+      if (
+        normalized.startsWith('select') &&
+        normalized.includes(`from ${table}`)
+      ) {
+        const result = collection.filter(row => row.lesson_id === params[0]);
+        if (normalized.includes('order by idx'))
+          result.sort((a, b) => a.idx - b.idx);
+        return toRows(result);
+      }
+    }
+    if (normalized.startsWith('delete from lesson_v2 where lesson_id')) {
+      const index = lessonV2.findIndex(row => row.lesson_id === params[0]);
+      if (index === -1) return {rowsAffected: 0};
+      lessonV2.splice(index, 1);
+      return {rowsAffected: 1};
+    }
+    if (normalized === 'delete from lesson_v2;') {
+      const count = lessonV2.length;
+      lessonV2.length = 0;
+      lessonV2Sentences.length = 0;
+      lessonV2Chunks.length = 0;
+      lessonV2Vocabulary.length = 0;
+      lessonV2Grammar.length = 0;
+      lessonV2Units.length = 0;
+      return {rowsAffected: count};
     }
 
     if (normalized.startsWith('insert into lessons')) {
@@ -1083,7 +1267,9 @@ function createMockDatabase() {
       return {rowsAffected: 1};
     }
 
-    if (normalized.startsWith('update content_lesson_state set is_started = 1')) {
+    if (
+      normalized.startsWith('update content_lesson_state set is_started = 1')
+    ) {
       const updatedAt = params[0];
       const lessonId = params[1];
       const row = contentLessonState.find(s => s.lesson_id === lessonId);
@@ -1095,7 +1281,9 @@ function createMockDatabase() {
       return {rowsAffected: 1};
     }
 
-    if (normalized.startsWith('update content_lesson_state set is_started = 0')) {
+    if (
+      normalized.startsWith('update content_lesson_state set is_started = 0')
+    ) {
       const updatedAt = params[0];
       const lessonId = params[1];
       const row = contentLessonState.find(s => s.lesson_id === lessonId);
@@ -1174,7 +1362,9 @@ function createMockDatabase() {
     }
 
     if (
-      normalized.startsWith('update grammar_bookmarks set reactivated_at = null')
+      normalized.startsWith(
+        'update grammar_bookmarks set reactivated_at = null',
+      )
     ) {
       const updatedAt = params[0];
       const lessonId = params[1];

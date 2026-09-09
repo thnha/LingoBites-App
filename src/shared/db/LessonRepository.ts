@@ -228,4 +228,5 @@ export function clearAllLocalData(): void {
   db.execute('DELETE FROM content_review_items;');
   db.execute('DELETE FROM grammar_bookmarks;');
   db.execute('DELETE FROM content_lesson_state;');
+  db.execute('DELETE FROM lesson_v2;');
 }
