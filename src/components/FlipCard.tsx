@@ -63,6 +63,7 @@ export function FlipCard({
 const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
+    alignSelf: 'stretch',
     justifyContent: 'center',
     width: '100%',
   },

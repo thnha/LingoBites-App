@@ -88,4 +88,28 @@ describe('FlipCard', () => {
       .findByProps({testID: 'flip-card'});
     expect(appCard).toBeTruthy();
   });
+
+  it('allows contentContainer to expand naturally without flex: 1 cap', async () => {
+    const tree = await render(
+      <FlipCard
+        back={<Text>Back</Text>}
+        flipped={false}
+        front={<Text>Front</Text>}
+        onFlip={() => {}}
+      />,
+    );
+
+    const appCard = tree.root.findByProps({testID: 'flip-card'});
+    const contentContainer = appCard.find(
+      node => node.props.style && node.props.style.width === '100%',
+    );
+    expect(contentContainer).toBeTruthy();
+    expect(contentContainer.props.style).toEqual(
+      expect.objectContaining({
+        alignSelf: 'stretch',
+        width: '100%',
+      }),
+    );
+    expect(contentContainer.props.style.flex).toBeUndefined();
+  });
 });
