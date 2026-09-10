@@ -46,6 +46,9 @@ function createMockDatabase() {
   const practiceQuestions = [];
   const practiceSessions = [];
   const practiceEvents = [];
+  // SETE-229 / T11: saved YouTube lessons
+  const youtubeLessons = [];
+  const youtubeSentences = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -55,6 +58,100 @@ function createMockDatabase() {
       normalized.startsWith('create index')
     ) {
       return {rowsAffected: 0};
+    }
+
+    if (normalized.startsWith('insert or replace into youtube_lessons')) {
+      const index = youtubeLessons.findIndex(row => row.id === params[0]);
+      const previous = index === -1 ? null : youtubeLessons[index];
+      const row = {
+        id: params[0],
+        schema_version: params[1],
+        video_id: params[2],
+        title: params[3],
+        channel_title: params[4],
+        duration_seconds: params[5],
+        language: params[6],
+        embeddable: params[7],
+        transcript_source: params[8],
+        warnings_json: params[9],
+        created_at: previous ? previous.created_at : params[11],
+        updated_at: params[12],
+      };
+      if (index === -1) youtubeLessons.push(row);
+      else youtubeLessons[index] = row;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('insert into youtube_sentences')) {
+      youtubeSentences.push({
+        lesson_id: params[0],
+        sentence_id: params[1],
+        idx: params[2],
+        start_ms: params[3],
+        end_ms: params[4],
+        en: params[5],
+        vi: params[6],
+        ipa: params[7],
+      });
+      return {rowsAffected: 1};
+    }
+
+    if (
+      normalized.startsWith('delete from youtube_sentences where lesson_id')
+    ) {
+      const before = youtubeSentences.length;
+      const remaining = youtubeSentences.filter(
+        row => row.lesson_id !== params[0],
+      );
+      youtubeSentences.length = 0;
+      youtubeSentences.push(...remaining);
+      return {rowsAffected: before - remaining.length};
+    }
+
+    if (normalized.startsWith('delete from youtube_lessons where id')) {
+      const before = youtubeLessons.length;
+      const remaining = youtubeLessons.filter(row => row.id !== params[0]);
+      youtubeLessons.length = 0;
+      youtubeLessons.push(...remaining);
+      return {rowsAffected: before - remaining.length};
+    }
+
+    if (
+      normalized.startsWith(
+        'select count(*) as count from youtube_sentences where lesson_id',
+      )
+    ) {
+      return toRows([
+        {
+          count: youtubeSentences.filter(row => row.lesson_id === params[0])
+            .length,
+        },
+      ]);
+    }
+    if (normalized === 'select count(*) as count from youtube_sentences;') {
+      return toRows([{count: youtubeSentences.length}]);
+    }
+    if (normalized.startsWith('select id from youtube_lessons where id')) {
+      return toRows(youtubeLessons.filter(row => row.id === params[0]));
+    }
+    if (normalized.startsWith('select * from youtube_lessons where id')) {
+      return toRows(youtubeLessons.filter(row => row.id === params[0]));
+    }
+    if (
+      normalized.startsWith('select * from youtube_sentences where lesson_id')
+    ) {
+      return toRows(
+        youtubeSentences
+          .filter(row => row.lesson_id === params[0])
+          .sort((a, b) => a.idx - b.idx),
+      );
+    }
+    if (normalized.startsWith('select * from youtube_lessons')) {
+      return toRows(
+        [...youtubeLessons].sort((a, b) =>
+          String(b.updated_at).localeCompare(String(a.updated_at)),
+        ),
+      );
     }
 
     if (
@@ -473,6 +570,10 @@ function createMockDatabase() {
         updated_at: params[2],
       });
       return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('select * from lessons where id')) {
+      return toRows(lessons.filter(row => row.id === params[0]));
     }
 
     if (normalized.startsWith('insert into flashcards')) {

@@ -479,7 +479,37 @@ const MIGRATIONS = [
     sync_status TEXT NOT NULL
   );`,
   `CREATE UNIQUE INDEX IF NOT EXISTS idx_practice_events_session_sequence ON practice_events (session_id, sequence);`,
-  `CREATE INDEX IF NOT EXISTS idx_practice_events_sync_status ON practice_events (sync_status);`
+  `CREATE INDEX IF NOT EXISTS idx_practice_events_sync_status ON practice_events (sync_status);`,
+  // ---- SETE-229 / T11: saved YouTube lessons ----
+  `CREATE TABLE IF NOT EXISTS youtube_lessons (
+    id TEXT PRIMARY KEY NOT NULL,
+    schema_version TEXT NOT NULL,
+    video_id TEXT NOT NULL UNIQUE,
+    title TEXT NOT NULL,
+    channel_title TEXT NOT NULL,
+    duration_seconds INTEGER NOT NULL,
+    language TEXT NOT NULL,
+    embeddable INTEGER NOT NULL,
+    transcript_source TEXT NOT NULL,
+    warnings_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_youtube_lessons_updated_at
+    ON youtube_lessons (updated_at DESC);`,
+  `CREATE TABLE IF NOT EXISTS youtube_sentences (
+    lesson_id TEXT NOT NULL,
+    sentence_id TEXT NOT NULL,
+    idx INTEGER NOT NULL,
+    start_ms INTEGER NOT NULL,
+    end_ms INTEGER NOT NULL,
+    en TEXT NOT NULL,
+    vi TEXT NOT NULL,
+    ipa TEXT NOT NULL,
+    PRIMARY KEY (lesson_id, sentence_id)
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_youtube_sentences_lesson_id
+    ON youtube_sentences (lesson_id, idx);`,
 ];
 
 /**
@@ -553,6 +583,13 @@ const DOWN_MIGRATIONS_M8: string[] = [
   `DROP TABLE IF EXISTS practice_questions;`,
   `DROP INDEX IF EXISTS idx_practice_sets_lesson_id;`,
   `DROP TABLE IF EXISTS practice_sets;`,
+];
+
+const DOWN_MIGRATIONS_M9: string[] = [
+  `DROP INDEX IF EXISTS idx_youtube_sentences_lesson_id;`,
+  `DROP TABLE IF EXISTS youtube_sentences;`,
+  `DROP INDEX IF EXISTS idx_youtube_lessons_updated_at;`,
+  `DROP TABLE IF EXISTS youtube_lessons;`,
 ];
 
 const DOWN_MIGRATIONS_M2: string[] = [
@@ -656,6 +693,15 @@ export function downgradeLessonV2Migrations(db: QuickSQLiteConnection): void {
 /** Reverse the M8 practice schema migration. */
 export function downgradePracticeMigrations(db: QuickSQLiteConnection): void {
   for (const sql of DOWN_MIGRATIONS_M8) {
+    db.execute(sql);
+  }
+}
+
+/** Reverse the SETE-229 saved YouTube lesson schema migration. */
+export function downgradeYouTubeLessonMigrations(
+  db: QuickSQLiteConnection,
+): void {
+  for (const sql of DOWN_MIGRATIONS_M9) {
     db.execute(sql);
   }
 }
