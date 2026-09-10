@@ -1,10 +1,12 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Text} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
+import * as Reanimated from 'react-native-reanimated';
 import {ThemeContext} from '@theme/useAppTheme';
 import {coreTheme} from '@theme/themes/core';
 import {darkTheme} from '@theme/themes/dark';
 import {defaultTheme} from '@theme/themes/default';
+import {neoTheme} from '@theme/themes/neo';
 import type {AppTheme} from '@theme/types';
 import {TabBar, resolveTabGlass} from '../TabBar';
 import {
@@ -20,7 +22,7 @@ jest.mock('react-native-safe-area-context', () => ({
 
 type BarProps = React.ComponentProps<typeof TabBar>;
 
-function makeProps(): BarProps {
+function makeProps(activeIndex = 0): BarProps {
   const routes = [
     {key: 'home', name: 'Home'},
     {key: 'lessons', name: 'Lessons'},
@@ -28,7 +30,7 @@ function makeProps(): BarProps {
   ];
   return {
     state: {
-      index: 0,
+      index: activeIndex,
       routes,
       key: 'tab',
       routeNames: routes.map(r => r.name),
@@ -64,6 +66,14 @@ function renderBar(
     );
   });
   return {tree, props};
+}
+
+function measureFirstTab(tree: ReactTestRenderer.ReactTestRenderer, width = 100) {
+  act(() => {
+    tree.root.findByProps({testID: 'tab-bar-item-Home'}).props.onLayout({
+      nativeEvent: {layout: {x: 0, y: 0, width, height: 48}},
+    });
+  });
 }
 
 describe('TabBar floating liquid-glass (SETE-214)', () => {
@@ -117,9 +127,12 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
       'tab-bar-item-Profile',
     ]) {
       expect(tree.root.findByProps({testID}).props.accessibilityRole).toBe(
-        'button',
+        'tab',
       );
     }
+    expect(
+      tree.root.findByProps({testID: 'tab-bar-glass'}).props.accessibilityRole,
+    ).toBe('tablist');
     expect(
       tree.root.findByProps({testID: 'tab-bar-item-Home'}).props
         .accessibilityState,
@@ -129,7 +142,7 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
         .accessibilityState,
     ).toEqual({selected: false});
     const labels = tree.root
-      .findAllByType('Text' as never)
+      .findAllByType(Text)
       .map((n: {props: {children?: unknown}}) => n.props.children);
     expect(labels).toEqual(
       expect.arrayContaining(['Trang chủ', 'Thư viện', 'Hồ sơ']),
@@ -161,17 +174,133 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(nav.navigate).not.toHaveBeenCalled();
   });
 
-  it('uses accent pill + accentInk for active and secondary text for inactive', () => {
+  it('uses a single sliding accent indicator instead of per-tab fills', () => {
     const {tree} = renderBar(defaultTheme);
-    const active = tree.root.findByProps({testID: 'tab-bar-item-Home'});
-    const inactive = tree.root.findByProps({
-      testID: 'tab-bar-item-Lessons',
+    measureFirstTab(tree, 100);
+
+    const findIndicatorHosts = () =>
+      tree.root.findAll(
+        node =>
+          node.props?.testID === 'tab-bar-indicator' &&
+          typeof node.type === 'string',
+      );
+    const indicatorStyleOf = () =>
+      StyleSheet.flatten(findIndicatorHosts()[0].props.style);
+
+    expect(findIndicatorHosts()).toHaveLength(1);
+    expect(indicatorStyleOf().backgroundColor).toBe(defaultTheme.colors.accent);
+    expect(indicatorStyleOf().borderRadius).toBe(defaultTheme.radius.pill);
+    expect(indicatorStyleOf().width).toBe(100);
+    expect(indicatorStyleOf().transform).toEqual([{translateX: 0}]);
+
+    for (const testID of [
+      'tab-bar-item-Home',
+      'tab-bar-item-Lessons',
+      'tab-bar-item-Profile',
+    ]) {
+      const tabStyle = StyleSheet.flatten(
+        tree.root.findByProps({testID}).props.style,
+      );
+      expect(tabStyle.backgroundColor).toBeUndefined();
+      expect(tree.root.findByProps({testID}).props.hitSlop).toBeDefined();
+    }
+  });
+
+  it('crossfades icon and label colors via animated styles on the UI thread', () => {
+    const {tree} = renderBar(defaultTheme);
+    measureFirstTab(tree);
+
+    const activeLabel = tree.root
+      .findAllByType(Text)
+      .find(node => node.props.children === 'Trang chủ');
+    const inactiveLabel = tree.root
+      .findAllByType(Text)
+      .find(node => node.props.children === 'Thư viện');
+    expect(activeLabel).toBeDefined();
+    expect(inactiveLabel).toBeDefined();
+
+    const activeLabelStyle = StyleSheet.flatten(activeLabel!.props.style);
+    const inactiveLabelStyle = StyleSheet.flatten(inactiveLabel!.props.style);
+    expect(activeLabelStyle.color).toBe(defaultTheme.colors.accentInk);
+    expect(inactiveLabelStyle.color).toBe(defaultTheme.colors.text.secondary);
+
+    const activeIcon = tree.root.findByProps({name: 'home'});
+    const inactiveIcon = tree.root.findByProps({name: 'school'});
+    expect(StyleSheet.flatten(activeIcon.props.style).color).toBe(
+      defaultTheme.colors.accentInk,
+    );
+    expect(StyleSheet.flatten(inactiveIcon.props.style).color).toBe(
+      defaultTheme.colors.text.secondary,
+    );
+  });
+
+  it('moves the indicator when the active tab changes', () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = ReactTestRenderer.create(
+        <ThemeContext.Provider
+          value={{
+            theme: defaultTheme,
+            themeId: 'default' as never,
+            setThemeId: jest.fn(),
+          }}
+        >
+          <TabBar {...makeProps(0)} />
+        </ThemeContext.Provider>,
+      );
     });
-    expect(active.props.style.backgroundColor).toBe(defaultTheme.colors.accent);
-    expect(inactive.props.style.backgroundColor).toBe('transparent');
-    // Visual is compact but the touch target stays >= 48px via hitSlop.
-    expect(active.props.hitSlop).toBeDefined();
-    expect(inactive.props.hitSlop).toBeDefined();
+    measureFirstTab(tree, 100);
+
+    const indicatorStyleOf = () =>
+      StyleSheet.flatten(
+        tree.root.findAll(
+          node =>
+            node.props?.testID === 'tab-bar-indicator' &&
+            typeof node.type === 'string',
+        )[0].props.style,
+      );
+
+    const showTab = (index: number) => {
+      act(() => {
+        tree.update(
+          <ThemeContext.Provider
+            value={{
+              theme: defaultTheme,
+              themeId: 'default' as never,
+              setThemeId: jest.fn(),
+            }}
+          >
+            <TabBar {...makeProps(index)} />
+          </ThemeContext.Provider>,
+        );
+      });
+      act(() => {
+        tree.update(
+          <ThemeContext.Provider
+            value={{
+              theme: defaultTheme,
+              themeId: 'default' as never,
+              setThemeId: jest.fn(),
+            }}
+          >
+            <TabBar {...makeProps(index)} />
+          </ThemeContext.Provider>,
+        );
+      });
+    };
+
+    showTab(1);
+    expect(indicatorStyleOf().transform).toEqual([{translateX: 100}]);
+
+    const reduceMotionSpy = jest
+      .spyOn(Reanimated, 'useReducedMotion')
+      .mockReturnValue(true);
+    try {
+      showTab(2);
+      expect(indicatorStyleOf().transform).toEqual([{translateX: 200}]);
+    } finally {
+      reduceMotionSpy.mockRestore();
+    }
   });
 
   it.each([
@@ -185,6 +314,16 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(StyleSheet.flatten(glass.props.style).backgroundColor).toBe(tint);
   });
 
+  it('uses square indicator radius on neo theme', () => {
+    const {tree} = renderBar(neoTheme);
+    measureFirstTab(tree);
+    const indicatorStyle = StyleSheet.flatten(
+      tree.root.findByProps({testID: 'tab-bar-indicator'}).props.style,
+    );
+    expect(neoTheme.radius.pill).toBe(0);
+    expect(indicatorStyle.borderRadius).toBe(0);
+  });
+
   it('falls back to opaque surface when glass is disabled', () => {
     const {tree} = renderBar(defaultTheme, makeProps(), {
       glassFallback: true,
@@ -193,6 +332,8 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(StyleSheet.flatten(fallback.props.style).backgroundColor).toBe(
       defaultTheme.colors.surface,
     );
+    measureFirstTab(tree);
+    expect(tree.root.findByProps({testID: 'tab-bar-indicator'})).toBeDefined();
   });
 
   it('reserves bar height + bottom gap + safe-area + gap in feeds', () => {

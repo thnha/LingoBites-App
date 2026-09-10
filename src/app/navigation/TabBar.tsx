@@ -1,10 +1,23 @@
-import React from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  type LayoutChangeEvent,
+} from 'react-native';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {AppText} from '@components/AppText';
+import Animated, {
+  Easing,
+  interpolateColor,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
 import type {HandoffIconName} from '@components/icons/iconRegistry';
-import {MaterialIcon} from '@components/MaterialIcon';
+import {AnimatedMaterialIcon} from '@components/MaterialIcon';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useTranslation} from 'react-i18next';
 import {
@@ -21,6 +34,7 @@ const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
 
 const TAB_ITEM_HIT_SLOP = {top: 8, bottom: 8, left: 8, right: 8};
 const TAB_ICON_SIZE = 21;
+const INDICATOR_DURATION_MS = 200;
 
 type TabBarProps = BottomTabBarProps & {
   /**
@@ -49,6 +63,89 @@ export function resolveTabGlass(theme: AppTheme) {
   };
 }
 
+type TabBarItemProps = {
+  index: number;
+  route: BottomTabBarProps['state']['routes'][number];
+  focused: boolean;
+  label: string;
+  icon: HandoffIconName;
+  progress: SharedValue<number>;
+  theme: AppTheme;
+  onPress: () => void;
+  onLayout?: (event: LayoutChangeEvent) => void;
+};
+
+function TabBarItem({
+  index,
+  route,
+  focused,
+  label,
+  icon,
+  progress,
+  theme,
+  onPress,
+  onLayout,
+}: TabBarItemProps) {
+  const secondary = theme.colors.text.secondary;
+  const accentInk = theme.colors.accentInk;
+  const captionPreset = theme.typography.presets.caption;
+
+  const animatedColorStyle = useAnimatedStyle(
+    () => ({
+      color: interpolateColor(
+        progress.value,
+        [index - 1, index, index + 1],
+        [secondary, accentInk, secondary],
+      ),
+    }),
+    [accentInk, index, secondary],
+  );
+
+  return (
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole="tab"
+      accessibilityState={{selected: focused}}
+      hitSlop={TAB_ITEM_HIT_SLOP}
+      onLayout={onLayout}
+      onPress={onPress}
+      style={{
+        alignItems: 'center',
+        borderRadius: theme.radius.pill,
+        flex: 1,
+        gap: 1,
+        justifyContent: 'center',
+        minWidth: 76,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        zIndex: 1,
+      }}
+      testID={`tab-bar-item-${route.name}`}
+    >
+      <AnimatedMaterialIcon
+        name={icon}
+        size={TAB_ICON_SIZE}
+        style={animatedColorStyle}
+      />
+      <Animated.Text
+        maxFontSizeMultiplier={captionPreset.maxFontSizeMultiplier}
+        numberOfLines={1}
+        style={[
+          {
+            fontFamily: theme.typography.fontFamily.display,
+            fontSize: 10.5,
+            fontWeight: focused ? '700' : '600',
+            lineHeight: 13,
+          },
+          animatedColorStyle,
+        ]}
+      >
+        {label}
+      </Animated.Text>
+    </Pressable>
+  );
+}
+
 export function TabBar({
   state,
   descriptors,
@@ -59,7 +156,38 @@ export function TabBar({
   const insets = useSafeAreaInsets();
   const {t} = useTranslation();
   const glass = resolveTabGlass(theme);
-  const styles = React.useMemo(() => makeStyles(theme), [theme]);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+  const reducedMotion = useReducedMotion();
+  const progress = useSharedValue(state.index);
+  const tabWidth = useSharedValue(0);
+  const hasAnimated = useRef(false);
+  const [indicatorReady, setIndicatorReady] = useState(false);
+
+  useEffect(() => {
+    if (reducedMotion || !hasAnimated.current) {
+      progress.value = state.index;
+      hasAnimated.current = true;
+      return;
+    }
+    progress.value = withTiming(state.index, {
+      duration: INDICATOR_DURATION_MS,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [progress, reducedMotion, state.index]);
+
+  const indicatorAnimatedStyle = useAnimatedStyle(() => ({
+    width: tabWidth.value,
+    transform: [{translateX: progress.value * tabWidth.value}],
+  }));
+
+  const handleTabLayout = (event: LayoutChangeEvent) => {
+    const {width} = event.nativeEvent.layout;
+    if (width <= 0 || tabWidth.value > 0) {
+      return;
+    }
+    tabWidth.value = width;
+    setIndicatorReady(true);
+  };
 
   return (
     <View
@@ -73,6 +201,7 @@ export function TabBar({
       testID="tab-bar-float-wrap"
     >
       <View
+        accessibilityRole="tablist"
         style={[
           styles.pill,
           {
@@ -101,23 +230,33 @@ export function TabBar({
             />
           </>
         ) : null}
+        {indicatorReady ? (
+          <Animated.View
+            accessible={false}
+            importantForAccessibility="no-hide-descendants"
+            pointerEvents="none"
+            style={[styles.indicator, indicatorAnimatedStyle]}
+            testID="tab-bar-indicator"
+          />
+        ) : null}
         {state.routes.map((route, index) => {
           const focused = state.index === index;
           const item = TAB_ITEMS[route.name] ?? {
             labelKey: '',
-            icon: 'circle',
+            icon: 'circle' as HandoffIconName,
           };
           const label = item.labelKey
             ? t(item.labelKey)
             : descriptors[route.key].options.title ?? route.name;
 
           return (
-            <Pressable
+            <TabBarItem
               key={route.key}
-              accessibilityLabel={label}
-              accessibilityRole="button"
-              accessibilityState={{selected: focused}}
-              hitSlop={TAB_ITEM_HIT_SLOP}
+              focused={focused}
+              icon={item.icon}
+              index={index}
+              label={label}
+              onLayout={index === 0 ? handleTabLayout : undefined}
               onPress={() => {
                 const event = navigation.emit({
                   type: 'tabPress',
@@ -128,41 +267,10 @@ export function TabBar({
                   navigation.navigate(route.name);
                 }
               }}
-              style={{
-                alignItems: 'center',
-                backgroundColor: focused ? theme.colors.accent : 'transparent',
-                borderRadius: theme.radius.pill,
-                flex: 1,
-                gap: 1,
-                justifyContent: 'center',
-                minWidth: 76,
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-              }}
-              testID={`tab-bar-item-${route.name}`}
-            >
-              <MaterialIcon
-                color={
-                  focused ? theme.colors.accentInk : theme.colors.text.secondary
-                }
-                name={item.icon}
-                size={TAB_ICON_SIZE}
-              />
-              <AppText
-                variant="caption"
-                numberOfLines={1}
-                style={{
-                  color: focused
-                    ? theme.colors.accentInk
-                    : theme.colors.text.secondary,
-                  fontSize: 10.5,
-                  fontWeight: focused ? '700' : '600',
-                  lineHeight: 13,
-                }}
-              >
-                {label}
-              </AppText>
-            </Pressable>
+              progress={progress}
+              route={route}
+              theme={theme}
+            />
           );
         })}
       </View>
@@ -210,6 +318,14 @@ function makeStyles(theme: AppTheme) {
       shadowOffset: {width: 0, height: 10},
       shadowOpacity: 0.22,
       shadowRadius: 28,
+    },
+    indicator: {
+      backgroundColor: theme.colors.accent,
+      borderRadius: theme.radius.pill,
+      bottom: 5,
+      left: 6,
+      position: 'absolute',
+      top: 5,
     },
     gloss: {
       borderTopLeftRadius: theme.radius.pill,
