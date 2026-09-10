@@ -1,3 +1,13 @@
+/**
+ * @deprecated Superseded by the offline session engine (SETE-204 / P9):
+ * `grader.ts` (pure option-ID grading, HI-4), `sessionEngine.ts`
+ * (repository-backed sessions with frozen order + pause/resume/retry) and
+ * `resultSummary.ts` (accuracy over graded questions only).
+ *
+ * Kept for the legacy `PracticeScreen`/`useQuiz` path (ai-output-v1 schema,
+ * whose string options carry no IDs and therefore cannot satisfy HI-4)
+ * until P11 migrates the UI. Do not use for new practice code.
+ */
 import type {PracticeQuestion} from '@shared/schemas/ai-output-v1';
 
 export type QuizStatus = 'answering' | 'answered' | 'finished';

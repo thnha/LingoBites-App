@@ -176,6 +176,16 @@ function createMockDatabase() {
     if (normalized.startsWith('select * from practice_events where event_id')) {
       return toRows(practiceEvents.filter(r => r.event_id === params[0]));
     }
+    if (normalized.startsWith('select * from practice_events where session_id')) {
+      const rows = practiceEvents.filter(r => r.session_id === params[0]);
+      rows.sort((a, b) => a.sequence - b.sequence);
+      return toRows(rows);
+    }
+    if (normalized.startsWith('select * from practice_sessions where practice_set_id')) {
+      const rows = practiceSessions.filter(r => r.practice_set_id === params[0]);
+      rows.sort((a, b) => a.attempt_no - b.attempt_no);
+      return toRows(rows);
+    }
 
     if (normalized.startsWith('delete from practice_events')) {
       const before = practiceEvents.length;

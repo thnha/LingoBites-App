@@ -266,6 +266,63 @@ export function recordAnswerEvent(
 }
 
 /**
+ * All answer events for a session, ordered by sequence. Used by the
+ * offline session engine (SETE-204 / P9) to resume after a kill and to
+ * rebuild counters without keeping progress in component state.
+ */
+export function getAnswerEvents(sessionId: string): AnswerEvent[] {
+  const db = getDatabase();
+  const res = rows<any>(
+    db.execute(
+      'SELECT * FROM practice_events WHERE session_id = ? ORDER BY sequence ASC',
+      [sessionId],
+    ),
+  );
+  return res.map(row => ({
+    event_id: row.event_id,
+    contract_version: row.contract_version,
+    session_id: row.session_id,
+    question_id: row.question_id,
+    sequence: row.sequence,
+    selected_option_id: row.selected_option_id,
+    is_correct: row.is_correct === 1,
+    answered_at: row.answered_at,
+    duration_ms: row.duration_ms,
+    try_index: row.try_index,
+    grading: parseJson(row.grading_json)!,
+    sync_status: row.sync_status,
+  }));
+}
+
+/**
+ * All sessions created for a practice set, ordered by attempt_no.
+ * Used to allocate the next `attempt_no` on retry without deleting history.
+ */
+export function listPracticeSessionsForSet(setId: string): PracticeSession[] {
+  const db = getDatabase();
+  const res = rows<any>(
+    db.execute(
+      'SELECT * FROM practice_sessions WHERE practice_set_id = ? ORDER BY attempt_no ASC',
+      [setId],
+    ),
+  );
+  return res.map(row => ({
+    id: row.id,
+    practice_set_id: row.practice_set_id,
+    set_revision: row.set_revision,
+    lesson_id: row.lesson_id,
+    lesson_revision: row.lesson_revision,
+    status: row.status,
+    question_order: parseJson(row.question_order_json)!,
+    current_index: row.current_index,
+    attempt_no: row.attempt_no,
+    started_at: row.started_at,
+    updated_at: row.updated_at,
+    completed_at: row.completed_at || undefined,
+  }));
+}
+
+/**
  * Purge expired practice data based on D5 config policy.
  * HI-5: Never delete in_progress sessions or pending sync events.
  */
@@ -305,4 +362,32 @@ export function purgeExpiredPracticeData(nowStr: string): void {
       [nowStr, PRACTICE_RETENTION.SETS_AND_QUESTIONS_DAYS],
     );
   });
+}
+
+export function findReusablePracticeSetLocally(
+  lessonId: string,
+  lessonRevision: number,
+  configHash: string,
+): PracticeSet | null {
+  const db = getDatabase();
+  const res = db.execute(
+    'SELECT id FROM practice_sets WHERE lesson_id = ? AND lesson_revision = ? AND config_hash = ? AND status = ? LIMIT 1',
+    [lessonId, lessonRevision, configHash, 'ready']
+  );
+  if (res.rows && res.rows.length > 0) {
+    return getPracticeSet(res.rows.item(0).id);
+  }
+  return null;
+}
+
+export function findActiveSessionLocally(lessonId: string): PracticeSession | null {
+  const db = getDatabase();
+  const res = db.execute(
+    'SELECT id FROM practice_sessions WHERE lesson_id = ? AND status = ? ORDER BY updated_at DESC LIMIT 1',
+    [lessonId, 'in_progress']
+  );
+  if (res.rows && res.rows.length > 0) {
+    return getPracticeSession(res.rows.item(0).id);
+  }
+  return null;
 }
