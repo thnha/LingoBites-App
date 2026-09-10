@@ -32,3 +32,18 @@ export function syncRetryDelayMs(attemptCount: number): number {
 export function isSyncStuck(attemptCount: number): boolean {
   return attemptCount >= MAX_SYNC_ATTEMPTS;
 }
+
+/**
+ * Exponential backoff with equal jitter (P12 at-least-once).
+ * `syncRetryDelayMs` stays deterministic for existing callers/tests;
+ * this spreads thundering-herd retries over [delay/2, delay].
+ * `randomFn` is injectable for deterministic tests.
+ */
+export function syncRetryDelayMsWithJitter(
+  attemptCount: number,
+  randomFn: () => number = Math.random,
+): number {
+  const base = syncRetryDelayMs(attemptCount);
+  const jitter = randomFn();
+  return Math.floor(base / 2 + (base / 2) * jitter);
+}

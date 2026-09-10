@@ -1,17 +1,23 @@
 import {REVIEW_EVENT_TYPE} from './types';
 import {getDatabase} from './database';
 import type {
-  ReviewEventPayload,
+  SyncOutboxEventType,
+  SyncOutboxPayload,
   SyncOutboxRecord,
   SyncOutboxRow,
 } from './types';
 
-type EnqueueSyncOutboxEventInput = {
-  /** Client-generated id — the review session id; doubles as the sync idempotency key. */
+export type EnqueueSyncOutboxEventInput = {
+  /** Client-generated id — doubles as the server-side idempotency key. */
   id: string;
   entityId: string;
-  payload: ReviewEventPayload;
+  payload: SyncOutboxPayload;
   createdAt?: string;
+  /**
+   * Outbox event type. Defaults to `review` so existing review call sites
+   * keep working unchanged (P12 preserves review behaviour).
+   */
+  eventType?: SyncOutboxEventType;
 };
 
 type PendingOptions = {
@@ -23,7 +29,7 @@ function mapRow(row: SyncOutboxRow): SyncOutboxRecord {
     id: row.id,
     eventType: row.event_type,
     entityId: row.entity_id,
-    payload: JSON.parse(row.payload_json) as ReviewEventPayload,
+    payload: JSON.parse(row.payload_json) as SyncOutboxPayload,
     createdAt: row.created_at,
     attemptCount: row.attempt_count,
     lastError: row.last_error,
@@ -39,8 +45,10 @@ function firstRow<T>(result: {
 
 /**
  * Appends a pending outbox event. Intended to be called inside the same
- * transaction that commits the underlying review write (ADR-2), so a crash
- * cannot produce a local review session with no outbox entry.
+ * transaction that commits the underlying review/practice write (ADR-2),
+ * so a crash cannot produce a local session with no outbox entry.
+ * Safe to call inside an outer `withTransaction` — it performs a single
+ * INSERT with no BEGIN/COMMIT of its own.
  */
 export function enqueueSyncOutboxEvent(
   input: EnqueueSyncOutboxEventInput,
@@ -54,7 +62,7 @@ export function enqueueSyncOutboxEvent(
     ) VALUES (?, ?, ?, ?, ?, 0, NULL, NULL);`,
     [
       input.id,
-      REVIEW_EVENT_TYPE,
+      input.eventType ?? REVIEW_EVENT_TYPE,
       input.entityId,
       JSON.stringify(input.payload),
       createdAt,

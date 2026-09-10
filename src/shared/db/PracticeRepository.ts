@@ -8,6 +8,8 @@ import type {
   ClozeChoice,
 } from '../schemas/practice';
 import {PRACTICE_RETENTION} from './constants';
+import {PRACTICE_EVENT_TYPE} from './types';
+import type {PracticeEventPayload} from './types';
 
 function parseJson<T>(value: string | null | undefined): T | undefined {
   if (!value) return undefined;
@@ -217,6 +219,29 @@ export function getPracticeSession(id: string): PracticeSession | null {
   };
 }
 
+/**
+ * Allowlist payload pushed to the server (P12 / P7 §5). Only source IDs +
+ * outcome + timing — never snapshot text, never SRS fields.
+ */
+export function toPracticeOutboxPayload(event: AnswerEvent): PracticeEventPayload {
+  return {
+    event_id: event.event_id,
+    contract_version: event.contract_version,
+    session_id: event.session_id,
+    question_id: event.question_id,
+    sequence: event.sequence,
+    selected_option_id: event.selected_option_id,
+    is_correct: event.is_correct,
+    answered_at: event.answered_at,
+    duration_ms: event.duration_ms,
+    try_index: event.try_index,
+    grading: {
+      mode: 'device_deterministic',
+      grader_version: event.grading.grader_version,
+    },
+  };
+}
+
 export function recordAnswerEvent(
   event: AnswerEvent,
   sessionUpdate: {
@@ -262,7 +287,45 @@ export function recordAnswerEvent(
         event.session_id,
       ],
     );
+
+    // P12: append the outbox row in the SAME transaction — no window where
+    // a kill after answering loses the event. D4: practice only, no SRS
+    // schedule or next_review_at writes here (HI-1/HI-4 preserved).
+    db.execute(
+      `INSERT INTO sync_outbox (
+        id, event_type, entity_id, payload_json, created_at, attempt_count,
+        last_error, synced_at
+      ) VALUES (?, ?, ?, ?, ?, 0, NULL, NULL);`,
+      [
+        event.event_id,
+        PRACTICE_EVENT_TYPE,
+        event.session_id,
+        stringifyJson(toPracticeOutboxPayload(event)),
+        event.answered_at,
+      ],
+    );
   });
+}
+
+/**
+ * Mirror of outbox drain state onto `practice_events.sync_status` so
+ * D5 retention (`purgeExpiredPracticeData`) can tell synced from pending.
+ * HI-5: never mark unsynced rows as synced.
+ */
+export function markPracticeEventsSynced(eventIds: string[]): number {
+  if (eventIds.length === 0) {
+    return 0;
+  }
+  const db = getDatabase();
+  let affected = 0;
+  for (const id of eventIds) {
+    const result = db.execute(
+      `UPDATE practice_events SET sync_status = 'synced' WHERE event_id = ?;`,
+      [id],
+    );
+    affected += result.rowsAffected ?? 0;
+  }
+  return affected;
 }
 
 /**

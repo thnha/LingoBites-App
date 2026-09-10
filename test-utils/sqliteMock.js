@@ -152,6 +152,15 @@ function createMockDatabase() {
       return {rowsAffected: 1};
     }
 
+    if (normalized.startsWith('update practice_events set sync_status')) {
+      const row = practiceEvents.find(e => e.event_id === params[0]);
+      if (!row) {
+        return {rowsAffected: 0};
+      }
+      row.sync_status = 'synced';
+      return {rowsAffected: 1};
+    }
+
     if (normalized.startsWith('update practice_sessions')) {
       const row = practiceSessions.find(s => s.id === params[4]);
       if (row) {

@@ -15,6 +15,7 @@ import {
   listPendingSyncEvents,
   markSyncEventsSynced,
 } from '../SyncOutboxRepository';
+import type {ReviewEventPayload} from '../types';
 
 function saveFixtureLesson(): string {
   const result = saveLesson({
@@ -293,9 +294,9 @@ describe('FlashcardRepository', () => {
       reviewed_at: '2026-08-17T12:00:00.000Z',
       interval_days: 3,
     });
-    expect(pending[0].payload.next_review_at).toBe(
-      result.ok ? result.nextReviewAt : '',
-    );
+    expect(
+      (pending[0].payload as ReviewEventPayload).next_review_at,
+    ).toBe(result.ok ? result.nextReviewAt : '');
   });
 
   it('does not enqueue an outbox event when the rating fails', () => {
