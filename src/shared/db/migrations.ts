@@ -413,6 +413,73 @@ const MIGRATIONS = [
     retryable INTEGER NOT NULL,
     PRIMARY KEY (lesson_id, unit_key)
   );`,
+  // ---- SETE-126 / P8: Practice set, session, and events ----
+  `CREATE TABLE IF NOT EXISTS practice_sets (
+    id TEXT PRIMARY KEY NOT NULL,
+    contract_version INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    lesson_id TEXT NOT NULL,
+    lesson_revision INTEGER NOT NULL,
+    source_fingerprint TEXT NOT NULL,
+    config_hash TEXT NOT NULL,
+    seed TEXT,
+    difficulty TEXT NOT NULL,
+    requested_count INTEGER NOT NULL,
+    set_revision INTEGER NOT NULL,
+    generator_json TEXT NOT NULL,
+    validation_summary_json TEXT,
+    created_at TEXT NOT NULL,
+    ready_at TEXT,
+    error_json TEXT
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_practice_sets_lesson_id ON practice_sets (lesson_id);`,
+  `CREATE TABLE IF NOT EXISTS practice_questions (
+    id TEXT PRIMARY KEY NOT NULL,
+    practice_set_id TEXT NOT NULL,
+    variant TEXT NOT NULL,
+    skill TEXT NOT NULL,
+    difficulty TEXT NOT NULL,
+    prompt_vi TEXT NOT NULL,
+    explanation_vi TEXT NOT NULL,
+    source_refs_json TEXT NOT NULL,
+    source_snapshot_json TEXT NOT NULL,
+    provenance_json TEXT NOT NULL,
+    validation_json TEXT NOT NULL,
+    payload_json TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_practice_questions_set_id ON practice_questions (practice_set_id);`,
+  `CREATE TABLE IF NOT EXISTS practice_sessions (
+    id TEXT PRIMARY KEY NOT NULL,
+    practice_set_id TEXT NOT NULL,
+    set_revision INTEGER NOT NULL,
+    lesson_id TEXT NOT NULL,
+    lesson_revision INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    question_order_json TEXT NOT NULL,
+    current_index INTEGER NOT NULL,
+    attempt_no INTEGER NOT NULL,
+    started_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    completed_at TEXT
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_practice_sessions_lesson_id ON practice_sessions (lesson_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_practice_sessions_status ON practice_sessions (status);`,
+  `CREATE TABLE IF NOT EXISTS practice_events (
+    event_id TEXT PRIMARY KEY NOT NULL,
+    contract_version INTEGER NOT NULL,
+    session_id TEXT NOT NULL,
+    question_id TEXT NOT NULL,
+    sequence INTEGER NOT NULL,
+    selected_option_id TEXT,
+    is_correct INTEGER NOT NULL,
+    answered_at TEXT NOT NULL,
+    duration_ms INTEGER NOT NULL,
+    try_index INTEGER NOT NULL,
+    grading_json TEXT NOT NULL,
+    sync_status TEXT NOT NULL
+  );`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS idx_practice_events_session_sequence ON practice_events (session_id, sequence);`,
+  `CREATE INDEX IF NOT EXISTS idx_practice_events_sync_status ON practice_events (sync_status);`
 ];
 
 /**
@@ -473,6 +540,19 @@ const DOWN_MIGRATIONS_M7: string[] = [
   `DROP TABLE IF EXISTS lesson_v2_sentences;`,
   `DROP INDEX IF EXISTS idx_lesson_v2_updated_at;`,
   `DROP TABLE IF EXISTS lesson_v2;`,
+];
+
+const DOWN_MIGRATIONS_M8: string[] = [
+  `DROP INDEX IF EXISTS idx_practice_events_sync_status;`,
+  `DROP INDEX IF EXISTS idx_practice_events_session_sequence;`,
+  `DROP TABLE IF EXISTS practice_events;`,
+  `DROP INDEX IF EXISTS idx_practice_sessions_status;`,
+  `DROP INDEX IF EXISTS idx_practice_sessions_lesson_id;`,
+  `DROP TABLE IF EXISTS practice_sessions;`,
+  `DROP INDEX IF EXISTS idx_practice_questions_set_id;`,
+  `DROP TABLE IF EXISTS practice_questions;`,
+  `DROP INDEX IF EXISTS idx_practice_sets_lesson_id;`,
+  `DROP TABLE IF EXISTS practice_sets;`,
 ];
 
 const DOWN_MIGRATIONS_M2: string[] = [
@@ -569,6 +649,13 @@ export function downgradeLibraryPersistenceMigrations(
 /** Reverse the M7 progressive lesson-v2 schema migration. */
 export function downgradeLessonV2Migrations(db: QuickSQLiteConnection): void {
   for (const sql of DOWN_MIGRATIONS_M7) {
+    db.execute(sql);
+  }
+}
+
+/** Reverse the M8 practice schema migration. */
+export function downgradePracticeMigrations(db: QuickSQLiteConnection): void {
+  for (const sql of DOWN_MIGRATIONS_M8) {
     db.execute(sql);
   }
 }

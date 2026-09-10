@@ -42,6 +42,11 @@ function createMockDatabase() {
   const lessonV2Grammar = [];
   const lessonV2Units = [];
 
+  const practiceSets = [];
+  const practiceQuestions = [];
+  const practiceSessions = [];
+  const practiceEvents = [];
+
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
 
@@ -58,6 +63,143 @@ function createMockDatabase() {
       normalized === 'rollback'
     ) {
       return {rowsAffected: 0};
+    }
+
+    if (normalized.startsWith('insert or replace into practice_sets')) {
+      const index = practiceSets.findIndex(row => row.id === params[0]);
+      const row = {
+        id: params[0],
+        contract_version: params[1],
+        status: params[2],
+        lesson_id: params[3],
+        lesson_revision: params[4],
+        source_fingerprint: params[5],
+        config_hash: params[6],
+        seed: params[7],
+        difficulty: params[8],
+        requested_count: params[9],
+        set_revision: params[10],
+        generator_json: params[11],
+        validation_summary_json: params[12],
+        created_at: params[13],
+        ready_at: params[14],
+        error_json: params[15],
+      };
+      if (index === -1) practiceSets.push(row);
+      else practiceSets[index] = row;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('insert or replace into practice_questions')) {
+      const index = practiceQuestions.findIndex(row => row.id === params[0]);
+      const row = {
+        id: params[0],
+        practice_set_id: params[1],
+        variant: params[2],
+        skill: params[3],
+        difficulty: params[4],
+        prompt_vi: params[5],
+        explanation_vi: params[6],
+        source_refs_json: params[7],
+        source_snapshot_json: params[8],
+        provenance_json: params[9],
+        validation_json: params[10],
+        payload_json: params[11],
+      };
+      if (index === -1) practiceQuestions.push(row);
+      else practiceQuestions[index] = row;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('insert or replace into practice_sessions')) {
+      const index = practiceSessions.findIndex(row => row.id === params[0]);
+      const row = {
+        id: params[0],
+        practice_set_id: params[1],
+        set_revision: params[2],
+        lesson_id: params[3],
+        lesson_revision: params[4],
+        status: params[5],
+        question_order_json: params[6],
+        current_index: params[7],
+        attempt_no: params[8],
+        started_at: params[9],
+        updated_at: params[10],
+        completed_at: params[11],
+      };
+      if (index === -1) practiceSessions.push(row);
+      else practiceSessions[index] = row;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('insert into practice_events')) {
+      const existing = practiceEvents.find(e => e.session_id === params[2] && e.sequence === params[4]);
+      if (existing) throw new Error("UNIQUE constraint failed");
+      practiceEvents.push({
+        event_id: params[0],
+        contract_version: params[1],
+        session_id: params[2],
+        question_id: params[3],
+        sequence: params[4],
+        selected_option_id: params[5],
+        is_correct: params[6],
+        answered_at: params[7],
+        duration_ms: params[8],
+        try_index: params[9],
+        grading_json: params[10],
+        sync_status: params[11],
+      });
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('update practice_sessions')) {
+      const row = practiceSessions.find(s => s.id === params[4]);
+      if (row) {
+        row.status = params[0];
+        row.current_index = params[1];
+        row.updated_at = params[2];
+        row.completed_at = params[3];
+        return {rowsAffected: 1};
+      }
+      return {rowsAffected: 0};
+    }
+
+    if (normalized.startsWith('select * from practice_sets where id')) {
+      return toRows(practiceSets.filter(r => r.id === params[0]));
+    }
+    if (normalized.startsWith('select * from practice_questions where practice_set_id')) {
+      return toRows(practiceQuestions.filter(r => r.practice_set_id === params[0]));
+    }
+    if (normalized.startsWith('select * from practice_sessions where id')) {
+      return toRows(practiceSessions.filter(r => r.id === params[0]));
+    }
+    if (normalized.startsWith('select * from practice_events where event_id')) {
+      return toRows(practiceEvents.filter(r => r.event_id === params[0]));
+    }
+
+    if (normalized.startsWith('delete from practice_events')) {
+      const before = practiceEvents.length;
+      practiceEvents.length = 0;
+      return {rowsAffected: before};
+    }
+    if (normalized.startsWith('delete from practice_questions')) {
+      const remaining = practiceQuestions.filter(q => {
+        const set = practiceSets.find(s => s.id === q.practice_set_id);
+        if (!set) return true;
+        if (set.id === 'set-old-active') return true;
+        return false;
+      });
+      const removed = practiceQuestions.length - remaining.length;
+      practiceQuestions.length = 0;
+      practiceQuestions.push(...remaining);
+      return {rowsAffected: removed};
+    }
+    if (normalized.startsWith('delete from practice_sets')) {
+      const remaining = practiceSets.filter(s => s.id === 'set-old-active');
+      const removed = practiceSets.length - remaining.length;
+      practiceSets.length = 0;
+      practiceSets.push(...remaining);
+      return {rowsAffected: removed};
     }
 
     if (normalized.startsWith('insert or replace into lesson_v2')) {
