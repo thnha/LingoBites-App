@@ -33,7 +33,7 @@ describe('FlipCard - Accessibility', () => {
     );
 
     const cardButton = tree.root.findByProps({testID: 'flip-card'});
-    expect(getAnnouncedText(cardButton)).toBe('Front content');
+    expect(getAnnouncedText(cardButton)).toBe('Front content Mặt trước');
 
     const flippedTree = await render(
       <FlipCard
@@ -47,7 +47,7 @@ describe('FlipCard - Accessibility', () => {
     const flippedCardButton = flippedTree.root.findByProps({
       testID: 'flip-card',
     });
-    expect(getAnnouncedText(flippedCardButton)).toBe('Back content');
+    expect(getAnnouncedText(flippedCardButton)).toBe('Back content Mặt sau');
   });
 
   it('has accessibility hint for flip action', async () => {
@@ -76,6 +76,62 @@ describe('FlipCard - Accessibility', () => {
 
     const cardButton = tree.root.findByProps({testID: 'flip-card'});
     expect(cardButton.props.accessibilityRole).toBe('button');
+  });
+
+  it('has accessibilityState.expanded reflecting flip state', async () => {
+    const tree = await render(
+      <FlipCard
+        back={<Text>Back content</Text>}
+        flipped={false}
+        front={<Text>Front content</Text>}
+        onFlip={jest.fn()}
+      />,
+    );
+
+    const cardButton = tree.root.findByProps({testID: 'flip-card'});
+    expect(cardButton.props.accessibilityState).toEqual({expanded: false});
+
+    const flippedTree = await render(
+      <FlipCard
+        back={<Text>Back content</Text>}
+        flipped={true}
+        front={<Text>Front content</Text>}
+        onFlip={jest.fn()}
+      />,
+    );
+
+    const flippedCardButton = flippedTree.root.findByProps({
+      testID: 'flip-card',
+    });
+    expect(flippedCardButton.props.accessibilityState).toEqual({expanded: true});
+  });
+
+  it('has accessibilityValue indicating front or back face', async () => {
+    const tree = await render(
+      <FlipCard
+        back={<Text>Back content</Text>}
+        flipped={false}
+        front={<Text>Front content</Text>}
+        onFlip={jest.fn()}
+      />,
+    );
+
+    const cardButton = tree.root.findByProps({testID: 'flip-card'});
+    expect(cardButton.props.accessibilityValue).toEqual({text: 'Mặt trước'});
+
+    const flippedTree = await render(
+      <FlipCard
+        back={<Text>Back content</Text>}
+        flipped={true}
+        front={<Text>Front content</Text>}
+        onFlip={jest.fn()}
+      />,
+    );
+
+    const flippedCardButton = flippedTree.root.findByProps({
+      testID: 'flip-card',
+    });
+    expect(flippedCardButton.props.accessibilityValue).toEqual({text: 'Mặt sau'});
   });
 
   it('announces the card content to screen readers, not just a static label', async () => {

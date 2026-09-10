@@ -29,7 +29,7 @@ import {RatingControl} from '../../src/components/RatingControl';
 import {AppThemeProvider} from '../../src/theme';
 import {FeatureFlagProvider} from '../../src/release';
 import {Text} from 'react-native';
-import {warnOnMaskedContent} from '../a11yTestUtils';
+import {findMaskedContent, warnOnMaskedContent} from '../a11yTestUtils';
 
 async function render(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
@@ -74,7 +74,7 @@ describe('Global a11y masking scan (warning mode — SETE-122 Việc 6.2)', () =
     warnOnMaskedContent(tree.root, 'HandoffDualActionBar');
   });
 
-  it('FlipCard: known bug (SETE-122), fix tracked in a separate issue', async () => {
+  it('FlipCard: no masked content (graduated hard gate - SETE-124)', async () => {
     const tree = await render(
       <FlipCard
         back={<Text>back</Text>}
@@ -83,6 +83,6 @@ describe('Global a11y masking scan (warning mode — SETE-122 Việc 6.2)', () =
         onFlip={() => {}}
       />,
     );
-    warnOnMaskedContent(tree.root, 'FlipCard');
+    expect(findMaskedContent(tree.root)).toHaveLength(0);
   });
 });

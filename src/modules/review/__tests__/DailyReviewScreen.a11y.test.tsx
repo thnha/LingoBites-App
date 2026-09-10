@@ -123,6 +123,8 @@ describe('DailyReviewScreen - Accessibility', () => {
       expect(flipCard.props.accessibilityLabel).toBeUndefined();
       expect(flipCard.props.accessibilityRole).toBe('button');
       expect(flipCard.props.accessibilityHint).toBe('Chạm để lật thẻ');
+      expect(flipCard.props.accessibilityState).toEqual({expanded: false});
+      expect(flipCard.props.accessibilityValue).toEqual({text: 'Mặt trước'});
     });
 
     it('announces flashcard word/meaning on the FlipCard', async () => {

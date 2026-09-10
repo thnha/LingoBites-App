@@ -27,6 +27,8 @@ export function FlipCard({
     <Pressable
       accessibilityHint="Chạm để lật thẻ"
       accessibilityRole="button"
+      accessibilityState={{expanded: flipped}}
+      accessibilityValue={{text: flipped ? 'Mặt sau' : 'Mặt trước'}}
       onPress={onFlip}
       testID={testID}
     >
