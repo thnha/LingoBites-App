@@ -38,10 +38,8 @@ export function FlipCard({
             minHeight: 220,
             justifyContent: 'center',
             alignItems: 'center',
-            padding: theme.spacing.lg,
             borderWidth: 1.5,
             borderColor: flipped ? theme.colors.primary : theme.colors.border,
-            backgroundColor: theme.components.card.background,
           },
           style,
         ])}
@@ -52,6 +50,7 @@ export function FlipCard({
           color="muted"
           importantForAccessibility="no-hide-descendants"
           style={styles.hintText}
+          variant="caption"
         >
           {flipped ? '🔄 Nhấn để xem mặt trước' : '🔄 Nhấn để xem mặt sau'}
         </AppText>
@@ -68,7 +67,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   hintText: {
-    fontSize: 12,
     marginTop: 12,
     textAlign: 'center',
   },
