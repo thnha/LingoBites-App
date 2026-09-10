@@ -138,6 +138,14 @@ jest.mock('react-native-audio-recorder-player', () => {
 
 jest.mock('react-native-vector-icons/MaterialIcons', () => 'MaterialIcons');
 
+// Reanimated runs animations on the UI thread, which does not exist under
+// Jest. The official `react-native-reanimated/mock` points at the library's
+// untranspiled TS sources, so this repo uses a small synchronous mock with
+// the same semantics (see test-utils/reanimatedMock.js).
+jest.mock('react-native-reanimated', () =>
+  require('./test-utils/reanimatedMock'),
+);
+
 jest.mock('@react-navigation/native', () => {
   const React = require('react');
   return {
