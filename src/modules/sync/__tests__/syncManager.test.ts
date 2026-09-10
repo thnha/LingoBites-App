@@ -9,7 +9,7 @@ import {
 import type {ReviewEventPayload} from '@shared/db/types';
 import {getSyncOutboxStatus} from '../outboxSync';
 import {createSyncManager} from '../syncManager';
-import {MAX_SYNC_ATTEMPTS} from '../syncPolicy';
+import {MAX_SYNC_ATTEMPTS, syncRetryDelayMs} from '../syncPolicy';
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch as unknown as typeof fetch;
@@ -103,7 +103,10 @@ describe('createSyncManager', () => {
       .mockRejectedValueOnce(new Error('offline'))
       .mockResolvedValueOnce(response(successBody(['event-1'])));
 
-    const manager = createSyncManager({fetchImpl: mockFetch as never});
+    const manager = createSyncManager({
+      fetchImpl: mockFetch as never,
+      randomFn: () => 1,
+    });
     manager.start();
     await flush();
 
@@ -118,6 +121,42 @@ describe('createSyncManager', () => {
     await jest.advanceTimersByTimeAsync(1);
     expect(mockFetch).toHaveBeenCalledTimes(2);
     expect(listPendingSyncEvents()).toHaveLength(0);
+  });
+
+  it('schedules retry with jitter at boundary randomFn values', async () => {
+    const nextAttempt = 2;
+    const base = syncRetryDelayMs(nextAttempt);
+    const minDelayMs = Math.floor(base / 2);
+
+    for (const [randomFn, delayMs] of [
+      [() => 0, minDelayMs],
+      [() => 1, base],
+    ] as const) {
+      __resetMockDatabases();
+      resetDatabaseForTests(open({name: DB_NAME}));
+      getDatabase();
+      mockFetch.mockReset();
+      seedEvent('event-1');
+      mockFetch
+        .mockRejectedValueOnce(new Error('offline'))
+        .mockResolvedValueOnce(response(successBody(['event-1'])));
+
+      const manager = createSyncManager({
+        fetchImpl: mockFetch as never,
+        randomFn,
+      });
+      manager.start();
+      await flush();
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(delayMs - 1);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(1);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+
+      manager.stop();
+    }
   });
 
   it('requestSync cancels a pending backoff and drains immediately (network returned)', async () => {

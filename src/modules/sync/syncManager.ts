@@ -6,15 +6,15 @@ import {drainOutboxOnce} from './outboxSync';
 import {
   SYNC_MAX_ROUNDS_PER_REQUEST,
   isSyncStuck,
-  syncRetryDelayMs,
+  syncRetryDelayMsWithJitter,
 } from './syncPolicy';
 
 /**
  * Foreground sync manager for the review outbox.
  *
  * Owns the retry schedule: after a failed drain it re-arms a backoff timer
- * (`syncRetryDelayMs`), a new `requestSync()` cancels any pending timer and
- * tries immediately (this is the "network came back" / app-foreground trigger),
+ * (`syncRetryDelayMsWithJitter`), a new `requestSync()` cancels any pending timer
+ * and tries immediately (this is the "network came back" / app-foreground trigger),
  * and rows that hit the attempt cap are left alone instead of retried forever.
  * Everything is best-effort and never throws.
  */
@@ -27,9 +27,11 @@ export type SyncManager = {
 
 export type SyncManagerDeps = {
   fetchImpl?: typeof fetch;
+  randomFn?: () => number;
 };
 
 export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
+  const randomFn = deps.randomFn ?? Math.random;
   let enabled = false;
   let busy = false;
   let retryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -53,7 +55,7 @@ export function createSyncManager(deps: SyncManagerDeps = {}): SyncManager {
       return;
     }
     const maxAttempt = Math.max(0, ...pending.map(event => event.attemptCount));
-    const delayMs = syncRetryDelayMs(maxAttempt + 1);
+    const delayMs = syncRetryDelayMsWithJitter(maxAttempt + 1, randomFn);
     retryTimer = setTimeout(() => {
       if (generation !== runGeneration || !enabled) return;
       retryTimer = null;
