@@ -231,7 +231,7 @@ export const featureRegistry = [
     required: false,
     releaseGroup: 'expansion',
     status: 'not_implemented',
-    limitations: ["Not implemented yet"],
+    limitations: ['Not implemented yet'],
   },
   {
     key: 'situationPractice',
@@ -239,7 +239,7 @@ export const featureRegistry = [
     required: false,
     releaseGroup: 'expansion',
     status: 'not_implemented',
-    limitations: ["Not implemented yet"],
+    limitations: ['Not implemented yet'],
   },
   {
     key: 'lessonV2',
@@ -249,6 +249,14 @@ export const featureRegistry = [
     status: 'beta',
     entryPoint: 'HomeScreen -> ProgressiveLesson',
     limitations: ["Disabled until T16 corpus thresholds and T17 operations evidence pass (SETE-159)."],
+  },
+  {
+    key: 'youtubeLearning',
+    module: 'modules/youtube',
+    required: false,
+    releaseGroup: 'expansion',
+    status: 'beta',
+    entryPoint: 'HomeScreen -> YouTubeInput',
   },
 ] as const satisfies readonly FeatureRegistryEntry[];
 

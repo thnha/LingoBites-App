@@ -42,4 +42,5 @@ export const featureDependencies: Record<FeatureKey, DependencyGroup[]> = {
 
   // Standalone v2 flow; when OFF the app keeps using the v1 lesson path (AC24).
   lessonV2: [],
+  youtubeLearning: [],
 };

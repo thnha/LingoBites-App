@@ -233,6 +233,32 @@ export function HomeScreen({navigation}: Props) {
             </Pressable>
           ) : null}
           <View style={styles.inputSourceGrid}>
+            {config.features.youtubeLearning ? (
+              <Pressable
+                accessibilityLabel={t('home.youtube_a11y')}
+                accessibilityRole="button"
+                onPress={() => navigation.navigate('YouTubeInput')}
+                style={({pressed}) => [
+                  styles.inputSourceSecondary,
+                  styles.inputSourcePaste,
+                  pressed && styles.pressed,
+                ]}
+                testID="home-input-youtube"
+              >
+                <MaterialIcon
+                  color={theme.colors.primary}
+                  name="play_circle"
+                  size={22}
+                />
+                <AppText
+                  variant="h3"
+                  style={styles.inputSourcePasteText}
+                  numberOfLines={1}
+                >
+                  {t('home.youtube')}
+                </AppText>
+              </Pressable>
+            ) : null}
             {imageInputEnabled ? (
               <Pressable
                 accessibilityLabel={t('home.upload_image_a11y')}

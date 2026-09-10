@@ -40,6 +40,12 @@ import {TtsSpikeScreen} from '@modules/tts';
 import {useFeatureFlags} from '@/release';
 import {TabBar} from './TabBar';
 import {isIngestionRouteEnabled} from './ingestionRouteGate';
+import {
+  YouTubeInputScreen,
+  YouTubeProcessingScreen,
+  YouTubeManualTranscriptScreen,
+  YouTubeLessonRouteScreen,
+} from '@modules/youtube';
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const LessonsStack = createNativeStackNavigator<LessonsStackParamList>();
@@ -58,6 +64,30 @@ function HomeStackNavigator() {
         name="HomeMain"
         options={{headerShown: false}}
       />
+      {config.features.youtubeLearning && (
+        <>
+          <HomeStack.Screen
+            component={YouTubeInputScreen}
+            name="YouTubeInput"
+            options={{headerShown: false}}
+          />
+          <HomeStack.Screen
+            component={YouTubeProcessingScreen}
+            name="YouTubeProcessing"
+            options={{headerShown: false, gestureEnabled: false}}
+          />
+          <HomeStack.Screen
+            component={YouTubeManualTranscriptScreen}
+            name="YouTubeManualTranscript"
+            options={{headerShown: false}}
+          />
+          <HomeStack.Screen
+            component={YouTubeLessonRouteScreen}
+            name="YouTubeLesson"
+            options={{headerShown: false}}
+          />
+        </>
+      )}
       <HomeStack.Screen
         component={ContentLessonRuntimeScreen}
         name="ContentLessonRuntime"

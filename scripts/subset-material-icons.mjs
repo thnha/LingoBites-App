@@ -25,6 +25,8 @@ const ICON_ALIASES = {
   emoji_events: 'emoji-events',
   fitness_center: 'fitness-center',
   format_quote: 'format-quote',
+  heart: 'favorite',
+  heart_outline: 'favorite-border',
   history_edu: 'history-edu',
   local_fire_department: 'local-fire-department',
   menu_book: 'menu-book',

@@ -32,6 +32,7 @@
     "dialogueGenerator": false,
     "phraseExtractor": false,
     "situationPractice": false,
-    "lessonV2": false
+    "lessonV2": false,
+    "youtubeLearning": false
   }
 }

@@ -39,6 +39,18 @@ export type LearningDetailParamList = {
 
 export type HomeStackParamList = {
   HomeMain: undefined;
+  YouTubeInput: undefined;
+  YouTubeProcessing: {
+    url: string;
+    manualCues?: import('@shared/schemas/youtube-transcript-v1').RawCue[];
+  };
+  YouTubeManualTranscript: {
+    url: string;
+    errorCode: import('@shared/schemas/youtube-transcript-v1').YouTubeErrorCode;
+  };
+  YouTubeLesson: {
+    lesson: import('@shared/schemas/youtube-transcript-v1').YouTubeTranscript;
+  };
   ContentLessonRuntime: {lessonId: string};
   PasteText: {analyzeError?: string} | undefined;
   ImageCapture: {sourceType: OCRSourceType};

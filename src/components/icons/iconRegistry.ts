@@ -51,6 +51,7 @@ export const HANDOFF_ICONS = [
   'psychology',
   'refresh',
   'record_voice_over',
+  'repeat',
   'restaurant_menu',
   'rule',
   'schedule',
