@@ -132,7 +132,7 @@
     "privacy_provided_data_title": "Dữ liệu bạn cung cấp",
     "privacy_local_storage_title": "Lưu trữ trên thiết bị",
     "privacy_ai_note_title": "Lưu ý về AI",
-    "privacy_note_body": "Ảnh hoặc văn bản bạn chọn có thể được gửi tới hệ thống OCR/AI để tạo bài học. Ứng dụng không lưu ảnh gốc mặc định và không gửi nội dung đầy đủ vào analytics. Không nên upload nội dung quá nhạy cảm.",
+    "privacy_note_body": "Ảnh, văn bản hoặc transcript video YouTube bạn chọn — dù do app tự lấy hay do bạn nạp thủ công — có thể được gửi tới backend và nhà cung cấp AI để dịch sang tiếng Việt và sinh phiên âm IPA. Ứng dụng không lưu ảnh gốc mặc định và không gửi nội dung đầy đủ vào analytics. Không nên upload nội dung quá nhạy cảm.",
     "ai_disclaimer_body": "Kết quả phân tích được tạo bởi AI và có thể chưa chính xác hoàn toàn. Hãy dùng như công cụ hỗ trợ học tập, không phải nguồn đánh giá tiếng Anh chính thức.",
     "local_data_note": "Bài học được lưu cục bộ trên thiết bị. Bạn có thể xóa dữ liệu học bất cứ lúc nào trong Hồ sơ.",
     "support_prompt": "Gửi góp ý hoặc báo lỗi qua email. App không gửi nội dung bài học trong email — hãy mô tả vấn đề bằng lời.",

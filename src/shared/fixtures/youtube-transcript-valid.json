@@ -1,0 +1,33 @@
+{
+  "schema_version": "youtube-transcript-v1",
+  "video": {
+    "id": "dQw4w9WgXcQ",
+    "title": "Sample Lesson Video",
+    "channel_title": "Sample Channel",
+    "duration_seconds": 212,
+    "language": "en",
+    "embeddable": true
+  },
+  "transcript_source": "auto_caption",
+  "segments": [
+    {
+      "id": "dQw4w9WgXcQ-0",
+      "index": 0,
+      "start_ms": 0,
+      "end_ms": 3200,
+      "en": "Hello there.",
+      "vi": "Xin chào.",
+      "ipa": "/həˈloʊ ðɛr/"
+    },
+    {
+      "id": "dQw4w9WgXcQ-1",
+      "index": 1,
+      "start_ms": 3200,
+      "end_ms": 6100,
+      "en": "Welcome to the lesson.",
+      "vi": "Chào mừng đến với bài học.",
+      "ipa": "/ˈwɛlkəm tu ðə ˈlɛsən/"
+    }
+  ],
+  "warnings": []
+}
