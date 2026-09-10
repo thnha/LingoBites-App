@@ -32,6 +32,9 @@ import type {
   VocabularyV2,
 } from '@shared/schemas/lesson-v2';
 import {useAppTheme, type AppTheme} from '@theme';
+import {PracticeEntryCard} from '@modules/practice/PracticeEntryCard';
+import {isLessonEligibleForPractice} from '@modules/practice/practiceEligibility';
+import {usePracticeController} from '@modules/practice/usePracticeController';
 
 type HomeProps = NativeStackScreenProps<
   HomeStackParamList,
@@ -207,6 +210,22 @@ export function ProgressiveLessonScreen({
   const [saving, setSaving] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
+  const practiceEligible = lesson ? isLessonEligibleForPractice(lesson) : false;
+  const practiceController = usePracticeController({
+    lessonId,
+    lessonRevision: lesson?.revision ?? 0,
+    lessonLevel: lesson?.level ?? 'beginner',
+    isOffline,
+    enabled: practiceEligible,
+  });
+
+  function openPracticeSession(sessionId: string) {
+    (navigation as HomeProps['navigation']).navigate('Practice', {
+      lessonId,
+      sessionId,
+      title: lesson?.title ?? 'Luyện tập',
+    });
+  }
 
   useEffect(() => {
     mountedRef.current = true;
@@ -732,45 +751,15 @@ export function ProgressiveLessonScreen({
           ))}
         </View>
 
-        <View style={styles.section}>
-          <AppText variant="h2" style={styles.sectionTitle}>
-            Bài tập ({lesson.practice.length})
-          </AppText>
-          {lesson.units.practice.status === 'pending' || lesson.units.practice.status === 'processing' ? (
-            <View style={styles.skeletonColumn} testID="practice-skeleton">
-              <View style={styles.skeletonBox} />
-              <View style={styles.skeletonBox} />
-              <View style={[styles.skeletonBox, styles.skeletonNarrow]} />
-            </View>
-          ) : null}
-          {lesson.units.practice.status === 'ready' && lesson.practice.length === 0 ? (
-            <AppText color="secondary" testID="practice-empty">
-              Bài này không có bài tập riêng.
-            </AppText>
-          ) : null}
-          {lesson.practice.map(practice => (
-            <AppCard key={practice.id}>
-              <View testID={`practice-card-${practice.id}`}>
-                <AppText variant="h3">{practice.question}</AppText>
-                {practice.type === 'multiple_choice' && practice.options ? (
-                  <View style={{gap: theme.spacing.xs, marginTop: theme.spacing.xs}}>
-                    {practice.options.map((opt, i) => (
-                      <AppText key={i} color="secondary">• {opt}</AppText>
-                    ))}
-                  </View>
-                ) : null}
-                <AppText color="secondary" style={{marginTop: theme.spacing.xs}}>
-                  Đáp án: {practice.answer}
-                </AppText>
-                {practice.explanation_vi ? (
-                  <AppText color="secondary" variant="caption">
-                    Giải thích: {practice.explanation_vi}
-                  </AppText>
-                ) : null}
-              </View>
-            </AppCard>
-          ))}
-        </View>
+        {practiceEligible ? (
+          <View style={styles.section}>
+            <PracticeEntryCard
+              controller={practiceController}
+              isOffline={isOffline}
+              onOpenSession={openPracticeSession}
+            />
+          </View>
+        ) : null}
 
         {ttsMessage ? (
           <AppText color="danger" testID="tts-error">

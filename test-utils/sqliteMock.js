@@ -195,18 +195,46 @@ function createMockDatabase() {
       rows.sort((a, b) => a.attempt_no - b.attempt_no);
       return toRows(rows);
     }
+    if (normalized.startsWith('select id from practice_sets where lesson_id')) {
+      let rows = practiceSets.filter(r => r.lesson_id === params[0]);
+      if (normalized.includes('lesson_revision = ?')) {
+        rows = rows.filter(
+          r =>
+            Number(r.lesson_revision) === Number(params[1]) &&
+            r.config_hash === params[2] &&
+            r.status === params[3],
+        );
+      }
+      rows.sort((a, b) =>
+        String(b.ready_at || b.created_at || '').localeCompare(String(a.ready_at || a.created_at || '')),
+      );
+      return toRows(rows.slice(0, 1));
+    }
+    if (normalized.startsWith('select id from practice_sessions where lesson_id')) {
+      const rows = practiceSessions
+        .filter(r => r.lesson_id === params[0] && r.status === params[1])
+        .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)));
+      return toRows(rows.slice(0, 1));
+    }
 
     if (normalized.startsWith('delete from practice_events')) {
-      const before = practiceEvents.length;
+      // Mirror purgeExpiredPracticeData HI-5 semantics: only synced events
+      // are purgeable; pending (unsynced) events always survive.
+      const remaining = practiceEvents.filter(r => r.sync_status !== 'synced');
+      const removed = practiceEvents.length - remaining.length;
       practiceEvents.length = 0;
-      return {rowsAffected: before};
+      practiceEvents.push(...remaining);
+      return {rowsAffected: removed};
     }
     if (normalized.startsWith('delete from practice_questions')) {
+      // HI-5: questions survive when their set has an in_progress session.
       const remaining = practiceQuestions.filter(q => {
         const set = practiceSets.find(s => s.id === q.practice_set_id);
         if (!set) return true;
         if (set.id === 'set-old-active') return true;
-        return false;
+        return practiceSessions.some(
+          sess => sess.practice_set_id === set.id && sess.status === 'in_progress',
+        );
       });
       const removed = practiceQuestions.length - remaining.length;
       practiceQuestions.length = 0;
@@ -214,7 +242,12 @@ function createMockDatabase() {
       return {rowsAffected: removed};
     }
     if (normalized.startsWith('delete from practice_sets')) {
-      const remaining = practiceSets.filter(s => s.id === 'set-old-active');
+      // HI-5: sets survive when they back an in_progress session.
+      const remaining = practiceSets.filter(
+        s =>
+          s.id === 'set-old-active' ||
+          practiceSessions.some(sess => sess.practice_set_id === s.id && sess.status === 'in_progress'),
+      );
       const removed = practiceSets.length - remaining.length;
       practiceSets.length = 0;
       practiceSets.push(...remaining);

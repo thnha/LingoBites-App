@@ -399,57 +399,32 @@ describe('ProgressiveLessonScreen', () => {
     expect(header.props.children.join('')).toContain('Câu (Xong)');
   });
 
-  it('renders practice section with data (AC-18)', async () => {
+  it('renders practice entry card instead of embedded answers (SETE-207)', async () => {
     const lesson = {
-      ...baseLesson,
-      units: {
-        ...baseLesson.units,
-        practice: { status: 'ready' as const, attempts: 1, error_code: null, retryable: false }
-      },
-      practice: [
-        {
-          id: 'p1',
-          type: 'multiple_choice' as const,
-          question: 'What is 1+1?',
-          options: ['1', '2'],
-          answer: '2',
-        }
-      ]
+      ...vocabLesson(),
+      status: 'ready' as const,
+      vocabulary: Array.from({length: 4}, (_, index) => ({
+        id: `v${index}`,
+        word: `word${index}`,
+        phrase_from_text: null,
+        word_type: 'noun',
+        meaning_vi: `nghĩa ${index}`,
+        ipa: null,
+        ipa_source: 'none' as const,
+        source_sentence_id: 's0',
+        example: 'example',
+        example_translation: 'dịch',
+        tts: {text: 'word', locale: 'en-US' as const, rate: 1},
+      })),
     };
     expect(upsertLessonV2(lesson).ok).toBe(true);
     const tree = await renderScreen(routeFor(lesson.lesson_id));
 
-    expect(tree.root.findByProps({testID: 'practice-card-p1'})).toBeTruthy();
-  });
-
-  it('renders practice section skeleton when pending/processing (AC-18)', async () => {
-    const lesson = {
-      ...baseLesson,
-      units: {
-        ...baseLesson.units,
-        practice: { status: 'processing' as const, attempts: 1, error_code: null, retryable: false }
-      },
-      practice: []
-    };
-    expect(upsertLessonV2(lesson).ok).toBe(true);
-    const tree = await renderScreen(routeFor(lesson.lesson_id));
-
-    expect(tree.root.findByProps({testID: 'practice-skeleton'})).toBeTruthy();
-  });
-
-  it('renders practice section empty state when ready but empty (AC-18)', async () => {
-    const lesson = {
-      ...baseLesson,
-      units: {
-        ...baseLesson.units,
-        practice: { status: 'ready' as const, attempts: 1, error_code: null, retryable: false }
-      },
-      practice: []
-    };
-    expect(upsertLessonV2(lesson).ok).toBe(true);
-    const tree = await renderScreen(routeFor(lesson.lesson_id));
-
-    expect(tree.root.findByProps({testID: 'practice-empty'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'practice-entry-card'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'practice-create-button'})).toBeTruthy();
+    expect(
+      tree.root.findAll(node => node.props.testID === 'practice-card-p1'),
+    ).toHaveLength(0);
   });
 
   it('asserts style badge, icon name, and string deduplication (AC-15, AC-19, AC-20)', async () => {

@@ -118,6 +118,19 @@ describe('pushPracticeEvents', () => {
     });
   });
 
+  it('maps an unreadable response body to retryable NETWORK_ERROR', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: jest.fn().mockRejectedValue(new Error('invalid json')),
+    });
+    await expect(pushPracticeEvents(events)).resolves.toMatchObject({
+      ok: false,
+      errorCode: 'NETWORK_ERROR',
+      retryable: true,
+    });
+  });
+
   it('flags a structurally invalid success body as retryable', async () => {
     mockFetch.mockResolvedValueOnce(response({accepted_ids: []}));
     await expect(pushPracticeEvents(events)).resolves.toMatchObject({

@@ -25,6 +25,7 @@ type Props = {
   disabled?: boolean;
   onPress?: () => void;
   testID?: string;
+  accessibilityLabel?: string;
 };
 
 export function QuizOption({
@@ -35,6 +36,7 @@ export function QuizOption({
   disabled = false,
   onPress,
   testID,
+  accessibilityLabel,
 }: Props) {
   const {theme} = useAppTheme();
   const resolved: QuizOptionState =
@@ -91,17 +93,39 @@ export function QuizOption({
 
   if (!onPress) {
     return (
-      <View style={[styles.container, containerStyle]} testID={testID}>
+      <View
+        accessibilityLabel={accessibilityLabel ?? label}
+        accessibilityRole="button"
+        accessibilityState={{
+          disabled: true,
+          selected: resolved === 'selected',
+          checked: resolved === 'correct',
+        }}
+        style={[styles.container, containerStyle]}
+        testID={testID}
+      >
         {content}
       </View>
     );
   }
 
+  const resolvedAccessibilityLabel =
+    accessibilityLabel ??
+    (resolved === 'correct'
+      ? `${label}, đúng`
+      : resolved === 'wrong'
+        ? `${label}, sai`
+        : label);
+
   return (
     <Pressable
-      accessibilityLabel={label}
+      accessibilityLabel={resolvedAccessibilityLabel}
       accessibilityRole="button"
-      accessibilityState={{disabled, selected: resolved === 'selected'}}
+      accessibilityState={{
+        disabled,
+        selected: resolved === 'selected',
+        checked: resolved === 'correct',
+      }}
       disabled={disabled}
       onPress={onPress}
       style={[styles.container, containerStyle]}

@@ -454,3 +454,48 @@ export function findActiveSessionLocally(lessonId: string): PracticeSession | nu
   }
   return null;
 }
+
+export function findLatestPracticeSetForLesson(
+  lessonId: string,
+): PracticeSet | null {
+  const db = getDatabase();
+  const res = db.execute(
+    `SELECT id FROM practice_sets
+     WHERE lesson_id = ?
+     ORDER BY COALESCE(ready_at, created_at) DESC
+     LIMIT 1`,
+    [lessonId],
+  );
+  if (res.rows && res.rows.length > 0) {
+    return getPracticeSet(res.rows.item(0).id);
+  }
+  return null;
+}
+
+export function findLatestSessionForLesson(
+  lessonId: string,
+): PracticeSession | null {
+  const db = getDatabase();
+  const res = db.execute(
+    `SELECT id FROM practice_sessions
+     WHERE lesson_id = ?
+     ORDER BY updated_at DESC
+     LIMIT 1`,
+    [lessonId],
+  );
+  if (res.rows && res.rows.length > 0) {
+    return getPracticeSession(res.rows.item(0).id);
+  }
+  return null;
+}
+
+export function hasPendingPracticeSync(sessionId: string): boolean {
+  const db = getDatabase();
+  const res = db.execute(
+    `SELECT 1 FROM practice_events
+     WHERE session_id = ? AND (sync_status IS NULL OR sync_status != 'synced')
+     LIMIT 1`,
+    [sessionId],
+  );
+  return Boolean(res.rows && res.rows.length > 0);
+}

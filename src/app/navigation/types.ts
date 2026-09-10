@@ -32,7 +32,9 @@ export type LearningDetailParamList = {
     related: GrammarPoint[];
     practice: PracticeQuestion[];
   };
-  Practice: {questions: PracticeQuestion[]; title?: string};
+  Practice:
+    | {questions: PracticeQuestion[]; title?: string}
+    | {lessonId: string; sessionId: string; title?: string};
 };
 
 export type HomeStackParamList = {
