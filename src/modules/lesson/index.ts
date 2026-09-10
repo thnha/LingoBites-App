@@ -1,4 +1,6 @@
 export {FlashcardListScreen} from './FlashcardListScreen';
+export {LessonHubView} from './LessonHubView';
+export {LessonV2HubView} from './LessonV2HubView';
 export {GrammarDetailScreen} from './GrammarDetailScreen';
 export {LessonResultScreen} from './LessonResultScreen';
 export {ProgressiveLessonScreen} from './ProgressiveLessonScreen';

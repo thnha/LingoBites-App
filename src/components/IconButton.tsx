@@ -17,6 +17,7 @@ export type IconButtonTone =
 type Props = {
   icon: HandoffIconName;
   accessibilityLabel: string;
+  accessibilityHint?: string;
   tone?: IconButtonTone;
   size?: number;
   iconSize?: number;
@@ -57,6 +58,7 @@ function resolveTone(
 export function IconButton({
   icon,
   accessibilityLabel,
+  accessibilityHint,
   tone = 'surface',
   size = 40,
   iconSize = 22,
@@ -93,6 +95,7 @@ export function IconButton({
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       accessibilityRole="button"
       accessibilityState={{disabled}}
       disabled={disabled}

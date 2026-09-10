@@ -35,6 +35,7 @@ import {
 import {useLibraryStore} from '@/store/useLibraryStore';
 import {useFeatureFlags} from '@/release';
 import {useAppTheme, type AppTheme} from '@theme';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {
   formatProfileAccuracy,
   formatProfileWordCount,
@@ -54,6 +55,7 @@ const INCOMPLETE_TRAILING = {chip: 'Incomplete', chipTone: 'neutral' as const};
 
 export function ProfileScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const feedClearance = useFloatingTabBarClearance();
   const {t} = useTranslation();
   const {isFeatureEnabled} = useFeatureFlags();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
@@ -176,7 +178,7 @@ export function ProfileScreen({navigation}: Props) {
       </View>
 
       <ScrollView
-        contentContainerStyle={themedStyles.scrollContent}
+        contentContainerStyle={[themedStyles.scrollContent, {paddingBottom: feedClearance}]}
         showsVerticalScrollIndicator={false}
       >
         <AppCard style={styles.profileCard}>

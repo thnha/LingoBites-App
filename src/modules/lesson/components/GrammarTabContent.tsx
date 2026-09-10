@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {LessonsStackParamList} from '@/app/navigation/types';
 import {useAppTheme} from '@theme';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {AppTheme} from '@theme/types';
 import type {GrammarBookmark, SaveGrammarBookmarkInput} from '@/shared/db/types';
 import {GrammarRowCard} from './GrammarRowCard';
@@ -28,6 +29,7 @@ function createStyles(theme: AppTheme) {
 
 export function GrammarTabContent({grammar}: GrammarTabContentProps) {
   const {theme} = useAppTheme();
+  const feedClearance = useFloatingTabBarClearance();
   const navigation =
     useNavigation<NativeStackNavigationProp<LessonsStackParamList>>();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -93,7 +95,7 @@ export function GrammarTabContent({grammar}: GrammarTabContentProps) {
   return (
     <View style={styles.container}>
       <FlatList
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[styles.contentContainer, {paddingBottom: feedClearance}]}
         data={grammar}
         keyExtractor={item => item.grammarId}
         renderItem={renderItem}

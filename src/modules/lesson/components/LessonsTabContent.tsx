@@ -6,6 +6,7 @@ import type {LessonsStackParamList} from '@/app/navigation/types';
 import {AppCard} from '@components/AppCard';
 import {AppText} from '@components/AppText';
 import {useAppTheme} from '@theme';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {AppTheme} from '@theme/types';
 import {LibraryEmptyState} from './LibraryEmptyState';
 import {SectionHeader} from '@components/SectionHeader';
@@ -63,6 +64,7 @@ export function LessonsTabContent({
   packagedLessons,
 }: LessonsTabContentProps) {
   const {theme} = useAppTheme();
+  const feedClearance = useFloatingTabBarClearance();
   const navigation =
     useNavigation<NativeStackNavigationProp<LessonsStackParamList>>();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -169,7 +171,7 @@ export function LessonsTabContent({
         renderItem={renderLessonItem}
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[styles.contentContainer, {paddingBottom: feedClearance}]}
         testID="lessons-section-list"
       />
     </View>

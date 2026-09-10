@@ -28,13 +28,13 @@ import type {
   ChunkV2,
   LessonV2,
   SentenceV2,
-  UnitState,
   VocabularyV2,
 } from '@shared/schemas/lesson-v2';
 import {useAppTheme, type AppTheme} from '@theme';
 import {PracticeEntryCard} from '@modules/practice/PracticeEntryCard';
 import {isLessonEligibleForPractice} from '@modules/practice/practiceEligibility';
 import {usePracticeController} from '@modules/practice/usePracticeController';
+import {LessonV2HubView, type LessonV2UnitKey} from './LessonV2HubView';
 
 type HomeProps = NativeStackScreenProps<
   HomeStackParamList,
@@ -46,15 +46,17 @@ type LessonsProps = NativeStackScreenProps<
 >;
 export type ProgressiveLessonScreenProps = HomeProps | LessonsProps;
 
-type UnitKey = keyof LessonV2['units'];
+type UnitKey = LessonV2UnitKey;
+
+type DetailSection = 'sentences' | 'vocabulary' | 'grammar' | 'practice';
 
 const UNIT_KEYS: UnitKey[] = ['vocabulary', 'grammar', 'ipa_resolve', 'practice'];
 
-const UNIT_LABELS: Record<UnitKey, string> = {
-  vocabulary: 'Từ vựng',
-  grammar: 'Ngữ pháp',
-  ipa_resolve: 'Phiên âm IPA',
-  practice: 'Luyện tập',
+const DETAIL_TITLES: Record<DetailSection, string> = {
+  sentences: 'Học từng câu',
+  vocabulary: 'Từ vựng chính',
+  grammar: 'Ngữ pháp trong ngữ cảnh',
+  practice: 'Luyện tập nhanh',
 };
 
 const SENTENCE_STATUS_LABEL: Record<SentenceV2['status'], string> = {
@@ -62,22 +64,6 @@ const SENTENCE_STATUS_LABEL: Record<SentenceV2['status'], string> = {
   processing: 'Đang tạo',
   ready: 'Xong',
   failed: 'Lỗi',
-};
-
-const LESSON_STATUS_LABEL: Record<LessonV2['status'], string> = {
-  skeleton_ready: 'Đang tạo',
-  partially_ready: 'Đang tạo',
-  ready: 'Xong',
-  ready_with_warnings: 'Xong',
-  failed: 'Lỗi',
-};
-
-const UNIT_STATUS_LABEL: Record<UnitState['status'], string> = {
-  pending: 'Chờ',
-  processing: 'Đang tạo',
-  ready: 'Xong',
-  failed: 'Lỗi',
-  skipped: 'Bỏ qua',
 };
 
 function isTerminalLesson(lesson: LessonV2): boolean {
@@ -159,6 +145,11 @@ function createStyles(theme: AppTheme) {
       flexDirection: 'row',
       gap: theme.spacing.sm,
     },
+    headerActions: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: theme.spacing.xs,
+    },
     centered: {
       alignItems: 'center',
       flex: 1,
@@ -208,6 +199,7 @@ export function ProgressiveLessonScreen({
   const [isSaved, setIsSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [detailSection, setDetailSection] = useState<DetailSection | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
   const practiceEligible = lesson ? isLessonEligibleForPractice(lesson) : false;
@@ -409,6 +401,48 @@ export function ProgressiveLessonScreen({
     fireAndForget(startResume(lesson));
   }
 
+  function handleToggleSave() {
+    if (!lesson || saving) {
+      return;
+    }
+    if (isSaved) {
+      setSaveError(null);
+      setSaving(true);
+      setTimeout(() => {
+        const success = setLessonV2Saved(lesson.lesson_id, false);
+        if (success) {
+          setIsSaved(false);
+        } else {
+          setSaveError('Bỏ lưu thất bại. Vui lòng thử lại.');
+        }
+        setSaving(false);
+      }, 0);
+      return;
+    }
+    setSaveError(null);
+    setSaving(true);
+    setTimeout(() => {
+      const success = setLessonV2Saved(lesson.lesson_id, true);
+      if (success) {
+        setIsSaved(true);
+      } else {
+        setSaveError('Lưu bài học thất bại. Vui lòng thử lại.');
+      }
+      setSaving(false);
+    }, 0);
+  }
+
+  function handleStartLearning() {
+    if (!lesson) {
+      return;
+    }
+    if (practiceEligible) {
+      setDetailSection('practice');
+      return;
+    }
+    setDetailSection('sentences');
+  }
+
   if (loading) {
     return (
       <AppScreen>
@@ -453,84 +487,107 @@ export function ProgressiveLessonScreen({
   const failedUnits = failedRetryableUnits(lesson);
   const readyCount = lesson.sentences.filter(s => s.status === 'ready').length;
 
+  const statusMessage =
+    lesson.status === 'skeleton_ready'
+      ? `Đã tách ${lesson.sentences.length} câu. Nghĩa từng câu đang được tạo dần…`
+      : lesson.status === 'partially_ready'
+        ? `Đã xong ${readyCount}/${lesson.sentences.length} câu. Bài học tiếp tục cập nhật mà không cần mở lại.`
+        : lesson.status === 'failed'
+          ? (lesson.error?.message ?? 'Tạo bài học thất bại.')
+          : null;
+  const warningMessages =
+    lesson.status === 'ready_with_warnings'
+      ? lesson.warnings.length === 0
+        ? ['Một vài phần chưa hoàn chỉnh nhưng nội dung đã có vẫn đọc được đầy đủ.']
+        : lesson.warnings.map(warning => warning.message_vi)
+      : [];
+  const showRefreshAction =
+    !isPolling && (isOffline || !isTerminalLesson(lesson));
+
+  const headerRight = (
+    <View style={styles.headerActions}>
+      {isPolling ? (
+        <ActivityIndicator
+          color={theme.colors.primary}
+          testID="lesson-polling-indicator"
+        />
+      ) : null}
+      {showRefreshAction ? (
+        <IconButton
+          accessibilityLabel="Tải lại bài học"
+          accessibilityHint="Tải lại nội dung mới nhất của bài học"
+          icon="refresh"
+          onPress={handleRefresh}
+          testID="lesson-refresh"
+        />
+      ) : null}
+      <IconButton
+        accessibilityLabel={isSaved ? 'Bỏ lưu bài học' : 'Lưu bài học'}
+        accessibilityHint={
+          isSaved ? 'Gỡ bài học khỏi thư viện' : 'Lưu bài học vào thư viện'
+        }
+        icon={isSaved ? 'bookmark' : 'bookmark_add'}
+        onPress={handleToggleSave}
+        disabled={saving}
+        testID="v2hub-bookmark"
+      />
+    </View>
+  );
+
+  if (detailSection === null) {
+    return (
+      <AppScreen>
+        <ScreenHeader
+          onBack={() => navigation.goBack()}
+          title={lesson.title ?? 'Bài học đang tạo…'}
+          rightAction={headerRight}
+        />
+        <View style={styles.flexBody}>
+          <LessonV2HubView
+            lesson={lesson}
+            practiceEligible={practiceEligible}
+            isOffline={isOffline}
+            statusMessage={statusMessage}
+            warningMessages={warningMessages}
+            actionMessage={actionMessage}
+            saveErrorMessage={saveError}
+            failedChunks={failedChunks}
+            failedUnits={failedUnits}
+            retryingChunkId={retryingChunkId}
+            retryingUnit={retryingUnit}
+            onRetryChunk={chunkId => fireAndForget(handleRetryChunk(chunkId))}
+            onRetryUnit={unitKey => fireAndForget(handleRetryUnit(unitKey))}
+            onOpenSentences={() => setDetailSection('sentences')}
+            onOpenVocabulary={() => setDetailSection('vocabulary')}
+            onOpenGrammar={() => setDetailSection('grammar')}
+            onOpenPronunciation={() => setDetailSection('sentences')}
+            onOpenPractice={() => setDetailSection('practice')}
+            onStartLearning={handleStartLearning}
+          />
+        </View>
+      </AppScreen>
+    );
+  }
+
   return (
     <AppScreen>
       <ScreenHeader
-        onBack={() => navigation.goBack()}
-        title={lesson.title ?? (isTerminalLesson(lesson) ? 'Bài học' : 'Bài học đang tạo…')}
-        rightAction={
-          isPolling ? (
-            <ActivityIndicator
-              color={theme.colors.primary}
-              testID="lesson-polling-indicator"
-            />
-          ) : undefined
-        }
+        onBack={() => setDetailSection(null)}
+        title={DETAIL_TITLES[detailSection]}
+        rightAction={headerRight}
       />
       <ScrollView contentContainerStyle={styles.content}>
-        <AppText color="secondary" variant="caption" style={{textAlign: 'center'}} testID="lesson-progress-header">
-          Câu ({LESSON_STATUS_LABEL[lesson.status]}) · Từ vựng ({UNIT_STATUS_LABEL[lesson.units.vocabulary.status]}) · Ngữ pháp ({UNIT_STATUS_LABEL[lesson.units.grammar.status]}) · Bài tập ({UNIT_STATUS_LABEL[lesson.units.practice.status]})
-        </AppText>
-        {isOffline ? (
-          <View testID="offline-banner" accessibilityRole="alert">
-            <Banner message="Bạn đang ngoại tuyến. Bài học đã lưu vẫn đọc được; kết nối lại để tiếp tục cập nhật." />
-          </View>
-        ) : null}
-        {lesson.status === 'skeleton_ready' ? (
-          <Banner
-            message={`Đã tách ${lesson.sentences.length} câu. Nghĩa từng câu đang được tạo dần…`}
-          />
-        ) : null}
-        {lesson.status === 'partially_ready' ? (
-          <Banner
-            message={`Đã xong ${readyCount}/${lesson.sentences.length} câu. Bài học tiếp tục cập nhật mà không cần mở lại.`}
-          />
-        ) : null}
-        {lesson.status === 'ready_with_warnings' ? (
-          <AppCard>
-            <View style={styles.warningBox} testID="lesson-warnings">
-              <AppText variant="h3">Bài học xong kèm lưu ý</AppText>
-              {lesson.warnings.length === 0 ? (
-                <AppText color="secondary">
-                  Một vài phần chưa hoàn chỉnh nhưng nội dung đã có vẫn đọc được đầy đủ.
-                </AppText>
-              ) : (
-                lesson.warnings.map((warning, index) => (
-                  <AppText
-                    key={`${warning.code}-${index}`}
-                    color="secondary"
-                    testID={`lesson-warning-${index}`}>
-                    {warning.message_vi}
-                  </AppText>
-                ))
-              )}
-            </View>
-          </AppCard>
-        ) : null}
-        {lesson.status === 'failed' ? (
-          <AppCard>
-            <View style={styles.warningBox}>
-              <AppText color="danger">
-                {lesson.error?.message ?? 'Tạo bài học thất bại.'}
+        {detailSection === 'sentences' || detailSection === 'vocabulary' ? (
+          <>
+            {voiceChecked && !voiceAvailable ? (
+              <AppText color="secondary" testID="tts-unavailable-hint" style={{marginBottom: theme.spacing.sm}}>
+                Thiết bị chưa cài giọng en-US nên các nút phát âm đang tắt. Phần còn lại của bài học vẫn dùng bình thường.
               </AppText>
-              <AppText color="secondary">
-                Các câu đã tách vẫn hiển thị. Hãy thử lại từng phần lỗi bên dưới.
-              </AppText>
-            </View>
-          </AppCard>
-        ) : null}
-        {actionMessage ? (
-          <AppText color="danger" testID="lesson-action-error">
-            {actionMessage}
-          </AppText>
+            ) : null}
+          </>
         ) : null}
 
-        {voiceChecked && !voiceAvailable ? (
-          <AppText color="secondary" testID="tts-unavailable-hint" style={{marginBottom: theme.spacing.sm}}>
-            Thiết bị chưa cài giọng en-US nên các nút phát âm đang tắt. Phần còn lại của bài học vẫn dùng bình thường.
-          </AppText>
-        ) : null}
-
+        {detailSection === 'sentences' ? (
         <View style={styles.section}>
           <AppText variant="h2" style={styles.sectionTitle}>
             Câu ({readyCount}/{lesson.sentences.length})
@@ -613,67 +670,9 @@ export function ProgressiveLessonScreen({
             );
           })}
         </View>
-
-        {failedChunks.length > 0 ? (
-          <View style={styles.section}>
-            <AppText variant="h2" style={styles.sectionTitle}>
-              Phần cần thử lại
-            </AppText>
-            {failedChunks.map(chunk => (
-              <AppCard key={chunk.id}>
-                <View style={styles.retryRow}>
-                  <View style={styles.flexBody}>
-                    <AppText variant="label">
-                      Chunk {chunk.index + 1} ({chunk.sentence_ids.length} câu)
-                    </AppText>
-                    {chunk.error_code ? (
-                      <AppText color="secondary" variant="caption">
-                        Lỗi: {chunk.error_code}
-                      </AppText>
-                    ) : null}
-                  </View>
-                  <AppButton
-                    title="Thử lại phần này"
-                    variant="secondary"
-                    loading={retryingChunkId === chunk.id}
-                    onPress={() => fireAndForget(handleRetryChunk(chunk.id))}
-                    testID={`chunk-retry-${chunk.id}`}
-                  />
-                </View>
-              </AppCard>
-            ))}
-          </View>
         ) : null}
 
-        {failedUnits.length > 0 ? (
-          <View style={styles.section}>
-            <AppText variant="h2" style={styles.sectionTitle}>
-              Nội dung bổ sung lỗi
-            </AppText>
-            {failedUnits.map(unitKey => (
-              <AppCard key={unitKey}>
-                <View style={styles.retryRow}>
-                  <View style={styles.flexBody}>
-                    <AppText variant="label">{UNIT_LABELS[unitKey]}</AppText>
-                    <AppText color="secondary" variant="caption">
-                      {lesson.units[unitKey].error_code
-                        ? `Lỗi: ${lesson.units[unitKey].error_code}`
-                        : 'Chưa tải được phần này.'}
-                    </AppText>
-                  </View>
-                  <AppButton
-                    title="Thử lại"
-                    variant="secondary"
-                    loading={retryingUnit === unitKey}
-                    onPress={() => fireAndForget(handleRetryUnit(unitKey))}
-                    testID={`unit-retry-${unitKey}`}
-                  />
-                </View>
-              </AppCard>
-            ))}
-          </View>
-        ) : null}
-
+        {detailSection === 'vocabulary' ? (
         <View style={styles.section}>
           <AppText variant="h2" style={styles.sectionTitle}>
             Từ vựng ({lesson.vocabulary.length})
@@ -721,7 +720,9 @@ export function ProgressiveLessonScreen({
             </AppCard>
           ))}
         </View>
+        ) : null}
 
+        {detailSection === 'grammar' ? (
         <View style={styles.section}>
           <AppText variant="h2" style={styles.sectionTitle}>
             Ngữ pháp ({lesson.grammar.length})
@@ -750,14 +751,21 @@ export function ProgressiveLessonScreen({
             </AppCard>
           ))}
         </View>
+        ) : null}
 
-        {practiceEligible ? (
+        {detailSection === 'practice' ? (
           <View style={styles.section}>
-            <PracticeEntryCard
-              controller={practiceController}
-              isOffline={isOffline}
-              onOpenSession={openPracticeSession}
-            />
+            {practiceEligible ? (
+              <PracticeEntryCard
+                controller={practiceController}
+                isOffline={isOffline}
+                onOpenSession={openPracticeSession}
+              />
+            ) : (
+              <AppText color="secondary">
+                Bài tập đang được tạo. Quay lại khi bài học có thêm nội dung.
+              </AppText>
+            )}
           </View>
         ) : null}
 
@@ -766,67 +774,6 @@ export function ProgressiveLessonScreen({
             {ttsMessage}
           </AppText>
         ) : null}
-        {lesson.status === 'ready' || lesson.status === 'ready_with_warnings' ? (
-          <View style={{gap: theme.spacing.md}}>
-            <Banner message="Bài học đã hoàn tất!" />
-            {saveError ? (
-              <AppText color="danger" testID="lesson-save-error">
-                {saveError}
-              </AppText>
-            ) : null}
-            <AppButton
-              title={isSaved ? "Về Thư viện" : "Lưu vào Thư viện"}
-              loading={!isSaved && saving}
-              onPress={() => {
-                if (isSaved) {
-                  (navigation as any).navigate('Lessons');
-                } else {
-                  setSaveError(null);
-                  setSaving(true);
-                  setTimeout(() => {
-                    const success = setLessonV2Saved(lesson.lesson_id, true);
-                    if (success) {
-                      setIsSaved(true);
-                    } else {
-                      setSaveError('Lưu bài học thất bại. Vui lòng thử lại.');
-                    }
-                    setSaving(false);
-                  }, 0);
-                }
-              }}
-              testID="lesson-ready-cta"
-            />
-            {isSaved ? (
-              <AppButton
-                title="Bỏ lưu"
-                variant="secondary"
-                loading={saving}
-                onPress={() => {
-                  setSaveError(null);
-                  setSaving(true);
-                  setTimeout(() => {
-                    const success = setLessonV2Saved(lesson.lesson_id, false);
-                    if (success) {
-                      setIsSaved(false);
-                    } else {
-                      setSaveError('Bỏ lưu thất bại. Vui lòng thử lại.');
-                    }
-                    setSaving(false);
-                  }, 0);
-                }}
-                testID="lesson-unsave-button"
-              />
-            ) : null}
-          </View>
-        ) : (isOffline || !isTerminalLesson(lesson) ? (
-          <AppButton
-            title={isPolling ? 'Đang cập nhật…' : 'Tải lại bài học'}
-            variant="secondary"
-            disabled={isPolling}
-            onPress={handleRefresh}
-            testID="lesson-refresh"
-          />
-        ) : null)}
       </ScrollView>
     </AppScreen>
   );

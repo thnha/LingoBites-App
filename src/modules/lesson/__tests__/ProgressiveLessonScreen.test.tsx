@@ -9,6 +9,10 @@ import {open} from 'react-native-quick-sqlite';
 import {DB_NAME} from '@shared/db/constants';
 import {resetDatabaseForTests} from '@shared/db/database';
 import {upsertLessonV2} from '@shared/db/LessonV2Repository';
+import {
+  isLessonV2Saved,
+  setLessonV2Saved,
+} from '@shared/db/LessonV2Repository';
 import type {LessonV2} from '@shared/schemas/lesson-v2';
 import fixture from '@shared/schemas/__tests__/fixtures/lesson-v2-envelope.json';
 import {
@@ -150,6 +154,45 @@ async function renderScreen(route: ReturnType<typeof routeFor>) {
   return tree;
 }
 
+async function openHubSection(
+  tree: ReactTestRenderer.ReactTestRenderer,
+  sectionTestID: string,
+) {
+  const wrapper = tree.root.findByProps({testID: sectionTestID});
+  const pressable = wrapper.findAll(
+    node =>
+      typeof node.props?.onPress === 'function' &&
+      node.props.accessibilityRole === 'button',
+  )[0];
+  await ReactTestRenderer.act(async () => {
+    pressable.props.onPress();
+    await Promise.resolve();
+  });
+}
+
+async function goBackToHub(tree: ReactTestRenderer.ReactTestRenderer) {
+  const back = tree.root.findAll(
+    node =>
+      node.props?.accessibilityLabel === 'Quay lại' &&
+      typeof node.props?.onPress === 'function',
+  )[0];
+  await ReactTestRenderer.act(async () => {
+    back.props.onPress();
+    await Promise.resolve();
+  });
+}
+
+async function pressByTestID(
+  tree: ReactTestRenderer.ReactTestRenderer,
+  testID: string,
+) {
+  const node = tree.root.findByProps({testID});
+  await ReactTestRenderer.act(async () => {
+    node.props.onPress();
+    await Promise.resolve();
+  });
+}
+
 describe('ProgressiveLessonScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -171,6 +214,7 @@ describe('ProgressiveLessonScreen', () => {
     mockResume.mockImplementation(() => new Promise(() => {}));
     const tree = await renderScreen(routeFor(skeleton.lesson_id, skeleton));
 
+    await openHubSection(tree, 'v2hub-explore-sentences');
     expect(
       tree.root.findByProps({testID: `sentence-card-${skeleton.sentences[0].id}`}),
     ).toBeTruthy();
@@ -200,6 +244,7 @@ describe('ProgressiveLessonScreen', () => {
     );
     const tree = await renderScreen(routeFor(skeleton.lesson_id, skeleton));
 
+    await openHubSection(tree, 'v2hub-explore-sentences');
     await ReactTestRenderer.act(async () => {
       await Promise.resolve();
     });
@@ -292,6 +337,7 @@ describe('ProgressiveLessonScreen', () => {
       await Promise.resolve();
     });
     expect(tree.root.findByProps({testID: 'offline-banner'})).toBeTruthy();
+    await openHubSection(tree, 'v2hub-explore-sentences');
     expect(
       tree.root.findByProps({testID: `sentence-card-${partial.sentences[0].id}`}),
     ).toBeTruthy();
@@ -303,9 +349,11 @@ describe('ProgressiveLessonScreen', () => {
     const tree = await renderScreen(routeFor(failed.lesson_id));
 
     expect(mockResume).not.toHaveBeenCalled();
+    await openHubSection(tree, 'v2hub-explore-sentences');
     expect(
       tree.root.findByProps({testID: `sentence-card-${failed.sentences[0].id}`}),
     ).toBeTruthy();
+    await goBackToHub(tree);
     expect(tree.root.findByProps({testID: 'lesson-warnings'})).toBeTruthy();
   });
 
@@ -314,6 +362,7 @@ describe('ProgressiveLessonScreen', () => {
     const skeleton = skeletonLesson();
     const tree = await renderScreen(routeFor(skeleton.lesson_id, skeleton));
 
+    await openHubSection(tree, 'v2hub-explore-sentences');
     await ReactTestRenderer.act(async () => {
       await Promise.resolve();
     });
@@ -328,6 +377,7 @@ describe('ProgressiveLessonScreen', () => {
     const withVocab = vocabLesson();
     const tree = await renderScreen(routeFor(withVocab.lesson_id, withVocab));
 
+    await openHubSection(tree, 'v2hub-explore-sentences');
     await ReactTestRenderer.act(async () => {
       tree.root
         .findByProps({testID: `sentence-tts-${withVocab.sentences[0].id}`})
@@ -339,6 +389,8 @@ describe('ProgressiveLessonScreen', () => {
       'en-US',
     );
 
+    await goBackToHub(tree);
+    await openHubSection(tree, 'v2hub-explore-vocabulary');
     await ReactTestRenderer.act(async () => {
       tree.root.findByProps({testID: 'vocab-tts-v1'}).props.onPress();
       await Promise.resolve();
@@ -350,6 +402,7 @@ describe('ProgressiveLessonScreen', () => {
     const withVocab = vocabLesson();
     const tree = await renderScreen(routeFor(withVocab.lesson_id, withVocab));
 
+    await openHubSection(tree, 'v2hub-explore-vocabulary');
     expect(tree.root.findByProps({testID: 'vocab-ipa-v1'}).props.children).toEqual([
       '/',
       'kæˈfeɪ',
@@ -378,13 +431,14 @@ describe('ProgressiveLessonScreen', () => {
     };
     expect(upsertLessonV2(lesson).ok).toBe(true);
     const tree = await renderScreen(routeFor(lesson.lesson_id));
-    
+
+    await openHubSection(tree, 'v2hub-explore-sentences');
     const card = tree.root.findByProps({testID: `sentence-card-${lesson.sentences[0].id}`});
     const texts = card.findAll(node => node.props.testID === undefined && typeof node.type !== 'string' && (node.type as any).name === 'AppText' && typeof node.props.children === 'string' && node.props.children.trim() === 'Xin chào');
     expect(texts.length).toBe(1);
   });
 
-  it('renders correctly for status ready (AC-16, AC-17)', async () => {
+  it('renders hub with start-learning CTA and bookmark instead of save buttons (SETE-212)', async () => {
     const lesson = {
       ...baseLesson,
       status: 'ready' as const,
@@ -393,10 +447,15 @@ describe('ProgressiveLessonScreen', () => {
     expect(upsertLessonV2(lesson).ok).toBe(true);
     const tree = await renderScreen(routeFor(lesson.lesson_id));
 
-    expect(tree.root.findByProps({testID: 'lesson-ready-cta'})).toBeTruthy();
-
-    const header = tree.root.findByProps({testID: 'lesson-progress-header'});
-    expect(header.props.children.join('')).toContain('Câu (Xong)');
+    expect(tree.root.findByProps({testID: 'v2hub-hero'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'v2hub-start-learning'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'v2hub-bookmark'})).toBeTruthy();
+    expect(
+      tree.root.findAll(node => node.props.testID === 'lesson-ready-cta'),
+    ).toHaveLength(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'lesson-progress-header'),
+    ).toHaveLength(0);
   });
 
   it('renders practice entry card instead of embedded answers (SETE-207)', async () => {
@@ -420,6 +479,7 @@ describe('ProgressiveLessonScreen', () => {
     expect(upsertLessonV2(lesson).ok).toBe(true);
     const tree = await renderScreen(routeFor(lesson.lesson_id));
 
+    await openHubSection(tree, 'v2hub-explore-practice');
     expect(tree.root.findByProps({testID: 'practice-entry-card'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'practice-create-button'})).toBeTruthy();
     expect(
@@ -448,9 +508,12 @@ describe('ProgressiveLessonScreen', () => {
     expect(upsertLessonV2(lesson).ok).toBe(true);
     const tree = await renderScreen(routeFor(lesson.lesson_id));
 
+    await openHubSection(tree, 'v2hub-explore-sentences');
     const badge = tree.root.findByProps({testID: `sentence-status-${lesson.sentences[0].id}`}).parent;
     expect(badge?.props.style).toEqual(expect.objectContaining({ alignSelf: 'flex-start' }));
 
+    await goBackToHub(tree);
+    await openHubSection(tree, 'v2hub-explore-vocabulary');
     const vocabTts = tree.root.findByProps({testID: 'vocab-tts-v1'});
     expect(vocabTts.props.icon).toBe('play_circle');
 
@@ -458,9 +521,140 @@ describe('ProgressiveLessonScreen', () => {
     const exampleTexts = vocabCard.findAll(node => typeof node.type !== 'string' && (node.type as any).name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('She works at a small cafe.'));
     expect(exampleTexts.length).toBe(0);
 
+    await goBackToHub(tree);
+    await openHubSection(tree, 'v2hub-explore-grammar');
     const grammarCard = tree.root.findByProps({testID: 'grammar-card-g1'});
     const nameViTexts = grammarCard.findAll(node => typeof node.type !== 'string' && (node.type as any).name === 'AppText' && typeof node.props.children === 'string' && node.props.children.includes('Thì Present Simple'));
     // 1 match expected because it should render `name` but NOT `name_vi`.
     expect(nameViTexts.length).toBe(1);
+  });
+
+  describe('Lesson V2 hub (SETE-212)', () => {
+    function multiSentenceLesson(): LessonV2 {
+      return {
+        ...baseLesson,
+        revision: 10,
+        status: 'ready',
+        title: 'Hub Lesson',
+        sentences: Array.from({length: 5}, (_, index) => ({
+          ...baseLesson.sentences[0],
+          id: `hs${index}`,
+          index,
+          text: `Sentence number ${index + 1}.`,
+          translation: `Câu số ${index + 1}.`,
+          status: 'ready' as const,
+        })),
+        chunks: [
+          {
+            ...baseLesson.chunks[0],
+            sentence_ids: ['hs0', 'hs1', 'hs2', 'hs3', 'hs4'],
+          },
+        ],
+      };
+    }
+
+    it('renders hero, 3-sentence preview with see-all, 5 explore rows, and bottom CTA', async () => {
+      const lesson = multiSentenceLesson();
+      expect(upsertLessonV2(lesson).ok).toBe(true);
+      const tree = await renderScreen(routeFor(lesson.lesson_id));
+
+      expect(tree.root.findByProps({testID: 'v2hub-hero'})).toBeTruthy();
+      expect(tree.root.findByProps({testID: 'v2hub-original-preview'})).toBeTruthy();
+      expect(tree.root.findByProps({testID: 'v2hub-translation-preview'})).toBeTruthy();
+
+      const preview = tree.root.findByProps({testID: 'v2hub-original-preview'});
+      const previewTexts = preview.findAll(
+        node =>
+          typeof node.type !== 'string' &&
+          (node.type as any).name === 'AppText' &&
+          typeof node.props.children === 'string',
+      );
+      expect(previewTexts).toHaveLength(3);
+
+      const seeAll = tree.root.findByProps({testID: 'v2hub-see-all-sentences'});
+      expect(seeAll.props.accessibilityLabel).toContain('5 câu');
+
+      for (const section of [
+        'v2hub-explore-sentences',
+        'v2hub-explore-vocabulary',
+        'v2hub-explore-grammar',
+        'v2hub-explore-pronunciation',
+        'v2hub-explore-practice',
+      ]) {
+        expect(tree.root.findByProps({testID: section})).toBeTruthy();
+      }
+      expect(tree.root.findByProps({testID: 'v2hub-start-learning'})).toBeTruthy();
+      expect(tree.root.findByProps({testID: 'v2hub-share'})).toBeTruthy();
+    });
+
+    it('shows creating subtitles while the lesson is still generating', async () => {
+      const skeletonBase = skeletonLesson();
+      const skeleton: LessonV2 = {
+        ...skeletonBase,
+        units: {
+          vocabulary: {status: 'pending', attempts: 0, error_code: null, retryable: false},
+          grammar: {status: 'pending', attempts: 0, error_code: null, retryable: false},
+          ipa_resolve: skeletonBase.units.ipa_resolve,
+          practice: {status: 'pending', attempts: 0, error_code: null, retryable: false},
+        },
+      };
+      mockResume.mockImplementation(() => new Promise(() => {}));
+      const tree = await renderScreen(routeFor(skeleton.lesson_id, skeleton));
+
+      const vocabRow = tree.root
+        .findByProps({testID: 'v2hub-explore-vocabulary'})
+        .findAll(node => node.props?.title === 'Từ vựng chính')[0];
+      expect(vocabRow.props.subtitle).toBe('Đang tạo…');
+
+      const sentencesRow = tree.root
+        .findByProps({testID: 'v2hub-explore-sentences'})
+        .findAll(node => node.props?.title === 'Học từng câu')[0];
+      expect(sentencesRow.props.subtitle).toContain('đang tạo');
+    });
+
+    it('routes start-learning to practice when eligible, sentences otherwise', async () => {
+      const eligible = vocabLesson();
+      expect(upsertLessonV2(eligible).ok).toBe(true);
+      const eligibleTree = await renderScreen(routeFor(eligible.lesson_id));
+      await pressByTestID(eligibleTree, 'v2hub-start-learning');
+      expect(
+        eligibleTree.root.findByProps({testID: 'practice-entry-card'}),
+      ).toBeTruthy();
+
+      const skeleton = skeletonLesson();
+      mockResume.mockImplementation(() => new Promise(() => {}));
+      const skeletonTree = await renderScreen(
+        routeFor(skeleton.lesson_id, skeleton),
+      );
+      await pressByTestID(skeletonTree, 'v2hub-start-learning');
+      expect(
+        skeletonTree.root.findByProps({
+          testID: `sentence-card-${skeleton.sentences[0].id}`,
+        }),
+      ).toBeTruthy();
+    });
+
+    it('toggles save from the header bookmark', async () => {
+      const lesson = {
+        ...baseLesson,
+        revision: 11,
+        status: 'ready' as const,
+        title: 'Bookmark Lesson',
+      };
+      expect(upsertLessonV2(lesson).ok).toBe(true);
+      expect(setLessonV2Saved(lesson.lesson_id, false)).toBe(true);
+      const tree = await renderScreen(routeFor(lesson.lesson_id));
+
+      expect(isLessonV2Saved(lesson.lesson_id)).toBe(false);
+      await ReactTestRenderer.act(async () => {
+        tree.root.findByProps({testID: 'v2hub-bookmark'}).props.onPress();
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
+      expect(isLessonV2Saved(lesson.lesson_id)).toBe(true);
+      expect(
+        tree.root.findByProps({testID: 'v2hub-bookmark'}).props
+          .accessibilityLabel,
+      ).toBe('Bỏ lưu bài học');
+    });
   });
 });

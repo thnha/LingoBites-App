@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {LessonsStackParamList} from '@/app/navigation/types';
 import {useAppTheme} from '@theme';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {AppTheme} from '@theme/types';
 import type {FlashcardRecord} from '@/shared/db/types';
 import type {SaveFlashcardInput} from '@/shared/db/types';
@@ -29,6 +30,7 @@ function createStyles(theme: AppTheme) {
 
 export function VocabularyTabContent({vocabulary}: VocabularyTabContentProps) {
   const {theme} = useAppTheme();
+  const feedClearance = useFloatingTabBarClearance();
   const navigation =
     useNavigation<NativeStackNavigationProp<LessonsStackParamList>>();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -101,7 +103,7 @@ export function VocabularyTabContent({vocabulary}: VocabularyTabContentProps) {
   return (
     <View style={styles.container}>
       <FlatList
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[styles.contentContainer, {paddingBottom: feedClearance}]}
         data={vocabulary}
         keyExtractor={item => item.id}
         renderItem={renderItem}

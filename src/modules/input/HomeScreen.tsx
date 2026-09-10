@@ -17,6 +17,7 @@ import {listStartedLessons} from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
 import {listSavedLessonV2Summaries} from '@shared/db/LessonV2Repository';
 import {useAppTheme, type AppTheme} from '@theme';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {useTranslation} from 'react-i18next';
 import {useFeatureFlags} from '@/release';
 
@@ -40,6 +41,7 @@ const RECENT_LIMIT = 3;
 
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const feedClearance = useFloatingTabBarClearance();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
   const {config, isFeatureEnabled} = useFeatureFlags();
@@ -157,7 +159,7 @@ export function HomeScreen({navigation}: Props) {
         />
       </View>
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, {paddingBottom: feedClearance}]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.intro}>
