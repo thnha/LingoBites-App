@@ -219,4 +219,20 @@ describe('SearchAndFilterBar', () => {
     const searchInput = tree.root.findByType(TextInput);
     expect(searchInput.props.placeholder).toBe('Tìm kiếm...');
   });
+
+  it('labels the search field for screen readers (SETE-210 P1)', () => {
+    const tree = render(
+      <SearchAndFilterBar
+        searchQuery=""
+        sourceFilter="all"
+        onSearchChange={jest.fn()}
+        onFilterChange={jest.fn()}
+      />,
+    );
+
+    const searchInput = tree.root.findByType(TextInput);
+    expect(searchInput.props.accessibilityLabel).toBe(
+      'Tìm kiếm trong Thư viện',
+    );
+  });
 });

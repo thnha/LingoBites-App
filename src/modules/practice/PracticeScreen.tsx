@@ -19,6 +19,7 @@ import {useAppTheme, type AppTheme} from '@theme';
 import type {PracticeQuestion as LegacyPracticeQuestion} from '@shared/schemas/ai-output-v1';
 import type {PracticeQuestion, ResultSummary} from '@shared/schemas/practice';
 import {useQuiz} from './useQuiz';
+import {hasInvalidMetaOptions} from './quizEngine';
 import {usePracticeSessionScreen} from './usePracticeSessionScreen';
 
 type Props =
@@ -405,6 +406,25 @@ function LegacyQuestionBlock({quiz}: {quiz: ReturnType<typeof useQuiz>}) {
     return null;
   }
   const answered = state.status === 'answered';
+
+  // Data defect guard (SETE-210 P0): never render meta-label options such as
+  // `từ vựng: English`. Offer a skip instead of an unanswerable question.
+  if (isMultipleChoice && hasInvalidMetaOptions(current)) {
+    return (
+      <View style={themedStyles.questionBlock} testID="practice-invalid-question">
+        <AppText variant="h2">{current.question}</AppText>
+        <AppText color="muted">
+          Câu hỏi này bị lỗi dữ liệu nên không hiển thị đáp án. Bạn có thể bỏ
+          qua và làm câu tiếp theo.
+        </AppText>
+        <AppButton
+          onPress={() => quiz.next()}
+          testID="practice-skip-button"
+          title={isLast ? 'Xem kết quả' : 'Bỏ qua câu này'}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={themedStyles.questionBlock}>

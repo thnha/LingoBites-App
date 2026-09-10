@@ -1,4 +1,5 @@
 import React from 'react';
+import {StyleSheet} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {AppThemeProvider} from '@theme';
 import {FeatureFlagProvider} from '@/release';
@@ -319,6 +320,50 @@ describe('LessonsTabContent', () => {
       testID: 'lesson-summary-packaged-3',
     });
     expect(summaryTexts).toHaveLength(0);
+  });
+
+  it('keeps sticky headers enabled so sections stay grouped', () => {
+    const tree = render(
+      <LessonsTabContent
+        personalLessons={[mockPersonalLesson]}
+        packagedLessons={[]}
+      />,
+    );
+
+    const sectionList = tree.root.findByProps({testID: 'lessons-section-list'});
+    expect(sectionList.props.stickySectionHeadersEnabled).toBe(true);
+  });
+
+  it('gives section headers an opaque background so cards never show through (SETE-210 P0)', () => {
+    const tree = render(
+      <LessonsTabContent
+        personalLessons={[mockPersonalLesson]}
+        packagedLessons={[]}
+      />,
+    );
+
+    const sectionList = tree.root.findByProps({testID: 'lessons-section-list'});
+    const header = sectionList.props.renderSectionHeader({
+      section: sectionList.props.sections[0],
+    });
+    const flat = StyleSheet.flatten(header.props.style);
+    expect(flat.backgroundColor).toBeTruthy();
+    expect(flat.zIndex).toBeGreaterThan(0);
+  });
+
+  it('truncates card summaries to two lines', () => {
+    const tree = render(
+      <LessonsTabContent
+        personalLessons={[mockPersonalLesson]}
+        packagedLessons={[]}
+      />,
+    );
+
+    const summaryText = tree.root.findByProps({
+      testID: 'lesson-summary-personal-1',
+    });
+    expect(summaryText.props.numberOfLines).toBe(2);
+    expect(summaryText.props.ellipsizeMode).toBe('tail');
   });
 
   it('re-renders when personalLessons prop changes', () => {

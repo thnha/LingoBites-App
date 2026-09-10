@@ -51,6 +51,23 @@ export function correctOptionIndex(question: PracticeQuestion): number {
   return question.options.findIndex(option => option === question.answer);
 }
 
+/**
+ * Meta-label options leak internal field names into the UI
+ * (e.g. `từ vựng: English` instead of a Vietnamese meaning).
+ * Such questions are data defects: callers should render a skip/report
+ * fallback instead of unanswerable options.
+ */
+const META_LABEL_OPTION_PATTERN = /^\s*(từ vựng|ngữ pháp)\s*:/iu;
+
+export function hasInvalidMetaOptions(question: PracticeQuestion): boolean {
+  if (!isMultipleChoice(question) || !question.options) {
+    return false;
+  }
+  return question.options.some(option =>
+    META_LABEL_OPTION_PATTERN.test(option),
+  );
+}
+
 export function selectAnswer(
   state: QuizState,
   question: PracticeQuestion,

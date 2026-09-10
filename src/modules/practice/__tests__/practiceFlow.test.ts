@@ -100,4 +100,21 @@ describe('practiceFlow', () => {
     expect(res.status).toBe('network_error');
     expect(mockSaveSet).not.toHaveBeenCalled();
   });
+
+  it('forwards server refusal (HTTP 422) without polling or saving', async () => {
+    mockFindActiveSession.mockReturnValue(null);
+    mockFindReusable.mockReturnValue(null);
+    mockCreateApi.mockResolvedValue({
+      status: 'rejected',
+      code: 'INSUFFICIENT_VALIDATED_SOURCE',
+    });
+
+    const res = await preparePracticeSet(lessonId, 2, baseConfig, idempotencyKey);
+    expect(res).toEqual({
+      status: 'rejected',
+      code: 'INSUFFICIENT_VALIDATED_SOURCE',
+    });
+    expect(mockGetApi).not.toHaveBeenCalled();
+    expect(mockSaveSet).not.toHaveBeenCalled();
+  });
 });

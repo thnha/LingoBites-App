@@ -72,4 +72,26 @@ describe('PracticeScreen', () => {
 
     expect(findText(tree, 'Chính xác!')).toBe(true);
   });
+
+  it('shows a skip fallback instead of meta-label options (SETE-210 P0)', () => {
+    const tree = renderWith({
+      questions: [
+        {
+          id: 'q-bad',
+          type: 'multiple_choice',
+          question: 'Chọn nghĩa đúng của từ "English"',
+          options: ['từ vựng: English', 'việc học tập', 'từ vựng: easy'],
+          answer: 'từ vựng: English',
+        },
+      ],
+    });
+
+    expect(tree.root.findByProps({testID: 'practice-invalid-question'})).toBeDefined();
+    const skip = tree.root.findByProps({testID: 'practice-skip-button'});
+    expect(skip).toBeDefined();
+    ReactTestRenderer.act(() => {
+      skip.props.onPress();
+    });
+    expect(findText(tree, 'Kết quả')).toBe(true);
+  });
 });

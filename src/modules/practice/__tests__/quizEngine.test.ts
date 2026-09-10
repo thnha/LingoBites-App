@@ -3,6 +3,7 @@ import {
   accuracyPercent,
   correctOptionIndex,
   goNext,
+  hasInvalidMetaOptions,
   initialQuizState,
   isMultipleChoice,
   restartQuiz,
@@ -39,6 +40,33 @@ describe('quizEngine', () => {
     it('finds the index of the correct option', () => {
       expect(correctOptionIndex(mc('1', 'b', ['a', 'b', 'c']))).toBe(1);
       expect(correctOptionIndex(mc('1', 'zzz', ['a', 'b']))).toBe(-1);
+    });
+
+    it('flags meta-label options as invalid (SETE-210 P0)', () => {
+      expect(
+        hasInvalidMetaOptions(
+          mc('bad', 'từ vựng: English', [
+            'từ vựng: English',
+            'việc học tập',
+            'việc nói',
+            'từ vựng: easy',
+          ]),
+        ),
+      ).toBe(true);
+      expect(
+        hasInvalidMetaOptions(
+          mc('bad2', 'x', ['ngữ pháp: hiện tại', 'việc học tập']),
+        ),
+      ).toBe(true);
+    });
+
+    it('accepts plain Vietnamese meanings', () => {
+      expect(
+        hasInvalidMetaOptions(
+          mc('good', 'việc học tập', ['việc học tập', 'việc nói', 'quả táo']),
+        ),
+      ).toBe(false);
+      expect(hasInvalidMetaOptions(translation('t1', 'a'))).toBe(false);
     });
   });
 

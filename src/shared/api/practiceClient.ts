@@ -17,7 +17,30 @@ export type CreatePracticeSetResponse =
       status: 'generating' | 'ready' | 'generation_failed' | 'invalidated';
       practiceSetId: string;
       pollAfterMs: number;
+    }
+  | {
+      /** Server refused generation (HTTP 422, e.g. lesson not ready or insufficient source). Not a network problem — do not retry blindly. */
+      status: 'rejected';
+      code: string;
     };
+
+/**
+ * Unwraps the Keychain capability token for practice endpoints.
+ * Never sends a missing/unreadable token as a header — the server would
+ * answer 404 and the UI would only show a generic network error.
+ */
+async function lessonTokenFor(lessonId: string): Promise<string> {
+  const result = await getLessonToken(lessonId);
+  if (!result.ok) {
+    throw new Error(
+      `Failed to load lesson token: ${result.errorCode}`,
+    );
+  }
+  if (!result.token) {
+    throw new Error('Missing lesson token for practice request.');
+  }
+  return result.token;
+}
 
 export async function createPracticeSetApi(
   lessonId: string,
@@ -25,7 +48,7 @@ export async function createPracticeSetApi(
   config: PracticeConfigInput,
   idempotencyKey: string,
 ): Promise<CreatePracticeSetResponse> {
-  const token = await getLessonToken(lessonId);
+  const token = await lessonTokenFor(lessonId);
   const baseUrl = getAppConfig().apiBaseUrl;
   const url = `${baseUrl}/v1/lessons/${lessonId}/practice-sets`;
 
@@ -33,7 +56,7 @@ export async function createPracticeSetApi(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token ?? ''}`,
+      Authorization: `Bearer ${token}`,
       'Idempotency-Key': idempotencyKey,
     },
     body: JSON.stringify({
@@ -59,6 +82,20 @@ export async function createPracticeSetApi(
     };
   }
 
+  if (response.status === 422) {
+    let code = 'UNKNOWN';
+    try {
+      const data = await response.json();
+      if (typeof data?.error?.code === 'string') {
+        code = data.error.code;
+      }
+    } catch {
+      // Unreadable body: keep the generic code so callers still
+      // distinguish refusal from a transport failure.
+    }
+    return {status: 'rejected', code};
+  }
+
   throw new Error(`Failed to create practice set: ${response.status}`);
 }
 
@@ -80,14 +117,14 @@ export async function getPracticeSetApi(
   lessonId: string,
   practiceSetId: string,
 ): Promise<GetPracticeSetResponse> {
-  const token = await getLessonToken(lessonId);
+  const token = await lessonTokenFor(lessonId);
   const baseUrl = getAppConfig().apiBaseUrl;
   const url = `${baseUrl}/v1/practice-sets/${practiceSetId}`;
 
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token ?? ''}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 

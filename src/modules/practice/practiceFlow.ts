@@ -31,6 +31,11 @@ export type PreparePracticeResult =
   | {
       status: 'generation_failed' | 'invalidated' | 'not_found' | 'network_error';
       message?: string;
+    }
+  | {
+      /** Server refused generation (HTTP 422) — caller should explain, not retry. */
+      status: 'rejected';
+      code: string;
     };
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -87,6 +92,10 @@ export async function preparePracticeSet(
         practiceSet: createRes.practiceSet,
         hasVersionMismatchWarning: false,
       };
+    }
+
+    if (createRes.status === 'rejected') {
+      return {status: 'rejected', code: createRes.code};
     }
 
     if (createRes.status === 'generation_failed' || createRes.status === 'invalidated') {

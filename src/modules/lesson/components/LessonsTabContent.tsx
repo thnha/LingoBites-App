@@ -50,6 +50,10 @@ function createStyles(theme: AppTheme) {
       paddingHorizontal: 0,
       marginTop: theme.spacing.md,
       marginBottom: theme.spacing.sm,
+      // Sticky headers render above scrolled cards: keep the header opaque
+      // (same as the screen background) so card text never shows through.
+      backgroundColor: theme.colors.background,
+      zIndex: 1,
     },
   });
 }
@@ -134,6 +138,8 @@ export function LessonsTabContent({
             <AppText
               variant="label"
               color="secondary"
+              numberOfLines={2}
+              ellipsizeMode="tail"
               testID={`lesson-summary-${item.id}`}
             >
               {item.summary}
@@ -162,6 +168,7 @@ export function LessonsTabContent({
         keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={renderLessonItem}
         renderSectionHeader={renderSectionHeader}
+        stickySectionHeadersEnabled
         contentContainerStyle={styles.contentContainer}
         testID="lessons-section-list"
       />

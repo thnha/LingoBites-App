@@ -28,14 +28,25 @@ function createStyles(theme: AppTheme) {
     },
     searchContainer: {
       position: 'relative',
+      justifyContent: 'center',
+    },
+    searchIcon: {
+      position: 'absolute',
+      left: theme.spacing.md,
+      // Vertically centered over the 48pt-min-height input; the 24pt glyph
+      // is pulled up by half its height so it stays centered.
+      top: '50%',
+      marginTop: -12,
+      zIndex: 1,
     },
     searchInput: {
-      paddingLeft: theme.spacing.lg + theme.spacing.md,
+      paddingLeft: theme.spacing.xl + theme.spacing.lg,
     },
     filterRow: {
       flexDirection: 'row',
       gap: theme.spacing.md,
       paddingHorizontal: theme.spacing.md,
+      paddingRight: theme.spacing.xl,
     },
   });
 }
@@ -52,15 +63,18 @@ export function SearchAndFilterBar({
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <MaterialIcon
-          name="search"
-          size={24}
-          color={theme.colors.text.secondary}
-        />
+        <View pointerEvents="none" style={styles.searchIcon}>
+          <MaterialIcon
+            name="search"
+            size={24}
+            color={theme.colors.text.secondary}
+          />
+        </View>
         <TextField
           value={searchQuery}
           onChangeText={onSearchChange}
           placeholder="Tìm kiếm..."
+          accessibilityLabel="Tìm kiếm trong Thư viện"
           style={styles.searchInput}
         />
       </View>
