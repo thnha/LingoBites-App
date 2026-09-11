@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {Alert, ScrollView, View} from 'react-native';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {ErrorCard} from '@components/ErrorCard';
@@ -36,6 +36,30 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   } | null>(null);
 
   const step = session?.getCurrentStep() ?? null;
+
+  const requestExit = useCallback(() => {
+    if (!session || finished) {
+      navigation.goBack();
+      return;
+    }
+    const hasProgress = session.getStepIndex() > 0;
+    if (!hasProgress) {
+      navigation.goBack();
+      return;
+    }
+    Alert.alert(
+      'Thoát bài học?',
+      'Tiến độ lượt học này chưa được lưu. Bạn có chắc muốn thoát?',
+      [
+        {text: 'Ở lại', style: 'cancel'},
+        {
+          text: 'Thoát',
+          style: 'destructive',
+          onPress: () => navigation.goBack(),
+        },
+      ],
+    );
+  }, [finished, navigation, session]);
 
   function handlePlayAudio(assetId: string | null) {
     if (!session) {
@@ -85,7 +109,7 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   if (!session) {
     return (
       <AppScreen>
-        <ScreenHeader onBack={() => navigation.goBack()} title="Bài học" />
+        <ScreenHeader onBack={requestExit} title="Bài học" />
         <View
           style={{
             alignItems: 'center',
@@ -102,10 +126,7 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader
-        onBack={() => navigation.goBack()}
-        title={session.data.lesson.titleVi}
-      />
+      <ScreenHeader onBack={requestExit} title={session.data.lesson.titleVi} />
       <ScrollView
         contentContainerStyle={{gap: theme.spacing.lg, padding: theme.gutter}}
       >

@@ -100,4 +100,15 @@ describe('TranscriptLine', () => {
       selected: true,
     });
   });
+
+  it('uses onPrimaryContainer for active IPA text contrast', () => {
+    const {tree} = renderLine({isActive: true});
+    const ipaNode = tree.root.findByProps({testID: 'transcript-line-seg-0-ipa'});
+    const flatStyle = Array.isArray(ipaNode.props.style)
+      ? Object.assign({}, ...ipaNode.props.style.filter(Boolean))
+      : ipaNode.props.style;
+
+    expect(flatStyle.color).toBeDefined();
+    expect(ipaNode.props.color).toBeUndefined();
+  });
 });

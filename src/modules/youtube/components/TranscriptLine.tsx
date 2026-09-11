@@ -77,9 +77,12 @@ export function TranscriptLine({
       ) : null}
       {showTranslation && segment.ipa ? (
         <AppText
-          color="muted"
+          color={isActive ? undefined : 'muted'}
           variant="caption"
-          style={styles.ipaText}
+          style={[
+            styles.ipaText,
+            isActive ? {color: theme.colors.onPrimaryContainer} : null,
+          ]}
           testID={testID ? `${testID}-ipa` : undefined}
         >
           {`/${segment.ipa}/`}

@@ -39,6 +39,7 @@ import {
 import {TtsSpikeScreen} from '@modules/tts';
 import {useFeatureFlags} from '@/release';
 import {TabBar} from './TabBar';
+import {tabBarVisibilityOptions} from './immersiveTabRoutes';
 import {isIngestionRouteEnabled} from './ingestionRouteGate';
 import {
   YouTubeInputScreen,
@@ -313,17 +314,26 @@ export function AppNavigator() {
         <Tab.Screen
           component={HomeStackNavigator}
           name="Home"
-          options={{title: 'Home'}}
+          options={({route}) => ({
+            title: 'Home',
+            ...tabBarVisibilityOptions({route}),
+          })}
         />
         <Tab.Screen
           component={LessonsStackNavigator}
           name="Lessons"
-          options={{title: 'Lessons'}}
+          options={({route}) => ({
+            title: 'Lessons',
+            ...tabBarVisibilityOptions({route}),
+          })}
         />
         <Tab.Screen
           component={ProfileStackNavigator}
           name="Profile"
-          options={{title: 'Profile'}}
+          options={({route}) => ({
+            title: 'Profile',
+            ...tabBarVisibilityOptions({route}),
+          })}
         />
       </Tab.Navigator>
     </NavigationContainer>

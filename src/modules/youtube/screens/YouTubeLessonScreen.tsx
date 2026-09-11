@@ -23,6 +23,7 @@ import {
 import {TranscriptLine} from '../components/TranscriptLine';
 import {useTranscriptSync} from '../sync/useTranscriptSync';
 import type {HomeStackParamList} from '@/app/navigation/types';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 const AUTOSCROLL_RESUME_DELAY_MS = 5_000;
@@ -65,6 +66,7 @@ export function YouTubeLessonScreen({
 }: YouTubeLessonScreenProps) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
+  const feedClearance = useFloatingTabBarClearance();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const playerRef = useRef<YouTubePlayerRef>(null);
@@ -234,7 +236,7 @@ export function YouTubeLessonScreen({
         </View>
       ) : null}
       <FlatList
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, {paddingBottom: feedClearance}]}
         data={lesson.segments}
         ItemSeparatorComponent={ListSeparator}
         keyExtractor={item => item.id}
