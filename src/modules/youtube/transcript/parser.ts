@@ -1,7 +1,9 @@
-export type RawCue = { startMs: number; endMs: number | null; text: string };
+export type RawCue = {startMs: number; endMs: number | null; text: string};
 
 function parseTimestamp(str: string): number | null {
-  const match = str.trim().match(/^(?:(\d+):)?(\d{1,2}):(\d{2})(?:[.,](\d{1,3}))?$/);
+  const match = str
+    .trim()
+    .match(/^(?:(\d+):)?(\d{1,2}):(\d{2})(?:[.,](\d{1,3}))?$/);
   if (!match) return null;
 
   const h = match[1] ? parseInt(match[1], 10) : 0;
@@ -39,7 +41,7 @@ function parseF3(lines: string[]): RawCue[] {
       const startMs = parseTimestamp(arrowMatch[1]);
       const endMs = parseTimestamp(arrowMatch[2]);
       if (startMs !== null) {
-        currentCue = { startMs, endMs, text: '' };
+        currentCue = {startMs, endMs, text: ''};
         textLines = [];
       }
       continue;
@@ -74,7 +76,11 @@ function parseF1(lines: string[]): RawCue[] {
     const ts = parseTimestamp(trimmed);
     if (ts !== null) {
       if (currentStart !== null) {
-        cues.push({ startMs: currentStart, endMs: null, text: textLines.join('\n').trim() });
+        cues.push({
+          startMs: currentStart,
+          endMs: null,
+          text: textLines.join('\n').trim(),
+        });
       }
       currentStart = ts;
       textLines = [];
@@ -83,9 +89,13 @@ function parseF1(lines: string[]): RawCue[] {
     }
   }
   if (currentStart !== null) {
-    cues.push({ startMs: currentStart, endMs: null, text: textLines.join('\n').trim() });
+    cues.push({
+      startMs: currentStart,
+      endMs: null,
+      text: textLines.join('\n').trim(),
+    });
   }
-  return cues.filter((c) => c.text.length > 0);
+  return cues.filter(c => c.text.length > 0);
 }
 
 function parseF2(lines: string[]): RawCue[] {
@@ -97,12 +107,18 @@ function parseF2(lines: string[]): RawCue[] {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    const match = trimmed.match(/^((?:(?:\d+):)?\d{1,2}:\d{2}(?:[.,]\d{1,3})?)\s+(.*)$/);
+    const match = trimmed.match(
+      /^((?:(?:\d+):)?\d{1,2}:\d{2}(?:[.,]\d{1,3})?)\s+(.*)$/,
+    );
     if (match) {
       const ts = parseTimestamp(match[1]);
       if (ts !== null) {
         if (currentStart !== null) {
-          cues.push({ startMs: currentStart, endMs: null, text: textLines.join('\n').trim() });
+          cues.push({
+            startMs: currentStart,
+            endMs: null,
+            text: textLines.join('\n').trim(),
+          });
         }
         currentStart = ts;
         textLines = [match[2].trim()];
@@ -116,23 +132,29 @@ function parseF2(lines: string[]): RawCue[] {
   }
 
   if (currentStart !== null) {
-    cues.push({ startMs: currentStart, endMs: null, text: textLines.join('\n').trim() });
+    cues.push({
+      startMs: currentStart,
+      endMs: null,
+      text: textLines.join('\n').trim(),
+    });
   }
 
-  return cues.filter((c) => c.text.length > 0);
+  return cues.filter(c => c.text.length > 0);
 }
 
 export function parseManualTranscript(text: string): RawCue[] {
   const lines = text.split('\n');
 
-  const hasArrow = lines.some((l) => l.includes('-->'));
+  const hasArrow = lines.some(l => l.includes('-->'));
   if (hasArrow) {
     const cues = parseF3(lines);
     if (cues.length > 0) return cues;
   }
 
-  const isF1 = lines.some((l) => parseTimestamp(l) !== null);
-  const isF2 = lines.some((l) => /^(?:(?:\d+):)?\d{1,2}:\d{2}(?:[.,]\d{1,3})?\s+/.test(l.trim()));
+  const isF1 = lines.some(l => parseTimestamp(l) !== null);
+  const isF2 = lines.some(l =>
+    /^(?:(?:\d+):)?\d{1,2}:\d{2}(?:[.,]\d{1,3})?\s+/.test(l.trim()),
+  );
 
   let cues: RawCue[] = [];
   if (isF1 && !isF2) {
@@ -147,7 +169,7 @@ export function parseManualTranscript(text: string): RawCue[] {
 
   if (cues.length === 0) {
     throw new Error(
-      'TRANSCRIPT_UNPARSABLE: Vui lòng nhập định dạng hợp lệ, ví dụ:\n0:00 Hello\nhoặc:\n0:00\nHello'
+      'TRANSCRIPT_UNPARSABLE: Vui lòng nhập định dạng hợp lệ, ví dụ:\n0:00 Hello\nhoặc:\n0:00\nHello',
     );
   }
 

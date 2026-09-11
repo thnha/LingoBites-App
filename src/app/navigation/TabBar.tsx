@@ -128,7 +128,9 @@ function TabBarItem({
         style={animatedColorStyle}
       />
       <Animated.Text
+        adjustsFontSizeToFit
         maxFontSizeMultiplier={captionPreset.maxFontSizeMultiplier}
+        minimumFontScale={0.85}
         numberOfLines={1}
         style={[
           {

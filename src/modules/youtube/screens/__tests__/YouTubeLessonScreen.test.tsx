@@ -149,16 +149,12 @@ describe('YouTubeLessonScreen', () => {
     expect(mockSeekTo).toHaveBeenCalledWith(3); // 3_000ms / 1000
   });
 
-  it('toggles the translation (Vietnamese + IPA) lines on and off', async () => {
+  it('toggles Vietnamese and IPA display independently', async () => {
     const tree = await renderScreen();
-
-    expect(() =>
-      tree.root.findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-vi'}),
-    ).not.toThrow();
 
     await act(async () => {
       tree.root
-        .findByProps({testID: 'youtube-toggle-translation'})
+        .findByProps({testID: 'youtube-toggle-vietnamese'})
         .props.onPress();
       await Promise.resolve();
     });
@@ -168,18 +164,16 @@ describe('YouTubeLessonScreen', () => {
     ).toThrow();
     expect(() =>
       tree.root.findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-ipa'}),
-    ).toThrow();
+    ).not.toThrow();
 
     await act(async () => {
-      tree.root
-        .findByProps({testID: 'youtube-toggle-translation'})
-        .props.onPress();
+      tree.root.findByProps({testID: 'youtube-toggle-ipa'}).props.onPress();
       await Promise.resolve();
     });
 
     expect(() =>
-      tree.root.findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-vi'}),
-    ).not.toThrow();
+      tree.root.findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-ipa'}),
+    ).toThrow();
   });
 
   it('follows and re-seeks the active sentence while repeat is on', async () => {

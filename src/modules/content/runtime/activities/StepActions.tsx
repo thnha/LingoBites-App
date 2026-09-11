@@ -20,7 +20,7 @@ export function StepActions({
     <View style={{gap: theme.spacing.sm}}>
       <AppButton onPress={onComplete} title={completeLabel} />
       {onSkip ? (
-        <AppButton onPress={onSkip} title="Bỏ qua" variant="secondary" />
+        <AppButton onPress={onSkip} title="Bỏ qua" variant="ghost" />
       ) : null}
     </View>
   );

@@ -9,10 +9,7 @@ type TimeSample = {
   mediaMs: number;
 };
 
-export type TranscriptSyncSegment = Pick<
-  YouTubeSegment,
-  'start_ms' | 'end_ms'
->;
+export type TranscriptSyncSegment = Pick<YouTubeSegment, 'start_ms' | 'end_ms'>;
 
 /**
  * Returns the index of the segment that should be highlighted at `timeMs`.

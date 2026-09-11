@@ -24,7 +24,7 @@ export const fontSize: SixStep = {
 export const fontWeight = {
   regular: '400',
   medium: '600',
-  bold: '800',
+  bold: '700',
 } as const;
 
 // Per-variant ceiling for RN's `allowFontScaling` (SETE-125). Groups:
@@ -58,7 +58,7 @@ export const typographyPresets = {
   title: {
     fontSize: fontSize.xxl,
     lineHeight: 36,
-    fontWeight: '800' as const,
+    fontWeight: '700' as const,
     maxFontSizeMultiplier: 1.5,
   },
   subtitle: {

@@ -32,7 +32,9 @@ function makeSegment(overrides: Partial<YouTubeSegment> = {}): YouTubeSegment {
   };
 }
 
-function renderLine(props: Partial<React.ComponentProps<typeof TranscriptLine>> = {}) {
+function renderLine(
+  props: Partial<React.ComponentProps<typeof TranscriptLine>> = {},
+) {
   const onPress = jest.fn();
   let tree!: renderer.ReactTestRenderer;
   act(() => {
@@ -43,7 +45,8 @@ function renderLine(props: Partial<React.ComponentProps<typeof TranscriptLine>> 
             isActive={false}
             onPress={onPress}
             segment={makeSegment()}
-            showTranslation
+            showIpa
+            showVietnamese
             testID="transcript-line-seg-0"
             {...props}
           />
@@ -72,8 +75,24 @@ describe('TranscriptLine', () => {
     ).toBe('/həˈloʊ ðɛr/');
   });
 
-  it('hides the Vietnamese and IPA lines when translation is toggled off', () => {
-    const {tree} = renderLine({showTranslation: false});
+  it('hides Vietnamese and IPA independently', () => {
+    const {tree} = renderLine({showVietnamese: false, showIpa: true});
+    expect(() =>
+      tree.root.findByProps({testID: 'transcript-line-seg-0-vi'}),
+    ).toThrow();
+    expect(
+      tree.root.findByProps({testID: 'transcript-line-seg-0-ipa'}).props
+        .children,
+    ).toBe('/həˈloʊ ðɛr/');
+
+    const ipaOff = renderLine({showVietnamese: true, showIpa: false}).tree;
+    expect(() =>
+      ipaOff.root.findByProps({testID: 'transcript-line-seg-0-ipa'}),
+    ).toThrow();
+  });
+
+  it('hides both lines when Vietnamese and IPA are off', () => {
+    const {tree} = renderLine({showVietnamese: false, showIpa: false});
 
     expect(() =>
       tree.root.findByProps({testID: 'transcript-line-seg-0-vi'}),
@@ -103,7 +122,9 @@ describe('TranscriptLine', () => {
 
   it('uses onPrimaryContainer for active IPA text contrast', () => {
     const {tree} = renderLine({isActive: true});
-    const ipaNode = tree.root.findByProps({testID: 'transcript-line-seg-0-ipa'});
+    const ipaNode = tree.root.findByProps({
+      testID: 'transcript-line-seg-0-ipa',
+    });
     const flatStyle = Array.isArray(ipaNode.props.style)
       ? Object.assign({}, ...ipaNode.props.style.filter(Boolean))
       : ipaNode.props.style;

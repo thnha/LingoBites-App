@@ -46,7 +46,9 @@ describe('YouTubeManualTranscriptScreen', () => {
 
   it('renders correctly with header and submit button inside ScrollView', () => {
     const props = createProps();
-    const tree = renderWithProviders(<YouTubeManualTranscriptScreen {...props} />);
+    const tree = renderWithProviders(
+      <YouTubeManualTranscriptScreen {...props} />,
+    );
 
     const submitBtn = tree.root.findByProps({testID: 'youtube-manual-submit'});
     expect(submitBtn).toBeDefined();
@@ -58,7 +60,9 @@ describe('YouTubeManualTranscriptScreen', () => {
 
   it('shows error when submitted with empty text or invalid transcript format', () => {
     const props = createProps();
-    const tree = renderWithProviders(<YouTubeManualTranscriptScreen {...props} />);
+    const tree = renderWithProviders(
+      <YouTubeManualTranscriptScreen {...props} />,
+    );
 
     const submitBtn = tree.root.findByProps({testID: 'youtube-manual-submit'});
 
@@ -86,7 +90,9 @@ describe('YouTubeManualTranscriptScreen', () => {
 
   it('parses valid transcript and navigates back to YouTubeProcessing', () => {
     const props = createProps('https://www.youtube.com/watch?v=OlulrDOixEg');
-    const tree = renderWithProviders(<YouTubeManualTranscriptScreen {...props} />);
+    const tree = renderWithProviders(
+      <YouTubeManualTranscriptScreen {...props} />,
+    );
 
     const textInput = tree.root.findByProps({
       placeholder: '0:00 Hello there\n0:04 How are you?',

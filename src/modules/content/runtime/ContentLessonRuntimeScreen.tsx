@@ -36,6 +36,8 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   } | null>(null);
 
   const step = session?.getCurrentStep() ?? null;
+  const stepIndex = session?.getStepIndex() ?? 0;
+  const totalSteps = session?.steps.length ?? 0;
 
   const requestExit = useCallback(() => {
     if (!session || finished) {
@@ -136,6 +138,15 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
             onRetry={() => handlePlayAudio(audioError.assetId)}
             retryLabel="Thử lại"
           />
+        ) : null}
+        {!finished && totalSteps > 0 ? (
+          <AppText
+            color="secondary"
+            testID="lesson-runtime-progress"
+            variant="label"
+          >
+            Bước {Math.min(stepIndex + 1, totalSteps)}/{totalSteps}
+          </AppText>
         ) : null}
         {finished ? (
           <FeedbackCard data={finished} onFinish={() => navigation.goBack()} />

@@ -1,4 +1,4 @@
-import { parseManualTranscript } from '../parser';
+import {parseManualTranscript} from '../parser';
 
 describe('parseManualTranscript', () => {
   describe('F3 Format - SRT and WebVTT', () => {
@@ -67,8 +67,8 @@ Line 2
 `;
       const result = parseManualTranscript(srt);
       expect(result).toEqual([
-        { startMs: 1000, endMs: 2000, text: 'Line 1' },
-        { startMs: 2000, endMs: 3000, text: 'Line 2' },
+        {startMs: 1000, endMs: 2000, text: 'Line 1'},
+        {startMs: 2000, endMs: 3000, text: 'Line 2'},
       ]);
     });
   });
@@ -85,9 +85,9 @@ Wow that is long
       `;
       const result = parseManualTranscript(f1);
       expect(result).toEqual([
-        { startMs: 0, endMs: null, text: 'Hello there' },
-        { startMs: 4000, endMs: null, text: 'how are you' },
-        { startMs: 3725000, endMs: null, text: 'Wow that is long' },
+        {startMs: 0, endMs: null, text: 'Hello there'},
+        {startMs: 4000, endMs: null, text: 'how are you'},
+        {startMs: 3725000, endMs: null, text: 'Wow that is long'},
       ]);
     });
 
@@ -101,8 +101,8 @@ how are you
       `;
       const result = parseManualTranscript(f1);
       expect(result).toEqual([
-        { startMs: 0, endMs: null, text: 'Hello there\nwelcome back' },
-        { startMs: 4000, endMs: null, text: 'how are you' },
+        {startMs: 0, endMs: null, text: 'Hello there\nwelcome back'},
+        {startMs: 4000, endMs: null, text: 'how are you'},
       ]);
     });
   });
@@ -116,9 +116,9 @@ how are you
       `;
       const result = parseManualTranscript(f2);
       expect(result).toEqual([
-        { startMs: 0, endMs: null, text: 'Hello there' },
-        { startMs: 4000, endMs: null, text: 'how are you' },
-        { startMs: 3725000, endMs: null, text: 'Wow that is long' },
+        {startMs: 0, endMs: null, text: 'Hello there'},
+        {startMs: 4000, endMs: null, text: 'how are you'},
+        {startMs: 3725000, endMs: null, text: 'Wow that is long'},
       ]);
     });
 
@@ -129,8 +129,8 @@ how are you
       `;
       const result = parseManualTranscript(f2);
       expect(result).toEqual([
-        { startMs: 123, endMs: null, text: 'Hello there' },
-        { startMs: 4000, endMs: null, text: 'how are you' },
+        {startMs: 123, endMs: null, text: 'Hello there'},
+        {startMs: 4000, endMs: null, text: 'how are you'},
       ]);
     });
 
@@ -142,8 +142,8 @@ welcome back
       `;
       const result = parseManualTranscript(f2);
       expect(result).toEqual([
-        { startMs: 0, endMs: null, text: 'Hello there\nwelcome back' },
-        { startMs: 4000, endMs: null, text: 'how are you' },
+        {startMs: 0, endMs: null, text: 'Hello there\nwelcome back'},
+        {startMs: 4000, endMs: null, text: 'how are you'},
       ]);
     });
   });
@@ -154,19 +154,27 @@ welcome back
 Hello there
 how are you
       `;
-      expect(() => parseManualTranscript(invalid)).toThrowError(/TRANSCRIPT_UNPARSABLE/);
+      expect(() => parseManualTranscript(invalid)).toThrowError(
+        /TRANSCRIPT_UNPARSABLE/,
+      );
     });
 
     it('throws TRANSCRIPT_UNPARSABLE when the string is empty', () => {
-      expect(() => parseManualTranscript('')).toThrowError(/TRANSCRIPT_UNPARSABLE/);
-      expect(() => parseManualTranscript('   \\n  ')).toThrowError(/TRANSCRIPT_UNPARSABLE/);
+      expect(() => parseManualTranscript('')).toThrowError(
+        /TRANSCRIPT_UNPARSABLE/,
+      );
+      expect(() => parseManualTranscript('   \\n  ')).toThrowError(
+        /TRANSCRIPT_UNPARSABLE/,
+      );
     });
 
     it('throws TRANSCRIPT_UNPARSABLE when timestamps are incorrectly formatted', () => {
       const completelyInvalid = `
 a:b:c Hello there
       `;
-      expect(() => parseManualTranscript(completelyInvalid)).toThrowError(/TRANSCRIPT_UNPARSABLE/);
+      expect(() => parseManualTranscript(completelyInvalid)).toThrowError(
+        /TRANSCRIPT_UNPARSABLE/,
+      );
     });
 
     it('ignores extraneous lines before valid cues', () => {
@@ -180,8 +188,8 @@ World
       `;
       const result = parseManualTranscript(f1);
       expect(result).toEqual([
-        { startMs: 0, endMs: null, text: 'Hello' },
-        { startMs: 4000, endMs: null, text: 'World' },
+        {startMs: 0, endMs: null, text: 'Hello'},
+        {startMs: 4000, endMs: null, text: 'World'},
       ]);
     });
 
@@ -195,8 +203,8 @@ World
       `;
       const result = parseManualTranscript(f2);
       expect(result).toEqual([
-        { startMs: 0, endMs: null, text: 'Hello' },
-        { startMs: 4000, endMs: null, text: 'World' },
+        {startMs: 0, endMs: null, text: 'Hello'},
+        {startMs: 4000, endMs: null, text: 'World'},
       ]);
     });
   });

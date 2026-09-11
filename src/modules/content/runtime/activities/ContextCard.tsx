@@ -22,12 +22,20 @@ export function ContextCard({data, onPlayAudio, onComplete, onSkip}: Props) {
       <AppCard style={{gap: theme.spacing.md}}>
         <View
           style={{
-            alignItems: 'center',
+            alignItems: 'flex-start',
             flexDirection: 'row',
+            flexWrap: 'wrap',
             gap: theme.spacing.sm,
           }}
+          testID="context-phrase-row"
         >
-          <AppText variant="h2">{data.phraseEn}</AppText>
+          <AppText
+            style={{flex: 1, flexShrink: 1}}
+            testID="context-phrase-en"
+            variant="h2"
+          >
+            {data.phraseEn}
+          </AppText>
           <IconButton
             accessibilityLabel="Nghe phát âm"
             icon="volume_up"

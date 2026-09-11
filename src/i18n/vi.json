@@ -157,6 +157,13 @@
   "youtube": {
     "input_title": "Học từ YouTube",
     "input_description": "Dán link YouTube để tạo bài học kèm transcript.",
+    "input_expectation": "Quá trình xử lý thường mất 30–90 giây tùy độ dài video.",
+    "input_paste": "Dán link từ bộ nhớ",
+    "input_paste_empty": "Không có link trong bộ nhớ. Hãy sao chép link YouTube trước.",
+    "display_vietnamese_hint": "Hiện hoặc ẩn bản dịch tiếng Việt",
+    "display_ipa_hint": "Hiện hoặc ẩn phiên âm IPA",
+    "ipa_show_a11y": "Hiện IPA",
+    "ipa_hide_a11y": "Ẩn IPA",
     "url_label": "Link YouTube",
     "start": "Tạo bài học",
     "processing_title": "Đang tạo bài học",

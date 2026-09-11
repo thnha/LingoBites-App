@@ -74,7 +74,8 @@ export function YouTubeLessonScreen({
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevActiveIndexRef = useRef(-1);
 
-  const [showTranslation, setShowTranslation] = useState(true);
+  const [showVietnamese, setShowVietnamese] = useState(true);
+  const [showIpa, setShowIpa] = useState(true);
   const [repeatIndex, setRepeatIndex] = useState<number | null>(null);
   const [autoScrollPaused, setAutoScrollPaused] = useState(false);
   const [playerError, setPlayerError] = useState<YouTubePlayerErrorCode | null>(
@@ -162,8 +163,12 @@ export function YouTubeLessonScreen({
     });
   }, []);
 
-  const toggleTranslation = useCallback(() => {
-    setShowTranslation(current => !current);
+  const toggleVietnamese = useCallback(() => {
+    setShowVietnamese(current => !current);
+  }, []);
+
+  const toggleIpa = useCallback(() => {
+    setShowIpa(current => !current);
   }, []);
 
   const toggleRepeat = useCallback(() => {
@@ -178,26 +183,37 @@ export function YouTubeLessonScreen({
         isActive={item.index === activeIndex}
         onPress={handleLinePress}
         segment={item}
-        showTranslation={showTranslation}
+        showIpa={showIpa}
+        showVietnamese={showVietnamese}
         testID={`transcript-line-${item.id}`}
       />
     ),
-    [activeIndex, handleLinePress, showTranslation],
+    [activeIndex, handleLinePress, showIpa, showVietnamese],
   );
 
   const headerActions = (
     <View style={styles.headerActions}>
       <IconButton
-        accessibilityHint={t('youtube.translation_toggle_hint')}
+        accessibilityHint={t('youtube.display_vietnamese_hint')}
         accessibilityLabel={
-          showTranslation
+          showVietnamese
             ? t('youtube.translation_hide_a11y')
             : t('youtube.translation_show_a11y')
         }
         icon="translate"
-        onPress={toggleTranslation}
-        testID="youtube-toggle-translation"
-        tone={showTranslation ? 'accent' : 'surface'}
+        onPress={toggleVietnamese}
+        testID="youtube-toggle-vietnamese"
+        tone={showVietnamese ? 'accent' : 'surface'}
+      />
+      <IconButton
+        accessibilityHint={t('youtube.display_ipa_hint')}
+        accessibilityLabel={
+          showIpa ? t('youtube.ipa_hide_a11y') : t('youtube.ipa_show_a11y')
+        }
+        icon="subtitles"
+        onPress={toggleIpa}
+        testID="youtube-toggle-ipa"
+        tone={showIpa ? 'accent' : 'surface'}
       />
       <IconButton
         accessibilityHint={t('youtube.repeat_toggle_hint')}

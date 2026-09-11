@@ -157,6 +157,13 @@
   "youtube": {
     "input_title": "Learn from YouTube",
     "input_description": "Paste a YouTube link to create a lesson with a transcript.",
+    "input_expectation": "Processing usually takes 30–90 seconds depending on video length.",
+    "input_paste": "Paste link from clipboard",
+    "input_paste_empty": "Nothing to paste. Copy a YouTube link first.",
+    "display_vietnamese_hint": "Show or hide Vietnamese translation",
+    "display_ipa_hint": "Show or hide IPA pronunciation",
+    "ipa_show_a11y": "Show IPA",
+    "ipa_hide_a11y": "Hide IPA",
     "url_label": "YouTube link",
     "start": "Create lesson",
     "processing_title": "Creating lesson",

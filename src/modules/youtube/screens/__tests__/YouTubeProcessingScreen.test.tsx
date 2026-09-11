@@ -19,7 +19,9 @@ jest.mock('@shared/db/YoutubeLessonRepository', () => ({
 const navigation = {
   replace: mockReplace,
   goBack: mockGoBack,
-} as unknown as React.ComponentProps<typeof YouTubeProcessingScreen>['navigation'];
+} as unknown as React.ComponentProps<
+  typeof YouTubeProcessingScreen
+>['navigation'];
 
 const route = {
   key: 'YouTubeProcessing',
@@ -73,9 +75,9 @@ describe('YouTubeProcessingScreen', () => {
       tree.root.findByProps({testID: 'youtube-processing-stage'}).props
         .children,
     ).toBe('Đang dịch transcript');
-    expect(tree.root.findByProps({testID: 'youtube-progress'}).props.children).toEqual(
-      [40, '%'],
-    );
+    expect(
+      tree.root.findByProps({testID: 'youtube-progress'}).props.children,
+    ).toEqual([40, '%']);
   });
 
   it('offers retry with the same URL after failure', async () => {

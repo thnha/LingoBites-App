@@ -8,7 +8,8 @@ import type {YouTubeSegment} from '@shared/schemas/youtube-transcript-v1';
 export type TranscriptLineProps = {
   segment: YouTubeSegment;
   isActive: boolean;
-  showTranslation: boolean;
+  showVietnamese: boolean;
+  showIpa: boolean;
   onPress: (segment: YouTubeSegment) => void;
   testID?: string;
 };
@@ -30,7 +31,8 @@ function createStyles(theme: AppTheme) {
 export function TranscriptLine({
   segment,
   isActive,
-  showTranslation,
+  showVietnamese,
+  showIpa,
   onPress,
   testID,
 }: TranscriptLineProps) {
@@ -66,7 +68,7 @@ export function TranscriptLine({
       >
         {segment.en}
       </AppText>
-      {showTranslation && segment.vi ? (
+      {showVietnamese && segment.vi ? (
         <AppText
           color={isActive ? 'primary' : 'secondary'}
           style={isActive ? {color: theme.colors.onPrimaryContainer} : null}
@@ -75,7 +77,7 @@ export function TranscriptLine({
           {segment.vi}
         </AppText>
       ) : null}
-      {showTranslation && segment.ipa ? (
+      {showIpa && segment.ipa ? (
         <AppText
           color={isActive ? undefined : 'muted'}
           variant="caption"

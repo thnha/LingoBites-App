@@ -47,12 +47,24 @@ export function ExitCheckCard({data, onComplete, onSkip}: Props) {
             <AppText variant="h3">{item.question}</AppText>
             {isRevealed ? (
               <>
-                <AppText
-                  color="primary"
-                  testID={`exit-check-answer-${item.id}`}
+                <View
+                  style={{
+                    backgroundColor: theme.colors.primaryContainer,
+                    borderColor: theme.colors.outline,
+                    borderRadius: theme.radius.md,
+                    borderWidth: 1,
+                    paddingHorizontal: theme.spacing.md,
+                    paddingVertical: theme.spacing.sm,
+                  }}
                 >
-                  {item.answer}
-                </AppText>
+                  <AppText
+                    color="primary"
+                    testID={`exit-check-answer-${item.id}`}
+                    variant="bodyLg"
+                  >
+                    {item.answer}
+                  </AppText>
+                </View>
                 <View style={{gap: theme.spacing.sm}}>
                   {SELF_GRADE_OPTIONS.map(option => (
                     <AppButton
@@ -93,7 +105,7 @@ export function ExitCheckCard({data, onComplete, onSkip}: Props) {
         onPress={() => onComplete(answers)}
         title="Hoàn thành bài kiểm tra"
       />
-      <AppButton onPress={onSkip} title="Bỏ qua" variant="secondary" />
+      <AppButton onPress={onSkip} title="Bỏ qua" variant="ghost" />
     </View>
   );
 }

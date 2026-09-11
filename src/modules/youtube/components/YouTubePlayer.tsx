@@ -23,7 +23,7 @@ export const YOUTUBE_PLAYER_ERROR_CODES = {
 } as const;
 
 export type YouTubePlayerErrorCode =
-  (typeof YOUTUBE_PLAYER_ERROR_CODES)[keyof typeof YOUTUBE_PLAYER_ERROR_CODES]
+  | (typeof YOUTUBE_PLAYER_ERROR_CODES)[keyof typeof YOUTUBE_PLAYER_ERROR_CODES]
   | 'YOUTUBE_PLAYER_UNKNOWN_ERROR';
 
 export function mapYouTubePlayerError(error: string): YouTubePlayerErrorCode {
