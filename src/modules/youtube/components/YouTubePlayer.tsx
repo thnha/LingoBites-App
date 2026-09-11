@@ -50,13 +50,14 @@ export interface YouTubePlayerRef {
 
 export interface YouTubePlayerProps {
   videoId: string;
+  playbackRate?: number;
   onReady?: () => void;
   onTimeUpdate?: (time: number) => void;
   onError?: (error: YouTubePlayerErrorCode) => void;
 }
 
 export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
-  ({videoId, onReady, onTimeUpdate, onError}, ref) => {
+  ({videoId, playbackRate = 1, onReady, onTimeUpdate, onError}, ref) => {
     const playerRef = useRef<YoutubeIframeRef>(null);
     const [playing, setPlaying] = useState(false);
     const [ready, setReady] = useState(false);
@@ -127,6 +128,7 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
           ref={playerRef}
           height={PLAYER_MIN_HEIGHT}
           play={playing}
+          playbackRate={playbackRate}
           videoId={videoId}
           onChangeState={handleChangeState}
           onReady={handleReady}

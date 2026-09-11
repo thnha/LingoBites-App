@@ -8,15 +8,17 @@ import {TranscriptLine} from '../TranscriptLine';
 const LINE_TEST_ID = 'transcript-line-seg-0';
 
 /**
- * `TranscriptLine`'s own props include `testID`, so `findByProps` (shallow)
- * matches the wrapper itself, not the inner `Pressable` that owns the real
- * `onPress`/`accessibilityState`. Pull the second (deep) match instead.
+ * The `testID` lives on the outer wrapper `View`, so locate the inner
+ * `Pressable` by capability: it is the only node that owns both the real
+ * `onPress` and an `accessibilityState`.
  */
 function findPressable(tree: renderer.ReactTestRenderer): ReactTestInstance {
   const matches = tree.root.findAll(
-    node => node.props?.testID === LINE_TEST_ID,
+    node =>
+      typeof node.props?.onPress === 'function' &&
+      node.props?.accessibilityState !== undefined,
   );
-  return matches[1];
+  return matches[0];
 }
 
 function makeSegment(overrides: Partial<YouTubeSegment> = {}): YouTubeSegment {
@@ -47,7 +49,7 @@ function renderLine(
             segment={makeSegment()}
             showIpa
             showVietnamese
-            testID="transcript-line-seg-0"
+            testID={LINE_TEST_ID}
             {...props}
           />
         </AppThemeProvider>
@@ -118,6 +120,30 @@ describe('TranscriptLine', () => {
     expect(findPressable(tree).props.accessibilityState).toEqual({
       selected: true,
     });
+  });
+
+  it('disables the pressable surface while keeping the transcript readable', () => {
+    const {tree} = renderLine({disabled: true});
+
+    const pressable = findPressable(tree);
+    expect(pressable.props.disabled).toBe(true);
+    expect(pressable.props.accessibilityState).toEqual({
+      selected: false,
+      disabled: true,
+    });
+
+    expect(
+      tree.root.findByProps({testID: 'transcript-line-seg-0-en'}).props
+        .children,
+    ).toBe('Hello there');
+    expect(
+      tree.root.findByProps({testID: 'transcript-line-seg-0-vi'}).props
+        .children,
+    ).toBe('Xin chào');
+    expect(
+      tree.root.findByProps({testID: 'transcript-line-seg-0-ipa'}).props
+        .children,
+    ).toBe('/həˈloʊ ðɛr/');
   });
 
   it('uses onPrimaryContainer for active IPA text contrast', () => {

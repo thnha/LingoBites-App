@@ -56,4 +56,24 @@ describe('YouTubeInputScreen', () => {
       tree.root.findByProps({testID: 'youtube-url-input'}).props.value,
     ).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
   });
+
+  it('shows server limits before submit', () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <YouTubeInputScreen navigation={navigation} route={route} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-input-limits'}).props.children,
+    ).toContain('15');
+    expect(
+      tree.root.findByProps({testID: 'youtube-input-limits'}).props.children,
+    ).toContain('400');
+  });
 });

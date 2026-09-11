@@ -1,7 +1,8 @@
 import React from 'react';
-import {Pressable, StyleSheet} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
 import {useAppTheme, type AppTheme} from '@theme';
 import type {YouTubeSegment} from '@shared/schemas/youtube-transcript-v1';
 
@@ -10,6 +11,9 @@ export type TranscriptLineProps = {
   isActive: boolean;
   showVietnamese: boolean;
   showIpa: boolean;
+  isSaved?: boolean;
+  disabled?: boolean;
+  onToggleSave?: (segment: YouTubeSegment) => void;
   onPress: (segment: YouTubeSegment) => void;
   testID?: string;
 };
@@ -17,6 +21,8 @@ export type TranscriptLineProps = {
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     container: {
+      flexDirection: 'row',
+      alignItems: 'center',
       borderRadius: theme.radius.md,
       gap: theme.spacing.xs,
       paddingHorizontal: theme.spacing.md,
@@ -33,6 +39,9 @@ export function TranscriptLine({
   isActive,
   showVietnamese,
   showIpa,
+  isSaved,
+  disabled = false,
+  onToggleSave,
   onPress,
   testID,
 }: TranscriptLineProps) {
@@ -41,55 +50,70 @@ export function TranscriptLine({
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={t('youtube.segment_a11y', {
-        index: segment.index + 1,
-        text: segment.en,
-      })}
-      accessibilityHint={t('youtube.segment_a11y_hint')}
-      accessibilityState={{selected: isActive}}
-      onPress={() => onPress(segment)}
-      testID={testID}
-      style={({pressed}) => [
+    <View
+      style={[
         styles.container,
-        {
-          backgroundColor: isActive
-            ? theme.colors.primaryContainer
-            : 'transparent',
-        },
-        pressed ? {opacity: theme.states.pressedOpacity} : null,
+        isActive ? {backgroundColor: theme.colors.primaryContainer} : null,
       ]}
+      testID={testID}
     >
-      <AppText
-        variant="bodyLg"
-        style={isActive ? {color: theme.colors.onPrimaryContainer} : null}
-        testID={testID ? `${testID}-en` : undefined}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('youtube.segment_a11y', {
+          index: segment.index + 1,
+          text: segment.en,
+        })}
+        accessibilityHint={t('youtube.segment_a11y_hint')}
+        accessibilityState={
+          disabled ? {selected: isActive, disabled: true} : {selected: isActive}
+        }
+        {...(disabled ? {disabled: true} : null)}
+        onPress={() => onPress(segment)}
+        style={({pressed}) => [
+          {flex: 1, gap: theme.spacing.xs},
+          pressed && !disabled ? {opacity: theme.states.pressedOpacity} : null,
+        ]}
       >
-        {segment.en}
-      </AppText>
-      {showVietnamese && segment.vi ? (
         <AppText
-          color={isActive ? 'primary' : 'secondary'}
+          variant="bodyLg"
           style={isActive ? {color: theme.colors.onPrimaryContainer} : null}
-          testID={testID ? `${testID}-vi` : undefined}
+          testID={testID ? `${testID}-en` : undefined}
         >
-          {segment.vi}
+          {segment.en}
         </AppText>
-      ) : null}
-      {showIpa && segment.ipa ? (
-        <AppText
-          color={isActive ? undefined : 'muted'}
-          variant="caption"
-          style={[
-            styles.ipaText,
-            isActive ? {color: theme.colors.onPrimaryContainer} : null,
-          ]}
-          testID={testID ? `${testID}-ipa` : undefined}
-        >
-          {`/${segment.ipa}/`}
-        </AppText>
-      ) : null}
-    </Pressable>
+        {showVietnamese && segment.vi ? (
+          <AppText
+            color={isActive ? 'primary' : 'secondary'}
+            style={isActive ? {color: theme.colors.onPrimaryContainer} : null}
+            testID={testID ? `${testID}-vi` : undefined}
+          >
+            {segment.vi}
+          </AppText>
+        ) : null}
+        {showIpa && segment.ipa ? (
+          <AppText
+            color={isActive ? undefined : 'muted'}
+            variant="caption"
+            style={[
+              styles.ipaText,
+              isActive ? {color: theme.colors.onPrimaryContainer} : null,
+            ]}
+            testID={testID ? `${testID}-ipa` : undefined}
+          >
+            {`/${segment.ipa}/`}
+          </AppText>
+        ) : null}
+      </Pressable>
+      {onToggleSave && (
+        <IconButton
+          accessibilityHint={isSaved ? t('youtube.unsave_sentence_hint', {defaultValue: 'Xóa câu này khỏi thẻ ghi nhớ'}) : t('youtube.save_sentence_hint', {defaultValue: 'Lưu câu này vào thẻ ghi nhớ'})}
+          accessibilityLabel={isSaved ? t('youtube.unsave_sentence_a11y', {defaultValue: 'Bỏ lưu câu'}) : t('youtube.save_sentence_a11y', {defaultValue: 'Lưu câu'})}
+          icon={isSaved ? 'heart' : 'heart_outline'}
+          onPress={() => onToggleSave(segment)}
+          testID={testID ? `${testID}-save` : undefined}
+          tone={isSaved ? 'accent' : 'surface'}
+        />
+      )}
+    </View>
   );
 }

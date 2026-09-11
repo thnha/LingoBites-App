@@ -137,12 +137,15 @@ describe('YouTubeLessonScreen', () => {
   it('tapping a line seeks the player to that segment start, in seconds', async () => {
     const tree = await renderScreen();
 
-    const lineMatches = tree.root.findAll(
-      node => node.props?.testID === 'transcript-line-dQw4w9WgXcQ-1',
-    );
-    // index 0 is the TranscriptLine wrapper; index 1 is the inner Pressable.
+    const enLine = tree.root.findByProps({
+      testID: 'transcript-line-dQw4w9WgXcQ-1-en',
+    });
+    let pressable: renderer.ReactTestInstance | null = enLine;
+    while (pressable && typeof pressable.props?.onPress !== 'function') {
+      pressable = pressable.parent;
+    }
     await act(async () => {
-      lineMatches[1].props.onPress();
+      pressable!.props.onPress();
       await Promise.resolve();
     });
 
@@ -179,7 +182,6 @@ describe('YouTubeLessonScreen', () => {
   it('follows and re-seeks the active sentence while repeat is on', async () => {
     const tree = await renderScreen();
 
-    // Move playback into segment 0, then enable repeat for it.
     mockCurrentTimeSeconds = 0.1;
     await act(async () => {
       jest.advanceTimersByTime(250);
@@ -193,8 +195,6 @@ describe('YouTubeLessonScreen', () => {
 
     mockSeekTo.mockClear();
 
-    // Advance playback past segment 0's end into segment 1 — repeat should
-    // immediately seek back to segment 0's start (0s).
     mockCurrentTimeSeconds = 3.5;
     await act(async () => {
       jest.advanceTimersByTime(250);
@@ -202,6 +202,62 @@ describe('YouTubeLessonScreen', () => {
     });
 
     expect(mockSeekTo).toHaveBeenCalledWith(0);
+  });
+
+  it('passes playback rate to the iframe', async () => {
+    const tree = await renderScreen();
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-iframe'}).props.playbackRate,
+    ).toBe(1);
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-playback-rate'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-iframe'}).props.playbackRate,
+    ).toBe(1.25);
+  });
+
+  it('loops between A and B segment markers', async () => {
+    const tree = await renderScreen();
+
+    mockCurrentTimeSeconds = 0.1;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-ab-loop-a'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    mockCurrentTimeSeconds = 3.5;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-ab-loop-b'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    mockSeekTo.mockClear();
+    mockCurrentTimeSeconds = 6.5;
+
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).toHaveBeenCalledWith(0);
+    expect(
+      tree.root.findByProps({testID: 'youtube-ab-loop-status'}),
+    ).toBeTruthy();
   });
 
   it('shows an inline error when the player reports a playback error', async () => {
@@ -216,5 +272,68 @@ describe('YouTubeLessonScreen', () => {
     expect(
       tree.root.findByProps({testID: 'youtube-player-error'}),
     ).toBeTruthy();
+  });
+
+  it('enters offline reading mode with the full cached transcript when the player errors', async () => {
+    const tree = await renderScreen();
+
+    const iframe = tree.root.findByProps({testID: 'youtube-iframe'});
+    await act(async () => {
+      iframe.props.onError('embed_not_allowed');
+      await Promise.resolve();
+    });
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-offline-banner'}),
+    ).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-player-error'}),
+    ).toBeTruthy();
+
+    for (const id of ['dQw4w9WgXcQ-0', 'dQw4w9WgXcQ-1', 'dQw4w9WgXcQ-2']) {
+      expect(
+        tree.root.findByProps({testID: `transcript-line-${id}-en`}),
+      ).toBeTruthy();
+      expect(
+        tree.root.findByProps({testID: `transcript-line-${id}-vi`}),
+      ).toBeTruthy();
+      expect(
+        tree.root.findByProps({testID: `transcript-line-${id}-ipa`}),
+      ).toBeTruthy();
+    }
+  });
+
+  it('disables playback controls in offline reading mode', async () => {
+    const tree = await renderScreen();
+
+    const iframe = tree.root.findByProps({testID: 'youtube-iframe'});
+    await act(async () => {
+      iframe.props.onError('video_not_found');
+      await Promise.resolve();
+    });
+
+    for (const testID of [
+      'youtube-playback-rate',
+      'youtube-toggle-repeat',
+      'youtube-ab-loop-a',
+      'youtube-ab-loop-b',
+    ]) {
+      expect(tree.root.findByProps({testID}).props.disabled).toBe(true);
+    }
+
+    const enLine = tree.root.findByProps({
+      testID: 'transcript-line-dQw4w9WgXcQ-1-en',
+    });
+    let pressable: renderer.ReactTestInstance | null = enLine;
+    while (pressable && typeof pressable.props?.onPress !== 'function') {
+      pressable = pressable.parent;
+    }
+    expect(pressable!.props.disabled).toBe(true);
+    await act(async () => {
+      pressable!.props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).not.toHaveBeenCalled();
   });
 });

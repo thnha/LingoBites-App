@@ -43,6 +43,7 @@ import {tabBarVisibilityOptions} from './immersiveTabRoutes';
 import {isIngestionRouteEnabled} from './ingestionRouteGate';
 import {
   YouTubeInputScreen,
+  YouTubeHistoryScreen,
   YouTubeProcessingScreen,
   YouTubeManualTranscriptScreen,
   YouTubeLessonRouteScreen,
@@ -70,6 +71,11 @@ function HomeStackNavigator() {
           <HomeStack.Screen
             component={YouTubeInputScreen}
             name="YouTubeInput"
+            options={{headerShown: false}}
+          />
+          <HomeStack.Screen
+            component={YouTubeHistoryScreen}
+            name="YouTubeHistory"
             options={{headerShown: false}}
           />
           <HomeStack.Screen

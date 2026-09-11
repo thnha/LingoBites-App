@@ -18,16 +18,32 @@ export type YouTubeJobResult =
   | {ok: false; cancelled: true}
   | {ok: false; errorCode: YouTubeErrorCode | 'NETWORK_ERROR'; message: string};
 
+const YOUTUBE_WATCH_HOSTS = new Set([
+  'youtube.com',
+  'm.youtube.com',
+  'music.youtube.com',
+  'youtube-nocookie.com',
+]);
+
+function videoIdFromYouTubeWatchUrl(url: URL): string | null {
+  if (url.pathname === '/watch') {
+    return url.searchParams.get('v');
+  }
+  if (/^\/(shorts|embed)\//.test(url.pathname)) {
+    return url.pathname.split('/')[2] ?? null;
+  }
+  return null;
+}
+
 export function parseYouTubeVideoId(value: string): string | null {
   try {
     const url = new URL(value.trim());
     const host = url.hostname.toLowerCase().replace(/^www\./, '');
     let id: string | null = null;
-    if (host === 'youtu.be') id = url.pathname.slice(1).split('/')[0] ?? null;
-    if (host === 'youtube.com' || host === 'm.youtube.com') {
-      if (url.pathname === '/watch') id = url.searchParams.get('v');
-      else if (/^\/(shorts|embed)\//.test(url.pathname))
-        id = url.pathname.split('/')[2] ?? null;
+    if (host === 'youtu.be') {
+      id = url.pathname.slice(1).split('/')[0] ?? null;
+    } else if (YOUTUBE_WATCH_HOSTS.has(host)) {
+      id = videoIdFromYouTubeWatchUrl(url);
     }
     return id && /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
   } catch {

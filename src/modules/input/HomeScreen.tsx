@@ -287,6 +287,32 @@ export function HomeScreen({navigation}: Props) {
                 </AppText>
               </Pressable>
             ) : null}
+            {config.features.youtubeLearning ? (
+              <Pressable
+                accessibilityLabel={t('home.youtube_history_a11y')}
+                accessibilityRole="button"
+                onPress={() => navigation.navigate('YouTubeHistory')}
+                style={({pressed}) => [
+                  styles.inputSourceSecondary,
+                  styles.inputSourcePaste,
+                  pressed && styles.pressed,
+                ]}
+                testID="home-input-youtube-history"
+              >
+                <MaterialIcon
+                  color={theme.colors.primary}
+                  name="history_edu"
+                  size={22}
+                />
+                <AppText
+                  variant="h3"
+                  style={styles.inputSourcePasteText}
+                  numberOfLines={1}
+                >
+                  {t('home.youtube_history')}
+                </AppText>
+              </Pressable>
+            ) : null}
             {config.features.pasteTextInput ? (
               <Pressable
                 accessibilityLabel={t('home.paste_text_a11y')}

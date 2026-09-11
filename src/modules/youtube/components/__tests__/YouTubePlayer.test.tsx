@@ -56,4 +56,17 @@ describe('YouTubePlayer', () => {
 
     expect(tree!.root.findByProps({testID: 'youtube-iframe'})).toBeTruthy();
   });
+
+  it('forwards playbackRate to the iframe', () => {
+    let tree: renderer.ReactTestRenderer;
+    act(() => {
+      tree = renderer.create(
+        <YouTubePlayer playbackRate={1.25} videoId="dQw4w9WgXcQ" />,
+      );
+    });
+
+    expect(
+      tree!.root.findByProps({testID: 'youtube-iframe'}).props.playbackRate,
+    ).toBe(1.25);
+  });
 });

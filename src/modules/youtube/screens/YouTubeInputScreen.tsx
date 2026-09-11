@@ -7,6 +7,10 @@ import {AppText} from '@components/AppText';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
 import type {HomeStackParamList} from '@/app/navigation/types';
+import {
+  YOUTUBE_MAX_DURATION_SECONDS,
+  YOUTUBE_MAX_SEGMENTS,
+} from '@shared/schemas/youtube-transcript-v1';
 import {parseYouTubeVideoId} from '../api/youtubeApi';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '@theme';
@@ -74,6 +78,12 @@ export function YouTubeInputScreen({navigation}: Props) {
         <AppText color="muted" variant="caption">
           {t('youtube.input_expectation')}
         </AppText>
+        <AppText color="muted" testID="youtube-input-limits" variant="caption">
+          {t('youtube.input_limits', {
+            maxMinutes: Math.floor(YOUTUBE_MAX_DURATION_SECONDS / 60),
+            maxSegments: YOUTUBE_MAX_SEGMENTS,
+          })}
+        </AppText>
         <TextField
           autoCapitalize="none"
           hasError={!!error}
@@ -100,6 +110,12 @@ export function YouTubeInputScreen({navigation}: Props) {
             onPress={submit}
             testID="youtube-submit"
             title={t('youtube.start')}
+          />
+          <AppButton
+            onPress={() => navigation.navigate('YouTubeHistory')}
+            testID="youtube-open-history"
+            title={t('youtube.open_history')}
+            variant="secondary"
           />
         </View>
       </ScrollView>
