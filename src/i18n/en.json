@@ -160,6 +160,7 @@
     "input_expectation": "Processing usually takes 30–90 seconds depending on video length.",
     "input_paste": "Paste link from clipboard",
     "input_paste_empty": "Nothing to paste. Copy a YouTube link first.",
+    "input_paste_unavailable": "Clipboard is unavailable in this build. Long-press the field to paste manually.",
     "display_vietnamese_hint": "Show or hide Vietnamese translation",
     "display_ipa_hint": "Show or hide IPA pronunciation",
     "ipa_show_a11y": "Show IPA",

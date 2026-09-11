@@ -1,6 +1,5 @@
 import React, {useCallback, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
@@ -29,7 +28,25 @@ export function YouTubeInputScreen({navigation}: Props) {
   };
 
   const pasteFromClipboard = useCallback(async () => {
-    const value = (await Clipboard.getString()).trim();
+    // Lazy-load the clipboard module: the native RNCClipboard TurboModule is
+    // absent in binaries built before `pod install`, and a top-level import
+    // crashes the whole bundle at startup. Loading it here keeps the screen
+    // usable and degrades only the paste action when native linking is
+    // missing.
+    let clipboardText: string | null = null;
+    try {
+      const ClipboardModule = require('@react-native-clipboard/clipboard');
+      const getString =
+        ClipboardModule?.default?.getString ?? ClipboardModule?.getString;
+      if (typeof getString !== 'function') {
+        throw new Error('clipboard unavailable');
+      }
+      clipboardText = await getString();
+    } catch {
+      setError(t('youtube.input_paste_unavailable'));
+      return;
+    }
+    const value = (clipboardText ?? '').trim();
     if (!value) {
       setError(t('youtube.input_paste_empty'));
       return;

@@ -160,6 +160,7 @@
     "input_expectation": "Quá trình xử lý thường mất 30–90 giây tùy độ dài video.",
     "input_paste": "Dán link từ bộ nhớ",
     "input_paste_empty": "Không có link trong bộ nhớ. Hãy sao chép link YouTube trước.",
+    "input_paste_unavailable": "Bộ nhớ tạm chưa dùng được ở bản build này. Hãy nhấn giữ ô nhập để dán thủ công.",
     "display_vietnamese_hint": "Hiện hoặc ẩn bản dịch tiếng Việt",
     "display_ipa_hint": "Hiện hoặc ẩn phiên âm IPA",
     "ipa_show_a11y": "Hiện IPA",
