@@ -1,6 +1,6 @@
 import {open, QuickSQLiteConnection} from 'react-native-quick-sqlite';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
-import {DB_NAME, PRACTICE_RETENTION} from '../constants';
+import {DB_NAME} from '../constants';
 import {runMigrations, downgradePracticeMigrations} from '../migrations';
 import {
   savePracticeSet,
@@ -10,7 +10,7 @@ import {
   recordAnswerEvent,
   purgeExpiredPracticeData,
 } from '../PracticeRepository';
-import {resetDatabaseForTests, getDatabase} from '../database';
+import {resetDatabaseForTests} from '../database';
 import type {
   PracticeSet,
   PracticeSession,

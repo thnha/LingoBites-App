@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {ScrollView} from 'react-native';
+import {ScrollView, StyleSheet} from 'react-native';
 import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
@@ -38,6 +38,7 @@ export function YouTubeManualTranscriptScreen({navigation, route}: Props) {
         title={t('youtube.manual_title')}
       />
       <ScrollView
+        style={styles.scrollContainer}
         contentContainerStyle={{
           gap: theme.spacing.md,
           paddingBottom: theme.spacing.xl,
@@ -60,11 +61,7 @@ export function YouTubeManualTranscriptScreen({navigation, route}: Props) {
           placeholder={'0:00 Hello there\n0:04 How are you?'}
           hasError={!!error}
           errorMessage={error ?? undefined}
-          style={{
-            maxHeight: 280,
-            minHeight: 120,
-            textAlignVertical: 'top',
-          }}
+          style={styles.textField}
         />
         <AppButton
           title={t('youtube.submit_transcript')}
@@ -75,3 +72,14 @@ export function YouTubeManualTranscriptScreen({navigation, route}: Props) {
     </AppScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+  },
+  textField: {
+    maxHeight: 280,
+    minHeight: 120,
+    textAlignVertical: 'top',
+  },
+});
