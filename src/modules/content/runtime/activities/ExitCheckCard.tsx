@@ -1,37 +1,78 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {View} from 'react-native';
 import {AppCard} from '@components/AppCard';
 import {AppButton} from '@components/AppButton';
 import {AppText} from '@components/AppText';
 import {useAppTheme} from '@theme';
 import type {ExitCheckStepData} from '../types';
-import {StepActions} from './StepActions';
 
 type Props = {
   data: ExitCheckStepData;
-  onComplete: () => void;
+  onComplete: (answers: Array<{correct: boolean}>) => void;
   onSkip: () => void;
 };
+
+const SELF_GRADE_OPTIONS = [
+  {key: 'remembered', label: 'Tôi nhớ', correct: true},
+  {key: 'review', label: 'Cần ôn lại', correct: false},
+] as const;
 
 /** Exit check: a short 2-3 item assessment covering the lesson just seen. */
 export function ExitCheckCard({data, onComplete, onSkip}: Props) {
   const {theme} = useAppTheme();
   const [revealed, setRevealed] = useState<Set<string>>(new Set());
+  const [selfGrades, setSelfGrades] = useState<Record<string, boolean>>({});
+  const allItemsGraded = data.items.every(item => item.id in selfGrades);
+  const answers = useMemo(
+    () => data.items.map(item => ({correct: selfGrades[item.id] ?? false})),
+    [data.items, selfGrades],
+  );
 
   return (
     <View style={{gap: theme.spacing.lg}}>
       <AppText color="secondary" variant="label">
         Kiểm tra nhanh cuối bài
       </AppText>
+      {data.items.length === 0 ? (
+        <AppCard>
+          <AppText color="secondary" testID="exit-check-empty">
+            Chưa có câu hỏi cho bài kiểm tra này. Bạn vẫn có thể xem kết quả.
+          </AppText>
+        </AppCard>
+      ) : null}
       {data.items.map(item => {
         const isRevealed = revealed.has(item.id);
         return (
           <AppCard key={item.id} style={{gap: theme.spacing.sm}}>
             <AppText variant="h3">{item.question}</AppText>
             {isRevealed ? (
-              <AppText color="primary" testID={`exit-check-answer-${item.id}`}>
-                {item.answer}
-              </AppText>
+              <>
+                <AppText
+                  color="primary"
+                  testID={`exit-check-answer-${item.id}`}
+                >
+                  {item.answer}
+                </AppText>
+                <View style={{gap: theme.spacing.sm}}>
+                  {SELF_GRADE_OPTIONS.map(option => (
+                    <AppButton
+                      key={option.key}
+                      onPress={() =>
+                        setSelfGrades(prev => ({
+                          ...prev,
+                          [item.id]: option.correct,
+                        }))
+                      }
+                      title={option.label}
+                      variant={
+                        selfGrades[item.id] === option.correct
+                          ? 'primary'
+                          : 'secondary'
+                      }
+                    />
+                  ))}
+                </View>
+              </>
             ) : (
               <AppButton
                 onPress={() => setRevealed(prev => new Set(prev).add(item.id))}
@@ -42,11 +83,17 @@ export function ExitCheckCard({data, onComplete, onSkip}: Props) {
           </AppCard>
         );
       })}
-      <StepActions
-        completeLabel="Hoàn thành bài kiểm tra"
-        onComplete={onComplete}
-        onSkip={onSkip}
+      {!allItemsGraded && data.items.length > 0 ? (
+        <AppText color="secondary" testID="exit-check-incomplete">
+          Xem đáp án và tự đánh giá từng câu để hoàn thành.
+        </AppText>
+      ) : null}
+      <AppButton
+        disabled={!allItemsGraded && data.items.length > 0}
+        onPress={() => onComplete(answers)}
+        title="Hoàn thành bài kiểm tra"
       />
+      <AppButton onPress={onSkip} title="Bỏ qua" variant="secondary" />
     </View>
   );
 }

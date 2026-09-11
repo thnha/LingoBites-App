@@ -27,6 +27,26 @@ export function FeedbackCard({data, onFinish}: Props) {
         <AppText testID="feedback-skipped-count">
           {`Đã bỏ qua: ${data.skippedCount} hoạt động`}
         </AppText>
+        {data.checkTotalCount !== undefined ? (
+          <View style={{gap: theme.spacing.xs}}>
+            <AppText variant="h3">Kết quả kiểm tra</AppText>
+            <AppText testID="feedback-check-score">
+              {`${data.checkCorrectCount ?? 0}/${data.checkTotalCount} đúng · ${
+                data.checkScorePercentage ?? 0
+              }%`}
+            </AppText>
+            <AppText testID="feedback-check-outcome">
+              {data.checkOutcome === 'pass'
+                ? 'Đạt'
+                : data.checkOutcome === 'conditional_pass'
+                ? 'Đạt có điều kiện'
+                : 'Chưa đạt'}
+            </AppText>
+            <AppText color="secondary" testID="feedback-check-feedback">
+              {data.checkFeedbackVi}
+            </AppText>
+          </View>
+        ) : null}
         <AppText color="secondary" testID="feedback-next-review-hint">
           {data.nextReviewHint}
         </AppText>

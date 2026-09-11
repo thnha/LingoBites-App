@@ -6,6 +6,7 @@ import {ErrorCard} from '@components/ErrorCard';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {useAppTheme} from '@theme';
 import {createLessonRuntimeSession} from './ContentLessonRuntime';
+import {evaluateCheck} from '../checks/checkEvaluator';
 import {playContentAudio} from './contentAudioPlayer';
 import {ActiveRecallCard} from './activities/ActiveRecallCard';
 import {ContextCard} from './activities/ContextCard';
@@ -44,13 +45,23 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
     setAudioError(result.ok ? null : {assetId, message: result.message});
   }
 
-  function advance(state: 'completed' | 'skipped') {
+  function advance(
+    state: 'completed' | 'skipped',
+    checkAnswers: Array<{correct: boolean}> = [],
+  ) {
     if (!session) {
       return;
     }
+    const currentStep = session.getCurrentStep();
     session.recordAttempt(state);
-    if (session.isFinished()) {
+    // The feedback step is a presentation state. Finalize as soon as the
+    // exit check is submitted so the learner never lands on an unrendered
+    // intermediate step.
+    if (currentStep?.kind === 'exit_check' || session.isFinished()) {
       const result = session.finish();
+      const check = evaluateCheck(
+        currentStep?.kind === 'exit_check' ? checkAnswers : [],
+      );
       setFinished({
         kind: 'feedback',
         newChunkCount: session.data.chunks.length,
@@ -60,6 +71,11 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
           result.createdReviewItemCount > 0
             ? `${result.createdReviewItemCount} thẻ ôn tập mới sẽ xuất hiện vào ngày mai.`
             : 'Chưa có thẻ ôn tập mới cho lượt học này.',
+        checkCorrectCount: check.correctCount,
+        checkTotalCount: check.totalCount,
+        checkScorePercentage: check.scorePercentage,
+        checkOutcome: check.outcome,
+        checkFeedbackVi: check.feedbackVi,
       });
       return;
     }
@@ -138,7 +154,7 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
         ) : step?.kind === 'exit_check' ? (
           <ExitCheckCard
             data={step.data}
-            onComplete={() => advance('completed')}
+            onComplete={answers => advance('completed', answers)}
             onSkip={() => advance('skipped')}
           />
         ) : null}

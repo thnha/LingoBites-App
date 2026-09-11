@@ -12,7 +12,13 @@ import type {
   ContentChunkRow,
   ContentLessonRow,
 } from '@shared/db/ContentRuntimeRepository';
-import type {AudioAsset, DialogueTurn, QAItem, SrsItem} from '../schema';
+import type {
+  AudioAsset,
+  CheckOutcome,
+  DialogueTurn,
+  QAItem,
+  SrsItem,
+} from '../schema';
 
 export type RuntimeStepKind =
   | 'context'
@@ -84,6 +90,11 @@ export type FeedbackStepData = {
   completedCount: number;
   skippedCount: number;
   nextReviewHint: string;
+  checkCorrectCount?: number;
+  checkTotalCount?: number;
+  checkScorePercentage?: number;
+  checkOutcome?: CheckOutcome;
+  checkFeedbackVi?: string;
 };
 
 export type RuntimeStepData =
