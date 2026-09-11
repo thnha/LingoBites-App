@@ -18,7 +18,7 @@ type Props = TextInputProps & {
 
 const FOCUS_RING_WIDTH = 4;
 const MULTILINE_RADIUS = 20;
-const IDLE_BORDER_ALPHA = 0.35;
+const IDLE_BORDER_ALPHA = 0.9;
 
 /**
  * Applies an alpha channel to an `#rgb` / `#rrggbb` theme color.
@@ -74,7 +74,7 @@ export function TextField({
     ? theme.colors.danger
     : focused
       ? theme.colors.accent
-      : withAlpha(theme.colors.accent, IDLE_BORDER_ALPHA);
+      : withAlpha(theme.components.input.border, IDLE_BORDER_ALPHA);
   // The halo ring is always laid out (fully transparent when idle) so
   // focusing the field never shifts surrounding layout. The transparent
   // value is derived from the theme token to satisfy no-color-literals.

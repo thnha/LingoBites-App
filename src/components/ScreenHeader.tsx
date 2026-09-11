@@ -21,7 +21,7 @@ export function ScreenHeader({
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
 
   return (
-    <View style={themedStyles.header}>
+    <View style={themedStyles.header} testID="screen-header">
       <View style={styles.titleRow}>
         {onBack ? (
           <IconButton
@@ -34,7 +34,14 @@ export function ScreenHeader({
         ) : (
           <View style={styles.backPlaceholder} />
         )}
-        <AppText numberOfLines={1} style={themedStyles.title}>
+        <AppText
+          adjustsFontSizeToFit
+          color="primary"
+          minimumFontScale={0.85}
+          numberOfLines={2}
+          style={themedStyles.title}
+          variant="h3"
+        >
           {title}
         </AppText>
       </View>
@@ -65,15 +72,15 @@ function makeStyles(theme: AppTheme) {
     header: {
       alignItems: 'center',
       flexDirection: 'row',
-      height: 56,
       justifyContent: 'space-between',
+      minHeight: 56,
       paddingHorizontal: theme.gutter,
+      paddingVertical: theme.spacing.sm,
     },
     title: {
-      color: theme.colors.primary,
+      flex: 1,
       flexShrink: 1,
-      fontSize: theme.typography.size.lg,
-      fontWeight: theme.typography.weight.medium,
+      minWidth: 0,
     },
   });
 }

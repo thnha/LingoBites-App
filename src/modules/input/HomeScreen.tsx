@@ -473,8 +473,8 @@ function makeStyles(theme: AppTheme) {
     },
     inputSourcePaste: {
       backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.outlineVariant,
-      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      borderWidth: 2,
     },
     inputSourcePasteText: {
       color: theme.colors.primary,
@@ -503,11 +503,11 @@ function makeStyles(theme: AppTheme) {
       fontWeight: theme.typography.weight.bold,
     },
     progressFill: {
-      backgroundColor: theme.colors.accent,
+      backgroundColor: theme.colors.primary,
       borderRadius: theme.radius.pill,
       elevation: 2,
       height: '100%',
-      shadowColor: theme.colors.accent,
+      shadowColor: theme.colors.primary,
       shadowOffset: {width: 0, height: 0},
       shadowOpacity: 0.45,
       shadowRadius: 14,

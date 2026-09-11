@@ -88,14 +88,13 @@ describe('TextField', () => {
     ).toHaveLength(0);
   });
 
-  it('uses a pill radius and a 2px accent-at-35% border by default', async () => {
+  it('uses a pill radius and a 2px outline border by default', async () => {
     const tree = await render(<TextField value="" />);
 
     const flattened = flattenStyle(tree.root.findByType(TextInput).props.style);
     expect(flattened.borderRadius).toBe(999);
     expect(flattened.borderWidth).toBe(2);
-    // pastel-kids accent #2dd4bf at 35% alpha per design/app.css.
-    expect(flattened.borderColor).toBe('rgba(45,212,191,0.35)');
+    expect(flattened.borderColor).toBe('rgba(86,104,98,0.9)');
   });
 
   it('uses the field-area radius for multiline inputs', async () => {
@@ -106,7 +105,7 @@ describe('TextField', () => {
     ).toBe(20);
   });
 
-  it('switches to the accent border with an accent-soft ring on focus', async () => {
+  it('switches to the accent selection border with an accent-soft ring on focus', async () => {
     const onFocus = jest.fn();
     const onBlur = jest.fn();
     const tree = await render(
@@ -135,7 +134,7 @@ describe('TextField', () => {
 
     expect(
       flattenStyle(tree.root.findByType(TextInput).props.style).borderColor,
-    ).toBe('rgba(45,212,191,0.35)');
+    ).toBe('rgba(86,104,98,0.9)');
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
 });

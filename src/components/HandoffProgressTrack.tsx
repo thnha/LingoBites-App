@@ -32,11 +32,11 @@ export function HandoffProgressTrack({progress, label}: Props) {
       >
         <View
           style={{
-            backgroundColor: theme.colors.accent,
+            backgroundColor: theme.colors.primary,
             borderRadius: theme.radius.pill,
             elevation: 2,
             height: '100%',
-            shadowColor: theme.colors.accent,
+            shadowColor: theme.colors.primary,
             shadowOffset: {width: 0, height: 0},
             shadowOpacity: 0.45,
             shadowRadius: 14,

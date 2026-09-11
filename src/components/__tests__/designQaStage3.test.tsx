@@ -49,8 +49,8 @@ function hostNodesWith(
 
 describe('SETE-194 design QA stage 3 (pastel-kids)', () => {
   it('uses design rgba alphas for soft colors', () => {
-    // design/app.css: --accent-soft .16, coral-soft .18, gold-soft .30.
-    expect(theme.colors.accentSoft).toBe('rgba(45,212,191,0.16)');
+    // SETE-240: accentSoft is primary-tinted (decorative), not bright selection teal.
+    expect(theme.colors.accentSoft).toBe('rgba(0,107,95,0.14)');
     expect(theme.colors.secondarySoft).toBe('rgba(254,116,136,0.18)');
     expect(theme.colors.tertiarySoft).toBe('rgba(255,226,76,0.30)');
   });
@@ -95,22 +95,21 @@ describe('SETE-194 design QA stage 3 (pastel-kids)', () => {
     });
   });
 
-  it('HandoffProgressTrack fill uses accent with glow and pill radius', async () => {
+  it('HandoffProgressTrack fill uses primary with glow and pill radius', async () => {
     const tree = await render(
       <HandoffProgressTrack label="2 / 5" progress={0.42} />,
     );
 
     const fills = hostNodesWith(
       tree,
-      style => style.backgroundColor === theme.colors.accent,
+      style => style.backgroundColor === theme.colors.primary,
     );
     expect(fills).toHaveLength(1);
 
     const fill = flattenStyle(fills[0].props.style);
-    expect(fill.backgroundColor).toBe('#2dd4bf');
+    expect(fill.backgroundColor).toBe(theme.colors.primary);
     expect(fill.borderRadius).toBe(theme.radius.pill);
-    // design/app.css:205-206 — 0 0 14 rgba(45,212,191,.45) glow.
-    expect(fill.shadowColor).toBe(theme.colors.accent);
+    expect(fill.shadowColor).toBe(theme.colors.primary);
     expect(fill.shadowOpacity).toBe(0.45);
     expect(fill.shadowRadius).toBe(14);
     expect(fill.width).toBe('42%');
