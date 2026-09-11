@@ -6,13 +6,13 @@ import {AppText} from '@components/AppText';
 import {AppButton} from '@components/AppButton';
 import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
 import {ScreenHeader} from '@components/ScreenHeader';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {runYouTubeJob, type YouTubeJobProgress} from '../api/youtubeApi';
 import {useTranslation} from 'react-i18next';
 import {saveYouTubeLesson} from '@shared/db/YoutubeLessonRepository';
 import {useAppTheme} from '@theme';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'YouTubeProcessing'>;
+type Props = NativeStackScreenProps<CreateStackParamList, 'YouTubeProcessing'>;
 
 export function YouTubeProcessingScreen({navigation, route}: Props) {
   const {t} = useTranslation();

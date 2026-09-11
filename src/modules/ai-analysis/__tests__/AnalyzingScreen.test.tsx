@@ -137,7 +137,7 @@ describe('AnalyzingScreen', () => {
     expect(mockReset).toHaveBeenCalledWith({
       index: 1,
       routes: [
-        {name: 'HomeMain'},
+        {name: 'CreateMain'},
         {
           name: 'LessonResult',
           params: {
@@ -436,7 +436,7 @@ describe('AnalyzingScreen', () => {
     expect(mockReset).toHaveBeenCalledWith({
       index: 1,
       routes: [
-        {name: 'HomeMain'},
+        {name: 'CreateMain'},
         {
           name: 'LessonResult',
           params: {

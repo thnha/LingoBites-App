@@ -6,13 +6,13 @@ import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {parseManualTranscript} from '../transcript/parser';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '@theme';
 
 type Props = NativeStackScreenProps<
-  HomeStackParamList,
+  CreateStackParamList,
   'YouTubeManualTranscript'
 >;
 export function YouTubeManualTranscriptScreen({navigation, route}: Props) {

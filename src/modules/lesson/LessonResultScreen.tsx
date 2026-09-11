@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {IconButton} from '@components/IconButton';
 import {ScreenHeader} from '@components/ScreenHeader';
@@ -16,7 +16,7 @@ import type {LessonSaveState} from './LessonResultView';
 import {useFlashcardLibrary} from './useFlashcardLibrary';
 import {useLessonRepository} from './useLessonRepository';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'LessonResult'>;
+type Props = NativeStackScreenProps<CreateStackParamList, 'LessonResult'>;
 
 export function LessonResultScreen({navigation, route}: Props) {
   const {t} = useTranslation();

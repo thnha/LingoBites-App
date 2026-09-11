@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {BottomActionBar} from '@components/BottomActionBar';
@@ -21,7 +21,7 @@ import {
   startLessonFromConfirmedText,
 } from '@shared/lesson/startLessonFromConfirmedText';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'PasteText'>;
+type Props = NativeStackScreenProps<CreateStackParamList, 'PasteText'>;
 
 type ScreenState = {type: 'input'} | {type: 'error'; message: string};
 

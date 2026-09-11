@@ -39,6 +39,20 @@ export type LearningDetailParamList = {
 
 export type HomeStackParamList = {
   HomeMain: undefined;
+  ContentLessonRuntime: {lessonId: string};
+  SavedLessonDetail: {lessonId: string};
+  FlashcardList: {lessonId?: string} | undefined;
+  DailyReview: undefined;
+  Today: undefined;
+} & LearningDetailParamList;
+
+/**
+ * Ingestion stack behind the Create tab (SETE-247): all lesson-creation
+ * entry points and their downstream flow screens moved here from HomeStack
+ * so Home stays learning-only.
+ */
+export type CreateStackParamList = {
+  CreateMain: undefined;
   YouTubeInput: undefined;
   YouTubeHistory: undefined;
   YouTubeProcessing: {
@@ -56,7 +70,6 @@ export type HomeStackParamList = {
     | {
         lessonId: string;
       };
-  ContentLessonRuntime: {lessonId: string};
   PasteText: {analyzeError?: string} | undefined;
   ImageCapture: {sourceType: OCRSourceType};
   OCRReview: {
@@ -81,11 +94,7 @@ export type HomeStackParamList = {
     sourceType: AnalyzeSourceType;
     ocrRawText?: string;
   };
-  SavedLessonDetail: {lessonId: string};
   ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
-  FlashcardList: {lessonId?: string} | undefined;
-  DailyReview: undefined;
-  Today: undefined;
 } & LearningDetailParamList;
 
 export type LessonsStackParamList = {
@@ -114,6 +123,7 @@ export type ProfileStackParamList = {
 
 export type RootTabParamList = {
   Home: undefined;
+  Create: NavigatorScreenParams<CreateStackParamList> | undefined;
   Lessons: NavigatorScreenParams<LessonsStackParamList> | undefined;
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };

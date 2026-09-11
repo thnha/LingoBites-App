@@ -5,9 +5,16 @@
   "nav": {
     "tab": {
       "home": "Home",
+      "create": "Create",
       "library": "Library",
       "profile": "Profile"
     }
+  },
+  "create": {
+    "title": "Create a new lesson",
+    "subtitle": "Turn a photo, text, or video into your own lesson.",
+    "empty_title": "No creation methods available",
+    "empty_body": "Lesson creation methods are currently disabled. Please check back later."
   },
   "home": {
     "title": "What do you want to learn from today?",
@@ -44,7 +51,19 @@
     "continue_learning": "Continue learning",
     "continue_learning_body": "Pick up where you left off in your offline lesson.",
     "continue_learning_a11y": "Continue your offline lesson",
+    "continue_label": "Continue",
     "continue_meta": "Continue your lesson · {{duration}} minutes",
+    "greeting_top": "Hello",
+    "greeting_title": "What are you learning today?",
+    "today_title": "What to learn today",
+    "today_swap": "Change",
+    "today_swap_a11y": "Change today's suggestions",
+    "empty_title": "No lessons yet",
+    "empty_body": "Create your first lesson from a photo, text, or YouTube video to get started.",
+    "empty_create": "Create your first lesson",
+    "empty_create_a11y": "Open the Create tab to make your first lesson",
+    "empty_try": "Or try a ready-made lesson",
+    "empty_try_a11y": "Browse the available offline lessons",
     "shortcuts_title": "Practice",
     "shortcut_review": "Review",
     "shortcut_review_meta": "{{count}} cards",

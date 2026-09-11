@@ -6,7 +6,7 @@ import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {
   YOUTUBE_MAX_DURATION_SECONDS,
   YOUTUBE_MAX_SEGMENTS,
@@ -15,7 +15,7 @@ import {parseYouTubeVideoId} from '../api/youtubeApi';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '@theme';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'YouTubeInput'>;
+type Props = NativeStackScreenProps<CreateStackParamList, 'YouTubeInput'>;
 
 export function YouTubeInputScreen({navigation}: Props) {
   const {t} = useTranslation();

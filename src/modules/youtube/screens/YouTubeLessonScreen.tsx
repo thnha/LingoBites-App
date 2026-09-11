@@ -23,7 +23,7 @@ import {
 } from '../components/YouTubePlayer';
 import {TranscriptLine} from '../components/TranscriptLine';
 import {useTranscriptSync, TRANSCRIPT_SYNC_POLL_INTERVAL_MS} from '../sync/useTranscriptSync';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useBookmarkOptimistic} from '../../lesson/useBookmarkOptimistic';
@@ -528,7 +528,7 @@ export function YouTubeLessonScreen({
 export function YouTubeLessonRouteScreen({
   navigation,
   route,
-}: NativeStackScreenProps<HomeStackParamList, 'YouTubeLesson'>) {
+}: NativeStackScreenProps<CreateStackParamList, 'YouTubeLesson'>) {
   const {t} = useTranslation();
   const {theme} = useAppTheme();
   const fallbackStyles = useMemo(() => createStyles(theme), [theme]);

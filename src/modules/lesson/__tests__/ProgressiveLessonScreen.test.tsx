@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import type {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 import type {LessonsStackParamList} from '@/app/navigation/types';
 import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
@@ -135,7 +138,10 @@ function routeFor(lessonId: string, initialLesson?: LessonV2) {
     key: 'ProgressiveLesson',
     name: 'ProgressiveLesson',
     params: {lessonId, initialLesson},
-  } as React.ComponentProps<typeof ProgressiveLessonScreen>['route'];
+  } as unknown as NativeStackScreenProps<
+    LessonsStackParamList,
+    'ProgressiveLesson'
+  >['route'];
 }
 
 async function renderScreen(route: ReturnType<typeof routeFor>) {

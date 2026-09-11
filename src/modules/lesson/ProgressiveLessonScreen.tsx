@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, ScrollView, StyleSheet, View} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
-  HomeStackParamList,
+  CreateStackParamList,
   LessonsStackParamList,
 } from '@/app/navigation/types';
 import {AppButton} from '@components/AppButton';
@@ -36,15 +36,15 @@ import {isLessonEligibleForPractice} from '@modules/practice/practiceEligibility
 import {usePracticeController} from '@modules/practice/usePracticeController';
 import {LessonV2HubView, type LessonV2UnitKey} from './LessonV2HubView';
 
-type HomeProps = NativeStackScreenProps<
-  HomeStackParamList,
-  'ProgressiveLesson'
->;
 type LessonsProps = NativeStackScreenProps<
   LessonsStackParamList,
   'ProgressiveLesson'
 >;
-export type ProgressiveLessonScreenProps = HomeProps | LessonsProps;
+type CreateProps = NativeStackScreenProps<
+  CreateStackParamList,
+  'ProgressiveLesson'
+>;
+export type ProgressiveLessonScreenProps = LessonsProps | CreateProps;
 
 type UnitKey = LessonV2UnitKey;
 
@@ -212,7 +212,7 @@ export function ProgressiveLessonScreen({
   });
 
   function openPracticeSession(sessionId: string) {
-    (navigation as HomeProps['navigation']).navigate('Practice', {
+    (navigation as LessonsProps['navigation']).navigate('Practice', {
       lessonId,
       sessionId,
       title: lesson?.title ?? 'Luyện tập',

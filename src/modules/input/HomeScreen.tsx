@@ -15,17 +15,19 @@ import {RecentLessonRow} from '@components/RecentLessonRow';
 import {useContentLibrary, type ContentLessonRow} from '../content';
 import {listStartedLessons} from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
-import {listSavedLessonV2Summaries} from '@shared/db/LessonV2Repository';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {useTranslation} from 'react-i18next';
-import {useFeatureFlags} from '@/release';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;
-type Shortcut = {
-  icon: 'refresh' | 'mic' | 'bolt' | 'school';
-  titleKey: string;
-  meta: string;
+
+type TodayChip = {
+  icon: 'refresh' | 'mic' | 'bolt';
+  value: string;
+  labelKey: string;
+  a11yLabel: string;
+  backgroundKey: 'accentSoft' | 'tertiarySoft' | 'secondarySoft';
+  inkKey: 'onPrimaryContainer' | 'onTertiaryContainer' | 'onSecondaryContainer';
   onPress: () => void;
   testID: string;
 };
@@ -38,13 +40,21 @@ type RecentItem = {
 };
 
 const RECENT_LIMIT = 3;
+const SUGGESTION_LIMIT = 3;
+const LINK_HIT_SLOP = {top: 10, bottom: 10, left: 10, right: 10};
 
+/**
+ * Learning-only home (SETE-247): Tiếp tục học → Hôm nay học gì →
+ * Bài học gần đây. Creation moved to the Create tab; practice lives in
+ * the "Hôm nay học gì" chips (with the real due-card count) and in Thư viện.
+ * No fake numbers: the streak chip is omitted (no data source) and the
+ * continue block shows no progress bar (no progress source) — just meta.
+ */
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const feedClearance = useFloatingTabBarClearance();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
-  const {config, isFeatureEnabled} = useFeatureFlags();
   const tabNavigation =
     navigation.getParent<
       import('@react-navigation/native').NavigationProp<RootTabParamList>
@@ -56,23 +66,14 @@ export function HomeScreen({navigation}: Props) {
     null,
   );
   const [dueCount, setDueCount] = useState(0);
-  const [libraryCount, setLibraryCount] = useState(0);
   const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
-  const imageInputEnabled =
-    config.features.imageInput &&
-    config.features.ocrScanner &&
-    config.features.ocrReviewEdit;
-
-  const isLessonV2Enabled = isFeatureEnabled('lessonV2');
+  const [suggestions, setSuggestions] = useState<RecentItem[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       const started = listStartedLessons()[0];
       setStartedLesson(started ? getContentLessonById(started.lessonId) : null);
       setDueCount(getDueFlashcards().length);
-      const v1Count = listLessons().length;
-      const v2Count = isLessonV2Enabled ? listSavedLessonV2Summaries().length : 0;
-      setLibraryCount(v1Count + v2Count);
       const personal: RecentItem[] = listLessons(RECENT_LIMIT).map(item => ({
         kind: 'personal',
         id: item.id,
@@ -84,70 +85,95 @@ export function HomeScreen({navigation}: Props) {
           ? listActivePackageLessons()
               .slice(0, RECENT_LIMIT - personal.length)
               .map(item => ({
-                kind: 'packaged',
+                kind: 'packaged' as const,
                 id: item.id,
                 title: item.titleVi,
                 meta: `${item.level} · ${item.estimatedDurationMinutes} phút`,
               }))
           : [];
       setRecentItems([...personal, ...packaged]);
+      setSuggestions(
+        listActivePackageLessons()
+          .slice(0, SUGGESTION_LIMIT)
+          .map(item => ({
+            kind: 'packaged' as const,
+            id: item.id,
+            title: item.titleVi,
+            meta: `${item.level} · ${item.estimatedDurationMinutes} phút`,
+          })),
+      );
     }, [
       getContentLessonById,
       getDueFlashcards,
       listActivePackageLessons,
       listLessons,
-      isLessonV2Enabled,
       t,
     ]),
   );
 
-  const shortcuts: Shortcut[] = [
+  const hasData = recentItems.length > 0 || dueCount > 0;
+  const showEmpty = !startedLesson && !hasData;
+
+  const todayChips: TodayChip[] = [
     {
       icon: 'refresh',
-      titleKey: 'home.shortcut_review',
-      meta: t('home.shortcut_review_meta', {count: dueCount}),
+      value: String(dueCount),
+      labelKey: 'home.shortcut_review',
+      a11yLabel: `${t('home.shortcut_review')}. ${t(
+        'home.shortcut_review_meta',
+        {count: dueCount},
+      )}`,
+      backgroundKey: 'accentSoft',
+      inkKey: 'onPrimaryContainer',
       onPress: () => navigation.navigate('DailyReview'),
-      testID: 'home-shortcut-review',
+      testID: 'home-today-review',
     },
     {
       icon: 'mic',
-      titleKey: 'home.shortcut_speaking',
-      meta: t('home.shortcut_speaking_meta'),
+      value: t('home.shortcut_speaking_meta'),
+      labelKey: 'home.shortcut_speaking',
+      a11yLabel: `${t('home.shortcut_speaking')}. ${t(
+        'home.shortcut_speaking_meta',
+      )}`,
+      backgroundKey: 'tertiarySoft',
+      inkKey: 'onTertiaryContainer',
       onPress: () =>
         tabNavigation?.navigate('Lessons', {screen: 'SpeakingRoom'}),
-      testID: 'home-shortcut-speaking',
+      testID: 'home-today-speaking',
     },
     {
       icon: 'bolt',
-      titleKey: 'home.shortcut_quick',
-      meta: t('home.shortcut_quick_meta'),
+      value: t('home.shortcut_quick_meta'),
+      labelKey: 'home.shortcut_quick',
+      a11yLabel: `${t('home.shortcut_quick')}. ${t('home.shortcut_quick_meta')}`,
+      backgroundKey: 'secondarySoft',
+      inkKey: 'onSecondaryContainer',
       onPress: () =>
         navigation.navigate('Practice', {
           questions: [],
           title: t('home.shortcut_quick'),
         }),
-      testID: 'home-shortcut-quick',
-    },
-    {
-      icon: 'school',
-      titleKey: 'home.shortcut_library',
-      meta: t('home.shortcut_library_meta', {count: libraryCount}),
-      onPress: () => tabNavigation?.navigate('Lessons'),
-      testID: 'home-shortcut-library',
+      testID: 'home-today-quick',
     },
   ];
+
+  const openRecentItem = (item: RecentItem) => {
+    if (item.kind === 'personal') {
+      navigation.navigate('SavedLessonDetail', {lessonId: item.id});
+    } else {
+      navigation.navigate('ContentLessonRuntime', {lessonId: item.id});
+    }
+  };
 
   return (
     <AppScreen>
       <View style={styles.header}>
-        <View style={styles.brand}>
-          <MaterialIcon
-            color={theme.colors.primary}
-            name="translate"
-            size={26}
-          />
-          <AppText numberOfLines={1} style={styles.brandText}>
-            {t('app.name')}
+        <View style={styles.greeting} testID="home-greeting">
+          <AppText variant="label" color="muted" numberOfLines={1}>
+            {t('home.greeting_top')}
+          </AppText>
+          <AppText variant="h3" numberOfLines={1}>
+            {t('home.greeting_title')}
           </AppText>
         </View>
         <IconButton
@@ -162,26 +188,60 @@ export function HomeScreen({navigation}: Props) {
         contentContainerStyle={[styles.scrollContent, {paddingBottom: feedClearance}]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.intro}>
-          <AppText variant="h1">{t('home.title_option_c')}</AppText>
-          <AppText color="secondary">{t('home.subtitle_option_c')}</AppText>
-        </View>
+        {showEmpty ? (
+          <View style={styles.emptyCard} testID="home-empty-section">
+            <View style={styles.emptyMedallion}>
+              <MaterialIcon
+                color={theme.colors.primary}
+                name="auto_stories"
+                size={28}
+              />
+            </View>
+            <AppText variant="h3" style={styles.centerText}>
+              {t('home.empty_title')}
+            </AppText>
+            <AppText color="secondary" style={styles.centerText}>
+              {t('home.empty_body')}
+            </AppText>
+            <AppButton
+              accessibilityLabel={t('home.empty_create_a11y')}
+              title={t('home.empty_create')}
+              variant="primary-accent"
+              onPress={() => tabNavigation?.navigate('Create')}
+              testID="home-empty-create"
+              style={styles.fullWidthButton}
+            />
+            <Pressable
+              accessibilityLabel={t('home.empty_try_a11y')}
+              accessibilityRole="link"
+              hitSlop={LINK_HIT_SLOP}
+              onPress={() =>
+                tabNavigation?.navigate('Lessons', {
+                  screen: 'ContentLessonList',
+                })
+              }
+              style={styles.textLink}
+              testID="home-empty-try"
+            >
+              <AppText variant="label" style={styles.textLinkLabel}>
+                {t('home.empty_try')}
+              </AppText>
+            </Pressable>
+          </View>
+        ) : null}
         {startedLesson ? (
-          <View style={styles.hero} testID="home-continue-section">
-            <AppText variant="h2">{startedLesson.titleVi}</AppText>
-            <AppText color="secondary">
+          <View style={styles.continueCard} testID="home-continue-section">
+            <AppText variant="caption" style={styles.continueKicker}>
+              {t('home.continue_label')}
+            </AppText>
+            <AppText variant="h3" numberOfLines={2}>
+              {startedLesson.titleVi}
+            </AppText>
+            <AppText color="muted" variant="caption">
               {t('home.continue_meta', {
                 duration: startedLesson.estimatedDurationMinutes,
               })}
             </AppText>
-            <View style={styles.progressRow}>
-              <View style={styles.progressTrack}>
-                <View style={styles.progressFill} />
-              </View>
-              <AppText color="secondary" variant="label">
-                0%
-              </AppText>
-            </View>
             <AppButton
               accessibilityLabel={t('home.continue_learning_a11y')}
               title={t('home.continue_learning')}
@@ -192,168 +252,86 @@ export function HomeScreen({navigation}: Props) {
                 })
               }
               testID="home-continue-action"
+              style={styles.fullWidthButton}
             />
           </View>
         ) : null}
-        <View style={styles.inputSection} testID="home-input-source-section">
-          <AppText variant="h2">{t('home.coming_soon')}</AppText>
-          {imageInputEnabled ? (
-            <Pressable
-              accessibilityLabel={t('home.capture_photo_a11y')}
-              accessibilityRole="button"
-              onPress={() =>
-                navigation.navigate('ImageCapture', {sourceType: 'camera'})
-              }
-              style={({pressed}) => [
-                styles.heroCamera,
-                pressed && styles.pressed,
-              ]}
-              testID="home-input-camera"
-            >
-              <View style={styles.heroCameraIcon}>
-                <MaterialIcon
-                  color={theme.colors.onPrimaryContainer}
-                  name="photo_camera"
-                  size={28}
-                />
-              </View>
-              <AppText
-                variant="h2"
-                style={styles.heroCameraTitle}
-                numberOfLines={2}
-              >
-                {t('home.capture_photo')}
-              </AppText>
-              <AppText
-                style={styles.heroCameraHint}
-                numberOfLines={2}
-              >
-                {t('home.capture_photo_hint')}
-              </AppText>
-            </Pressable>
-          ) : null}
-          <View style={styles.inputSourceGrid}>
-            {config.features.youtubeLearning ? (
+        {!showEmpty ? (
+          <View style={styles.section} testID="home-today-section">
+            <View style={styles.sectionHeader}>
+              <AppText variant="h3">{t('home.today_title')}</AppText>
               <Pressable
-                accessibilityLabel={t('home.youtube_a11y')}
+                accessibilityLabel={t('home.today_swap_a11y')}
                 accessibilityRole="button"
-                onPress={() => navigation.navigate('YouTubeInput')}
-                style={({pressed}) => [
-                  styles.inputSourceSecondary,
-                  styles.inputSourcePaste,
-                  pressed && styles.pressed,
-                ]}
-                testID="home-input-youtube"
+                hitSlop={LINK_HIT_SLOP}
+                onPress={() => navigation.navigate('Today')}
+                style={styles.textLink}
+                testID="home-today-swap"
               >
-                <MaterialIcon
-                  color={theme.colors.primary}
-                  name="play_circle"
-                  size={22}
-                />
-                <AppText
-                  variant="h3"
-                  style={styles.inputSourcePasteText}
-                  numberOfLines={1}
-                >
-                  {t('home.youtube')}
+                <AppText variant="label" style={styles.textLinkLabel}>
+                  {t('home.today_swap')}
                 </AppText>
               </Pressable>
-            ) : null}
-            {imageInputEnabled ? (
-              <Pressable
-                accessibilityLabel={t('home.upload_image_a11y')}
-                accessibilityRole="button"
-                onPress={() =>
-                  navigation.navigate('ImageCapture', {sourceType: 'gallery'})
-                }
-                style={({pressed}) => [
-                  styles.inputSourceSecondary,
-                  styles.inputSourceGallery,
-                  pressed && styles.pressed,
-                ]}
-                testID="home-input-gallery"
-              >
-                <MaterialIcon
-                  color={theme.colors.onOverlay}
-                  name="add_photo_alternate"
-                  size={22}
-                />
-                <AppText
-                  variant="h3"
-                  style={styles.inputSourceGalleryText}
-                  numberOfLines={1}
+            </View>
+            <View style={styles.todayRow}>
+              {todayChips.map(chip => (
+                <Pressable
+                  accessibilityLabel={chip.a11yLabel}
+                  accessibilityRole="button"
+                  key={chip.testID}
+                  onPress={chip.onPress}
+                  style={({pressed}) => [
+                    styles.todayChip,
+                    {backgroundColor: theme.colors[chip.backgroundKey]},
+                    pressed && styles.pressed,
+                  ]}
+                  testID={chip.testID}
                 >
-                  {t('home.upload_image')}
-                </AppText>
-              </Pressable>
-            ) : null}
-            {config.features.youtubeLearning ? (
-              <Pressable
-                accessibilityLabel={t('home.youtube_history_a11y')}
-                accessibilityRole="button"
-                onPress={() => navigation.navigate('YouTubeHistory')}
-                style={({pressed}) => [
-                  styles.inputSourceSecondary,
-                  styles.inputSourcePaste,
-                  pressed && styles.pressed,
-                ]}
-                testID="home-input-youtube-history"
-              >
-                <MaterialIcon
-                  color={theme.colors.primary}
-                  name="history_edu"
-                  size={22}
-                />
-                <AppText
-                  variant="h3"
-                  style={styles.inputSourcePasteText}
-                  numberOfLines={1}
-                >
-                  {t('home.youtube_history')}
-                </AppText>
-              </Pressable>
-            ) : null}
-            {config.features.pasteTextInput ? (
-              <Pressable
-                accessibilityLabel={t('home.paste_text_a11y')}
-                accessibilityRole="button"
-                onPress={() => navigation.navigate('PasteText')}
-                style={({pressed}) => [
-                  styles.inputSourceSecondary,
-                  styles.inputSourcePaste,
-                  pressed && styles.pressed,
-                ]}
-                testID="home-input-paste"
-              >
-                <MaterialIcon
-                  color={theme.colors.primary}
-                  name="content_paste"
-                  size={22}
-                />
-                <AppText
-                  variant="h3"
-                  style={styles.inputSourcePasteText}
-                  numberOfLines={1}
-                >
-                  {t('home.paste_text')}
-                </AppText>
-              </Pressable>
-            ) : null}
+                  <View style={styles.todayIconCell}>
+                    <MaterialIcon
+                      color={theme.colors[chip.inkKey]}
+                      name={chip.icon}
+                      size={22}
+                    />
+                  </View>
+                  <AppText
+                    style={[
+                      styles.todayValue,
+                      {color: theme.colors[chip.inkKey]},
+                    ]}
+                    numberOfLines={2}
+                  >
+                    {chip.value}
+                  </AppText>
+                  <AppText
+                    style={[
+                      styles.todayLabel,
+                      {color: theme.colors[chip.inkKey]},
+                    ]}
+                    numberOfLines={2}
+                  >
+                    {t(chip.labelKey)}
+                  </AppText>
+                </Pressable>
+              ))}
+            </View>
           </View>
-        </View>
-        {recentItems.length > 0 ? (
-          <View style={styles.recentSection} testID="home-recent-section">
-            <View style={styles.recentHeader}>
-              <AppText variant="h2">{t('home.recent_lessons')}</AppText>
+        ) : null}
+        {!showEmpty && recentItems.length > 0 ? (
+          <View style={styles.section} testID="home-recent-section">
+            <View style={styles.sectionHeader}>
+              <AppText variant="h3">{t('home.recent_lessons')}</AppText>
               <Pressable
                 accessibilityLabel={t('home.view_all_a11y')}
                 accessibilityRole="button"
+                hitSlop={LINK_HIT_SLOP}
                 onPress={() => tabNavigation?.navigate('Lessons')}
+                style={styles.viewAllChip}
                 testID="home-recent-view-all"
               >
                 <AppText
                   variant="label"
-                  style={styles.recentViewAll}
+                  style={styles.textLinkLabel}
                   numberOfLines={1}
                 >
                   {t('home.view_all')}
@@ -362,71 +340,36 @@ export function HomeScreen({navigation}: Props) {
             </View>
             <View style={styles.recentList}>
               {recentItems.map((item, index) => (
-                <View
-                  key={item.id}
-                  testID={`home-recent-item-${item.id}`}
-                >
+                <View key={item.id} testID={`home-recent-item-${item.id}`}>
                   <RecentLessonRow
                     index={index}
                     lesson={{id: item.id, title: item.title, meta: item.meta}}
-                    onPress={() => {
-                      if (item.kind === 'personal') {
-                        navigation.navigate('SavedLessonDetail', {
-                          lessonId: item.id,
-                        });
-                      } else {
-                        navigation.navigate('ContentLessonRuntime', {
-                          lessonId: item.id,
-                        });
-                      }
-                    }}
+                    onPress={() => openRecentItem(item)}
                   />
                 </View>
               ))}
             </View>
           </View>
         ) : null}
-        <AppText variant="h2">{t('home.shortcuts_title')}</AppText>
-        <View style={styles.shortcutGrid}>
-          {shortcuts.map(shortcut => (
-            <Pressable
-              accessibilityLabel={`${t(shortcut.titleKey)}. ${shortcut.meta}`}
-              accessibilityRole="button"
-              key={shortcut.testID}
-              onPress={shortcut.onPress}
-              style={({pressed}) => [
-                styles.shortcut,
-                pressed && styles.pressed,
-              ]}
-              testID={shortcut.testID}
-            >
-              <View style={styles.shortcutIcon}>
-                <MaterialIcon
-                  color={theme.colors.primary}
-                  name={shortcut.icon}
-                  size={20}
-                />
-              </View>
-              <View style={styles.shortcutCopy}>
-                <AppText
-                  variant="h3"
-                  style={styles.shortcutTitle}
-                  numberOfLines={1}
+        {showEmpty && suggestions.length > 0 ? (
+          <View style={styles.section} testID="home-empty-suggestions">
+            <AppText variant="h3">{t('home.offline_section_title')}</AppText>
+            <View style={styles.recentList}>
+              {suggestions.map((item, index) => (
+                <View
+                  key={item.id}
+                  testID={`home-empty-suggestion-${item.id}`}
                 >
-                  {t(shortcut.titleKey)}
-                </AppText>
-                <AppText color="secondary" variant="label" numberOfLines={1}>
-                  {shortcut.meta}
-                </AppText>
-              </View>
-              <MaterialIcon
-                color={theme.colors.text.secondary}
-                name="chevron_right"
-                size={20}
-              />
-            </Pressable>
-          ))}
-        </View>
+                  <RecentLessonRow
+                    index={index}
+                    lesson={{id: item.id, title: item.title, meta: item.meta}}
+                    onPress={() => openRecentItem(item)}
+                  />
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
       </ScrollView>
     </AppScreen>
   );
@@ -434,12 +377,6 @@ export function HomeScreen({navigation}: Props) {
 
 function makeStyles(theme: AppTheme) {
   return StyleSheet.create({
-    brand: {alignItems: 'center', flexDirection: 'row', gap: 10, minWidth: 0},
-    brandText: {
-      color: theme.colors.primary,
-      fontSize: theme.typography.size.lg,
-      fontWeight: theme.typography.weight.medium,
-    },
     header: {
       alignItems: 'center',
       flexDirection: 'row',
@@ -447,142 +384,99 @@ function makeStyles(theme: AppTheme) {
       justifyContent: 'space-between',
       paddingHorizontal: theme.gutter,
     },
-    hero: {
+    greeting: {flex: 1, gap: 0, minWidth: 0, paddingRight: theme.spacing.sm},
+    scrollContent: {
+      gap: theme.spacing.xl,
+      paddingBottom: 28,
+      paddingHorizontal: theme.gutter,
+      paddingTop: theme.spacing.sm,
+    },
+    section: {gap: theme.spacing.md},
+    sectionHeader: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    continueCard: {
       backgroundColor: theme.colors.surface,
-      borderRadius: theme.radius.xl,
+      borderRadius: theme.radius.lg,
       gap: theme.spacing.md,
       padding: theme.spacing.lg,
+      ...theme.shadow.soft,
     },
-    intro: {gap: theme.spacing.xs},
-    inputSection: {gap: theme.spacing.sm},
-    heroCamera: {
+    continueKicker: {
+      color: theme.colors.primary,
+      textTransform: 'uppercase',
+    },
+    fullWidthButton: {
+      alignSelf: 'stretch',
+      minHeight: 52,
+    },
+    todayRow: {flexDirection: 'row', gap: theme.spacing.sm},
+    todayChip: {
       alignItems: 'center',
-      backgroundColor: theme.colors.primaryContainer,
-      borderRadius: theme.radius.xl,
-      gap: theme.spacing.sm,
+      borderRadius: 20,
+      flex: 1,
+      gap: 4,
       justifyContent: 'center',
-      minHeight: 196,
-      padding: theme.spacing.lg,
+      minHeight: 88,
+      minWidth: 0,
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: theme.spacing.sm,
     },
-    heroCameraIcon: {
+    todayIconCell: {
       alignItems: 'center',
-      backgroundColor: theme.colors.overlayLight,
+      height: 36,
+      justifyContent: 'center',
+      width: 36,
+    },
+    todayValue: {
+      fontSize: 16,
+      fontWeight: theme.typography.weight.bold,
+      lineHeight: 20,
+      textAlign: 'center',
+    },
+    todayLabel: {
+      fontSize: 12.5,
+      fontWeight: theme.typography.weight.medium,
+      lineHeight: 16,
+      textAlign: 'center',
+    },
+    recentList: {gap: theme.spacing.sm},
+    viewAllChip: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 44,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+    },
+    textLink: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 44,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+    },
+    textLinkLabel: {
+      color: theme.colors.primary,
+    },
+    emptyCard: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.lg,
+      gap: theme.spacing.md,
+      padding: theme.spacing.lg,
+      ...theme.shadow.soft,
+    },
+    emptyMedallion: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.accentSoft,
       borderRadius: theme.radius.pill,
       height: 64,
       justifyContent: 'center',
       width: 64,
     },
-    heroCameraTitle: {
-      color: theme.colors.onPrimaryContainer,
-      textAlign: 'center',
-    },
-    heroCameraHint: {
-      color: theme.colors.onPrimaryContainer,
-      textAlign: 'center',
-    },
-    inputSourceSecondary: {
-      alignItems: 'center',
-      borderRadius: theme.radius.lg,
-      flex: 1,
-      flexShrink: 1,
-      gap: theme.spacing.sm,
-      justifyContent: 'center',
-      minHeight: 96,
-      minWidth: 0,
-      padding: theme.spacing.md,
-    },
-    inputSourceGallery: {
-      backgroundColor: theme.colors.secondaryContainer,
-    },
-    inputSourceGalleryText: {
-      color: theme.colors.onOverlay,
-    },
-    inputSourcePaste: {
-      backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.outline,
-      borderWidth: 2,
-    },
-    inputSourcePasteText: {
-      color: theme.colors.primary,
-    },
-    inputSourceGrid: {flexDirection: 'row', gap: theme.spacing.sm},
-    recentSection: {gap: theme.spacing.sm},
-    recentHeader: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    recentViewAll: {
-      color: theme.colors.primary,
-    },
-    recentList: {gap: theme.spacing.sm},
-    primaryAction: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.primary,
-      borderRadius: theme.radius.pill,
-      justifyContent: 'center',
-      minHeight: 52,
-      paddingHorizontal: theme.spacing.lg,
-    },
-    primaryActionText: {
-      color: theme.colors.text.inverse,
-      fontWeight: theme.typography.weight.bold,
-    },
-    progressFill: {
-      backgroundColor: theme.colors.primary,
-      borderRadius: theme.radius.pill,
-      elevation: 2,
-      height: '100%',
-      shadowColor: theme.colors.primary,
-      shadowOffset: {width: 0, height: 0},
-      shadowOpacity: 0.45,
-      shadowRadius: 14,
-      width: '0%',
-    },
-    progressRow: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      gap: theme.spacing.sm,
-    },
-    progressTrack: {
-      backgroundColor: theme.colors.outlineVariant,
-      borderRadius: theme.radius.pill,
-      flex: 1,
-      height: 12,
-      overflow: 'hidden',
-    },
+    centerText: {textAlign: 'center'},
     pressed: {opacity: theme.states.pressedOpacity},
-    scrollContent: {
-      gap: theme.spacing.lg,
-      paddingBottom: 28,
-      paddingHorizontal: theme.gutter,
-      paddingTop: theme.spacing.sm,
-    },
-    shortcut: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.radius.lg,
-      flexBasis: '47%',
-      flexDirection: 'row',
-      flexGrow: 1,
-      gap: theme.spacing.sm,
-      minHeight: 88,
-      padding: theme.spacing.md,
-    },
-    shortcutCopy: {flex: 1, gap: 2, minWidth: 0},
-    shortcutGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-    },
-    shortcutIcon: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.accentSoft,
-      borderRadius: theme.radius.pill,
-      height: 36,
-      justifyContent: 'center',
-      width: 36,
-    },
-    shortcutTitle: {fontSize: theme.typography.size.md},
   });
 }

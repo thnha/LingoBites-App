@@ -4,6 +4,8 @@ import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
 import {DB_NAME} from '@shared/db/constants';
 import {resetDatabaseForTests} from '@shared/db/database';
+import {saveLesson} from '@shared/db/LessonRepository';
+import {validFullOutput} from '@shared/fixtures';
 import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {HomeScreen} from '../HomeScreen';
@@ -27,72 +29,58 @@ async function renderHome(nav = navigation()) {
   return tree;
 }
 
-describe('HomeScreen Option C', () => {
+function seedLesson() {
+  const lesson = saveLesson({
+    confirmedText: validFullOutput.original_text,
+    sourceType: 'paste_text',
+    lesson: validFullOutput,
+  });
+  if (!lesson.ok) throw new Error('Could not seed lesson');
+}
+
+async function pressChip(
+  tree: ReactTestRenderer.ReactTestRenderer,
+  testID: string,
+) {
+  const target = tree.root
+    .findAll(node => node.props.testID === testID)
+    .find(node => typeof node.props.onPress === 'function');
+  if (!target) throw new Error(`No pressable found for testID ${testID}`);
+  await act(async () => target.props.onPress());
+}
+
+describe('HomeScreen today chips (SETE-247)', () => {
   beforeEach(() => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
   });
 
-  it('renders the four shortcuts and source entries', async () => {
-    const tree = await renderHome();
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-shortcut-review')
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-shortcut-speaking')
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-shortcut-quick')
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-shortcut-library')
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAllByProps({
-        children: 'Học từ ảnh hoặc văn bản',
-      }).length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAllByProps({testID: 'home-input-camera'}).length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAllByProps({testID: 'home-input-gallery'}).length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAllByProps({testID: 'home-input-paste'}).length,
-    ).toBeGreaterThan(0);
+  it('routes the review chip to DailyReview', async () => {
+    seedLesson();
+    const nav = navigation();
+    const tree = await renderHome(nav);
+    await pressChip(tree, 'home-today-review');
+    expect(nav.navigate).toHaveBeenCalledWith('DailyReview');
   });
 
-  it('routes shortcut actions to their existing destinations', async () => {
+  it('routes the speaking chip to the library SpeakingRoom', async () => {
+    seedLesson();
     const tabNavigate = jest.fn();
-    const nav = navigation(tabNavigate);
-    const tree = await renderHome(nav);
-    await act(async () =>
-      tree.root
-        .findAll(node => node.props.testID === 'home-shortcut-review')
-        .find(node => typeof node.props.onPress === 'function')
-        ?.props.onPress(),
-    );
-    expect(nav.navigate).toHaveBeenCalledWith('DailyReview');
-    await act(async () =>
-      tree.root
-        .findAll(node => node.props.testID === 'home-shortcut-speaking')
-        .find(node => typeof node.props.onPress === 'function')
-        ?.props.onPress(),
-    );
+    const tree = await renderHome(navigation(tabNavigate));
+    await pressChip(tree, 'home-today-speaking');
     expect(tabNavigate).toHaveBeenCalledWith('Lessons', {
       screen: 'SpeakingRoom',
     });
-    await act(async () =>
-      tree.root
-        .findAll(node => node.props.testID === 'home-shortcut-library')
-        .find(node => typeof node.props.onPress === 'function')
-        ?.props.onPress(),
+  });
+
+  it('routes the quick-practice chip to an empty Practice session', async () => {
+    seedLesson();
+    const nav = navigation();
+    const tree = await renderHome(nav);
+    await pressChip(tree, 'home-today-quick');
+    expect(nav.navigate).toHaveBeenCalledWith(
+      'Practice',
+      expect.objectContaining({questions: []}),
     );
-    expect(tabNavigate).toHaveBeenCalledWith('Lessons');
   });
 });

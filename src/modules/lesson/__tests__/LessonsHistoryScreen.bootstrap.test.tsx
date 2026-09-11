@@ -33,12 +33,18 @@ jest.mock('../useLibrarySegments', () => ({
   }),
 }));
 
-jest.mock('@react-navigation/native', () => ({
-  useFocusEffect: (callback: () => void) => callback(),
-  useNavigation: () => ({
-    navigate: jest.fn(),
-  }),
-}));
+jest.mock('@react-navigation/native', () => {
+  const React = require('react');
+  return {
+    // Run focus callbacks as a mount effect: invoking them synchronously
+    // during render would turn screen setState calls into a render loop.
+    useFocusEffect: (callback: () => void) =>
+      React.useEffect(callback, [callback]),
+    useNavigation: () => ({
+      navigate: jest.fn(),
+    }),
+  };
+});
 
 jest.mock('@modules/content', () => ({
   bootstrapContentPackage: jest.fn(),

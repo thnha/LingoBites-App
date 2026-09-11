@@ -25,6 +25,7 @@ type BarProps = React.ComponentProps<typeof TabBar>;
 function makeProps(activeIndex = 0): BarProps {
   const routes = [
     {key: 'home', name: 'Home'},
+    {key: 'create', name: 'Create'},
     {key: 'lessons', name: 'Lessons'},
     {key: 'profile', name: 'Profile'},
   ];
@@ -40,6 +41,7 @@ function makeProps(activeIndex = 0): BarProps {
     },
     descriptors: {
       home: {options: {}},
+      create: {options: {}},
       lessons: {options: {}},
       profile: {options: {}},
     },
@@ -93,18 +95,32 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     // The overlay (including the bottom safe-area strip) paints nothing
     // itself — the screen's theme background flows edge-to-edge behind it.
     expect(wrap.backgroundColor).toBe('transparent');
-    // Only 3 tabs → pill is ~2/3 width and centered, not full-width.
+    // 4 tabs → pill is near full width and centered.
     expect(wrap.alignItems).toBe('center');
   });
 
-  it('sizes the pill at ~3/4 width (compact for 3 tabs)', () => {
+  it('sizes the pill at ~92% width (near full width for 4 tabs)', () => {
     const {tree} = renderBar(defaultTheme);
     const pill = StyleSheet.flatten(
       tree.root.findByProps({testID: 'tab-bar-glass'}).props.style,
     );
-    expect(pill.width).toBe('75%');
+    expect(pill.width).toBe('92%');
     expect(pill.minWidth).toBe(240);
-    expect(pill.maxWidth).toBe(340);
+    expect(pill.maxWidth).toBe(380);
+  });
+
+  it('fits 4 minimum-width tabs inside the 320pt-screen inner pill', () => {
+    const {tree} = renderBar(defaultTheme);
+    const pill = StyleSheet.flatten(
+      tree.root.findByProps({testID: 'tab-bar-glass'}).props.style,
+    );
+    const itemStyle = StyleSheet.flatten(
+      tree.root.findByProps({testID: 'tab-bar-item-Home'}).props.style,
+    );
+    // 320pt screen: (320 − 2×16 margin) × 92% − 2×4 padding = ~257pt inner.
+    const pillWidth = (320 - 2 * 16) * 0.92;
+    const innerWidth = pillWidth - 2 * (pill.paddingHorizontal as number);
+    expect(4 * (itemStyle.minWidth as number)).toBeLessThanOrEqual(innerWidth);
   });
 
   it('keeps a visible lift shadow (no overflow clipping on iOS)', () => {
@@ -119,10 +135,11 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(pill.elevation).toBeGreaterThanOrEqual(12);
   });
 
-  it('renders the 3 current tabs with labels and selected state', () => {
+  it('renders the 4 current tabs with labels and selected state', () => {
     const {tree} = renderBar(defaultTheme);
     for (const testID of [
       'tab-bar-item-Home',
+      'tab-bar-item-Create',
       'tab-bar-item-Lessons',
       'tab-bar-item-Profile',
     ]) {
@@ -145,8 +162,20 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
       .findAllByType(Text)
       .map((n: {props: {children?: unknown}}) => n.props.children);
     expect(labels).toEqual(
-      expect.arrayContaining(['Trang chủ', 'Thư viện', 'Hồ sơ']),
+      expect.arrayContaining(['Trang chủ', 'Tạo bài', 'Thư viện', 'Hồ sơ']),
     );
+  });
+
+  it('shrinks tab labels instead of truncating at large text sizes', () => {
+    const {tree} = renderBar(defaultTheme);
+    const label = tree.root
+      .findAllByType(Text)
+      .find(node => node.props.children === 'Tạo bài');
+    expect(label).toBeDefined();
+    // Single line + shrink-to-fit: no ellipsis even for the longest labels.
+    expect(label!.props.numberOfLines).toBe(1);
+    expect(label!.props.adjustsFontSizeToFit).toBe(true);
+    expect(label!.props.maxFontSizeMultiplier).toBeLessThanOrEqual(1.3);
   });
 
   it('navigates on inactive tab press and ignores the focused tab', () => {
@@ -195,6 +224,7 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
 
     for (const testID of [
       'tab-bar-item-Home',
+      'tab-bar-item-Create',
       'tab-bar-item-Lessons',
       'tab-bar-item-Profile',
     ]) {

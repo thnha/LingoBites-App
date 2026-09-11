@@ -3,12 +3,18 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import type {
+  CreateStackParamList,
   HomeStackParamList,
   LessonsStackParamList,
   ProfileStackParamList,
   RootTabParamList,
 } from './types';
-import {HomeScreen, PasteTextScreen, ImageCaptureScreen} from '@modules/input';
+import {
+  CreateScreen,
+  HomeScreen,
+  PasteTextScreen,
+  ImageCaptureScreen,
+} from '@modules/input';
 import {OCRReviewScreen} from '@modules/ocr';
 import {AnalyzingScreen} from '@modules/ai-analysis';
 import {
@@ -50,15 +56,12 @@ import {
 } from '@modules/youtube';
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
+const CreateStack = createNativeStackNavigator<CreateStackParamList>();
 const LessonsStack = createNativeStackNavigator<LessonsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 function HomeStackNavigator() {
-  const {config} = useFeatureFlags();
-  const canMount = (route: string) =>
-    isIngestionRouteEnabled(route, config.features);
-
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
@@ -66,85 +69,16 @@ function HomeStackNavigator() {
         name="HomeMain"
         options={{headerShown: false}}
       />
-      {config.features.youtubeLearning && (
-        <>
-          <HomeStack.Screen
-            component={YouTubeInputScreen}
-            name="YouTubeInput"
-            options={{headerShown: false}}
-          />
-          <HomeStack.Screen
-            component={YouTubeHistoryScreen}
-            name="YouTubeHistory"
-            options={{headerShown: false}}
-          />
-          <HomeStack.Screen
-            component={YouTubeProcessingScreen}
-            name="YouTubeProcessing"
-            options={{headerShown: false, gestureEnabled: false}}
-          />
-          <HomeStack.Screen
-            component={YouTubeManualTranscriptScreen}
-            name="YouTubeManualTranscript"
-            options={{headerShown: false}}
-          />
-          <HomeStack.Screen
-            component={YouTubeLessonRouteScreen}
-            name="YouTubeLesson"
-            options={{headerShown: false}}
-          />
-        </>
-      )}
       <HomeStack.Screen
         component={ContentLessonRuntimeScreen}
         name="ContentLessonRuntime"
         options={{headerShown: false, gestureEnabled: false}}
-      />
-      {canMount('PasteText') && (
-        <HomeStack.Screen
-          component={PasteTextScreen}
-          name="PasteText"
-          options={{headerShown: false}}
-        />
-      )}
-      {canMount('ImageCapture') && (
-        <HomeStack.Screen
-          component={ImageCaptureScreen}
-          name="ImageCapture"
-          options={{headerShown: false}}
-        />
-      )}
-      {canMount('OCRReview') && (
-        <HomeStack.Screen
-          component={OCRReviewScreen}
-          name="OCRReview"
-          options={{headerShown: false}}
-        />
-      )}
-      {canMount('Analyzing') && (
-        <HomeStack.Screen
-          component={AnalyzingScreen}
-          name="Analyzing"
-          options={{headerShown: false, gestureEnabled: false}}
-        />
-      )}
-      <HomeStack.Screen
-        component={LessonResultScreen}
-        name="LessonResult"
-        options={{headerShown: false}}
       />
       <HomeStack.Screen
         component={SavedLessonDetailScreen}
         name="SavedLessonDetail"
         options={{headerShown: false}}
       />
-      {canMount('ProgressiveLesson') && (
-        <HomeStack.Screen
-          component={ProgressiveLessonScreen}
-          name="ProgressiveLesson"
-          options={{headerShown: false}}
-        />
-      )}
       <HomeStack.Screen
         component={FlashcardListScreen}
         name="FlashcardList"
@@ -181,6 +115,111 @@ function HomeStackNavigator() {
         options={{headerShown: false}}
       />
     </HomeStack.Navigator>
+  );
+}
+
+function CreateStackNavigator() {
+  const {config} = useFeatureFlags();
+  const canMount = (route: string) =>
+    isIngestionRouteEnabled(route, config.features);
+
+  return (
+    <CreateStack.Navigator>
+      <CreateStack.Screen
+        component={CreateScreen}
+        name="CreateMain"
+        options={{headerShown: false}}
+      />
+      {config.features.youtubeLearning && (
+        <>
+          <CreateStack.Screen
+            component={YouTubeInputScreen}
+            name="YouTubeInput"
+            options={{headerShown: false}}
+          />
+          <CreateStack.Screen
+            component={YouTubeHistoryScreen}
+            name="YouTubeHistory"
+            options={{headerShown: false}}
+          />
+          <CreateStack.Screen
+            component={YouTubeProcessingScreen}
+            name="YouTubeProcessing"
+            options={{headerShown: false, gestureEnabled: false}}
+          />
+          <CreateStack.Screen
+            component={YouTubeManualTranscriptScreen}
+            name="YouTubeManualTranscript"
+            options={{headerShown: false}}
+          />
+          <CreateStack.Screen
+            component={YouTubeLessonRouteScreen}
+            name="YouTubeLesson"
+            options={{headerShown: false}}
+          />
+        </>
+      )}
+      {canMount('PasteText') && (
+        <CreateStack.Screen
+          component={PasteTextScreen}
+          name="PasteText"
+          options={{headerShown: false}}
+        />
+      )}
+      {canMount('ImageCapture') && (
+        <CreateStack.Screen
+          component={ImageCaptureScreen}
+          name="ImageCapture"
+          options={{headerShown: false}}
+        />
+      )}
+      {canMount('OCRReview') && (
+        <CreateStack.Screen
+          component={OCRReviewScreen}
+          name="OCRReview"
+          options={{headerShown: false}}
+        />
+      )}
+      {canMount('Analyzing') && (
+        <CreateStack.Screen
+          component={AnalyzingScreen}
+          name="Analyzing"
+          options={{headerShown: false, gestureEnabled: false}}
+        />
+      )}
+      <CreateStack.Screen
+        component={LessonResultScreen}
+        name="LessonResult"
+        options={{headerShown: false}}
+      />
+      {canMount('ProgressiveLesson') && (
+        <CreateStack.Screen
+          component={ProgressiveLessonScreen}
+          name="ProgressiveLesson"
+          options={{headerShown: false}}
+        />
+      )}
+      <CreateStack.Screen
+        component={SentenceDetailScreen}
+        name="SentenceDetail"
+        options={{headerShown: false}}
+      />
+      <CreateStack.Screen
+        component={WordDetailScreen}
+        name="WordDetail"
+        options={{headerShown: false}}
+      />
+      <CreateStack.Screen
+        component={GrammarDetailScreen}
+        name="GrammarDetail"
+        options={{headerShown: false}}
+      />
+      <CreateStack.Screen
+        component={PracticeScreen}
+        name="Practice"
+        options={{headerShown: false}}
+      />
+    </CreateStack.Navigator>
   );
 }
 
@@ -322,6 +361,14 @@ export function AppNavigator() {
           name="Home"
           options={({route}) => ({
             title: 'Home',
+            ...tabBarVisibilityOptions({route}),
+          })}
+        />
+        <Tab.Screen
+          component={CreateStackNavigator}
+          name="Create"
+          options={({route}) => ({
+            title: 'Create',
             ...tabBarVisibilityOptions({route}),
           })}
         />

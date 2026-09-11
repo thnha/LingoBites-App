@@ -30,13 +30,13 @@ async function renderHome(nav = navigation()) {
   return tree;
 }
 
-describe('HomeScreen review shortcut', () => {
+describe('HomeScreen review chip (SETE-247)', () => {
   beforeEach(() => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
   });
 
-  it('shows the current due-card count in the review shortcut', async () => {
+  it('shows the current due-card count in the today review chip', async () => {
     const lesson = saveLesson({
       confirmedText: validFullOutput.original_text,
       sourceType: 'paste_text',
@@ -48,9 +48,16 @@ describe('HomeScreen review shortcut', () => {
       vocabulary: validFullOutput.vocabulary[0],
       now: '2026-08-17T00:00:00.000Z',
     });
-    const tree = await renderHome();
+    const nav = navigation();
+    const tree = await renderHome(nav);
+    const chip = tree.root
+      .findAll(item => item.props.testID === 'home-today-review')
+      .find(item => typeof item.props.onPress === 'function');
+    if (!chip) throw new Error('No today review chip found');
     expect(
-      tree.root.findAllByProps({children: '1 thẻ'}).length,
+      chip.findAll(item => item.props.children === '1').length,
     ).toBeGreaterThan(0);
+    await act(async () => chip.props.onPress());
+    expect(nav.navigate).toHaveBeenCalledWith('DailyReview');
   });
 });

@@ -5,9 +5,16 @@
   "nav": {
     "tab": {
       "home": "Trang chủ",
+      "create": "Tạo bài",
       "library": "Thư viện",
       "profile": "Hồ sơ"
     }
+  },
+  "create": {
+    "title": "Tạo bài học mới",
+    "subtitle": "Biến ảnh, văn bản hoặc video thành bài học của bạn.",
+    "empty_title": "Chưa có cách tạo bài nào",
+    "empty_body": "Các cách tạo bài học hiện chưa được bật. Hãy quay lại sau."
   },
   "home": {
     "title": "Hôm nay bạn muốn học từ đâu?",
@@ -44,7 +51,19 @@
     "continue_learning": "Tiếp tục học",
     "continue_learning_body": "Tiếp tục bài học offline bạn đang học dở.",
     "continue_learning_a11y": "Tiếp tục bài học offline",
+    "continue_label": "Tiếp tục",
     "continue_meta": "Tiếp tục bài học đang dở · {{duration}} phút",
+    "greeting_top": "Chào bạn",
+    "greeting_title": "Hôm nay bạn học gì?",
+    "today_title": "Hôm nay học gì",
+    "today_swap": "Đổi",
+    "today_swap_a11y": "Đổi gợi ý học hôm nay",
+    "empty_title": "Chưa có bài học nào",
+    "empty_body": "Tạo bài học đầu tiên từ ảnh, văn bản hoặc video YouTube để bắt đầu.",
+    "empty_create": "Tạo bài học đầu tiên",
+    "empty_create_a11y": "Mở tab Tạo bài để tạo bài học đầu tiên",
+    "empty_try": "Hoặc học thử 1 bài có sẵn",
+    "empty_try_a11y": "Xem các bài học offline có sẵn",
     "shortcuts_title": "Luyện tập",
     "shortcut_review": "Ôn tập",
     "shortcut_review_meta": "{{count}} thẻ",

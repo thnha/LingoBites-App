@@ -7,7 +7,7 @@ import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {ScreenHeader} from '@components/ScreenHeader';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useTranslation} from 'react-i18next';
@@ -17,7 +17,7 @@ import {
 } from '@shared/db/YoutubeLessonRepository';
 import type {YouTubeTranscript} from '@shared/schemas/youtube-transcript-v1';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'YouTubeHistory'>;
+type Props = NativeStackScreenProps<CreateStackParamList, 'YouTubeHistory'>;
 
 function HistorySeparator() {
   const {theme} = useAppTheme();

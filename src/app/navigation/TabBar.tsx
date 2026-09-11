@@ -28,6 +28,7 @@ import {
 
 const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
   Home: {labelKey: 'nav.tab.home', icon: 'home'},
+  Create: {labelKey: 'nav.tab.create', icon: 'document_scanner'},
   Lessons: {labelKey: 'nav.tab.library', icon: 'school'},
   Profile: {labelKey: 'nav.tab.profile', icon: 'person'},
 };
@@ -115,8 +116,9 @@ function TabBarItem({
         flex: 1,
         gap: 1,
         justifyContent: 'center',
-        minWidth: 76,
-        paddingHorizontal: 10,
+        // 4 tabs × 64pt = 256pt fits the 320pt-screen inner pill (~257pt).
+        minWidth: 64,
+        paddingHorizontal: 8,
         paddingVertical: 4,
         zIndex: 1,
       }}
@@ -287,8 +289,7 @@ function makeStyles(theme: AppTheme) {
       // the feed scrolls *behind* the pill so the glass has content to
       // show through. Feed screens reserve clearance via
       // useFloatingTabBarClearance() so the last row is never covered.
-      // Only 3 tabs → the pill is ~2/3 width and centered instead of
-      // stretching full width (which looked sparse).
+      // 4 tabs → the pill is near full width and centered.
       alignItems: 'center',
       backgroundColor: 'transparent',
       bottom: 0,
@@ -305,16 +306,17 @@ function makeStyles(theme: AppTheme) {
       elevation: 16,
       flexDirection: 'row',
       justifyContent: 'space-around',
-      // ~3/4 screen width for 3 tabs: compact, not sparse.
-      // minWidth keeps the v3 76px-per-tab floor on narrow screens,
-      // maxWidth stops it stretching on tablets.
-      maxWidth: 340,
+      // ~92% screen width for 4 tabs (SETE-247): 4 × 64pt floor = 256pt
+      // fits the 320pt-screen inner pill (~257pt); labels shrink via
+      // adjustsFontSizeToFit instead of truncating. maxWidth stops it
+      // stretching on tablets.
+      maxWidth: 380,
       minWidth: 240,
-      width: '75%',
+      width: '92%',
       // NOTE: no `overflow: 'hidden'` here — on iOS it clips the shadow
       // and the pill loses all lift (SETE-214 screenshot feedback).
       // Children are all inside the bounds so nothing needs clipping.
-      paddingHorizontal: 6,
+      paddingHorizontal: 4,
       paddingVertical: 5,
       shadowColor: '#0a0a28',
       shadowOffset: {width: 0, height: 10},

@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {AppButton} from '@components/AppButton';
 import {AppCard} from '@components/AppCard';
 import {AppScreen} from '@components/AppScreen';
@@ -28,7 +28,7 @@ import {
   type PickedImage,
 } from './imagePicker';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'ImageCapture'>;
+type Props = NativeStackScreenProps<CreateStackParamList, 'ImageCapture'>;
 
 type ScreenState =
   | {type: 'upload_idle'}

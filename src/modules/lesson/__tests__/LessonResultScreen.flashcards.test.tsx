@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactTestRenderer from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {AppThemeProvider} from '@theme';
 import {DB_NAME} from '@shared/db/constants';
 import {resetDatabaseForTests} from '@shared/db/database';
@@ -19,7 +19,7 @@ const navigation = {
   navigate: jest.fn(),
   popToTop: jest.fn(),
 } as unknown as NativeStackScreenProps<
-  HomeStackParamList,
+  CreateStackParamList,
   'LessonResult'
 >['navigation'];
 

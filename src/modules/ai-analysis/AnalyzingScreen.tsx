@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {CommonActions} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {HomeStackParamList} from '@/app/navigation/types';
+import type {CreateStackParamList} from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
@@ -13,7 +13,7 @@ import type {AnalysisJobStage} from '@shared/api/types';
 import {analyzeText} from './AIAnalysisService';
 import type {AnalysisProgress} from './types';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'Analyzing'>;
+type Props = NativeStackScreenProps<CreateStackParamList, 'Analyzing'>;
 
 // Post-success hold: keep the "all done" state on screen briefly before
 // navigating, so the transition doesn't feel abrupt.
@@ -114,7 +114,7 @@ export function AnalyzingScreen({navigation, route}: Props) {
           navigation.reset({
             index: 1,
             routes: [
-              {name: 'HomeMain'},
+              {name: 'CreateMain'},
               {
                 name: 'LessonResult',
                 params: {lesson: result.lesson, confirmedText, sourceType},

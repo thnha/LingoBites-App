@@ -22,12 +22,18 @@ jest.mock('../useLibrarySegments', () => ({
   }),
 }));
 
-jest.mock('@react-navigation/native', () => ({
-  useFocusEffect: (callback: () => void) => callback(),
-  useNavigation: () => ({
-    navigate: jest.fn(),
-  }),
-}));
+jest.mock('@react-navigation/native', () => {
+  const React = require('react');
+  return {
+    // Run focus callbacks as a mount effect: invoking them synchronously
+    // during render would turn screen setState calls into a render loop.
+    useFocusEffect: (callback: () => void) =>
+      React.useEffect(callback, [callback]),
+    useNavigation: () => ({
+      navigate: jest.fn(),
+    }),
+  };
+});
 
 jest.mock('@modules/content', () => ({
   bootstrapContentPackage: jest.fn().mockResolvedValue({ok: true}),
@@ -123,5 +129,44 @@ describe('LessonsHistoryScreen', () => {
     render(<LessonsHistoryScreen navigation={navigation} route={route} />);
 
     expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it('shows the practice entry row above the segments (SETE-247)', () => {
+    const tree = render(
+      <LessonsHistoryScreen navigation={navigation} route={route} />,
+    );
+
+    expect(tree.root.findByProps({testID: 'library-practice-row'}))
+      .toBeDefined();
+    expect(tree.root.findByProps({testID: 'library-practice-review'}))
+      .toBeDefined();
+    expect(tree.root.findByProps({testID: 'library-practice-speaking'}))
+      .toBeDefined();
+    expect(tree.root.findByProps({testID: 'library-practice-quick'}))
+      .toBeDefined();
+  });
+
+  it('routes practice chips to their destinations', () => {
+    const tree = render(
+      <LessonsHistoryScreen navigation={navigation} route={route} />,
+    );
+
+    const press = (testID: string) => {
+      const target = tree.root
+        .findAll(node => node.props.testID === testID)
+        .find(node => typeof node.props.onPress === 'function');
+      if (!target) throw new Error(`No pressable found for ${testID}`);
+      act(() => target.props.onPress());
+    };
+
+    press('library-practice-review');
+    expect(navigation.navigate).toHaveBeenCalledWith('FlashcardList');
+    press('library-practice-speaking');
+    expect(navigation.navigate).toHaveBeenCalledWith('SpeakingRoom');
+    press('library-practice-quick');
+    expect(navigation.navigate).toHaveBeenCalledWith(
+      'Practice',
+      expect.objectContaining({questions: []}),
+    );
   });
 });
