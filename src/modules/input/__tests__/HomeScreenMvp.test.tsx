@@ -5,7 +5,7 @@ import {FeatureFlagProvider} from '@/release';
 import {DB_NAME} from '@shared/db/constants';
 import {resetDatabaseForTests} from '@shared/db/database';
 import {saveLesson} from '@shared/db/LessonRepository';
-import {validFullOutput} from '@shared/fixtures';
+import {validFullOutput, validMinimalOutput} from '@shared/fixtures';
 import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {HomeScreen} from '../HomeScreen';
@@ -73,14 +73,43 @@ describe('HomeScreen today chips (SETE-247)', () => {
     });
   });
 
-  it('routes the quick-practice chip to an empty Practice session', async () => {
+  it('routes the quick-practice chip with real questions (never empty)', async () => {
     seedLesson();
     const nav = navigation();
     const tree = await renderHome(nav);
     await pressChip(tree, 'home-today-quick');
     expect(nav.navigate).toHaveBeenCalledWith(
       'Practice',
-      expect.objectContaining({questions: []}),
+      expect.objectContaining({
+        questions: expect.arrayContaining([expect.anything()]),
+      }),
     );
+    const [, params] = (nav.navigate as jest.Mock).mock.calls.find(
+      ([screen]: [string]) => screen === 'Practice',
+    ) as [string, {questions: unknown[]}];
+    expect(params.questions.length).toBeGreaterThan(0);
+  });
+
+  it('hides the quick-practice chip when no lesson has questions', async () => {
+    const lesson = saveLesson({
+      confirmedText: validMinimalOutput.original_text,
+      sourceType: 'paste_text',
+      lesson: validMinimalOutput,
+    });
+    if (!lesson.ok) throw new Error('Could not seed minimal lesson');
+    const tree = await renderHome();
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-today-quick')
+        .length,
+    ).toBe(0);
+    // Review + speaking stay available — the row never goes fully missing.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-today-review')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-today-speaking')
+        .length,
+    ).toBeGreaterThan(0);
   });
 });

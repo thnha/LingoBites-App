@@ -33,7 +33,10 @@ async function renderHome(nav = navigation()) {
   return tree;
 }
 
-function pressByTestID(tree: ReactTestRenderer.ReactTestRenderer, testID: string) {
+function pressByTestID(
+  tree: ReactTestRenderer.ReactTestRenderer,
+  testID: string,
+) {
   const target = tree.root
     .findAll(item => item.props.testID === testID)
     .find(item => typeof item.props.onPress === 'function');
@@ -41,35 +44,55 @@ function pressByTestID(tree: ReactTestRenderer.ReactTestRenderer, testID: string
   return target.props.onPress();
 }
 
-describe('HomeScreen learning-only layout (SETE-247)', () => {
+describe('HomeScreen learning-only layout (SETE-250 Option B)', () => {
   beforeEach(() => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
   });
 
-  it('shows the first-open empty state with paths to Create and offline lessons', async () => {
+  it('shows the bare starter card on first open — never a dead end', async () => {
     const tabNavigate = jest.fn();
     const tree = await renderHome(navigation(tabNavigate));
+    // No started lesson → the starter slot shows the bare variant because
+    // the library is empty and there is no past lesson.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-section')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-continue-section')
+        .length,
+    ).toBe(0);
+    // The old full-screen empty card is gone; practice + lessons sections
+    // decide their own state and stay visible.
     expect(
       tree.root.findAll(node => node.props.testID === 'home-empty-section')
         .length,
-    ).toBeGreaterThan(0);
-    // Learning blocks stay hidden until there is data — the home is never
-    // an empty dead end, but it also shows no fake content.
+    ).toBe(0);
     expect(
       tree.root.findAll(node => node.props.testID === 'home-today-section')
         .length,
-    ).toBe(0);
+    ).toBeGreaterThan(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-recent-section')
+      tree.root.findAll(node => node.props.testID === 'home-lessons-section')
+        .length,
+    ).toBeGreaterThan(0);
+    // Bare variant: a single create CTA, no rows leading anywhere empty,
+    // and no second create CTA at the bottom of the page.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-pick')
         .length,
     ).toBe(0);
-    await act(async () => pressByTestID(tree, 'home-empty-create'));
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
+        .length,
+    ).toBe(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-lessons-create')
+        .length,
+    ).toBe(0);
+    await act(async () => pressByTestID(tree, 'home-starter-first'));
     expect(tabNavigate).toHaveBeenCalledWith('Create');
-    await act(async () => pressByTestID(tree, 'home-empty-try'));
-    expect(tabNavigate).toHaveBeenCalledWith('Lessons', {
-      screen: 'ContentLessonList',
-    });
   });
 
   it('keeps lesson creation off Home (moved to the Create tab)', async () => {
@@ -86,7 +109,7 @@ describe('HomeScreen learning-only layout (SETE-247)', () => {
     }
   });
 
-  it('shows today + recent (no empty card) once data exists', async () => {
+  it('shows starter + today + lessons once a personal lesson exists', async () => {
     const lesson = saveLesson({
       confirmedText: validFullOutput.original_text,
       sourceType: 'paste_text',
@@ -94,8 +117,22 @@ describe('HomeScreen learning-only layout (SETE-247)', () => {
     });
     if (!lesson.ok) throw new Error('Could not seed lesson');
     const tree = await renderHome();
+    // Starter shows create + relearn rows; the pick row stays hidden while
+    // the packaged library is empty.
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-empty-section')
+      tree.root.findAll(node => node.props.testID === 'home-starter-section')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-create')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-pick')
         .length,
     ).toBe(0);
     expect(
@@ -103,17 +140,17 @@ describe('HomeScreen learning-only layout (SETE-247)', () => {
         .length,
     ).toBeGreaterThan(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-recent-section')
+      tree.root.findAll(node => node.props.testID === 'home-lessons-section')
         .length,
     ).toBeGreaterThan(0);
-    // No started lesson → continue block hidden, today block leads.
+    // No started lesson → continue block hidden, starter leads.
     expect(
       tree.root.findAll(node => node.props.testID === 'home-continue-section')
         .length,
     ).toBe(0);
   });
 
-  it('opens the Today screen from the swap entry point', async () => {
+  it('opens the Today screen from the plan entry point', async () => {
     const lesson = saveLesson({
       confirmedText: validFullOutput.original_text,
       sourceType: 'paste_text',
@@ -126,7 +163,7 @@ describe('HomeScreen learning-only layout (SETE-247)', () => {
     expect(nav.navigate).toHaveBeenCalledWith('Today');
   });
 
-  it('shows saved lessons in the recent section and routes taps', async () => {
+  it('shows saved lessons in the lessons section and routes taps', async () => {
     const tabNavigate = jest.fn();
     const nav = navigation(tabNavigate);
     const lesson = saveLesson({
@@ -175,8 +212,8 @@ describe('HomeScreen learning-only layout (SETE-247)', () => {
       ((style.paddingVertical as number) ?? 0) +
       ((style.hitSlop as {top?: number; bottom?: number} | undefined)?.top ??
         0) +
-      ((style.hitSlop as {top?: number; bottom?: number} | undefined)
-        ?.bottom ?? 0);
+      ((style.hitSlop as {top?: number; bottom?: number} | undefined)?.bottom ??
+        0);
     expect(Math.max(minHeight, 18 + verticalPadding)).toBeGreaterThanOrEqual(
       44,
     );
@@ -195,10 +232,13 @@ describe('HomeScreen learning-only layout (SETE-247)', () => {
       tree.root.findAll(node => node.props.testID === 'home-continue-section')
         .length,
     ).toBeGreaterThan(0);
-    // No progress source exists: no bar and no hard-coded 0% label.
+    // The starter card never shows alongside Continue.
     expect(
-      tree.root.findAllByProps({children: '0%'}).length,
+      tree.root.findAll(node => node.props.testID === 'home-starter-section')
+        .length,
     ).toBe(0);
+    // No progress source exists: no bar and no hard-coded 0% label.
+    expect(tree.root.findAllByProps({children: '0%'}).length).toBe(0);
     await act(async () => pressByTestID(tree, 'home-continue-action'));
     expect(nav.navigate).toHaveBeenCalledWith('ContentLessonRuntime', {
       lessonId: packaged.id,
