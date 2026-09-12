@@ -1,4 +1,5 @@
 export {AppThemeProvider} from './ThemeProvider';
+export {ThemedStatusBar} from './ThemedStatusBar';
 export {useAppTheme} from './useAppTheme';
 export type {ThemeContextValue} from './useAppTheme';
 export {

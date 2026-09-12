@@ -1,8 +1,12 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Text} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
+import {ThemeContext} from '@theme/useAppTheme';
+import {defaultTheme} from '@theme/themes/default';
+import {stickerSoftTheme} from '@theme/themes/stickerSoft';
+import type {AppTheme} from '@theme/types';
 import {themeIds, themes} from '@theme/themeRegistry';
 import {ThemePicker} from '../ThemePicker';
 
@@ -87,5 +91,51 @@ describe('ThemePicker', () => {
 
     expect(darkOption.props.accessibilityLabel).toBe(themes.dark.name);
     expect(flattened.minHeight).toBe(44);
+  });
+
+  it('keeps chip geometry identical across themes (SETE-269 P1)', async () => {
+    const chipGeometry = async (theme: AppTheme) => {
+      let tree!: ReactTestRenderer.ReactTestRenderer;
+      await act(async () => {
+        tree = ReactTestRenderer.create(
+          <FeatureFlagProvider releaseName="theme-release">
+            <ThemeContext.Provider
+              value={{
+                theme,
+                themeId: 'default' as never,
+                setThemeId: jest.fn(),
+              }}
+            >
+              <ThemePicker />
+            </ThemeContext.Provider>
+          </FeatureFlagProvider>,
+        );
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+      const chip = StyleSheet.flatten(
+        tree.root.findByProps({testID: 'theme-option-dark'}).props.style,
+      );
+      const label = StyleSheet.flatten(
+        tree.root
+          .findAllByType(Text)
+          .find(node => node.props.children === themes.dark.name)!.props.style,
+      );
+      return {
+        borderRadius: chip.borderRadius,
+        minHeight: chip.minHeight,
+        paddingHorizontal: chip.paddingHorizontal,
+        paddingVertical: chip.paddingVertical,
+        fontSize: label.fontSize,
+        fontWeight: label.fontWeight,
+      };
+    };
+
+    // Sticker previously changed radius, spacing, and type while in use,
+    // moving adjacent targets under the user's finger.
+    expect(await chipGeometry(stickerSoftTheme)).toEqual(
+      await chipGeometry(defaultTheme),
+    );
   });
 });

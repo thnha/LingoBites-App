@@ -11,7 +11,11 @@
  */
 import {useContext} from 'react';
 import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
+import type {AppTheme} from '@theme/types';
+import {ThemeContext} from '@theme/useAppTheme';
 export const FLOATING_TAB_BAR_HEIGHT = 60;
+/** Sticker face height — see `TabBar.tsx` (`height: theme.shelf ? 66`). */
+export const STICKER_TAB_BAR_FACE_HEIGHT = 66;
 // Small lift above the bottom safe-area so the pill breathes —
 // per SETE-214 review feedback.
 export const FLOATING_TAB_BAR_BOTTOM_GAP = 8;
@@ -19,9 +23,27 @@ export const FLOATING_TAB_BAR_HORIZONTAL_MARGIN = 16;
 /** Breathing room between the last feed row and the floating pill. */
 export const FLOATING_TAB_BAR_CONTENT_GAP = 16;
 
-export function getFloatingTabBarClearance(bottomInset: number): number {
+/**
+ * Rendered vertical footprint of the floating bar for a theme: face
+ * height plus the shelf it casts (SETE-269 P1). Sticker renders a
+ * 66pt face with a 7pt shelf (73pt total); every other theme renders
+ * the standard 60pt face with no shelf.
+ */
+export function getTabBarVisualHeight(theme?: AppTheme): number {
+  if (theme?.shelf) {
+    return (
+      STICKER_TAB_BAR_FACE_HEIGHT + (theme.shelf.tabBar?.height ?? 0)
+    );
+  }
+  return FLOATING_TAB_BAR_HEIGHT;
+}
+
+export function getFloatingTabBarClearance(
+  bottomInset: number,
+  barHeight: number = FLOATING_TAB_BAR_HEIGHT,
+): number {
   return (
-    FLOATING_TAB_BAR_HEIGHT +
+    barHeight +
     FLOATING_TAB_BAR_BOTTOM_GAP +
     bottomInset +
     FLOATING_TAB_BAR_CONTENT_GAP
@@ -32,11 +54,17 @@ export function getFloatingTabBarClearance(bottomInset: number): number {
  * Safe `useSafeAreaInsets().bottom`-based clearance for feed screens.
  * Reads `SafeAreaInsetsContext` directly so screens render outside a
  * `SafeAreaProvider` (e.g. Jest) fall back to a zero inset instead of
- * throwing like `useSafeAreaInsets()` does.
+ * throwing like `useSafeAreaInsets()` does. The bar height follows the
+ * active theme (Sticker is taller); outside a theme provider it falls
+ * back to the standard height instead of throwing like `useAppTheme()`.
  */
 export function useFloatingTabBarClearance(): number {
   const insets = useContext(SafeAreaInsetsContext);
-  return getFloatingTabBarClearance(insets?.bottom ?? 0);
+  const themeValue = useContext(ThemeContext);
+  return getFloatingTabBarClearance(
+    insets?.bottom ?? 0,
+    getTabBarVisualHeight(themeValue?.theme),
+  );
 }
 
 /**

@@ -14,6 +14,18 @@ import {
 
 type PickerOption = {id: ThemePreference; label: string};
 
+/**
+ * Fixed preview-control geometry (SETE-269 P1). These chips must keep a
+ * stable layout while they are being used, so radius, padding, and type
+ * are constants — not inherited from the theme being selected (which
+ * previously moved targets under the user's finger when switching).
+ * Colors still follow the active theme for selected-state feedback.
+ */
+const PICKER_CHIP_RADIUS = 999;
+const PICKER_CHIP_PADDING_HORIZONTAL = 16;
+const PICKER_CHIP_PADDING_VERTICAL = 10;
+const PICKER_CHIP_FONT_SIZE = 14;
+
 export function ThemePicker() {
   const {theme, themeId, setThemeId} = useAppTheme();
   const {isFeatureEnabled} = useFeatureFlags();
@@ -59,10 +71,10 @@ export function ThemePicker() {
               styles.chip,
               {
                 borderColor: theme.colors.border,
-                borderRadius: theme.radius.pill,
+                borderRadius: PICKER_CHIP_RADIUS,
                 minHeight: 44,
-                paddingHorizontal: theme.spacing.md,
-                paddingVertical: theme.spacing.sm,
+                paddingHorizontal: PICKER_CHIP_PADDING_HORIZONTAL,
+                paddingVertical: PICKER_CHIP_PADDING_VERTICAL,
               },
               selected && {
                 backgroundColor: theme.colors.primary,
@@ -75,8 +87,8 @@ export function ThemePicker() {
                 color: selected
                   ? theme.colors.text.inverse
                   : theme.colors.text.secondary,
-                fontSize: theme.typography.size.sm,
-                fontWeight: theme.typography.weight.medium,
+                fontSize: PICKER_CHIP_FONT_SIZE,
+                fontWeight: '600',
               }}
             >
               {label}

@@ -14,7 +14,9 @@ import {
   FLOATING_TAB_BAR_CONTENT_GAP,
   FLOATING_TAB_BAR_HEIGHT,
   getFloatingTabBarClearance,
+  getTabBarVisualHeight,
 } from '../tabBarMetrics';
+import {stickerSoftTheme} from '@theme/themes/stickerSoft';
 
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({top: 0, bottom: 20, left: 0, right: 0}),
@@ -107,6 +109,23 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(pill.width).toBe('92%');
     expect(pill.minWidth).toBe(240);
     expect(pill.maxWidth).toBe(380);
+  });
+
+  it('stretches the pill container so the 92% face covers all 4 tabs', () => {
+    const {tree} = renderBar(defaultTheme);
+    // The face width is a percentage: it only resolves against a
+    // full-width container. Without the stretch the container
+    // shrink-wraps to content (~264pt), cramming the tabs and pushing
+    // "Hồ sơ" past the pill edge on iPhone 17 Pro.
+    const container = StyleSheet.flatten(
+      tree.root.findByProps({testID: 'tab-bar-container'}).props.style,
+    );
+    expect(container.alignSelf).toBe('stretch');
+    expect(container.alignItems).toBe('center');
+    // iPhone 17 Pro (402pt): (402 − 2×16 margin) × 92% ≈ 340pt face,
+    // ≈ 83pt per tab — comfortably above the 64pt tab minimum.
+    const faceWidth = (402 - 2 * 16) * 0.92;
+    expect((faceWidth - 2 * 4) / 4).toBeGreaterThan(64);
   });
 
   it('fits 4 minimum-width tabs inside the 320pt-screen inner pill', () => {
@@ -219,8 +238,9 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(findIndicatorHosts()).toHaveLength(1);
     expect(indicatorStyleOf().backgroundColor).toBe(defaultTheme.colors.accent);
     expect(indicatorStyleOf().borderRadius).toBe(defaultTheme.radius.pill);
-    expect(indicatorStyleOf().width).toBe(100);
-    expect(indicatorStyleOf().transform).toEqual([{translateX: 0}]);
+    // 6pt symmetric inset inside the measured 100pt slot.
+    expect(indicatorStyleOf().width).toBe(88);
+    expect(indicatorStyleOf().transform).toEqual([{translateX: 6}]);
 
     for (const testID of [
       'tab-bar-item-Home',
@@ -320,17 +340,62 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     };
 
     showTab(1);
-    expect(indicatorStyleOf().transform).toEqual([{translateX: 100}]);
+    expect(indicatorStyleOf().transform).toEqual([{translateX: 106}]);
 
     const reduceMotionSpy = jest
       .spyOn(Reanimated, 'useReducedMotion')
       .mockReturnValue(true);
     try {
       showTab(2);
-      expect(indicatorStyleOf().transform).toEqual([{translateX: 200}]);
+      expect(indicatorStyleOf().transform).toEqual([{translateX: 206}]);
     } finally {
       reduceMotionSpy.mockRestore();
     }
+  });
+
+  it('keeps the Sticker indicator for the last tab inside the tab row (SETE-269 P0)', () => {
+    const {tree} = renderBar(stickerSoftTheme, makeProps(3));
+    measureFirstTab(tree, 100);
+
+    const indicatorStyle = StyleSheet.flatten(
+      tree.root.findByProps({testID: 'tab-bar-indicator'}).props.style,
+    );
+    const pillStyle = StyleSheet.flatten(
+      tree.root.findByProps({testID: 'tab-bar-glass'}).props.style,
+    );
+    const tabWidth = 100;
+    const tabCount = 4;
+    const rowStart = pillStyle.paddingHorizontal as number;
+    const indicatorStart =
+      (indicatorStyle.left as number) +
+      (indicatorStyle.transform as [{translateX: number}])[0].translateX;
+    const indicatorEnd = indicatorStart + (indicatorStyle.width as number);
+    // Symmetric 6pt inset: starts inside the first slot ...
+    expect(indicatorStart).toBeGreaterThanOrEqual(rowStart);
+    expect(indicatorStart).toBe(rowStart + 3 * tabWidth + 6);
+    // ... and the last indicator ends inside the tab row, not past it.
+    expect(indicatorEnd).toBeLessThanOrEqual(rowStart + tabCount * tabWidth);
+  });
+
+  it('keeps the selected capsule the same height across themes (SETE-269 follow-up)', () => {
+    // The Sticker face is taller (66pt vs ~60pt); a deeper vertical
+    // inset keeps the capsule at 50pt so it reads as separated from
+    // the shelf instead of merged with it.
+    const {tree: stickerTree} = renderBar(stickerSoftTheme);
+    measureFirstTab(stickerTree);
+    const stickerIndicator = StyleSheet.flatten(
+      stickerTree.root.findByProps({testID: 'tab-bar-indicator'}).props.style,
+    );
+    expect(stickerIndicator.top).toBe(8);
+    expect(stickerIndicator.bottom).toBe(8);
+
+    const {tree: defaultTree} = renderBar(defaultTheme);
+    measureFirstTab(defaultTree);
+    const defaultIndicator = StyleSheet.flatten(
+      defaultTree.root.findByProps({testID: 'tab-bar-indicator'}).props.style,
+    );
+    expect(defaultIndicator.top).toBe(5);
+    expect(defaultIndicator.bottom).toBe(5);
   });
 
   it.each([

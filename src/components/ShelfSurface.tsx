@@ -18,6 +18,7 @@ interface ShelfSurfaceProps {
   preserveShelfSpace?: boolean; // e.g. for loading state where we keep shelf
   children: React.ReactNode;
   containerStyle?: StyleProp<ViewStyle>;
+  containerTestID?: string;
   faceStyle?: StyleProp<ViewStyle>;
   faceTestID?: string;
 }
@@ -31,6 +32,7 @@ export function ShelfSurface({
   preserveShelfSpace = false,
   children,
   containerStyle,
+  containerTestID,
   faceStyle,
   faceTestID,
 }: ShelfSurfaceProps) {
@@ -64,7 +66,7 @@ export function ShelfSurface({
     : (isPressed && reduceMotion ? theme.states.pressedOpacity : 1);
 
   return (
-    <View style={[containerStyle, { paddingBottom: showShelf ? shelfHeight : 0, marginTop: (!showShelf && hasShelf) ? shelfHeight : 0 }]}>
+    <View testID={containerTestID} style={[containerStyle, { paddingBottom: showShelf ? shelfHeight : 0, marginTop: (!showShelf && hasShelf) ? shelfHeight : 0 }]}>
       {showShelf && (
         <View
           style={[

@@ -38,6 +38,19 @@ const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
 const TAB_ITEM_HIT_SLOP = {top: 8, bottom: 8, left: 8, right: 8};
 const TAB_ICON_SIZE = 21;
 const INDICATOR_DURATION_MS = 200;
+/**
+ * Symmetric inset of the sliding indicator inside each tab slot
+ * (SETE-269 P0). The indicator previously spanned the full measured
+ * slot width from a 6pt base offset, so the last (Profile) indicator
+ * ended outside the tab row and the Sticker pill looked broken.
+ */
+const INDICATOR_INSET = 6;
+/**
+ * Horizontal padding of the pill face where the tab row starts. The
+ * indicator's base offset must match it or every tab misaligns by the
+ * difference (and the last one escapes the row).
+ */
+const PILL_CONTENT_PADDING = 4;
 
 type TabBarProps = BottomTabBarProps & {
   /**
@@ -201,8 +214,10 @@ export function TabBar({
   }, [progress, reducedMotion, state.index]);
 
   const indicatorAnimatedStyle = useAnimatedStyle(() => ({
-    width: tabWidth.value,
-    transform: [{translateX: progress.value * tabWidth.value}],
+    width: Math.max(tabWidth.value - INDICATOR_INSET * 2, 0),
+    transform: [
+      {translateX: progress.value * tabWidth.value + INDICATOR_INSET},
+    ],
   }));
 
   const handleTabLayout = (event: LayoutChangeEvent) => {
@@ -233,6 +248,8 @@ export function TabBar({
         shelfHeight={theme.shelf?.tabBar?.height}
         shelfColor={theme.shelf?.tabBar?.color}
         borderRadius={theme.radius.pill}
+        containerStyle={styles.shelfContainer}
+        containerTestID="tab-bar-container"
         faceTestID={glassFallback ? 'tab-bar-fallback' : 'tab-bar-glass'}
         faceStyle={[
           styles.pill,
@@ -332,6 +349,15 @@ function makeStyles(theme: AppTheme) {
       position: 'absolute',
       right: 0,
     },
+    shelfContainer: {
+      // The pill face sizes itself as 92% of the screen width. That
+      // percentage only resolves when this container spans the wrap:
+      // previously it shrink-wrapped to content, collapsing the bar to
+      // ~264pt (4 x 64pt min-width) and pushing "Hồ sơ" past the pill
+      // edge on iPhone 17 Pro instead of the designed ~340pt.
+      alignSelf: 'stretch',
+      alignItems: 'center',
+    },
     pill: {
       alignItems: 'center',
       borderRadius: theme.radius.pill,
@@ -349,7 +375,8 @@ function makeStyles(theme: AppTheme) {
       // NOTE: no `overflow: 'hidden'` here — on iOS it clips the shadow
       // and the pill loses all lift (SETE-214 screenshot feedback).
       // Children are all inside the bounds so nothing needs clipping.
-      paddingHorizontal: 4,
+      // Keep in sync with PILL_CONTENT_PADDING (indicator base offset).
+      paddingHorizontal: PILL_CONTENT_PADDING,
       paddingVertical: 5,
       shadowColor: '#0a0a28',
       shadowOffset: {width: 0, height: 10},
@@ -359,10 +386,16 @@ function makeStyles(theme: AppTheme) {
     indicator: {
       backgroundColor: theme.colors.accent,
       borderRadius: theme.radius.pill,
-      bottom: 5,
-      left: 6,
+      // The Sticker face is taller (66pt vs ~60pt). A deeper vertical
+      // inset keeps the selected capsule the same 50pt height as other
+      // themes, leaving clear breathing room so the highlight never
+      // reads as merged with the shelf below (SETE-269 follow-up).
+      bottom: theme.shelf ? 8 : 5,
+      // Aligns with the tab row start (pill horizontal padding); the
+      // worklet adds INDICATOR_INSET so the fill sits inside each slot.
+      left: PILL_CONTENT_PADDING,
       position: 'absolute',
-      top: 5,
+      top: theme.shelf ? 8 : 5,
     },
     gloss: {
       borderTopLeftRadius: theme.radius.pill,
