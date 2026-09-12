@@ -23,14 +23,17 @@ export const FeatureFlagContext = createContext<FeatureFlagContextValue | null>(
 type FeatureFlagProviderProps = {
   children: React.ReactNode;
   releaseName?: ReleaseConfigName;
+  /** Synthetic config for tests; bypasses preset manifest lookup. */
+  releaseConfig?: ReleaseConfig;
 };
 
 export function FeatureFlagProvider({
   children,
   releaseName = DEFAULT_RELEASE_NAME,
+  releaseConfig,
 }: FeatureFlagProviderProps) {
   const value = useMemo(() => {
-    const config = getReleaseConfig(releaseName);
+    const config = releaseConfig ?? getReleaseConfig(releaseName);
     const validation = validateReleaseConfig(
       config,
       featureRegistry,
@@ -39,7 +42,7 @@ export function FeatureFlagProvider({
 
     if (!validation.valid) {
       throw new Error(
-        `Invalid release config "${releaseName}":\n${validation.errors.join(
+        `Invalid release config "${config.releaseName}":\n${validation.errors.join(
           '\n',
         )}`,
       );
@@ -50,7 +53,7 @@ export function FeatureFlagProvider({
       config,
       isFeatureEnabled: (key: FeatureKey) => Boolean(config.features[key]),
     };
-  }, [releaseName]);
+  }, [releaseName, releaseConfig]);
 
   return (
     <FeatureFlagContext.Provider value={value}>

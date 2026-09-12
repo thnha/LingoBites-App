@@ -1,75 +1,19 @@
 import {featureDependencies} from '../feature-dependencies';
 import {featureRegistry} from '../feature-registry';
-import {getReleaseConfig} from '../release-manifest';
+import {getReleaseConfig, listReleaseConfigNames} from '../release-manifest';
+import {
+  CORE_BETA_WITHOUT_REVIEW,
+  makeTestReleaseConfig,
+} from '@/test-support';
 import {validateReleaseConfig} from '../validate-release-config';
 
 describe('validateReleaseConfig', () => {
-  it('accepts close-beta-1 preset', () => {
-    const config = getReleaseConfig('close-beta-1');
-    const result = validateReleaseConfig(
-      config,
-      featureRegistry,
-      featureDependencies,
-    );
-    expect(result.valid).toBe(true);
-    expect(result.errors).toEqual([]);
+  it('exposes exactly dev and production presets', () => {
+    expect(listReleaseConfigNames()).toEqual(['dev', 'production']);
   });
 
-  it('accepts theme-release preset', () => {
-    const config = getReleaseConfig('theme-release');
-    const result = validateReleaseConfig(
-      config,
-      featureRegistry,
-      featureDependencies,
-    );
-    expect(result.valid).toBe(true);
-  });
-
-  it('accepts mini-game-release preset', () => {
-    const config = getReleaseConfig('mini-game-release');
-    const result = validateReleaseConfig(
-      config,
-      featureRegistry,
-      featureDependencies,
-    );
-    expect(result.valid).toBe(true);
-  });
-
-  it('accepts situation-learning-release preset', () => {
-    const config = getReleaseConfig('situation-learning-release');
-    const result = validateReleaseConfig(
-      config,
-      featureRegistry,
-      featureDependencies,
-    );
-    expect(result.valid).toBe(true);
-  });
-
-  it('accepts lingobites-mvp preset with review enabled and legacy ingestion disabled', () => {
-    const config = getReleaseConfig('lingobites-mvp');
-    const result = validateReleaseConfig(
-      config,
-      featureRegistry,
-      featureDependencies,
-    );
-    expect(result.valid).toBe(true);
-    expect(result.errors).toEqual([]);
-
-    // The MVP keeps the saved-lesson + review path so the offline review flow
-    // is reachable, while disabling legacy OCR/AI/paste ingestion.
-    expect(config.features.reviewSystem).toBe(true);
-    expect(config.features.lingobitesMvpReviewFlow).toBe(true);
-    expect(config.features.lessonResultView).toBe(true);
-    expect(config.features.lessonSave).toBe(true);
-    expect(config.features.lessonHistory).toBe(true);
-    expect(config.features.pasteTextInput).toBe(false);
-    expect(config.features.imageInput).toBe(false);
-    expect(config.features.ocrScanner).toBe(false);
-    expect(config.features.aiLessonAnalysis).toBe(false);
-  });
-
-  it('accepts all-features preset with every implemented feature enabled', () => {
-    const config = getReleaseConfig('all-features');
+  it('accepts dev preset with every implemented feature enabled', () => {
+    const config = getReleaseConfig('dev');
     const result = validateReleaseConfig(
       config,
       featureRegistry,
@@ -82,16 +26,46 @@ describe('validateReleaseConfig', () => {
     // validator never reports "Cannot enable ... not_implemented".
     for (const entry of featureRegistry) {
       if (entry.status === 'not_implemented') {
-        expect(config.features[entry.key]).toBe(false);
+        expect(Boolean(config.features[entry.key])).toBe(false);
       } else {
         expect(config.features[entry.key]).toBe(true);
       }
     }
+    expect(config.features.stickerSoftTheme).toBe(true);
     expect(config.features.lessonV2).toBe(true);
+    expect(config.features.youtubeLearning).toBe(true);
+  });
+
+  it('accepts production preset with every implemented feature enabled', () => {
+    const config = getReleaseConfig('production');
+    const result = validateReleaseConfig(
+      config,
+      featureRegistry,
+      featureDependencies,
+    );
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+
+    for (const entry of featureRegistry) {
+      if (entry.status === 'not_implemented') {
+        expect(Boolean(config.features[entry.key])).toBe(false);
+      } else {
+        expect(config.features[entry.key]).toBe(true);
+      }
+    }
+    expect(config.features.stickerSoftTheme).toBe(true);
+    expect(config.features.lessonV2).toBe(true);
+    expect(config.features.youtubeLearning).toBe(true);
+  });
+
+  it('keeps dev and production feature maps identical', () => {
+    const dev = getReleaseConfig('dev');
+    const production = getReleaseConfig('production');
+    expect(production.features).toEqual(dev.features);
   });
 
   it('rejects miniGame when lessonSave is disabled', () => {
-    const config = getReleaseConfig('close-beta-1');
+    const config = makeTestReleaseConfig(CORE_BETA_WITHOUT_REVIEW);
     const result = validateReleaseConfig(
       {
         ...config,
@@ -110,7 +84,7 @@ describe('validateReleaseConfig', () => {
   });
 
   it('rejects reviewSystem when lessonSave is disabled', () => {
-    const config = getReleaseConfig('close-beta-1');
+    const config = makeTestReleaseConfig(CORE_BETA_WITHOUT_REVIEW);
     const result = validateReleaseConfig(
       {
         ...config,
@@ -130,7 +104,7 @@ describe('validateReleaseConfig', () => {
   });
 
   it('rejects unknown feature keys', () => {
-    const config = getReleaseConfig('close-beta-1');
+    const config = makeTestReleaseConfig(CORE_BETA_WITHOUT_REVIEW);
     const result = validateReleaseConfig(
       {
         ...config,
@@ -152,7 +126,15 @@ describe('validateReleaseConfig', () => {
 import {DEFAULT_RELEASE_NAME} from '../release-manifest';
 
 describe('DEFAULT_RELEASE_NAME', () => {
-  it('remains lingobites-mvp', () => {
-    expect(DEFAULT_RELEASE_NAME).toBe('lingobites-mvp');
+  it('remains production', () => {
+    expect(DEFAULT_RELEASE_NAME).toBe('production');
+  });
+});
+
+describe('stickerSoftTheme rollout (SETE-268)', () => {
+  it('is enabled in every release preset', () => {
+    for (const name of listReleaseConfigNames()) {
+      expect(getReleaseConfig(name).features.stickerSoftTheme).toBe(true);
+    }
   });
 });

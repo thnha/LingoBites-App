@@ -3,6 +3,8 @@ import {Alert} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, CORE_BETA_WITHOUT_REVIEW, CORE_WITH_REVIEW} from '@/test-support';
+import type {FeatureKey} from '@/release/feature-registry';
 import {AppThemeProvider} from '@theme';
 import {DB_NAME} from '@shared/db/constants';
 import {resetDatabaseForTests} from '@shared/db/database';
@@ -16,14 +18,12 @@ const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
 
 async function renderScreen(
   ui: React.ReactElement,
-  releaseName:
-    | 'situation-learning-release'
-    | 'close-beta-1' = 'situation-learning-release',
+  flags: Partial<Record<FeatureKey, boolean>> = CORE_WITH_REVIEW,
 ) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName={releaseName}>
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(flags)}>
         <AppThemeProvider>{ui}</AppThemeProvider>
       </FeatureFlagProvider>,
     );
@@ -50,8 +50,10 @@ describe('FlashcardListScreen', () => {
   });
 
   it('renders disabled error card when reviewSystem feature flag is disabled', async () => {
-    // 'close-beta-1' release config has reviewSystem = false
-    const tree = await renderScreen(<FlashcardListScreen />, 'close-beta-1');
+    const tree = await renderScreen(
+      <FlashcardListScreen />,
+      CORE_BETA_WITHOUT_REVIEW,
+    );
 
     const errorCards = tree.root.findAllByProps({
       message: 'Tính năng ôn tập hiện chưa được bật.',

@@ -2,6 +2,7 @@ import React from 'react';
 import {Alert} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, CORE_WITH_REVIEW} from '@/test-support';
 import {validFullOutput} from '@shared/fixtures';
 import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
@@ -99,7 +100,7 @@ describe('SavedLessonDetailScreen', () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider releaseName="situation-learning-release">
+        <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
           <AppThemeProvider>
             <SavedLessonDetailScreen navigation={navigation} route={route} />
           </AppThemeProvider>
@@ -156,7 +157,7 @@ describe('SavedLessonDetailScreen', () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider releaseName="situation-learning-release">
+        <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
           <AppThemeProvider>
             <SavedLessonDetailScreen navigation={navigation} route={route} />
           </AppThemeProvider>
@@ -197,7 +198,7 @@ describe('SavedLessonDetailScreen', () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider releaseName="situation-learning-release">
+        <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
           <AppThemeProvider>
             <SavedLessonDetailScreen navigation={navigation} route={route} />
           </AppThemeProvider>

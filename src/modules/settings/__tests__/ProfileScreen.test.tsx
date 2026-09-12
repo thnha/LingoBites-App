@@ -2,6 +2,7 @@ import React from 'react';
 import {Alert, Linking, Text} from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, OFFLINE_REVIEW_MVP} from '@/test-support';
 import {AppThemeProvider} from '@theme';
 import {ProfileScreen} from '../ProfileScreen';
 
@@ -183,7 +184,7 @@ describe('ProfileScreen', () => {
 
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider releaseName="lingobites-mvp">
+        <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(OFFLINE_REVIEW_MVP)}>
           <AppThemeProvider>
             <ProfileScreen navigation={navigation} route={route} />
           </AppThemeProvider>

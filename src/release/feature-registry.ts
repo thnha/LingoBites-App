@@ -66,14 +66,6 @@ export const featureRegistry = [
     entryPoint: 'HomeScreen -> PasteText',
   },
   {
-    key: 'lingobitesMvpReviewFlow',
-    module: 'app/navigation',
-    required: false,
-    releaseGroup: 'foundation',
-    status: 'ready',
-    entryPoint: 'HomeScreen -> PasteText',
-  },
-  {
     key: 'shortPractice',
     module: 'modules/practice',
     required: false,

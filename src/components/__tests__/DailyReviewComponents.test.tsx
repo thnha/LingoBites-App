@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, CORE_WITH_REVIEW} from '@/test-support';
 import {AppThemeProvider} from '@theme';
 import {Banner} from '../Banner';
 import {RatingControl} from '../RatingControl';
@@ -10,7 +11,7 @@ async function render(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName="situation-learning-release">
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
         <AppThemeProvider>{ui}</AppThemeProvider>
       </FeatureFlagProvider>,
     );

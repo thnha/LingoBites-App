@@ -11,12 +11,11 @@ describe('lessonV2 feature flag (SETE-159 T17 / AC24)', () => {
     expect(entry?.status).toBe('beta');
   });
 
-  it('keeps lessonV2 disabled in legacy presets and enables only lesson-v2-beta and all-features', () => {
+  it('enables lessonV2 in both dev and production presets', () => {
+    expect(listReleaseConfigNames()).toEqual(['dev', 'production']);
     for (const name of listReleaseConfigNames()) {
       const config = getReleaseConfig(name);
-      expect(config.features.lessonV2).toBe(
-        name === 'lesson-v2-beta' || name === 'all-features',
-      );
+      expect(config.features.lessonV2).toBe(true);
       const result = validateReleaseConfig(
         config,
         featureRegistry,
@@ -27,8 +26,8 @@ describe('lessonV2 feature flag (SETE-159 T17 / AC24)', () => {
     }
   });
 
-  it('enables the complete OCR and Lesson V2 route capability set in lesson-v2-beta', () => {
-    const config = getReleaseConfig('lesson-v2-beta');
+  it('enables the complete OCR and Lesson V2 route capability set in production', () => {
+    const config = getReleaseConfig('production');
 
     expect(config.features.imageInput).toBe(true);
     expect(config.features.ocrScanner).toBe(true);

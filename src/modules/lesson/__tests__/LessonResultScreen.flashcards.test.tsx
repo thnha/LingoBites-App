@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactTestRenderer from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, CORE_WITH_REVIEW} from '@/test-support';
 import type {CreateStackParamList} from '@/app/navigation/types';
 import {AppThemeProvider} from '@theme';
 import {DB_NAME} from '@shared/db/constants';
@@ -51,7 +52,7 @@ describe('LessonResultScreen flashcard save UI', () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider releaseName="situation-learning-release">
+        <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
           <AppThemeProvider>
             <LessonResultScreen navigation={navigation} route={route} />
           </AppThemeProvider>

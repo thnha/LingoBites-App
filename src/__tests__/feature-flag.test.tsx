@@ -8,7 +8,14 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
-import {FeatureFlagProvider, getReleaseConfig} from '../release';
+import {FeatureFlagProvider} from '../release';
+import {
+  CORE_BETA_WITHOUT_REVIEW,
+  CORE_WITH_REVIEW,
+  makeTestReleaseConfig,
+  OFFLINE_REVIEW_MVP,
+} from '../test-support';
+import type {FeatureKey} from '../release/feature-registry';
 import {DB_NAME} from '../shared/db/constants';
 import {resetDatabaseForTests} from '../shared/db/database';
 import {saveFlashcard} from '../shared/db/FlashcardRepository';
@@ -24,12 +31,12 @@ const renderedTrees: ReactTestRenderer.ReactTestRenderer[] = [];
 
 async function renderWithFlag(
   ui: React.ReactElement,
-  releaseName: 'situation-learning-release' | 'close-beta-1',
+  flags: Partial<Record<FeatureKey, boolean>>,
 ) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName={releaseName}>
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(flags)}>
         <AppThemeProvider>{ui}</AppThemeProvider>
       </FeatureFlagProvider>,
     );
@@ -65,11 +72,11 @@ describe('Feature Flag: reviewSystem', () => {
 
   describe('DailyReviewScreen', () => {
     it('shows disabled message when reviewSystem flag is OFF', async () => {
-      // Render with close-beta-1 release (reviewSystem disabled)
+      // Render with reviewSystem disabled
       const nav = createMockNavigation();
       const tree = await renderWithFlag(
         <DailyReviewScreen navigation={nav as never} />,
-        'close-beta-1',
+        CORE_BETA_WITHOUT_REVIEW,
       );
 
       // Should show error card about feature being disabled
@@ -107,11 +114,11 @@ describe('Feature Flag: reviewSystem', () => {
         });
       }
 
-      // Render with situation-learning-release (reviewSystem enabled)
+      // Render with reviewSystem enabled
       const nav = createMockNavigation();
       const tree = await renderWithFlag(
         <DailyReviewScreen navigation={nav as never} />,
-        'situation-learning-release',
+        CORE_WITH_REVIEW,
       );
 
       // Should show review UI
@@ -138,7 +145,7 @@ describe('Feature Flag: reviewSystem', () => {
       const nav = createMockNavigation();
       const tree = await renderWithFlag(
         <FlashcardListScreen navigation={nav as never} />,
-        'close-beta-1',
+        CORE_BETA_WITHOUT_REVIEW,
       );
 
       // Should show error card about feature being disabled
@@ -167,7 +174,7 @@ describe('Feature Flag: reviewSystem', () => {
       const nav = createMockNavigation();
       const tree = await renderWithFlag(
         <FlashcardListScreen navigation={nav as never} />,
-        'situation-learning-release',
+        CORE_WITH_REVIEW,
       );
 
       // Should NOT show disabled message
@@ -187,7 +194,7 @@ describe('Feature Flag: reviewSystem', () => {
 
   describe('HomeScreen integration', () => {
     it('does not mount OCR or Progressive Lesson routes when their flags are OFF', () => {
-      const mvpFeatures = getReleaseConfig('lingobites-mvp').features;
+      const mvpFeatures = makeTestReleaseConfig(OFFLINE_REVIEW_MVP).features;
 
       expect(isIngestionRouteEnabled('ImageCapture', mvpFeatures)).toBe(false);
       expect(isIngestionRouteEnabled('OCRReview', mvpFeatures)).toBe(false);

@@ -2,6 +2,7 @@ import React from 'react';
 import {Pressable, StyleSheet, TextInput} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, THEME_UI_FLAGS} from '@/test-support';
 import {AppThemeProvider} from '@theme';
 import {AppButton} from '../AppButton';
 import {Chip} from '../Chip';
@@ -18,7 +19,7 @@ async function render(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName="theme-release">
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(THEME_UI_FLAGS)}>
         <AppThemeProvider>{ui}</AppThemeProvider>
       </FeatureFlagProvider>,
     );

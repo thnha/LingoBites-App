@@ -4,6 +4,8 @@ import ReactTestRenderer from 'react-test-renderer';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, CORE_BETA_WITHOUT_REVIEW, CORE_WITH_REVIEW} from '@/test-support';
+import type {FeatureKey} from '@/release/feature-registry';
 import {validFullOutput} from '@shared/fixtures';
 import type {LessonsStackParamList} from '@/app/navigation/types';
 import {AppThemeProvider} from '@theme';
@@ -31,12 +33,12 @@ function testNavigation<RouteName extends keyof LessonsStackParamList>() {
 
 function render(
   node: React.ReactElement,
-  releaseName: 'close-beta-1' | 'situation-learning-release' = 'close-beta-1',
+  flags: Partial<Record<FeatureKey, boolean>> = CORE_BETA_WITHOUT_REVIEW,
 ) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   ReactTestRenderer.act(() => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName={releaseName}>
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(flags)}>
         <AppThemeProvider>{node}</AppThemeProvider>
       </FeatureFlagProvider>,
     );
@@ -136,7 +138,7 @@ describe('learning detail screens', () => {
         navigation={testNavigation<'WordDetail'>()}
         route={route}
       />,
-      'situation-learning-release',
+      CORE_WITH_REVIEW,
     );
 
     const saveButton = tree.root.findByProps({accessibilityLabel: 'Lưu từ'});
@@ -201,7 +203,7 @@ describe('learning detail screens', () => {
         navigation={testNavigation<'WordDetail'>()}
         route={route}
       />,
-      'situation-learning-release',
+      CORE_WITH_REVIEW,
     );
 
     await ReactTestRenderer.act(async () => {
@@ -239,7 +241,7 @@ describe('learning detail screens', () => {
         navigation={testNavigation<'WordDetail'>()}
         route={secondRoute}
       />,
-      'situation-learning-release',
+      CORE_WITH_REVIEW,
     );
 
     await ReactTestRenderer.act(async () => {

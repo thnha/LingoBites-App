@@ -54,13 +54,14 @@ export type ThemePreference = ThemeId | SystemThemeId;
 export const SYSTEM_THEME_LABEL = 'Theo hệ thống';
 
 /**
- * The production theme picker offers exactly these three options.
+ * The production theme picker offers exactly these four options.
  * Experimental themes (pastel-kids, core, neo, comic, cartoon) stay
  * available in dev builds only.
  */
 export const productionThemeOptions: readonly ThemePreference[] = [
   'default',
   'dark',
+  'sticker-soft',
   SYSTEM_THEME_ID,
 ];
 

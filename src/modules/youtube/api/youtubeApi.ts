@@ -11,6 +11,7 @@ import {
 
 const POLL_INTERVAL_MS = 1_000;
 const POLL_DEADLINE_MS = 75_000;
+const FETCH_TIMEOUT_MS = 10_000;
 
 export type YouTubeJobProgress = {percent: number; stage: string | null};
 export type YouTubeJobResult =
@@ -62,6 +63,34 @@ function errorMessage(code: string): string {
   return translated === key ? i18n.t('errors.youtube_failed') : translated;
 }
 
+function isAborted(signal?: AbortSignal): boolean {
+  return signal?.aborted === true;
+}
+
+const cancelledResult = (): YouTubeJobResult => ({ok: false, cancelled: true});
+
+/**
+ * Bounds a single fetch call so a hung request can't outlive the overall
+ * poll deadline. The returned signal aborts when either the caller's own
+ * `externalSignal` aborts (user cancellation) or `timeoutMs` elapses
+ * (internal watchdog) — callers distinguish the two after the fact by
+ * checking whether `externalSignal` itself is aborted.
+ */
+function withTimeout(
+  timeoutMs: number,
+  externalSignal: AbortSignal | undefined,
+): {signal: AbortSignal; cleanup: () => void} {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const onExternalAbort = () => controller.abort();
+  externalSignal?.addEventListener('abort', onExternalAbort, {once: true});
+  const cleanup = () => {
+    clearTimeout(timer);
+    externalSignal?.removeEventListener('abort', onExternalAbort);
+  };
+  return {signal: controller.signal, cleanup};
+}
+
 function wait(ms: number, signal?: AbortSignal): Promise<boolean> {
   return new Promise(resolve => {
     if (signal?.aborted) return resolve(false);
@@ -77,39 +106,74 @@ function wait(ms: number, signal?: AbortSignal): Promise<boolean> {
   });
 }
 
+type WaitOutcome = 'continue' | 'cancelled' | 'timeout';
+
+/**
+ * Waits up to `ms` (clamped to the remaining time before `deadline`) before
+ * the next poll attempt. Every caller in the polling loop needs the same
+ * "did the deadline already pass / did the caller cancel" decision, so this
+ * is the single place that makes it.
+ */
+async function waitBeforeNextAttempt(
+  ms: number,
+  deadline: number,
+  signal?: AbortSignal,
+): Promise<WaitOutcome> {
+  if (Date.now() >= deadline) {
+    return 'timeout';
+  }
+  const clamped = Math.min(ms, deadline - Date.now());
+  const completed = await wait(clamped, signal);
+  return completed ? 'continue' : 'cancelled';
+}
+
+function isTransientStatus(status: number): boolean {
+  return status === 429 || status >= 500;
+}
+
 export async function runYouTubeJob(
   url: string,
   cues?: RawCue[],
   onProgress?: (progress: YouTubeJobProgress) => void,
   signal?: AbortSignal,
 ): Promise<YouTubeJobResult> {
-  if (signal?.aborted) return {ok: false, cancelled: true};
+  if (isAborted(signal)) return cancelledResult();
   const {apiBaseUrl} = getAppConfig();
+  const deadline = Date.now() + POLL_DEADLINE_MS;
   let response: Response;
   try {
-    response = await fetch(`${apiBaseUrl}/v1/youtube/transcripts`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Idempotency-Key': createRequestId(),
-      },
-      body: JSON.stringify(cues ? {url, transcript: {cues}} : {url}),
+    const {signal: fetchSignal, cleanup} = withTimeout(
+      Math.min(FETCH_TIMEOUT_MS, deadline - Date.now()),
       signal,
-    });
+    );
+    try {
+      response = await fetch(`${apiBaseUrl}/v1/youtube/transcripts`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Idempotency-Key': createRequestId(),
+        },
+        body: JSON.stringify(cues ? {url, transcript: {cues}} : {url}),
+        signal: fetchSignal,
+      });
+    } finally {
+      cleanup();
+    }
   } catch {
-    return signal?.aborted
-      ? {ok: false, cancelled: true}
-      : {
-          ok: false,
-          errorCode: 'NETWORK_ERROR',
-          message: i18n.t('errors.network_lost'),
-        };
+    if (isAborted(signal)) return cancelledResult();
+    return {
+      ok: false,
+      errorCode: 'NETWORK_ERROR',
+      message: i18n.t('errors.network_lost'),
+    };
   }
+  if (isAborted(signal)) return cancelledResult();
   let body: unknown;
   try {
     body = await response.json();
   } catch {
+    if (isAborted(signal)) return cancelledResult();
     return {
       ok: false,
       errorCode: 'NETWORK_ERROR',
@@ -127,32 +191,62 @@ export async function runYouTubeJob(
     };
   }
   onProgress?.(parsedCreated.data.progress);
-  const deadline = Date.now() + POLL_DEADLINE_MS;
   while (Date.now() < deadline) {
-    if (!(await wait(POLL_INTERVAL_MS, signal)))
-      return {ok: false, cancelled: true};
+    const waitOutcome = await waitBeforeNextAttempt(
+      POLL_INTERVAL_MS,
+      deadline,
+      signal,
+    );
+    if (waitOutcome === 'cancelled') return cancelledResult();
+    if (waitOutcome === 'timeout') break;
     try {
-      response = await fetch(
-        `${apiBaseUrl}/v1/youtube/transcripts/${parsedCreated.data.job_id}`,
-        {headers: {Accept: 'application/json'}, signal},
+      const {signal: fetchSignal, cleanup} = withTimeout(
+        Math.min(FETCH_TIMEOUT_MS, deadline - Date.now()),
+        signal,
       );
+      try {
+        response = await fetch(
+          `${apiBaseUrl}/v1/youtube/transcripts/${parsedCreated.data.job_id}`,
+          {headers: {Accept: 'application/json'}, signal: fetchSignal},
+        );
+      } finally {
+        cleanup();
+      }
     } catch {
-      return signal?.aborted
-        ? {ok: false, cancelled: true}
-        : {
-            ok: false,
-            errorCode: 'NETWORK_ERROR',
-            message: i18n.t('errors.network_lost'),
-          };
+      if (isAborted(signal)) return cancelledResult();
+      const outcome = await waitBeforeNextAttempt(
+        POLL_INTERVAL_MS,
+        deadline,
+        signal,
+      );
+      if (outcome === 'cancelled') return cancelledResult();
+      if (outcome === 'timeout') break;
+      continue;
+    }
+    if (isAborted(signal)) return cancelledResult();
+
+    if (!response.ok && isTransientStatus(response.status)) {
+      const outcome = await waitBeforeNextAttempt(
+        POLL_INTERVAL_MS,
+        deadline,
+        signal,
+      );
+      if (outcome === 'cancelled') return cancelledResult();
+      if (outcome === 'timeout') break;
+      continue;
     }
     try {
       body = await response.json();
     } catch {
-      return {
-        ok: false,
-        errorCode: 'NETWORK_ERROR',
-        message: i18n.t('errors.network_lost'),
-      };
+      if (isAborted(signal)) return cancelledResult();
+      const outcome = await waitBeforeNextAttempt(
+        POLL_INTERVAL_MS,
+        deadline,
+        signal,
+      );
+      if (outcome === 'cancelled') return cancelledResult();
+      if (outcome === 'timeout') break;
+      continue;
     }
     const status = validateGetYouTubeTranscriptResponse(body);
     if (!status.valid)

@@ -14,7 +14,6 @@ export const featureDependencies: Record<FeatureKey, DependencyGroup[]> = {
   lessonResultView: [],
   lessonSave: [['lessonResultView']],
   lessonHistory: [['lessonSave']],
-  lingobitesMvpReviewFlow: [],
   shortPractice: [['lessonResultView']],
   pronunciationSupport: [['lessonResultView']],
 

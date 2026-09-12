@@ -11,12 +11,6 @@ export const INGESTION_ROUTE_REQUIREMENTS = {
 
 export type IngestionRouteName = keyof typeof INGESTION_ROUTE_REQUIREMENTS;
 
-/** @deprecated Kept for callers outside navigation while presets migrate. */
-export const LEGACY_INGESTION_ROUTE_NAMES = Object.keys(
-  INGESTION_ROUTE_REQUIREMENTS,
-) as IngestionRouteName[];
-export type LegacyIngestionRouteName = IngestionRouteName;
-
 type FeatureFlags = Partial<Record<FeatureKey, boolean>>;
 
 /** Resolves a feature and all of its OR/AND dependency groups. */
@@ -50,13 +44,4 @@ export function isIngestionRouteEnabled(
   return feature ? isCapabilityChainEnabled(feature, flags) : false;
 }
 
-/** @deprecated Route registration must use capability flags. */
-export function isIngestionRouteHiddenForMvp(
-  routeName: string,
-  mvpReviewFlowEnabled: boolean,
-): boolean {
-  return (
-    mvpReviewFlowEnabled &&
-    LEGACY_INGESTION_ROUTE_NAMES.includes(routeName as IngestionRouteName)
-  );
-}
+

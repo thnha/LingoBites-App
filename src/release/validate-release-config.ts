@@ -15,12 +15,6 @@ export function validateReleaseConfig(
   const enabled = config.features;
   const registryKeySet = new Set(registry.map(entry => entry.key));
 
-  for (const entry of registry) {
-    if (entry.required && !enabled[entry.key]) {
-      errors.push(`Required feature "${entry.key}" must be enabled.`);
-    }
-  }
-
   for (const key of Object.keys(enabled)) {
     if (!registryKeySet.has(key)) {
       errors.push(`Unknown feature key "${key}".`);
@@ -51,15 +45,6 @@ export function validateReleaseConfig(
         );
       }
     }
-  }
-
-  const missingRegistryKeys = featureKeys.filter(key => !(key in enabled));
-  if (missingRegistryKeys.length > 0) {
-    errors.push(
-      `Release config is missing feature keys: ${missingRegistryKeys.join(
-        ', ',
-      )}.`,
-    );
   }
 
   return {valid: errors.length === 0, errors};

@@ -1,37 +1,14 @@
-import closeBeta1 from './configs/close-beta-1.json';
-import lingobitensMvp from './configs/lingobites-mvp.json';
-import miniGameRelease from './configs/mini-game-release.json';
-import situationLearningRelease from './configs/situation-learning-release.json';
-import themeRelease from './configs/theme-release.json';
-import fullFeatureShowcase from './configs/full-feature-showcase.json';
-import lessonV2Beta from './configs/lesson-v2-beta.json';
-import allFeatures from './configs/all-features.json';
+import dev from './configs/dev';
+import production from './configs/production';
 import type {ReleaseConfig} from './types';
 
-// export const DEFAULT_RELEASE_NAME = 'close-beta-1';
-// export const DEFAULT_RELEASE_NAME = 'situation-learning-release';
-// export const DEFAULT_RELEASE_NAME = 'lingobites-mvp';
-export const DEFAULT_RELEASE_NAME = 'all-features';
+export const DEFAULT_RELEASE_NAME = 'production';
 
-export type ReleaseConfigName =
-  | 'close-beta-1'
-  | 'theme-release'
-  | 'mini-game-release'
-  | 'situation-learning-release'
-  | 'lingobites-mvp'
-  | 'full-feature-showcase'
-  | 'lesson-v2-beta'
-  | 'all-features';
+export type ReleaseConfigName = 'dev' | 'production';
 
 const releaseConfigs: Record<ReleaseConfigName, ReleaseConfig> = {
-  'close-beta-1': closeBeta1 as ReleaseConfig,
-  'theme-release': themeRelease as ReleaseConfig,
-  'mini-game-release': miniGameRelease as ReleaseConfig,
-  'situation-learning-release': situationLearningRelease as ReleaseConfig,
-  'lingobites-mvp': lingobitensMvp as ReleaseConfig,
-  'full-feature-showcase': fullFeatureShowcase as ReleaseConfig,
-  'lesson-v2-beta': lessonV2Beta as ReleaseConfig,
-  'all-features': allFeatures as ReleaseConfig,
+  dev: dev as ReleaseConfig,
+  production: production as ReleaseConfig,
 };
 
 export function getReleaseConfig(

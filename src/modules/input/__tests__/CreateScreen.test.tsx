@@ -1,6 +1,13 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
+import type {ReleaseConfig} from '@/release/types';
+import {
+  ALL_IMPLEMENTED_FEATURES,
+  CORE_WITH_REVIEW,
+  makeTestReleaseConfig,
+  OFFLINE_REVIEW_MVP,
+} from '@/test-support';
 import {AppThemeProvider} from '@theme';
 import {CreateScreen} from '../CreateScreen';
 
@@ -10,12 +17,12 @@ function navigation() {
 
 async function renderCreate(
   nav = navigation(),
-  releaseName: 'situation-learning-release' | 'all-features' | 'lingobites-mvp' = 'situation-learning-release',
+  releaseConfig: ReleaseConfig = makeTestReleaseConfig(CORE_WITH_REVIEW),
 ) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName={releaseName}>
+      <FeatureFlagProvider releaseConfig={releaseConfig}>
         <AppThemeProvider>
           <CreateScreen navigation={nav as never} route={{} as never} />
         </AppThemeProvider>
@@ -75,7 +82,10 @@ describe('CreateScreen (SETE-247)', () => {
     ).toBe(0);
 
     const nav = navigation();
-    const flaggedOn = await renderCreate(nav, 'all-features');
+    const flaggedOn = await renderCreate(
+      nav,
+      makeTestReleaseConfig(ALL_IMPLEMENTED_FEATURES),
+    );
     await pressByTestID(flaggedOn, 'create-tile-youtube');
     expect(nav.navigate).toHaveBeenCalledWith('YouTubeInput');
     await pressByTestID(flaggedOn, 'create-history-link');
@@ -83,7 +93,10 @@ describe('CreateScreen (SETE-247)', () => {
   });
 
   it('renders an empty state instead of a blank screen when all sources are off', async () => {
-    const tree = await renderCreate(navigation(), 'lingobites-mvp');
+    const tree = await renderCreate(
+      navigation(),
+      makeTestReleaseConfig(OFFLINE_REVIEW_MVP),
+    );
     expect(
       tree.root.findAll(node => node.props.testID === 'create-empty-state')
         .length,

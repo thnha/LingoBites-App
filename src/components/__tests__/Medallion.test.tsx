@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, THEME_UI_FLAGS} from '@/test-support';
 import {AppThemeProvider, useAppTheme, type AppTheme} from '@theme';
 import {Medallion} from '../Medallion';
 
@@ -17,7 +18,7 @@ async function renderWithTheme(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName="theme-release">
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(THEME_UI_FLAGS)}>
         <AppThemeProvider>
           <ThemeProbe />
           {ui}

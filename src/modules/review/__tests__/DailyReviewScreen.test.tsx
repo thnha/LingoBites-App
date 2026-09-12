@@ -3,6 +3,7 @@ import ReactTestRenderer, {act} from 'react-test-renderer';
 import {Alert} from 'react-native';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, CORE_WITH_REVIEW} from '@/test-support';
 import {DB_NAME} from '@shared/db/constants';
 import {resetDatabaseForTests} from '@shared/db/database';
 import {saveFlashcard} from '@shared/db/FlashcardRepository';
@@ -27,7 +28,7 @@ async function renderScreen(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName="situation-learning-release">
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
         <AppThemeProvider>{ui}</AppThemeProvider>
       </FeatureFlagProvider>,
     );

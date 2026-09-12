@@ -2,6 +2,7 @@ import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
+import {makeTestReleaseConfig, CORE_WITH_REVIEW} from '@/test-support';
 import {DB_NAME} from '@shared/db/constants';
 import {resetDatabaseForTests} from '@shared/db/database';
 import {saveFlashcard} from '@shared/db/FlashcardRepository';
@@ -19,7 +20,7 @@ async function renderHome(nav = navigation()) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseName="situation-learning-release">
+      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
         <AppThemeProvider>
           <HomeScreen navigation={nav as never} route={{} as never} />
         </AppThemeProvider>
