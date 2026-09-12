@@ -32,7 +32,10 @@ type TodayChip = {
   labelKey: string;
   a11yLabel: string;
   backgroundKey: 'accentSoft' | 'tertiarySoft' | 'secondarySoft';
-  inkKey: 'onPrimaryContainer' | 'onTertiaryContainer' | 'onSecondaryContainer';
+  // Ink is paired by the Chip convention (accentSoft+primary,
+  // secondarySoft+secondary): onPrimaryContainer is unreadable on the light
+  // accentSoft tint in the neo/comic/core themes (1.0–1.2:1).
+  inkKey: 'primary' | 'onTertiaryContainer' | 'secondary';
   onPress: () => void;
   testID: string;
 };
@@ -294,7 +297,7 @@ export function HomeScreen({navigation}: Props) {
       labelKey: 'home.shortcut_review',
       a11yLabel: reviewA11y,
       backgroundKey: 'accentSoft',
-      inkKey: 'onPrimaryContainer',
+      inkKey: 'primary',
       onPress: () => navigation.navigate('DailyReview'),
       testID: 'home-today-review',
     },
@@ -323,7 +326,7 @@ export function HomeScreen({navigation}: Props) {
         'home.shortcut_quick_meta',
       )}`,
       backgroundKey: 'secondarySoft',
-      inkKey: 'onSecondaryContainer',
+      inkKey: 'secondary',
       onPress: () => navigation.navigate('Practice', {questions, title}),
       testID: 'home-today-quick',
     });
@@ -419,7 +422,9 @@ export function HomeScreen({navigation}: Props) {
         ) : null}
         <View style={styles.section} testID="home-today-section">
           <View style={styles.sectionHeader}>
-            <AppText variant="h3">{t('home.today_title')}</AppText>
+            <AppText variant="h3" style={styles.sectionTitle}>
+              {t('home.today_title')}
+            </AppText>
             <Pressable
               accessibilityLabel={t('home.today_swap_a11y')}
               accessibilityRole="button"
@@ -478,14 +483,16 @@ export function HomeScreen({navigation}: Props) {
         </View>
         <View style={styles.section} testID="home-lessons-section">
           <View style={styles.sectionHeader}>
-            <AppText variant="h3">{t('home.recent_lessons')}</AppText>
+            <AppText variant="h3" style={styles.sectionTitle}>
+              {t('home.recent_lessons')}
+            </AppText>
             {ownItems.length > 0 ? (
               <Pressable
                 accessibilityLabel={t('home.view_all_a11y')}
                 accessibilityRole="button"
                 hitSlop={LINK_HIT_SLOP}
                 onPress={() => tabNavigation?.navigate('Lessons')}
-                style={styles.viewAllChip}
+                style={styles.textLink}
                 testID="home-recent-view-all"
               >
                 <AppText
@@ -641,8 +648,11 @@ function makeStyles(theme: AppTheme) {
     sectionHeader: {
       alignItems: 'center',
       flexDirection: 'row',
+      gap: theme.spacing.sm,
       justifyContent: 'space-between',
     },
+    // Lets long AX titles wrap instead of pushing the section link off-screen.
+    sectionTitle: {flex: 1, minWidth: 0},
     starterCard: {
       backgroundColor: theme.colors.surface,
       borderRadius: theme.radius.lg,
@@ -666,7 +676,10 @@ function makeStyles(theme: AppTheme) {
     },
     fullWidthButton: {
       alignSelf: 'stretch',
+      // Height stays flexible so AX text sizes wrap instead of clipping.
+      height: 'auto',
       minHeight: 52,
+      paddingVertical: theme.spacing.sm,
     },
     lessonsEmpty: {
       gap: theme.spacing.md,
@@ -702,13 +715,6 @@ function makeStyles(theme: AppTheme) {
       textAlign: 'center',
     },
     recentList: {gap: theme.spacing.sm},
-    viewAllChip: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: 44,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-    },
     textLink: {
       alignItems: 'center',
       justifyContent: 'center',

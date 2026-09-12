@@ -93,11 +93,14 @@ export function AppButton({
             <MaterialIcon color={spec.text} name={iconLeft} size={22} />
           )}
           <Text
+            numberOfLines={3}
             style={{
               color: spec.text,
               fontSize: theme.typography.size.md,
               fontWeight: theme.typography.weight.bold,
               fontFamily: theme.typography.fontFamily.primary,
+              flexShrink: 1,
+              textAlign: 'center',
             }}
           >
             {title}

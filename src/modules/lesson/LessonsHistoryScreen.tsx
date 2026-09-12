@@ -24,7 +24,9 @@ type PracticeChip = {
   value: string;
   labelKey: string;
   backgroundKey: 'accentSoft' | 'tertiarySoft' | 'secondarySoft';
-  inkKey: 'onPrimaryContainer' | 'onTertiaryContainer' | 'onSecondaryContainer';
+  // Same pairing as HomeScreen chips: onPrimaryContainer/onSecondaryContainer
+  // fall below 4.5:1 on the light soft tints in neo/comic/core.
+  inkKey: 'primary' | 'onTertiaryContainer' | 'secondary';
   onPress: () => void;
   testID: string;
 };
@@ -68,7 +70,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
       value: t('home.shortcut_review_meta', {count: dueCount}),
       labelKey: 'home.shortcut_review',
       backgroundKey: 'accentSoft',
-      inkKey: 'onPrimaryContainer',
+      inkKey: 'primary',
       onPress: () => navigation.navigate('FlashcardList'),
       testID: 'library-practice-review',
     },
@@ -86,7 +88,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
       value: t('home.shortcut_quick_meta'),
       labelKey: 'home.shortcut_quick',
       backgroundKey: 'secondarySoft',
-      inkKey: 'onSecondaryContainer',
+      inkKey: 'secondary',
       onPress: () =>
         navigation.navigate('Practice', {
           questions: [],

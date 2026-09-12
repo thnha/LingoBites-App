@@ -92,6 +92,43 @@ describe('HomeScreen starter card (SETE-250 Option B)', () => {
     expect(tabNavigate).toHaveBeenCalledWith('Create');
   });
 
+  it('drops the relearn row when nothing was ever studied', async () => {
+    const installed = await bootstrapContentPackage();
+    expect(installed.ok).toBe(true);
+    // Library exists but there is no personal or saved lesson, so the card
+    // keeps pick + create while the relearn row stays hidden.
+    const tree = await renderHome();
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-pick')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-create')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
+        .length,
+    ).toBe(0);
+    expect(
+      tree.root.findAllByProps({children: 'Bắt đầu từ đâu?'}).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('interpolates the real library count into the pick subtitle', async () => {
+    const installed = await bootstrapContentPackage();
+    expect(installed.ok).toBe(true);
+    const expected = listActivePackageLessons().length;
+    expect(expected).toBeGreaterThan(0);
+    const tree = await renderHome();
+    // i18next {{n}} must render the number — never the literal placeholder.
+    expect(
+      tree.root.findAllByProps({
+        children: `Thư viện có ${expected} bài, học ngay không cần mạng`,
+      }).length,
+    ).toBeGreaterThan(0);
+  });
+
   it('routes the relearn row straight to the newest personal lesson', async () => {
     const installed = await bootstrapContentPackage();
     expect(installed.ok).toBe(true);
