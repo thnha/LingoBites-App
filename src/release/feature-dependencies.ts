@@ -26,6 +26,7 @@ export const featureDependencies: Record<FeatureKey, DependencyGroup[]> = {
   neoTheme: [['themeSystem']],
   comicTheme: [['themeSystem']],
   cartoonTheme: [['themeSystem']],
+  stickerSoftTheme: [['themeSystem']],
 
   reviewSystem: [['lessonSave']],
   miniGame: [['lessonSave', 'reviewSystem']],

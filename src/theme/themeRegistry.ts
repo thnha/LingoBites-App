@@ -6,6 +6,7 @@ import {darkTheme} from './themes/dark';
 import {defaultTheme} from './themes/default';
 import {neoTheme} from './themes/neo';
 import {pastelKidsTheme} from './themes/pastelKids';
+import {stickerSoftTheme} from './themes/stickerSoft';
 import type {AppTheme} from './types';
 
 export const themes = {
@@ -16,6 +17,7 @@ export const themes = {
   neo: neoTheme,
   comic: comicTheme,
   cartoon: cartoonTheme,
+  'sticker-soft': stickerSoftTheme,
 } satisfies Record<string, AppTheme>;
 
 export type ThemeId = keyof typeof themes;
@@ -36,6 +38,7 @@ export const themeReleaseFlag: Partial<Record<ThemeId, FeatureKey>> = {
   neo: 'neoTheme',
   comic: 'comicTheme',
   cartoon: 'cartoonTheme',
+  'sticker-soft': 'stickerSoftTheme',
 };
 
 /**

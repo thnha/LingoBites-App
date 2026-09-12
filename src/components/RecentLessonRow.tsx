@@ -5,6 +5,7 @@ import type {HandoffIconName} from './icons/iconRegistry';
 import {MaterialIcon} from './MaterialIcon';
 import {useAppTheme} from '../theme';
 import type {LessonCardView} from '../types/lesson';
+import {ShelfSurface} from './ShelfSurface';
 
 const THUMB_ICONS: readonly HandoffIconName[] = [
   'sell',
@@ -26,28 +27,18 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
   const thumbColor =
     thumbTone === 'teal' ? theme.colors.primary : theme.colors.secondary;
   const iconName = THUMB_ICONS[index % THUMB_ICONS.length];
+  const shelf = theme.shelf?.surface;
 
-  const row = (
-    <View
-      style={{
-        alignItems: 'center',
-        backgroundColor: theme.colors.surface,
-        borderRadius: 18,
-        flexDirection: 'row',
-        gap: 14,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        ...theme.shadow.soft,
-      }}
-    >
+  const rowContent = (
+    <>
       <View
         style={{
           alignItems: 'center',
           backgroundColor: thumbBg,
-          borderRadius: 14,
-          height: 48,
+          borderRadius: 999, // bong bóng icon pill
+          height: 42,
           justifyContent: 'center',
-          width: 48,
+          width: 42,
         }}
       >
         <MaterialIcon color={thumbColor} name={iconName} size={22} />
@@ -65,11 +56,28 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
         name="chevron_right"
         size={22}
       />
-    </View>
+    </>
   );
 
+  const faceStyle = {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    flexDirection: 'row',
+    gap: 14,
+    paddingHorizontal: 15,
+    paddingVertical: 13,
+  } as const;
+
   if (!onPress) {
-    return row;
+    return (
+      <ShelfSurface
+        borderRadius={22}
+        containerStyle={theme.shadow.soft}
+        faceStyle={faceStyle}
+      >
+        {rowContent}
+      </ShelfSurface>
+    );
   }
 
   return (
@@ -77,11 +85,22 @@ export function RecentLessonRow({lesson, index, onPress}: Props) {
       accessibilityLabel={`${lesson.title}, ${lesson.meta}`}
       accessibilityRole="button"
       onPress={onPress}
-      style={({pressed}) => [
-        {opacity: pressed ? theme.states.pressedOpacity : 1},
-      ]}
     >
-      {row}
+      {({pressed}) => (
+        <ShelfSurface
+          shelfHeight={shelf?.height}
+          shelfColor={shelf?.color}
+          borderRadius={22}
+          isPressed={pressed}
+          containerStyle={theme.shadow.soft}
+          faceStyle={[
+            faceStyle,
+            !shelf && pressed && {opacity: theme.states.pressedOpacity}
+          ]}
+        >
+          {rowContent}
+        </ShelfSurface>
+      )}
     </Pressable>
   );
 }

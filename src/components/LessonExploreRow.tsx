@@ -32,6 +32,8 @@ function medallionColors(
   }
 }
 
+import {ShelfSurface} from './ShelfSurface';
+
 export function LessonExploreRow({
   icon,
   title,
@@ -47,9 +49,10 @@ export function LessonExploreRow({
     () => makeStyles(theme, medallion.bg, disabled, badge),
     [badge, disabled, medallion.bg, theme],
   );
+  const shelf = theme.shelf?.surface;
 
-  const row = (
-    <View style={themedStyles.row}>
+  const rowContent = (
+    <>
       {badge ? (
         <View style={styles.badge}>
           <Chip label={badge} tone="coralSoft" />
@@ -71,11 +74,21 @@ export function LessonExploreRow({
           size={22}
         />
       ) : null}
-    </View>
+    </>
   );
 
+  const faceStyle = themedStyles.row;
+
   if (!onPress) {
-    return row;
+    return (
+      <ShelfSurface
+        borderRadius={22}
+        containerStyle={theme.shadow.soft}
+        faceStyle={faceStyle}
+      >
+        {rowContent}
+      </ShelfSurface>
+    );
   }
 
   return (
@@ -85,11 +98,23 @@ export function LessonExploreRow({
       accessibilityState={{disabled}}
       disabled={disabled}
       onPress={onPress}
-      style={({pressed}) => [
-        pressed && !disabled ? themedStyles.pressed : styles.resting,
-      ]}
     >
-      {row}
+      {({pressed}) => (
+        <ShelfSurface
+          shelfHeight={shelf?.height}
+          shelfColor={shelf?.color}
+          borderRadius={22}
+          isPressed={pressed}
+          isDisabled={disabled}
+          containerStyle={theme.shadow.soft}
+          faceStyle={[
+            faceStyle,
+            !shelf && pressed && !disabled && {opacity: theme.states.pressedOpacity}
+          ]}
+        >
+          {rowContent}
+        </ShelfSurface>
+      )}
     </Pressable>
   );
 }
@@ -100,9 +125,6 @@ const styles = StyleSheet.create({
     right: 14,
     top: 10,
     zIndex: 1,
-  },
-  resting: {
-    opacity: 1,
   },
   title: {
     fontSize: 16,
@@ -126,25 +148,19 @@ function makeStyles(
     medallion: {
       alignItems: 'center',
       backgroundColor: medallionBackground,
-      borderRadius: 14,
-      height: 46,
+      borderRadius: 999,
+      height: 42,
       justifyContent: 'center',
-      width: 46,
-    },
-    pressed: {
-      opacity: theme.states.pressedOpacity,
+      width: 42,
     },
     row: {
       alignItems: 'center',
       backgroundColor: theme.colors.surface,
-      borderRadius: 18,
       flexDirection: 'row',
       gap: 14,
-      opacity: disabled ? theme.states.disabledOpacity : 1,
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: 14,
+      paddingHorizontal: 15,
+      paddingVertical: 13,
       position: 'relative',
-      ...theme.shadow.soft,
     },
   });
 }

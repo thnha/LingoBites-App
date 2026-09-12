@@ -31,6 +31,8 @@ function medallionColors(
   }
 }
 
+import {ShelfSurface} from './ShelfSurface';
+
 export function ProfileSettingsRow({
   icon,
   label,
@@ -41,6 +43,8 @@ export function ProfileSettingsRow({
 }: Props) {
   const {theme} = useAppTheme();
   const medallion = medallionColors(theme, medallionTone);
+  const shelf = theme.shelf?.surface;
+
   const trailingNode = (() => {
     if (trailing === 'chevron') {
       return onPress ? (
@@ -66,27 +70,16 @@ export function ProfileSettingsRow({
     return null;
   })();
 
-  const row = (
-    <View
-      style={{
-        alignItems: 'center',
-        backgroundColor: theme.colors.surface,
-        borderRadius: 18,
-        flexDirection: 'row',
-        gap: 14,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        ...theme.shadow.soft,
-      }}
-    >
+  const rowContent = (
+    <>
       <View
         style={{
           alignItems: 'center',
           backgroundColor: medallion.bg,
-          borderRadius: 14,
-          height: 46,
+          borderRadius: 999,
+          height: 42,
           justifyContent: 'center',
-          width: 46,
+          width: 42,
         }}
       >
         <MaterialIcon color={medallion.fg} name={icon} size={22} />
@@ -95,11 +88,28 @@ export function ProfileSettingsRow({
         {label}
       </AppText>
       {trailingNode}
-    </View>
+    </>
   );
 
+  const faceStyle = {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    flexDirection: 'row',
+    gap: 14,
+    paddingHorizontal: 15,
+    paddingVertical: 13,
+  } as const;
+
   if (!onPress) {
-    return row;
+    return (
+      <ShelfSurface
+        borderRadius={22}
+        containerStyle={theme.shadow.soft}
+        faceStyle={faceStyle}
+      >
+        {rowContent}
+      </ShelfSurface>
+    );
   }
 
   return (
@@ -107,11 +117,22 @@ export function ProfileSettingsRow({
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityRole="button"
       onPress={onPress}
-      style={({pressed}) => [
-        {opacity: pressed ? theme.states.pressedOpacity : 1},
-      ]}
     >
-      {row}
+      {({pressed}) => (
+        <ShelfSurface
+          shelfHeight={shelf?.height}
+          shelfColor={shelf?.color}
+          borderRadius={22}
+          isPressed={pressed}
+          containerStyle={theme.shadow.soft}
+          faceStyle={[
+            faceStyle,
+            !shelf && pressed && {opacity: theme.states.pressedOpacity}
+          ]}
+        >
+          {rowContent}
+        </ShelfSurface>
+      )}
     </Pressable>
   );
 }

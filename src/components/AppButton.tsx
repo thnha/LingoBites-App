@@ -11,6 +11,7 @@ import {
 import {useAppTheme} from '../theme';
 import type {HandoffIconName} from './icons/iconRegistry';
 import {MaterialIcon} from './MaterialIcon';
+import {ShelfSurface} from './ShelfSurface';
 
 export type AppButtonVariant =
   | 'primary'
@@ -55,6 +56,15 @@ export function AppButton({
     : {...accessibilityState, disabled: isDisabled};
 
   const shadowStyle = spec.shadow ? theme.shadow[spec.shadow] : undefined;
+  
+  const shelfRoleMap: Record<string, string> = {
+    'primary-accent': 'accent',
+    'secondary-coral': 'coral',
+    'deep': 'primary',
+    'ghost': 'ghost',
+  };
+  const shelfRole = shelfRoleMap[variant];
+  const shelf = theme.shelf && shelfRole ? (theme.shelf as any)[shelfRole] : undefined;
 
   return (
     <Pressable
@@ -63,52 +73,63 @@ export function AppButton({
       accessibilityRole="button"
       accessibilityState={buttonAccessibilityState}
       disabled={isDisabled}
-      style={({pressed}) => [
-        styles.base,
-        {
-          backgroundColor: spec.background,
-          height: spec.height,
-          borderRadius: spec.radius,
-        },
-        spec.border && {
-          borderColor: spec.border,
-          borderWidth: 2,
-        },
-        shadowStyle,
-        pressed && !isDisabled && {opacity: theme.states.pressedOpacity},
-        isDisabled && {opacity: theme.states.disabledOpacity},
-        style,
-      ]}
+      style={style}
       {...rest}
     >
-      {loading ? (
-        <ActivityIndicator
-          accessibilityElementsHidden
-          color={spec.text}
-          importantForAccessibility="no"
-        />
-      ) : (
-        <>
-          {iconLeft && (
-            <MaterialIcon color={spec.text} name={iconLeft} size={22} />
+      {({pressed}) => (
+        <ShelfSurface
+          shelfHeight={shelf?.height}
+          shelfColor={shelf?.color}
+          borderRadius={spec.radius}
+          isPressed={pressed}
+          isDisabled={disabled ?? false}
+          preserveShelfSpace={loading}
+          containerStyle={shadowStyle}
+          faceTestID={testID + '-face'}
+          faceStyle={[
+            styles.base,
+            {
+              backgroundColor: spec.background,
+              height: spec.height,
+            },
+            spec.border && {
+              borderColor: spec.border,
+              borderWidth: 2,
+            },
+            (!shelf && pressed && !isDisabled) && {opacity: theme.states.pressedOpacity},
+            (!shelf && isDisabled && !loading) && {opacity: theme.states.disabledOpacity},
+          ]}
+        >
+          {loading ? (
+            <ActivityIndicator
+              accessibilityElementsHidden
+              color={spec.text}
+              importantForAccessibility="no"
+            />
+          ) : (
+            <>
+              {iconLeft && (
+                <MaterialIcon color={spec.text} name={iconLeft} size={22} />
+              )}
+              <Text
+                numberOfLines={3}
+                style={{
+                  color: spec.text,
+                  fontSize: theme.typography.size.md,
+                  fontWeight: theme.typography.weight.bold,
+                  fontFamily: theme.typography.fontFamily.primary,
+                  flexShrink: 1,
+                  textAlign: 'center',
+                }}
+              >
+                {title}
+              </Text>
+              {iconRight && (
+                <MaterialIcon color={spec.text} name={iconRight} size={22} />
+              )}
+            </>
           )}
-          <Text
-            numberOfLines={3}
-            style={{
-              color: spec.text,
-              fontSize: theme.typography.size.md,
-              fontWeight: theme.typography.weight.bold,
-              fontFamily: theme.typography.fontFamily.primary,
-              flexShrink: 1,
-              textAlign: 'center',
-            }}
-          >
-            {title}
-          </Text>
-          {iconRight && (
-            <MaterialIcon color={spec.text} name={iconRight} size={22} />
-          )}
-        </>
+        </ShelfSurface>
       )}
     </Pressable>
   );

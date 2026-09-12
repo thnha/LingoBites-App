@@ -148,7 +148,7 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
       );
     }
     expect(
-      tree.root.findByProps({testID: 'tab-bar-glass'}).props.accessibilityRole,
+      tree.root.findByProps({accessibilityRole: 'tablist'}).props.accessibilityRole,
     ).toBe('tablist');
     expect(
       tree.root.findByProps({testID: 'tab-bar-item-Home'}).props

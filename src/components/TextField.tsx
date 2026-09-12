@@ -17,8 +17,6 @@ type Props = TextInputProps & {
 };
 
 const FOCUS_RING_WIDTH = 4;
-const MULTILINE_RADIUS = 20;
-const IDLE_BORDER_ALPHA = 0.9;
 
 /**
  * Applies an alpha channel to an `#rgb` / `#rrggbb` theme color.
@@ -69,19 +67,17 @@ export function TextField({
 
   const hasErrorText = errorMessage !== undefined && errorMessage !== '';
   const invalid = hasError || hasErrorText;
-  const radius = multiline ? MULTILINE_RADIUS : theme.radius.pill;
+  const radius = theme.components.input.radius;
   const borderColor = invalid
     ? theme.colors.danger
     : focused
-      ? theme.colors.accent
-      : withAlpha(theme.components.input.border, IDLE_BORDER_ALPHA);
-  // The halo ring is always laid out (fully transparent when idle) so
-  // focusing the field never shifts surrounding layout. The transparent
-  // value is derived from the theme token to satisfy no-color-literals.
+      ? theme.colors.primary
+      : theme.components.input.border;
+  
   const ringColor =
     focused && !invalid
-      ? theme.colors.accentSoft
-      : withAlpha(theme.colors.accentSoft, 0);
+      ? withAlpha(theme.colors.accent, 0.34)
+      : withAlpha(theme.colors.accent, 0);
 
   const handleFocus = (event: FocusEvent) => {
     setFocused(true);
@@ -137,11 +133,12 @@ export function TextField({
               backgroundColor: theme.components.input.background,
               borderColor,
               borderRadius: radius,
-              borderWidth: 2,
+              borderWidth: focused ? 2.5 : 2,
               color: theme.components.input.text,
               fontSize: theme.typography.presets.body.fontSize,
               minHeight: 48,
-              padding: theme.spacing.md,
+              paddingHorizontal: theme.spacing.md,
+              paddingVertical: theme.spacing.sm,
             },
             style,
           ]}
@@ -149,14 +146,17 @@ export function TextField({
         />
       </View>
       {hasErrorText ? (
-        <AppText
-          accessibilityLiveRegion="polite"
-          accessibilityRole="alert"
-          color="danger"
-          variant="caption"
-        >
-          {errorMessage}
-        </AppText>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+          <AppText color="danger" style={{fontSize: 14}}>⚠</AppText>
+          <AppText
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            color="danger"
+            variant="caption"
+          >
+            {errorMessage}
+          </AppText>
+        </View>
       ) : null}
     </View>
   );

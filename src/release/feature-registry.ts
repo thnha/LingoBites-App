@@ -154,6 +154,14 @@ export const featureRegistry = [
     entryPoint: 'HomeScreen -> PasteText',
   },
   {
+    key: 'stickerSoftTheme',
+    module: 'theme',
+    required: false,
+    releaseGroup: 'ui',
+    status: 'ready',
+    entryPoint: 'HomeScreen -> PasteText',
+  },
+  {
     key: 'reviewSystem',
     module: 'modules/review',
     required: false,

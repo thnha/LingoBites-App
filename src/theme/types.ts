@@ -87,6 +87,19 @@ export type ShadowScale = {
   [key: string]: ViewStyle;
 };
 
+export type ShelfScale = {
+  surface: {height: number; color: string};
+  accent: {height: number; color: string};
+  coral: {height: number; color: string};
+  primary: {height: number; color: string};
+  ghost: {height: number; color: string};
+  chipTeal: {height: number; color: string};
+  chipYellow: {height: number; color: string};
+  chipPink: {height: number; color: string};
+  iconButton: {height: number; color: string};
+  tabBar: {height: number; color: string};
+};
+
 export type AppTheme = {
   id: string;
   name: string;
@@ -113,6 +126,7 @@ export type AppTheme = {
   spacing: SpacingScale;
   radius: RadiusScale;
   shadow: ShadowScale;
+  shelf?: ShelfScale;
   components: {
     button: Record<
       string,

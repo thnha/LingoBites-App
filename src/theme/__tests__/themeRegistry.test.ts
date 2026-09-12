@@ -20,6 +20,7 @@ describe('themeRegistry', () => {
       'default',
       'neo',
       'pastel-kids',
+      'sticker-soft',
     ]);
   });
 
@@ -48,6 +49,7 @@ describe('themeRegistry', () => {
     expect(themeReleaseFlag.neo).toBe('neoTheme');
     expect(themeReleaseFlag.comic).toBe('comicTheme');
     expect(themeReleaseFlag.cartoon).toBe('cartoonTheme');
+    expect(themeReleaseFlag['sticker-soft']).toBe('stickerSoftTheme');
     expect(themeReleaseFlag.default).toBeUndefined();
   });
 

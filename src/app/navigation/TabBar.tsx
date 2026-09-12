@@ -26,6 +26,7 @@ import {
   withAlpha,
 } from './tabBarMetrics';
 import {isTabBarHiddenForDescriptors} from './immersiveTabRoutes';
+import {ShelfSurface} from '@components/ShelfSurface';
 
 const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
   Home: {labelKey: 'nav.tab.home', icon: 'home'},
@@ -88,19 +89,33 @@ function TabBarItem({
   onPress,
   onLayout,
 }: TabBarItemProps) {
-  const secondary = theme.colors.text.secondary;
-  const accentInk = theme.colors.accentInk;
+  const isSticker = !!theme.shelf;
+  const unselectedColor = isSticker ? '#c8ece7' : theme.colors.text.secondary;
+  const selectedTextColor = isSticker ? '#ffffff' : theme.colors.accentInk;
+  const selectedIconColor = isSticker ? theme.colors.accentInk : theme.colors.accentInk;
+  
   const captionPreset = theme.typography.presets.caption;
 
-  const animatedColorStyle = useAnimatedStyle(
+  const animatedIconColorStyle = useAnimatedStyle(
     () => ({
       color: interpolateColor(
         progress.value,
         [index - 1, index, index + 1],
-        [secondary, accentInk, secondary],
+        [unselectedColor, selectedIconColor, unselectedColor],
       ),
     }),
-    [accentInk, index, secondary],
+    [selectedIconColor, index, unselectedColor],
+  );
+
+  const animatedTextColorStyle = useAnimatedStyle(
+    () => ({
+      color: interpolateColor(
+        progress.value,
+        [index - 1, index, index + 1],
+        [unselectedColor, selectedTextColor, unselectedColor],
+      ),
+    }),
+    [selectedTextColor, index, unselectedColor],
   );
 
   return (
@@ -115,20 +130,20 @@ function TabBarItem({
         alignItems: 'center',
         borderRadius: theme.radius.pill,
         flex: 1,
-        gap: 1,
+        gap: isSticker ? 2 : 1,
         justifyContent: 'center',
-        // 4 tabs × 64pt = 256pt fits the 320pt-screen inner pill (~257pt).
         minWidth: 64,
         paddingHorizontal: 8,
         paddingVertical: 4,
         zIndex: 1,
+        height: '100%',
       }}
       testID={`tab-bar-item-${route.name}`}
     >
       <AnimatedMaterialIcon
         name={icon}
         size={TAB_ICON_SIZE}
-        style={animatedColorStyle}
+        style={animatedIconColorStyle}
       />
       <Animated.Text
         adjustsFontSizeToFit
@@ -142,7 +157,7 @@ function TabBarItem({
             fontWeight: focused ? '700' : '600',
             lineHeight: 13,
           },
-          animatedColorStyle,
+          animatedTextColorStyle,
         ]}
       >
         {label}
@@ -214,80 +229,88 @@ export function TabBar({
       ]}
       testID="tab-bar-float-wrap"
     >
-      <View
-        accessibilityRole="tablist"
-        style={[
+      <ShelfSurface
+        shelfHeight={theme.shelf?.tabBar?.height}
+        shelfColor={theme.shelf?.tabBar?.color}
+        borderRadius={theme.radius.pill}
+        faceTestID={glassFallback ? 'tab-bar-fallback' : 'tab-bar-glass'}
+        faceStyle={[
           styles.pill,
           {
             borderColor: glass.border,
-            backgroundColor: glassFallback ? glass.fallback : glass.tint,
+            backgroundColor: theme.shelf ? theme.colors.primary : (glassFallback ? glass.fallback : glass.tint),
+            borderWidth: theme.shelf ? 0 : 1, // Sticker Soft doesn't use border for the bar
+            height: theme.shelf ? 66 : undefined,
           },
         ]}
-        testID={glassFallback ? 'tab-bar-fallback' : 'tab-bar-glass'}
       >
-        {!glassFallback ? (
-          <>
-            {/* Top gloss: white 12% fading down (gradient stand-in;
-                install @react-native-community/blur + a gradient layer for
-                true native blur — see SETE-214 handoff). */}
-            <View
-              pointerEvents="none"
-              style={[styles.gloss, {backgroundColor: glass.gloss}]}
-            />
-            {/* Inner top highlight line. */}
-            <View
-              pointerEvents="none"
-              style={[
-                styles.innerHighlight,
-                {borderTopColor: glass.innerHighlight},
-              ]}
-            />
-          </>
-        ) : null}
+        <View style={StyleSheet.absoluteFill} pointerEvents="none" testID={glassFallback ? 'tab-bar-fallback' : 'tab-bar-glass'}>
+          {(!glassFallback && !theme.shelf) ? (
+            <>
+              {/* Top gloss: white 12% fading down (gradient stand-in;
+                  install @react-native-community/blur + a gradient layer for
+                  true native blur — see SETE-214 handoff). */}
+              <View
+                pointerEvents="none"
+                style={[styles.gloss, {backgroundColor: glass.gloss}]}
+              />
+              {/* Inner top highlight line. */}
+              <View
+                pointerEvents="none"
+                style={[
+                  styles.innerHighlight,
+                  {borderTopColor: glass.innerHighlight},
+                ]}
+              />
+            </>
+          ) : null}
+        </View>
         {indicatorReady ? (
           <Animated.View
             accessible={false}
             importantForAccessibility="no-hide-descendants"
             pointerEvents="none"
-            style={[styles.indicator, indicatorAnimatedStyle]}
+            style={[styles.indicator, indicatorAnimatedStyle, { backgroundColor: theme.shelf ? theme.colors.accent : theme.colors.accent }]}
             testID="tab-bar-indicator"
           />
         ) : null}
-        {state.routes.map((route, index) => {
-          const focused = state.index === index;
-          const item = TAB_ITEMS[route.name] ?? {
-            labelKey: '',
-            icon: 'circle' as HandoffIconName,
-          };
-          const label = item.labelKey
-            ? t(item.labelKey)
-            : descriptors[route.key].options.title ?? route.name;
+        <View accessibilityRole="tablist" style={{ flexDirection: 'row', flex: 1, height: '100%' }}>
+          {state.routes.map((route, index) => {
+            const focused = state.index === index;
+            const item = TAB_ITEMS[route.name] ?? {
+              labelKey: '',
+              icon: 'circle' as HandoffIconName,
+            };
+            const label = item.labelKey
+              ? t(item.labelKey)
+              : descriptors[route.key].options.title ?? route.name;
 
-          return (
-            <TabBarItem
-              key={route.key}
-              focused={focused}
-              icon={item.icon}
-              index={index}
-              label={label}
-              onLayout={index === 0 ? handleTabLayout : undefined}
-              onPress={() => {
-                const event = navigation.emit({
-                  type: 'tabPress',
-                  target: route.key,
-                  canPreventDefault: true,
-                });
-                if (!focused && !event.defaultPrevented) {
-                  navigation.navigate(route.name);
-                }
-              }}
-              progress={progress}
-              route={route}
-              theme={theme}
-            />
-          );
-        })}
-      </View>
+            return (
+              <TabBarItem
+                key={route.key}
+                focused={focused}
+                icon={item.icon}
+                index={index}
+                label={label}
+                onLayout={index === 0 ? handleTabLayout : undefined}
+                onPress={() => {
+                  const event = navigation.emit({
+                    type: 'tabPress',
+                    target: route.key,
+                    canPreventDefault: true,
+                  });
+                  if (!focused && !event.defaultPrevented) {
+                    navigation.navigate(route.name);
+                  }
+                }}
+                progress={progress}
+                route={route}
+                theme={theme}
+              />
+            );
+          })}
+        </View>
+      </ShelfSurface>
     </View>
   );
 }

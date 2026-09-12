@@ -21,6 +21,8 @@
     "neoTheme": true,
     "comicTheme": true,
     "cartoonTheme": true,
+    "stickerSoftTheme": false,
+  "stickerSoftTheme": true,
     "reviewSystem": true,
     "miniGame": false,
     "wordMatchGame": false,

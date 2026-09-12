@@ -22,14 +22,13 @@ async function render(ui: React.ReactElement) {
   return tree;
 }
 
+import {StyleSheet} from 'react-native';
+
 describe('AppButton', () => {
   it('primary variant uses components.button.primary-accent background', async () => {
     const tree = await render(<AppButton title="Go" onPress={() => {}} />);
-    const pressable = tree.root.findByProps({testID: 'app-button'});
-    const flattened = Object.assign(
-      {},
-      ...[].concat(pressable.props.style({pressed: false})),
-    );
+    const face = tree.root.findByProps({testID: 'app-button-face'});
+    const flattened = StyleSheet.flatten(face.props.style);
     expect(flattened.backgroundColor).toBe(
       themes['pastel-kids'].components.button['primary-accent'].background,
     );
@@ -39,11 +38,8 @@ describe('AppButton', () => {
     const tree = await render(
       <AppButton title="Back" variant="outline" onPress={() => {}} />,
     );
-    const pressable = tree.root.findByProps({testID: 'app-button'});
-    const flattened = Object.assign(
-      {},
-      ...[].concat(pressable.props.style({pressed: false})),
-    );
+    const face = tree.root.findByProps({testID: 'app-button-face'});
+    const flattened = StyleSheet.flatten(face.props.style);
     expect(flattened.borderColor).toBe(
       themes['pastel-kids'].components.button.outline.border,
     );

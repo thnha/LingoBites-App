@@ -1,5 +1,11 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
@@ -13,6 +19,7 @@ import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import type {HandoffIconName} from '@components/icons/iconRegistry';
 import {RecentLessonRow} from '@components/RecentLessonRow';
+import {ShelfSurface} from '@components/ShelfSurface';
 import {useContentLibrary, type ContentLessonRow} from '../content';
 import {
   listSavedLessons,
@@ -81,6 +88,8 @@ const LINK_HIT_SLOP = {top: 10, bottom: 10, left: 10, right: 10};
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const feedClearance = useFloatingTabBarClearance();
+  const {width} = useWindowDimensions();
+  const isNarrow = width <= 360;
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
   const tabNavigation =
@@ -429,47 +438,70 @@ export function HomeScreen({navigation}: Props) {
               </AppText>
             </Pressable>
           </View>
-          <View style={styles.todayRow}>
-            {todayChips.map(chip => (
-              <Pressable
-                accessibilityLabel={chip.a11yLabel}
-                accessibilityRole="button"
-                key={chip.testID}
-                onPress={chip.onPress}
-                style={({pressed}) => [
-                  styles.todayChip,
-                  {backgroundColor: theme.colors[chip.backgroundKey]},
-                  pressed && styles.pressed,
-                ]}
-                testID={chip.testID}
-              >
-                <View style={styles.todayIconCell}>
-                  <MaterialIcon
-                    color={theme.colors[chip.inkKey]}
-                    name={chip.icon}
-                    size={22}
-                  />
-                </View>
-                <AppText
-                  style={[
-                    styles.todayValue,
-                    {color: theme.colors[chip.inkKey]},
-                  ]}
-                  numberOfLines={2}
+          <View style={[styles.todayRow, isNarrow && {flexDirection: 'column'}]}>
+            {todayChips.map(chip => {
+              const shelfRoleMap: Record<string, string> = {
+                'accentSoft': 'chipTeal',
+                'secondarySoft': 'chipPink',
+                'tertiarySoft': 'chipYellow'
+              };
+              const shelfRole = shelfRoleMap[chip.backgroundKey as string];
+              const shelf = theme.shelf && shelfRole ? (theme.shelf as any)[shelfRole] : undefined;
+              const radius = theme.shelf ? 24 : 20;
+
+              return (
+                <Pressable
+                  accessibilityLabel={chip.a11yLabel}
+                  accessibilityRole="button"
+                  key={chip.testID}
+                  onPress={chip.onPress}
+                  testID={chip.testID}
+                  style={isNarrow ? {flex: 0} : {flex: 1}}
                 >
-                  {chip.value}
-                </AppText>
-                <AppText
-                  style={[
-                    styles.todayLabel,
-                    {color: theme.colors[chip.inkKey]},
-                  ]}
-                  numberOfLines={2}
-                >
-                  {t(chip.labelKey)}
-                </AppText>
-              </Pressable>
-            ))}
+                  {({pressed}) => (
+                    <ShelfSurface
+                      shelfHeight={shelf?.height}
+                      shelfColor={shelf?.color}
+                      borderRadius={radius}
+                      isPressed={pressed}
+                      containerStyle={isNarrow ? undefined : {flex: 1}}
+                      faceStyle={[
+                        styles.todayChip,
+                        {backgroundColor: theme.colors[chip.backgroundKey], borderRadius: radius},
+                        isNarrow && {minHeight: 72},
+                        (!shelf && pressed) && styles.pressed,
+                      ]}
+                    >
+                      <View style={styles.todayIconCell}>
+                        <MaterialIcon
+                          color={theme.colors[chip.inkKey]}
+                          name={chip.icon}
+                          size={22}
+                        />
+                      </View>
+                      <AppText
+                        style={[
+                          styles.todayValue,
+                          {color: theme.colors[chip.inkKey]},
+                        ]}
+                        numberOfLines={2}
+                      >
+                        {chip.value}
+                      </AppText>
+                      <AppText
+                        style={[
+                          styles.todayLabel,
+                          {color: theme.colors[chip.inkKey]},
+                        ]}
+                        numberOfLines={2}
+                      >
+                        {t(chip.labelKey)}
+                      </AppText>
+                    </ShelfSurface>
+                  )}
+                </Pressable>
+              );
+            })}
           </View>
         </View>
         <View style={styles.section} testID="home-lessons-section">
