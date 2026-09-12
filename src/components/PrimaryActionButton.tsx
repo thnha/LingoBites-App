@@ -22,6 +22,7 @@ export function PrimaryActionButton({
     <Pressable
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
+      accessibilityState={{disabled: disabled ?? false}}
       disabled={disabled}
       onPress={onPress}
       testID={testID}
@@ -34,7 +35,11 @@ export function PrimaryActionButton({
           gap: 8,
           justifyContent: 'center',
           minHeight: 52,
-          opacity: disabled || pressed ? theme.states.pressedOpacity : 1,
+          opacity: disabled
+            ? theme.states.disabledOpacity
+            : pressed
+              ? theme.states.pressedOpacity
+              : 1,
         },
       ]}
     >

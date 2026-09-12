@@ -1,12 +1,17 @@
 import React from 'react';
 import {Text, TextInput} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
-import {themes, defaultThemeId} from '@theme/themeRegistry';
+import {themes} from '@theme/themeRegistry';
+import {THEME_STORAGE_KEY} from '@theme/themeStorage';
 import {TextField} from '../TextField';
 
 async function render(ui: React.ReactElement) {
+  // These assertions target pastel-kids design tokens, so pin the active
+  // theme instead of depending on the app default (Sáng).
+  await AsyncStorage.setItem(THEME_STORAGE_KEY, 'pastel-kids');
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
@@ -74,7 +79,7 @@ describe('TextField', () => {
 
     const input = tree.root.findByType(TextInput);
     expect(flattenStyle(input.props.style).borderColor).toBe(
-      themes[defaultThemeId].colors.danger,
+      themes['pastel-kids'].colors.danger,
     );
   });
 
@@ -116,7 +121,7 @@ describe('TextField', () => {
       tree.root.findByType(TextInput).props.onFocus();
     });
 
-    const theme = themes[defaultThemeId];
+    const theme = themes['pastel-kids'];
     expect(
       flattenStyle(tree.root.findByType(TextInput).props.style).borderColor,
     ).toBe(theme.colors.accent);

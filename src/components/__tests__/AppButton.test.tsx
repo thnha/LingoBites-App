@@ -1,11 +1,16 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
-import {defaultThemeId, themes} from '@theme/themeRegistry';
+import {themes} from '@theme/themeRegistry';
+import {THEME_STORAGE_KEY} from '@theme/themeStorage';
 import {AppButton} from '../AppButton';
 
 async function render(ui: React.ReactElement) {
+  // These assertions target pastel-kids-only button variants, so pin the
+  // active theme instead of depending on the app default (Sáng).
+  await AsyncStorage.setItem(THEME_STORAGE_KEY, 'pastel-kids');
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
@@ -26,7 +31,7 @@ describe('AppButton', () => {
       ...[].concat(pressable.props.style({pressed: false})),
     );
     expect(flattened.backgroundColor).toBe(
-      themes[defaultThemeId].components.button['primary-accent'].background,
+      themes['pastel-kids'].components.button['primary-accent'].background,
     );
   });
 
@@ -40,7 +45,7 @@ describe('AppButton', () => {
       ...[].concat(pressable.props.style({pressed: false})),
     );
     expect(flattened.borderColor).toBe(
-      themes[defaultThemeId].components.button.outline.border,
+      themes['pastel-kids'].components.button.outline.border,
     );
     expect(flattened.borderWidth).toBe(2);
   });

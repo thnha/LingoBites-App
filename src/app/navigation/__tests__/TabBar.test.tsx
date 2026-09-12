@@ -354,6 +354,37 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(indicatorStyle.borderRadius).toBe(0);
   });
 
+  it('renders nothing when the focused stack hides the bar (SETE-255)', () => {
+    const props = makeProps();
+    const hiddenDescriptors = Object.fromEntries(
+      Object.entries(props.descriptors).map(([key, descriptor]) => [
+        key,
+        {
+          ...(descriptor as {options: Record<string, unknown>}),
+          options: {tabBarStyle: {display: 'none'}},
+        },
+      ]),
+    );
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = ReactTestRenderer.create(
+        <ThemeContext.Provider
+          value={{
+            theme: defaultTheme,
+            themeId: 'default' as never,
+            setThemeId: jest.fn(),
+          }}
+        >
+          <TabBar {...props} descriptors={hiddenDescriptors as never} />
+        </ThemeContext.Provider>,
+      );
+    });
+    expect(tree.toJSON()).toBeNull();
+    expect(
+      tree.root.findAllByProps({testID: 'tab-bar-float-wrap'}),
+    ).toHaveLength(0);
+  });
+
   it('falls back to opaque surface when glass is disabled', () => {
     const {tree} = renderBar(defaultTheme, makeProps(), {
       glassFallback: true,
@@ -373,5 +404,65 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
         20 +
         FLOATING_TAB_BAR_CONTENT_GAP,
     );
+  });
+
+  it('enforces useFloatingTabBarClearance on scrollable screens', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const walk = (dir: string): string[] => {
+      let results: string[] = [];
+      const list = fs.readdirSync(dir);
+      list.forEach((file: string) => {
+        file = path.join(dir, file);
+        const stat = fs.statSync(file);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(walk(file));
+        } else {
+          if (file.endsWith('Screen.tsx') || file.endsWith('Activity.tsx')) {
+            results.push(file);
+          }
+        }
+      });
+      return results;
+    };
+    const screens = walk(path.join(__dirname, '../../../modules'));
+    const missing: string[] = [];
+    for (const screen of screens) {
+      const code = fs.readFileSync(screen, 'utf8');
+      const hasScroll = code.includes('<ScrollView') || code.includes('<FlatList');
+      if (!hasScroll) continue;
+      
+      if (!code.includes('useFloatingTabBarClearance') && !code.includes('IGNORE_TAB_BAR_CLEARANCE')) {
+        missing.push(path.basename(screen));
+      }
+    }
+    
+    // Whitelist legacy screens that haven't been updated yet (SETE-251 etc).
+    // New screens with ScrollView/FlatList will fail if they don't import useFloatingTabBarClearance.
+    const legacyExemptions = [
+      'TtsSpikeScreen.tsx',
+      'PracticeScreen.tsx',
+      'SentenceDetailScreen.tsx',
+      'TodayScreen.tsx',
+      'DailyReviewScreen.tsx',
+      'WordDetailScreen.tsx',
+      'PrivacyNoteScreen.tsx',
+      'ProfileScreen.tsx',
+      'ProgressReportScreen.tsx',
+      'GrammarDetailScreen.tsx',
+      'FeatureStatusScreen.tsx',
+      'OCRReviewScreen.tsx',
+      'FlashcardListScreen.tsx',
+      'ProgressiveLessonScreen.tsx',
+      'HomeScreen.tsx',
+      'ImageCaptureScreen.tsx',
+      'CreateScreen.tsx',
+      'YouTubeHistoryScreen.tsx',
+      'YouTubeManualTranscriptScreen.tsx',
+      'YouTubeInputScreen.tsx',
+      'YouTubeLessonScreen.tsx',
+    ];
+    const actuallyMissing = missing.filter(m => !legacyExemptions.includes(m));
+    expect(actuallyMissing).toEqual([]);
   });
 });

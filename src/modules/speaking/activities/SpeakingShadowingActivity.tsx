@@ -1,5 +1,12 @@
-import React, {useMemo, useState} from 'react';
-import {Alert, Pressable, ScrollView, View} from 'react-native';
+import React, {useEffect, useMemo, useState} from 'react';
+import {
+  Alert,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {LessonsStackParamList} from '@/app/navigation/types';
 import {AppCard} from '@components/AppCard';
@@ -12,11 +19,13 @@ import {playContentAudio, useContentLibrary} from '@modules/content';
 import {captureSpeakingErrorIfNeeded} from '../errorNotebookService';
 import {
   playRecording,
+  requestMicrophonePermission,
   startRecording,
   stopRecording,
 } from '../recordingService';
 import {getShadowingContent} from '../speakingModes';
 import {useSpeakingRepository} from '../useSpeakingRepository';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'SpeakingShadowing'>;
 
@@ -30,6 +39,7 @@ type RecordingPhase = 'idle' | 'recording' | 'recorded';
  */
 export function SpeakingShadowingActivity({navigation}: Props) {
   const {theme} = useAppTheme();
+  const floatingClearance = useFloatingTabBarClearance();
   const {getLessonAudioAssets} = useContentLibrary();
   const {insertSpeakingRecording} = useSpeakingRepository();
   const content = useMemo(() => getShadowingContent(), []);
@@ -49,6 +59,46 @@ export function SpeakingShadowingActivity({navigation}: Props) {
   const [respondedQuickly, setRespondedQuickly] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // Unsaved work that would be lost on exit: an in-progress or finished
+  // recording, or self-check answers that were never submitted. A pristine
+  // screen (or an already-submitted one) has nothing at stake.
+  const hasUnsavedProgress =
+    !submitted &&
+    (phase !== 'idle' || taskCompleted || keyPhraseUsed || respondedQuickly);
+
+  function exitActivity() {
+    // Never leave the microphone running after the activity is dismissed.
+    if (phase === 'recording' && filePath) {
+      stopRecording(filePath, startedAtMs).catch(() => undefined);
+    }
+    navigation.goBack();
+  }
+
+  function requestExit() {
+    if (!hasUnsavedProgress) {
+      navigation.goBack();
+      return;
+    }
+    Alert.alert(
+      'Thoát buổi luyện nói?',
+      'Bản ghi âm và tiến độ tự kiểm tra sẽ không được lưu.',
+      [
+        {text: 'Huỷ', style: 'cancel'},
+        {text: 'Thoát', style: 'destructive', onPress: exitActivity},
+      ],
+    );
+  }
+
+  const closeAction = (
+    <IconButton
+      accessibilityLabel="Đóng buổi luyện nói"
+      icon="close"
+      onPress={requestExit}
+      tone="bare"
+      testID="shadowing-close"
+    />
+  );
+
   function handlePlayReference() {
     const result = playContentAudio(line?.audioAssetId ?? null, audioAssets);
     if (!result.ok) {
@@ -56,11 +106,30 @@ export function SpeakingShadowingActivity({navigation}: Props) {
     }
   }
 
+  useEffect(() => {
+    // Pre-flight check: request/verify microphone permission when the speaking activity opens
+    requestMicrophonePermission();
+  }, []);
+
   async function handleToggleRecording() {
     if (phase === 'idle') {
       const start = await startRecording('shadowing', `shadow-${Date.now()}`);
       if (!start.ok) {
-        Alert.alert('Ghi âm', start.message);
+        if (start.errorCode === 'PERMISSION_DENIED') {
+          Alert.alert('Cần quyền truy cập micro', start.message, [
+            {text: 'Huỷ', style: 'cancel'},
+            {text: 'Mở Cài đặt', onPress: () => Linking.openSettings()},
+          ]);
+        } else if (start.errorCode === 'NO_INPUT_DEVICE') {
+          Alert.alert('Ghi âm', start.message, [{text: 'OK'}]);
+        } else if (start.errorCode === 'TRANSIENT_FAILURE') {
+          Alert.alert('Ghi âm', start.message, [
+            {text: 'Huỷ', style: 'cancel'},
+            {text: 'Thử lại', onPress: () => handleToggleRecording()},
+          ]);
+        } else {
+          Alert.alert('Ghi âm', start.message);
+        }
         return;
       }
       setFilePath(start.filePath);
@@ -118,10 +187,7 @@ export function SpeakingShadowingActivity({navigation}: Props) {
   if (!lesson || !line) {
     return (
       <AppScreen>
-        <ScreenHeader
-          title="Lặp lại theo mẫu"
-          onBack={() => navigation.goBack()}
-        />
+        <ScreenHeader title="Lặp lại theo mẫu" rightAction={closeAction} />
         <View style={{padding: theme.gutter}}>
           <AppText color="secondary">
             Chưa có nội dung lặp lại theo mẫu nào được cài đặt.
@@ -133,18 +199,17 @@ export function SpeakingShadowingActivity({navigation}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader
-        title="Lặp lại theo mẫu"
-        onBack={() => navigation.goBack()}
-      />
+      <ScreenHeader title="Lặp lại theo mẫu" rightAction={closeAction} />
       <ScrollView
         contentContainerStyle={{
+          flexGrow: 1,
           gap: theme.spacing.lg,
-          paddingBottom: 28,
+          paddingBottom: floatingClearance,
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
         showsVerticalScrollIndicator={false}
+        style={{flex: 1}}
       >
         <AppCard style={{gap: theme.spacing.sm}}>
           <View
@@ -153,19 +218,35 @@ export function SpeakingShadowingActivity({navigation}: Props) {
               flexDirection: 'row',
               gap: theme.spacing.sm,
             }}
+            testID="shadowing-prompt-row"
           >
-            <AppText variant="h3">{line.textEn}</AppText>
+            <AppText
+              style={styles.lineText}
+              testID="shadowing-prompt-en"
+              variant="h3"
+            >
+              {line.textEn}
+            </AppText>
             <IconButton
               accessibilityLabel="Nghe câu mẫu"
               icon="volume_up"
               onPress={handlePlayReference}
+              style={styles.audioButton}
               tone="ghost"
             />
           </View>
           <AppText color="secondary">{line.textVi}</AppText>
         </AppCard>
 
-        <AppCard style={{alignItems: 'center', gap: theme.spacing.sm}}>
+        {/* Flexible spacer: on tall screens this pushes the repeated record
+            control into the bottom thumb zone instead of leaving dead space
+            below it. Collapses when content overflows so the view scrolls. */}
+        <View style={{flex: 1, minHeight: theme.spacing.xxl}} />
+
+        <AppCard
+          style={{alignItems: 'center', gap: theme.spacing.sm}}
+          testID="shadowing-record-card"
+        >
           <IconButton
             accessibilityLabel={
               phase === 'recording' ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'
@@ -240,6 +321,16 @@ export function SpeakingShadowingActivity({navigation}: Props) {
     </AppScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  audioButton: {
+    flexShrink: 0,
+  },
+  lineText: {
+    flex: 1,
+    flexShrink: 1,
+  },
+});
 
 function ChecklistRow({
   label,

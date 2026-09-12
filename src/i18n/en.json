@@ -100,6 +100,10 @@
     "open_feature_status": "View feature status",
     "open_feature_status_a11y": "View feature availability status"
   },
+  "practice": {
+    "quick_empty_cause": "No lessons are ready for quick practice yet.",
+    "quick_empty_explain": "Quick practice pulls questions from lessons you have created."
+  },
   "review": {
     "title": "Review today",
     "close_a11y": "Close review session",
@@ -115,7 +119,15 @@
     "summary_forgot_label": "Forgot",
     "summary_xp": "+{{xp}} XP today",
     "back_to_home": "Back to Home",
-    "back_to_home_a11y": "Back to Home"
+    "back_to_home_a11y": "Back to Home",
+    "show_answer_hint": "Tap to see the meaning",
+    "show_prompt_hint": "Tap to see the front",
+    "listen_prompt_a11y": "Listen to the English pronunciation",
+    "listen_answer_a11y": "Listen to the English pronunciation again",
+    "exit_title": "Leave the review session?",
+    "exit_body": "Progress {{reviewed}}/{{total}} will not be saved.",
+    "exit_stay": "Cancel",
+    "exit_quit": "Leave"
   },
   "rating": {
     "forgot_label": "Forgot",

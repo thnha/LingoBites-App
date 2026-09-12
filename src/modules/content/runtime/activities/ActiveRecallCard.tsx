@@ -46,6 +46,7 @@ export function ActiveRecallCard({data, onComplete, onSkip}: Props) {
                       onPress={() =>
                         setRatings(prev => ({...prev, [item.id]: option.key}))
                       }
+                      testID={`recall-rate-${item.id}-${option.key}`}
                       title={option.label}
                       variant={
                         ratings[item.id] === option.key
@@ -59,6 +60,7 @@ export function ActiveRecallCard({data, onComplete, onSkip}: Props) {
             ) : (
               <AppButton
                 onPress={() => setRevealed(prev => new Set(prev).add(item.id))}
+                testID={`recall-reveal-${item.id}`}
                 title="Xem đáp án"
                 variant="secondary"
               />

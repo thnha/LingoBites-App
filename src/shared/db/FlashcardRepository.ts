@@ -206,9 +206,14 @@ export function getDueFlashcards({
 
   const db = getDatabase();
   const result = db.execute(
+    // SETE-253: cards without a Vietnamese translation can never be answered
+    // (the back face would repeat the English prompt), so they are excluded
+    // from the due queue at the source rather than rendered degenerately.
     `SELECT flashcards.* FROM flashcards
       INNER JOIN review_schedule ON review_schedule.card_id = flashcards.id
-      WHERE flashcards.is_saved = 1 AND review_schedule.next_review_at <= ?
+      WHERE flashcards.is_saved = 1
+        AND TRIM(flashcards.meaning_vi) != ''
+        AND review_schedule.next_review_at <= ?
       ORDER BY datetime(review_schedule.next_review_at) ASC${limitClause};`,
     params,
   );

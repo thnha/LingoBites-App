@@ -145,7 +145,9 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
 
     // Verify progress shows "1 / 1"
     const progress = reviewTree.root.findByProps({testID: 'review-progress'});
-    expect(progress.props.children).toBe('1 / 1');
+    expect(progress.findAllByProps({children: '1 / 1'}).length).toBeGreaterThan(
+      0,
+    );
 
     // === STEP 5: Rate the card as "remembered" ===
     const rememberedButton = reviewTree.root.findByProps({
@@ -238,7 +240,9 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
 
     // Verify progress shows "1 / 3"
     let progress = tree.root.findByProps({testID: 'review-progress'});
-    expect(progress.props.children).toBe('1 / 3');
+    expect(progress.findAllByProps({children: '1 / 3'}).length).toBeGreaterThan(
+      0,
+    );
 
     // Rate first card as remembered
     await revealCard(tree);
@@ -248,7 +252,9 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
 
     // Verify progress shows "2 / 3"
     progress = tree.root.findByProps({testID: 'review-progress'});
-    expect(progress.props.children).toBe('2 / 3');
+    expect(progress.findAllByProps({children: '2 / 3'}).length).toBeGreaterThan(
+      0,
+    );
 
     // Rate second card as forgot
     await revealCard(tree);
@@ -258,7 +264,9 @@ describe('E2E: Flashcard Feature - Complete Flow', () => {
 
     // Verify progress shows "3 / 3"
     progress = tree.root.findByProps({testID: 'review-progress'});
-    expect(progress.props.children).toBe('3 / 3');
+    expect(progress.findAllByProps({children: '3 / 3'}).length).toBeGreaterThan(
+      0,
+    );
 
     // Skip third card
     await revealCard(tree);

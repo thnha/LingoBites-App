@@ -14,6 +14,7 @@ import {useAppTheme} from '@theme';
 import {bootstrapContentPackage} from '../bootstrap';
 import {useContentLibrary} from './useContentLibrary';
 import type {ContentLessonListItem} from './useContentLibrary';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'ContentLessonList'>;
 
@@ -23,6 +24,7 @@ export function ContentLessonListScreen({navigation}: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {listActivePackageLessons} = useContentLibrary();
+  const floatingClearance = useFloatingTabBarClearance();
 
   const loadLessons = useCallback(async () => {
     let items = listActivePackageLessons();
@@ -68,7 +70,12 @@ export function ContentLessonListScreen({navigation}: Props) {
         title="Bài học đóng gói"
       />
       <FlatList
-        contentContainerStyle={{gap: theme.spacing.md, padding: theme.gutter}}
+        contentContainerStyle={{
+          gap: theme.spacing.md,
+          paddingHorizontal: theme.gutter,
+          paddingTop: theme.gutter,
+          paddingBottom: floatingClearance,
+        }}
         data={lessons}
         keyExtractor={item => item.id}
         ListEmptyComponent={

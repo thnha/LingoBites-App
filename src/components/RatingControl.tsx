@@ -38,7 +38,19 @@ const RATING_OPTIONS: RatingOption[] = [
 function ratingTone(
   theme: AppTheme,
   rating: ReviewRating,
+  disabled: boolean,
 ): {background: string; border: string; ink: string} {
+  if (disabled) {
+    // SETE-254: never wash the whole button with disabledOpacity — the
+    // composited glyph-vs-fill contrast collapses to ~1.7-2.0:1. A muted but
+    // explicitly readable tone (text.secondary on surfaceMuted, >=3:1 on all
+    // themes) still reads as inactive without becoming illegible.
+    return {
+      background: theme.colors.surfaceMuted,
+      border: theme.colors.border,
+      ink: theme.colors.text.secondary,
+    };
+  }
   switch (rating) {
     case 'remembered':
       return {
@@ -63,7 +75,7 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
   return (
     <View style={styles.container}>
       {RATING_OPTIONS.map(option => {
-        const tone = ratingTone(theme, option.rating);
+        const tone = ratingTone(theme, option.rating, disabled);
         return (
           <Pressable
             accessibilityLabel={t(option.accessibilityKey)}
@@ -77,7 +89,6 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
               {
                 backgroundColor: tone.background,
                 borderColor: tone.border,
-                opacity: disabled ? theme.states.disabledOpacity : 1,
               },
             ]}
             testID={`rating-${option.rating}`}
@@ -99,9 +110,13 @@ export function RatingControl({onRate, onSkip, disabled = false}: Props) {
         style={[
           styles.skipButton,
           {
-            backgroundColor: theme.colors.surface,
+            // SETE-254: same readable-disabled treatment as the rating
+            // buttons — muted fill, full-strength secondary ink, no opacity
+            // wash (which collapsed glyph contrast to ~2:1).
+            backgroundColor: disabled
+              ? theme.colors.surfaceMuted
+              : theme.colors.surface,
             borderColor: theme.colors.border,
-            opacity: disabled ? theme.states.disabledOpacity : 1,
           },
         ]}
         testID="rating-skip"

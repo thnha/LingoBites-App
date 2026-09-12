@@ -13,12 +13,21 @@ import {
   listActivePackageLessons,
 } from '@shared/db/ContentRuntimeRepository';
 import type {SpeakingMode} from '@shared/db/types';
+import type {HandoffIconName} from '@components/icons/iconRegistry';
 
 export type SpeakingModeInfo = {
   mode: SpeakingMode;
   titleVi: string;
   descriptionVi: string;
   available: boolean;
+  /** Estimated commitment, in minutes — shown as "~X phút" on the card. */
+  durationMin: number;
+  /** CEFR level label (A2 / B1 / B2), same vocabulary as lesson cards. */
+  level: string;
+  /** Per-mode medallion icon so the list scans instead of reading as a wall of text. */
+  icon: HandoffIconName;
+  /** Exactly one mode is the obvious default, badged "Gợi ý hôm nay". */
+  recommended: boolean;
 };
 
 const SHADOWING_ACTIVITY_TYPES = new Set([
@@ -148,33 +157,69 @@ export function getMockInterviewContent(): SpeakingModeContent[] {
   ]);
 }
 
+/**
+ * SETE-262: fixed per-mode metadata, ordered by commitment (shortest and
+ * easiest first, mock interview last). Shadowing is the recommended default:
+ * it is the shortest warm-up and the only mode backed by installed content.
+ */
 const MODE_COPY: Record<
   SpeakingMode,
-  {titleVi: string; descriptionVi: string}
+  {
+    titleVi: string;
+    descriptionVi: string;
+    durationMin: number;
+    level: string;
+    icon: HandoffIconName;
+    recommended: boolean;
+  }
 > = {
   shadowing: {
     titleVi: 'Lặp lại theo mẫu (Shadowing)',
     descriptionVi: 'Nghe câu mẫu, ghi âm lại và tự kiểm tra.',
+    durationMin: 2,
+    level: 'A2',
+    icon: 'repeat',
+    recommended: true,
   },
   quick_answer: {
     titleVi: 'Trả lời nhanh',
     descriptionVi: 'Trả lời một câu hỏi ngắn trong vài giây.',
+    durationMin: 2,
+    level: 'A2',
+    icon: 'bolt',
+    recommended: false,
   },
   standup: {
     titleVi: 'Báo cáo hàng ngày (Stand-up)',
     descriptionVi: 'Luyện nói tóm tắt công việc hôm nay.',
+    durationMin: 3,
+    level: 'B1',
+    icon: 'event_note',
+    recommended: false,
   },
   app_description: {
     titleVi: 'Mô tả ứng dụng/hệ thống',
     descriptionVi: 'Luyện mô tả một tính năng hoặc hệ thống bằng tiếng Anh.',
+    durationMin: 5,
+    level: 'B1',
+    icon: 'smartphone',
+    recommended: false,
   },
   bug_report: {
     titleVi: 'Báo lỗi (Bug report)',
     descriptionVi: 'Luyện trình bày một lỗi kỹ thuật bằng tiếng Anh.',
+    durationMin: 5,
+    level: 'B2',
+    icon: 'warning',
+    recommended: false,
   },
   mock_interview: {
     titleVi: 'Phỏng vấn thử',
     descriptionVi: 'Luyện trả lời câu hỏi phỏng vấn công việc.',
+    durationMin: 10,
+    level: 'B2',
+    icon: 'record_voice_over',
+    recommended: false,
   },
 };
 
@@ -200,5 +245,9 @@ export function listSpeakingRoomModes(): SpeakingModeInfo[] {
     titleVi: MODE_COPY[mode].titleVi,
     descriptionVi: MODE_COPY[mode].descriptionVi,
     available: availability[mode],
+    durationMin: MODE_COPY[mode].durationMin,
+    level: MODE_COPY[mode].level,
+    icon: MODE_COPY[mode].icon,
+    recommended: MODE_COPY[mode].recommended,
   }));
 }

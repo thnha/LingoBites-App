@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import {AppButton} from '@components/AppButton';
 import {AppCard} from '@components/AppCard';
 import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
@@ -35,26 +36,44 @@ export function ShadowingCard({data, onPlayAudio, onComplete, onSkip}: Props) {
               flexDirection: 'row',
               gap: theme.spacing.sm,
             }}
+            testID={`shadowing-line-row-${index}`}
           >
-            <AppText variant="h3">{line.textEn}</AppText>
+            <AppText
+              style={styles.lineText}
+              testID={`shadowing-line-en-${index}`}
+              variant="h3"
+            >
+              {line.textEn}
+            </AppText>
             <IconButton
               accessibilityLabel="Nghe phát âm"
               icon="volume_up"
               onPress={() => onPlayAudio(line.audioAssetId)}
+              style={styles.audioButton}
               tone="ghost"
             />
           </View>
           <AppText color="primary">{line.textVi}</AppText>
         </AppCard>
       ))}
-      <AppText
-        color={repeated ? 'primary' : 'secondary'}
+      <AppButton
+        accessibilityState={{selected: repeated}}
         onPress={() => setRepeated(true)}
         testID="shadowing-confirm"
-      >
-        {repeated ? '✓ Tôi đã lặp lại' : 'Tôi đã lặp lại'}
-      </AppText>
+        title={repeated ? '✓ Tôi đã lặp lại' : 'Tôi đã lặp lại'}
+        variant="secondary"
+      />
       <StepActions onComplete={onComplete} onSkip={onSkip} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  audioButton: {
+    flexShrink: 0,
+  },
+  lineText: {
+    flex: 1,
+    flexShrink: 1,
+  },
+});

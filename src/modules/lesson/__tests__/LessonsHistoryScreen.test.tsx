@@ -39,6 +39,23 @@ jest.mock('@modules/content', () => ({
   bootstrapContentPackage: jest.fn().mockResolvedValue({ok: true}),
 }));
 
+const mockListLessons = jest.fn(() => []);
+const mockGetLessonById = jest.fn(() => null);
+const mockGetDueFlashcards = jest.fn(() => []);
+
+jest.mock('../useLessonRepository', () => ({
+  useLessonRepository: () => ({
+    listLessons: mockListLessons,
+    getLessonById: mockGetLessonById,
+  }),
+}));
+
+jest.mock('../useFlashcardLibrary', () => ({
+  useFlashcardLibrary: () => ({
+    getDueFlashcards: mockGetDueFlashcards,
+  }),
+}));
+
 function render(ui: React.ReactElement) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   act(() => {
@@ -142,8 +159,9 @@ describe('LessonsHistoryScreen', () => {
       .toBeDefined();
     expect(tree.root.findByProps({testID: 'library-practice-speaking'}))
       .toBeDefined();
-    expect(tree.root.findByProps({testID: 'library-practice-quick'}))
-      .toBeDefined();
+    expect(() =>
+      tree.root.findByProps({testID: 'library-practice-quick'}),
+    ).toThrow();
   });
 
   it('routes practice chips to their destinations', () => {
@@ -163,10 +181,5 @@ describe('LessonsHistoryScreen', () => {
     expect(navigation.navigate).toHaveBeenCalledWith('FlashcardList');
     press('library-practice-speaking');
     expect(navigation.navigate).toHaveBeenCalledWith('SpeakingRoom');
-    press('library-practice-quick');
-    expect(navigation.navigate).toHaveBeenCalledWith(
-      'Practice',
-      expect.objectContaining({questions: []}),
-    );
   });
 });

@@ -15,7 +15,7 @@ const handoffSpacing = {
 
 export const defaultTheme: AppTheme = {
   id: 'default',
-  name: 'Mặc định',
+  name: 'Sáng',
   colors: {
     background: '#fcfae6',
     surface: '#ffffff',

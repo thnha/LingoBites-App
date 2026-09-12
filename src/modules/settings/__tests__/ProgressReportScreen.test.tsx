@@ -73,11 +73,13 @@ describe('ProgressReportScreen (REQ-39)', () => {
     expect(text).toContain('Thời gian bắt đầu phản xạ');
     expect(text).toContain('Hiểu ngay lần nghe đầu tiên');
     expect(text).toContain('Tỷ lệ ghi nhớ SRS (7d / 30d)');
-    expect(text).toContain('Tình huống đã đạt (Situations)');
+    expect(text).toContain('Tình huống đã đạt');
+    expect(text).not.toContain('(Situations)');
+    expect(text).not.toContain('REQ-39');
     expect(text).toContain('So sánh ghi âm trước & sau');
   });
 
-  test('clicking export privacy-safe metrics button generates JSON output', async () => {
+  test('clicking export metrics button generates JSON output', async () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
 
     await ReactTestRenderer.act(async () => {
@@ -86,7 +88,7 @@ describe('ProgressReportScreen (REQ-39)', () => {
 
     const exportBtn = findPressableByText(
       tree!.root,
-      'Xuất Metrics Privacy-Safe (JSON)',
+      'Xuất chỉ số học tập (JSON)',
     );
     expect(exportBtn).toBeTruthy();
 
@@ -95,8 +97,8 @@ describe('ProgressReportScreen (REQ-39)', () => {
     });
 
     expect(Alert.alert).toHaveBeenCalledWith(
-      'Xuất Metrics Privacy-Safe',
-      expect.stringContaining('JSON bảo mật'),
+      'Xuất chỉ số học tập',
+      expect.stringContaining('JSON ẩn danh'),
     );
 
     const updatedText = JSON.stringify(tree!.toJSON());

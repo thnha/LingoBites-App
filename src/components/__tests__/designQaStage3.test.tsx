@@ -1,16 +1,21 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
-import {defaultThemeId, themeList, themes} from '@theme/themeRegistry';
+import {themeList, themes} from '@theme/themeRegistry';
+import {THEME_STORAGE_KEY} from '@theme/themeStorage';
 import {AppCard} from '../AppCard';
 import {HandoffProgressTrack} from '../HandoffProgressTrack';
 
 // Stage 3 design QA (SETE-194): progress fill/glow, card spec, soft-color
 // alphas, and the 32 spacing step — all against design/app.css.
-const theme = themes[defaultThemeId];
+const theme = themes['pastel-kids'];
 
 async function render(ui: React.ReactElement) {
+  // Token assertions above target pastel-kids; render under the same theme
+  // instead of depending on the app default (Sáng).
+  await AsyncStorage.setItem(THEME_STORAGE_KEY, 'pastel-kids');
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(

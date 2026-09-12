@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {View} from 'react-native';
+import {Pressable, View} from 'react-native';
 import {AppCard} from '@components/AppCard';
 import {AppButton} from '@components/AppButton';
 import {AppText} from '@components/AppText';
@@ -75,6 +75,7 @@ export function ExitCheckCard({data, onComplete, onSkip}: Props) {
                           [item.id]: option.correct,
                         }))
                       }
+                      testID={`exit-check-grade-${item.id}-${option.key}`}
                       title={option.label}
                       variant={
                         selfGrades[item.id] === option.correct
@@ -88,6 +89,7 @@ export function ExitCheckCard({data, onComplete, onSkip}: Props) {
             ) : (
               <AppButton
                 onPress={() => setRevealed(prev => new Set(prev).add(item.id))}
+                testID={`exit-check-reveal-${item.id}`}
                 title="Xem đáp án"
                 variant="secondary"
               />
@@ -100,12 +102,23 @@ export function ExitCheckCard({data, onComplete, onSkip}: Props) {
           Xem đáp án và tự đánh giá từng câu để hoàn thành.
         </AppText>
       ) : null}
-      <AppButton
-        disabled={!allItemsGraded && data.items.length > 0}
-        onPress={() => onComplete(answers)}
-        title="Hoàn thành bài kiểm tra"
-      />
-      <AppButton onPress={onSkip} title="Bỏ qua" variant="ghost" />
+      <View style={{gap: theme.spacing.lg}}>
+        <AppButton
+          disabled={!allItemsGraded && data.items.length > 0}
+          onPress={() => onComplete(answers)}
+          testID="exit-check-complete"
+          title="Hoàn thành bài kiểm tra"
+        />
+        <Pressable
+          accessibilityLabel="Bỏ qua"
+          accessibilityRole="button"
+          onPress={onSkip}
+          style={{alignSelf: 'center', paddingVertical: theme.spacing.xs}}
+          testID="exit-check-skip-link"
+        >
+          <AppText color="secondary" variant="label">Bỏ qua</AppText>
+        </Pressable>
+      </View>
     </View>
   );
 }

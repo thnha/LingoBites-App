@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import {Alert, Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {AppButton} from '@components/AppButton';
 import {AppCard} from '@components/AppCard';
@@ -8,9 +8,12 @@ import {AppText} from '@components/AppText';
 import {Banner} from '@components/Banner';
 import {ErrorCard} from '@components/ErrorCard';
 import {FlipCard} from '@components/FlipCard';
+import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
+import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {Medallion} from '@components/Medallion';
 import {RatingControl} from '@components/RatingControl';
+import {speak} from '@modules/audio/ttsService';
 import {useFeatureEnabled} from '@/release';
 import {requestSync} from '@modules/sync';
 import {useFlashcardLibrary} from '@modules/lesson';
@@ -23,6 +26,11 @@ import {
 import {useAppTheme} from '@theme';
 
 const DEFAULT_SOFT_CAP = 10;
+
+/** Runs an async side effect without returning its promise to the caller. */
+function fireAndForget(task: Promise<unknown>): void {
+  task.catch(() => undefined);
+}
 
 type Props = {
   navigation?: {
@@ -46,18 +54,38 @@ function FlashcardFace({
   card: FlashcardRecord;
   side: 'front' | 'back';
 }) {
+  const {t} = useTranslation();
+
+  // SETE-253: the flip must reveal something new. The front is the English
+  // prompt only (recall cue); the back leads with the Vietnamese meaning as
+  // the answer and repeats the English smaller as context. Cards without a
+  // translation never reach this component — they are filtered out of the due
+  // queue in `getDueFlashcards`.
   if (side === 'back') {
     return (
-      <View style={styles.cardFace}>
-        <AppText style={styles.word} variant="h2">
-          {card.word}
-        </AppText>
-        <AppText color="primary" style={styles.meaning} variant="h3">
+      <View style={styles.cardFace} testID="review-card-back">
+        <AppText color="primary" style={styles.meaning} variant="h2">
           {card.meaningVi}
         </AppText>
+        <AppText color="muted" style={styles.contextWord}>
+          {card.word}
+        </AppText>
+        <IconButton
+          accessibilityLabel={t('review.listen_answer_a11y')}
+          icon="play_circle"
+          onPress={() => {
+            fireAndForget(speak(card.word));
+          }}
+          testID="review-speak-back"
+        />
         {card.example ? (
           <AppText color="secondary" style={styles.example}>
             {card.example}
+          </AppText>
+        ) : null}
+        {card.exampleTranslation ? (
+          <AppText color="secondary" style={styles.example}>
+            {card.exampleTranslation}
           </AppText>
         ) : null}
       </View>
@@ -65,7 +93,7 @@ function FlashcardFace({
   }
 
   return (
-    <View style={styles.cardFace}>
+    <View style={styles.cardFace} testID="review-card-front">
       <AppText style={styles.word} variant="h2">
         {card.word}
       </AppText>
@@ -75,11 +103,14 @@ function FlashcardFace({
           {card.ipa ? `/${card.ipa}/` : ''}
         </AppText>
       ) : null}
-      {card.sourceSentence ? (
-        <AppText color="muted" style={styles.example}>
-          {card.sourceSentence}
-        </AppText>
-      ) : null}
+      <IconButton
+        accessibilityLabel={t('review.listen_prompt_a11y')}
+        icon="play_circle"
+        onPress={() => {
+          fireAndForget(speak(card.word));
+        }}
+        testID="review-speak-front"
+      />
     </View>
   );
 }
@@ -145,6 +176,12 @@ export function DailyReviewScreen({
   }
 
   function handleRate(rating: ReviewRating) {
+    // SETE-254: ratings are gated behind the flip — the RatingControl is
+    // disabled pre-flip, and this guard keeps a pre-flip rating from ever
+    // being recorded even if the handler is invoked directly.
+    if (!flipped) {
+      return;
+    }
     const card = sessionCards[currentIndex];
     if (!card) {
       return;
@@ -183,16 +220,44 @@ export function DailyReviewScreen({
   }
 
   function handleSkip() {
+    // SETE-254: same flip gate as handleRate — the skip control is disabled
+    // pre-flip, and this keeps a pre-flip skip from advancing the session.
+    if (!flipped) {
+      return;
+    }
     finishNext({
       ...summary,
       reviewed: summary.reviewed + 1,
     });
   }
 
-  function handleClose() {
-    // Leave after rating at least one card still closes the session.
+  function exitSession() {
+    // Leaving after rating at least one card still closes the session.
     finalizeSession();
     navigation?.goBack?.();
+  }
+
+  function requestExit() {
+    // Nothing at stake on the first card with no answers given: exit directly.
+    if (summary.reviewed === 0) {
+      exitSession();
+      return;
+    }
+    Alert.alert(
+      t('review.exit_title'),
+      t('review.exit_body', {
+        reviewed: summary.reviewed,
+        total: sessionCards.length,
+      }),
+      [
+        {text: t('review.exit_stay'), style: 'cancel'},
+        {
+          text: t('review.exit_quit'),
+          style: 'destructive',
+          onPress: exitSession,
+        },
+      ],
+    );
   }
 
   if (!reviewSystemEnabled) {
@@ -213,7 +278,7 @@ export function DailyReviewScreen({
           <Pressable
             accessibilityLabel={t('review.close_a11y')}
             accessibilityRole="button"
-            onPress={handleClose}
+            onPress={requestExit}
             style={styles.closeButton}
             testID="review-close"
           >
@@ -313,18 +378,21 @@ export function DailyReviewScreen({
   return (
     <AppScreen>
       <View style={[styles.header, {paddingHorizontal: theme.gutter}]}>
-        <View>
+        <View style={styles.headerText}>
           <AppText color="secondary" variant="label">
             {t('review.title')}
           </AppText>
-          <AppText testID="review-progress" variant="h2">
-            {`${currentIndex + 1} / ${sessionCards.length}`}
-          </AppText>
+          <View testID="review-progress">
+            <HandoffProgressTrack
+              label={`${currentIndex + 1} / ${sessionCards.length}`}
+              progress={(currentIndex + 1) / sessionCards.length}
+            />
+          </View>
         </View>
         <Pressable
           accessibilityLabel={t('review.close_a11y')}
           accessibilityRole="button"
-          onPress={() => navigation?.goBack?.()}
+          onPress={requestExit}
           style={styles.closeButton}
           testID="review-close"
         >
@@ -335,8 +403,9 @@ export function DailyReviewScreen({
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          {paddingHorizontal: theme.gutter},
+          {flexGrow: 1, justifyContent: 'center', paddingHorizontal: theme.gutter},
         ]}
+        style={{flex: 1}}
       >
         {carryOverCount > 0 ? (
           <Banner
@@ -348,8 +417,10 @@ export function DailyReviewScreen({
         {activeCard ? (
           <FlipCard
             back={<FlashcardFace card={activeCard} side="back" />}
+            backHint={t('review.show_prompt_hint')}
             flipped={flipped}
             front={<FlashcardFace card={activeCard} side="front" />}
+            frontHint={t('review.show_answer_hint')}
             onFlip={() => setFlipped(value => !value)}
             testID="daily-review-flip-card"
           />
@@ -392,6 +463,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 44,
   },
+  contextWord: {
+    textAlign: 'center',
+  },
   content: {
     gap: 16,
     paddingBottom: 32,
@@ -420,6 +494,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     minHeight: 64,
     paddingVertical: 8,
+  },
+  headerText: {
+    flex: 1,
+    gap: 6,
+    marginRight: 12,
   },
   meaning: {
     textAlign: 'center',

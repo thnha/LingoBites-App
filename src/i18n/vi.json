@@ -100,6 +100,10 @@
     "open_feature_status": "Xem trạng thái tính năng",
     "open_feature_status_a11y": "Xem trạng thái khả dụng của tính năng"
   },
+  "practice": {
+    "quick_empty_cause": "Chưa có bài học nào để luyện nhanh.",
+    "quick_empty_explain": "Luyện nhanh lấy câu từ các bài học bạn đã tạo."
+  },
   "review": {
     "title": "Ôn tập hôm nay",
     "close_a11y": "Đóng phiên ôn tập",
@@ -115,7 +119,15 @@
     "summary_forgot_label": "Chưa nhớ",
     "summary_xp": "+{{xp}} XP hôm nay",
     "back_to_home": "Quay về Home",
-    "back_to_home_a11y": "Quay về Home"
+    "back_to_home_a11y": "Quay về Home",
+    "show_answer_hint": "Nhấn để xem nghĩa",
+    "show_prompt_hint": "Nhấn để xem mặt trước",
+    "listen_prompt_a11y": "Nghe phát âm từ tiếng Anh",
+    "listen_answer_a11y": "Nghe lại phát âm từ tiếng Anh",
+    "exit_title": "Thoát buổi ôn tập?",
+    "exit_body": "Tiến độ {{reviewed}}/{{total}} sẽ không được lưu.",
+    "exit_stay": "Huỷ",
+    "exit_quit": "Thoát"
   },
   "rating": {
     "forgot_label": "Quên",
@@ -183,7 +195,7 @@
     "ai_disclaimer_body": "Kết quả phân tích được tạo bởi AI và có thể chưa chính xác hoàn toàn. Hãy dùng như công cụ hỗ trợ học tập, không phải nguồn đánh giá tiếng Anh chính thức.",
     "local_data_note": "Bài học được lưu cục bộ trên thiết bị. Bạn có thể xóa dữ liệu học bất cứ lúc nào trong Hồ sơ.",
     "support_prompt": "Gửi góp ý hoặc báo lỗi qua email. App không gửi nội dung bài học trong email — hãy mô tả vấn đề bằng lời.",
-    "feature_status": "Tính năng hệ thống (Feature Status)",
+    "feature_status": "Tính năng hệ thống",
     "feature_status_desc": "Tình trạng và hạn chế của các tính năng"
   },
   "youtube": {

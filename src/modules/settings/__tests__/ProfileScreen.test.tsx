@@ -128,11 +128,11 @@ describe('ProfileScreen', () => {
     const text = JSON.stringify(tree!.toJSON());
     expect(text).not.toContain('4.2k');
     expect(text).not.toContain('"85%"');
-    expect(text).toContain('Chưa có dữ liệu');
+    expect(text).toContain('—');
     expect(text).not.toContain('Chỉnh sửa hồ sơ');
   });
 
-  it('marks incomplete settings rows instead of fake values or chevrons', async () => {
+  it('shows Chưa đặt for settings without values instead of fake values or chevrons', async () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
 
     await ReactTestRenderer.act(async () => {
@@ -142,7 +142,40 @@ describe('ProfileScreen', () => {
     const text = JSON.stringify(tree!.toJSON());
     expect(text).not.toContain('10 từ');
     expect(text).not.toContain('Tiếng Việt');
-    expect(text.match(/Incomplete/g)?.length).toBe(4);
+    expect(text).not.toContain('Incomplete');
+    expect(text.match(/Chưa đặt/g)?.length).toBe(4);
+  });
+
+  it('shows developer entries in dev builds', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = renderProfileScreen();
+    });
+
+    const text = JSON.stringify(tree!.toJSON());
+    expect(text).toContain('Tính năng hệ thống');
+    expect(text).toContain('Demo native TTS');
+  });
+
+  it('hides developer entries on production builds', async () => {
+    const originalDev = (globalThis as {__DEV__?: boolean}).__DEV__;
+    (globalThis as {__DEV__?: boolean}).__DEV__ = false;
+    try {
+      let tree!: ReactTestRenderer.ReactTestRenderer;
+
+      await ReactTestRenderer.act(async () => {
+        tree = renderProfileScreen();
+      });
+
+      const text = JSON.stringify(tree!.toJSON());
+      expect(text).not.toContain('Tính năng hệ thống');
+      expect(text).not.toContain('Demo native TTS');
+      expect(text).not.toContain('FeatureStatus');
+      expect(text).not.toContain('TtsSpike');
+    } finally {
+      (globalThis as {__DEV__?: boolean}).__DEV__ = originalDev;
+    }
   });
 
   it('hides the theme picker card when themeSwitcher is disabled', async () => {

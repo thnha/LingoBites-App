@@ -1,14 +1,16 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {useColorScheme} from 'react-native';
 import {useFeatureFlags} from '../release';
 import {
+  SYSTEM_THEME_ID,
   defaultThemeId,
-  isThemeId,
+  isThemePreference,
   themeReleaseFlag,
   themes,
-  type ThemeId,
+  type ThemePreference,
 } from './themeRegistry';
 
-const disabledPersistedThemeFallbackId: ThemeId = 'default';
+const disabledPersistedThemeFallbackId: ThemePreference = 'default';
 import {getSavedThemeId, saveThemeId} from './themeStorage';
 import {ThemeContext} from './useAppTheme';
 
@@ -16,10 +18,22 @@ type Props = {children: React.ReactNode};
 
 export function AppThemeProvider({children}: Props) {
   const {isFeatureEnabled} = useFeatureFlags();
-  const [themeId, setThemeIdState] = useState<ThemeId>(defaultThemeId);
+  const systemScheme = useColorScheme();
+  const [preference, setPreferenceState] =
+    useState<ThemePreference>(defaultThemeId);
 
   const isThemeAllowed = useCallback(
-    (id: ThemeId) => {
+    (id: ThemePreference) => {
+      if (id === SYSTEM_THEME_ID) {
+        return true;
+      }
+      if (!__DEV__) {
+        // Production builds offer only Sáng/Tối — experimental themes
+        // (pastel-kids, core, neo, comic, cartoon) are dev-only.
+        if (id !== 'default' && id !== 'dark') {
+          return false;
+        }
+      }
       const flag = themeReleaseFlag[id];
       return flag === undefined || isFeatureEnabled(flag);
     },
@@ -33,15 +47,15 @@ export function AppThemeProvider({children}: Props) {
       if (!active) {
         return;
       }
-      if (saved !== null && isThemeId(saved)) {
+      if (saved !== null && isThemePreference(saved)) {
         if (isThemeAllowed(saved)) {
-          setThemeIdState(saved);
+          setPreferenceState(saved);
         } else {
-          setThemeIdState(disabledPersistedThemeFallbackId);
+          setPreferenceState(disabledPersistedThemeFallbackId);
           void saveThemeId(disabledPersistedThemeFallbackId);
         }
       } else {
-        setThemeIdState(defaultThemeId);
+        setPreferenceState(defaultThemeId);
       }
     })();
     return () => {
@@ -50,19 +64,26 @@ export function AppThemeProvider({children}: Props) {
   }, [isThemeAllowed]);
 
   const setThemeId = useCallback(
-    (id: ThemeId) => {
-      if (!isThemeId(id) || !isThemeAllowed(id)) {
+    (id: ThemePreference) => {
+      if (!isThemePreference(id) || !isThemeAllowed(id)) {
         return;
       }
-      setThemeIdState(id);
+      setPreferenceState(id);
       void saveThemeId(id);
     },
     [isThemeAllowed],
   );
 
+  const theme =
+    preference === SYSTEM_THEME_ID
+      ? systemScheme === 'dark'
+        ? themes.dark
+        : themes.default
+      : themes[preference];
+
   const value = useMemo(
-    () => ({theme: themes[themeId], themeId, setThemeId}),
-    [themeId, setThemeId],
+    () => ({theme, themeId: preference, setThemeId}),
+    [theme, preference, setThemeId],
   );
 
   return (

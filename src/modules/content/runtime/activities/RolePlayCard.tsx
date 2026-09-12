@@ -52,6 +52,7 @@ export function RolePlayCard({data, onPlayAudio, onComplete, onSkip}: Props) {
               onPress={() =>
                 setConfirmedIndex(prev => Math.max(prev, index + 1))
               }
+              testID={`roleplay-confirm-${turn.id}`}
               title="Đã luyện tập lượt này"
               variant="secondary"
             />

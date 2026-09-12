@@ -189,6 +189,47 @@ describe('FlashcardRepository', () => {
     );
   });
 
+  it('excludes cards without a Vietnamese translation from the due queue (SETE-253)', () => {
+    const lessonId = saveFixtureLesson();
+    const base = validFullOutput.vocabulary[0];
+    const now = '2026-08-17T00:00:00.000Z';
+
+    const results = [
+      saveFlashcard({
+        lessonId,
+        vocabulary: {...base, id: 'v-with', word: 'offer', meaning_vi: 'cung cấp'},
+        now,
+      }),
+      saveFlashcard({
+        lessonId,
+        vocabulary: {...base, id: 'v-empty', word: 'empty-word', meaning_vi: ''},
+        now,
+      }),
+      saveFlashcard({
+        lessonId,
+        vocabulary: {
+          ...base,
+          id: 'v-blank',
+          word: 'blank-word',
+          meaning_vi: '   ',
+        },
+        now,
+      }),
+    ];
+    for (const result of results) {
+      expect(result.ok).toBe(true);
+    }
+
+    // Degenerate front==back cards never appear in the due queue, even though
+    // they remain listed in the library.
+    expect(
+      getDueFlashcards({today: '2026-08-17T12:00:00.000Z'}).map(
+        card => card.word,
+      ),
+    ).toEqual(['offer']);
+    expect(listFlashcards()).toHaveLength(3);
+  });
+
   it('forgot rating resets the card to a 1-day relearn', () => {
     const lessonId = saveFixtureLesson();
     const saved = saveFlashcard({

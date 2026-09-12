@@ -25,6 +25,7 @@ import {
   FLOATING_TAB_BAR_HORIZONTAL_MARGIN,
   withAlpha,
 } from './tabBarMetrics';
+import {isTabBarHiddenForDescriptors} from './immersiveTabRoutes';
 
 const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
   Home: {labelKey: 'nav.tab.home', icon: 'home'},
@@ -166,6 +167,11 @@ export function TabBar({
   const tabWidth = useSharedValue(0);
   const hasAnimated = useRef(false);
   const [indicatorReady, setIndicatorReady] = useState(false);
+  // Immersive routes (review session, lesson runtime, speaking — SETE-255)
+  // hide the bar via tabBarStyle display:none; the custom bar must honor it
+  // itself (see isTabBarHiddenForDescriptors). Read before the early return
+  // so hook order stays stable when visibility toggles.
+  const hidden = isTabBarHiddenForDescriptors(state, descriptors);
 
   useEffect(() => {
     if (reducedMotion || !hasAnimated.current) {
@@ -192,6 +198,10 @@ export function TabBar({
     tabWidth.value = width;
     setIndicatorReady(true);
   };
+
+  if (hidden) {
+    return null;
+  }
 
   return (
     <View

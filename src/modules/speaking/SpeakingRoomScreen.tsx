@@ -7,10 +7,12 @@ import {AppCard} from '@components/AppCard';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {Chip} from '@components/Chip';
+import {MaterialIcon} from '@components/MaterialIcon';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {useAppTheme} from '@theme';
 import {listSpeakingRoomModes} from './speakingModes';
 import type {SpeakingModeInfo} from './speakingModes';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'SpeakingRoom'>;
 
@@ -21,6 +23,7 @@ type Props = NativeStackScreenProps<LessonsStackParamList, 'SpeakingRoom'>;
  */
 export function SpeakingRoomScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const floatingClearance = useFloatingTabBarClearance();
   const [modes, setModes] = React.useState<SpeakingModeInfo[]>(() =>
     listSpeakingRoomModes(),
   );
@@ -49,7 +52,7 @@ export function SpeakingRoomScreen({navigation}: Props) {
       <ScrollView
         contentContainerStyle={{
           gap: theme.spacing.md,
-          paddingBottom: 28,
+          paddingBottom: floatingClearance,
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
@@ -58,7 +61,11 @@ export function SpeakingRoomScreen({navigation}: Props) {
         {modes.map(mode => (
           <Pressable
             key={mode.mode}
-            accessibilityLabel={mode.titleVi}
+            accessibilityLabel={`${mode.titleVi}, ${mode.level}, ~${
+              mode.durationMin
+            } phút${
+              mode.recommended ? ', Gợi ý hôm nay' : ''
+            }${mode.available ? '' : ', Chưa có sẵn'}`}
             accessibilityRole="button"
             disabled={!mode.available}
             onPress={() => handlePressMode(mode)}
@@ -75,15 +82,70 @@ export function SpeakingRoomScreen({navigation}: Props) {
                 style={{
                   alignItems: 'center',
                   flexDirection: 'row',
-                  justifyContent: 'space-between',
+                  gap: theme.spacing.md,
                 }}
               >
-                <AppText variant="h3">{mode.titleVi}</AppText>
-                {mode.available ? null : (
-                  <Chip label="Chưa có sẵn" tone="neutral" />
-                )}
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: theme.colors.accentSoft,
+                    borderRadius: 14,
+                    height: 46,
+                    justifyContent: 'center',
+                    width: 46,
+                  }}
+                >
+                  <MaterialIcon
+                    color={theme.colors.primary}
+                    name={mode.icon}
+                    size={22}
+                  />
+                </View>
+                <View style={{flex: 1, gap: 2, minWidth: 0}}>
+                  <AppText variant="h3">{mode.titleVi}</AppText>
+                  <AppText color="secondary">{mode.descriptionVi}</AppText>
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      gap: theme.spacing.xs,
+                      marginTop: theme.spacing.xs,
+                    }}
+                  >
+                    <Chip label={mode.level} tone="default" />
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        gap: 4,
+                      }}
+                    >
+                      <MaterialIcon
+                        color={theme.colors.text.secondary}
+                        name="schedule"
+                        size={16}
+                      />
+                      <AppText color="muted" variant="caption">
+                        ~{mode.durationMin} phút
+                      </AppText>
+                    </View>
+                    {mode.recommended ? (
+                      <Chip label="Gợi ý hôm nay" tone="gold" />
+                    ) : null}
+                    {mode.available ? null : (
+                      <Chip label="Chưa có sẵn" tone="neutral" />
+                    )}
+                  </View>
+                </View>
+                <View style={{opacity: mode.available ? 1 : 0.4}}>
+                  <MaterialIcon
+                    color={theme.colors.text.secondary}
+                    name="chevron_right"
+                    size={22}
+                  />
+                </View>
               </View>
-              <AppText color="secondary">{mode.descriptionVi}</AppText>
             </AppCard>
           </Pressable>
         ))}

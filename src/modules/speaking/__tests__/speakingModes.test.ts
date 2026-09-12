@@ -105,6 +105,27 @@ describe('listSpeakingRoomModes', () => {
     expect(modes.every(m => !m.available)).toBe(true);
   });
 
+  it('shows duration and level on every mode card (SETE-262)', () => {
+    const modes = listSpeakingRoomModes();
+    for (const mode of modes) {
+      expect(mode.durationMin).toBeGreaterThan(0);
+      expect(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).toContain(mode.level);
+      expect(mode.icon).toBeTruthy();
+    }
+  });
+
+  it('marks exactly one mode as recommended (SETE-262)', () => {
+    const modes = listSpeakingRoomModes();
+    expect(modes.filter(m => m.recommended)).toHaveLength(1);
+  });
+
+  it('orders modes by commitment with mock interview last (SETE-262)', () => {
+    const modes = listSpeakingRoomModes();
+    expect(modes[modes.length - 1]?.mode).toBe('mock_interview');
+    const durations = modes.map(m => m.durationMin);
+    expect([...durations].sort((a, b) => a - b)).toEqual(durations);
+  });
+
   it('flags shadowing available once matching content_activities exist', () => {
     const db = setup();
     seedActivePackageWithShadowingContent(db);

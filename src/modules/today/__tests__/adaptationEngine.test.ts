@@ -1,4 +1,4 @@
-import {generateStudyBlock} from '../adaptationEngine';
+import {generateStudyBlock, REASON_CODE_VI_LABELS} from '../adaptationEngine';
 import type {LearnerStateSnapshot, TodayMode} from '../types';
 
 function createMockSnapshot(
@@ -352,6 +352,32 @@ describe('adaptationEngine', () => {
       if (nextIndex > -1) {
         expect(prereqIndex).toBeLessThan(nextIndex);
       }
+    });
+  });
+
+  describe('REASON_CODE_VI_LABELS (SETE-257)', () => {
+    it('covers every reason code with a Vietnamese label (no raw enums)', () => {
+      const codes: Array<keyof typeof REASON_CODE_VI_LABELS> = [
+        'BACKLOG_CONSOLIDATION',
+        'REMEDIATE_RECENT_ERRORS',
+        'LISTENING_REMEDIATION',
+        'ACTIVE_RECALL_WEAKNESS',
+        'PREREQUISITE_NEEDED',
+        'FAST_MASTERY_VARIATION',
+        'SPEAKING_GAP_PRIORITY',
+        'INTERVIEW_PORTFOLIO_PRIORITY',
+        'STANDARD_PROGRESSION',
+      ];
+      for (const code of codes) {
+        const label = REASON_CODE_VI_LABELS[code];
+        expect(typeof label).toBe('string');
+        expect(label.length).toBeGreaterThan(0);
+        expect(label).not.toContain(code);
+        expect(label).not.toMatch(/^[A-Z_#]+$/);
+      }
+      expect(Object.keys(REASON_CODE_VI_LABELS).sort()).toEqual(
+        [...codes].sort(),
+      );
     });
   });
 });

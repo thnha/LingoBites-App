@@ -205,18 +205,50 @@ function feedbackStep(): RuntimeStep {
   };
 }
 
+function activityPlacementOrder(
+  activity: {chunkRefIds: string[]},
+  chunks: ContentChunkRow[],
+): number {
+  const orderById = new Map(chunks.map(row => [row.id, row.order]));
+  const orders = activity.chunkRefIds
+    .map(id => orderById.get(id))
+    .filter((order): order is number => order !== undefined);
+  if (orders.length === 0) {
+    return Number.POSITIVE_INFINITY;
+  }
+  return Math.max(...orders);
+}
+
 export function buildLessonSteps(data: LessonRuntimeData): RuntimeStep[] {
   const steps: RuntimeStep[] = [];
   const orderedChunks = [...data.chunks].sort((a, b) => a.order - b.order);
+  const placedActivityIds = new Set<string>();
 
   for (const chunk of orderedChunks) {
     steps.push(contextStep(chunk));
+    for (const activity of data.activities) {
+      if (placedActivityIds.has(activity.id)) {
+        continue;
+      }
+      if (activityPlacementOrder(activity, orderedChunks) !== chunk.order) {
+        continue;
+      }
+      const step = activityStep(orderedChunks, activity);
+      if (step) {
+        steps.push(step);
+        placedActivityIds.add(activity.id);
+      }
+    }
   }
 
   for (const activity of data.activities) {
+    if (placedActivityIds.has(activity.id)) {
+      continue;
+    }
     const step = activityStep(orderedChunks, activity);
     if (step) {
       steps.push(step);
+      placedActivityIds.add(activity.id);
     }
   }
 

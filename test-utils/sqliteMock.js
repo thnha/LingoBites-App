@@ -806,7 +806,10 @@ function createMockDatabase() {
           ? Number(params[1])
           : undefined;
       const due = flashcards
+        // Mirrors the FlashcardRepository due-queue guard (SETE-253):
+        // cards without a Vietnamese translation are never due.
         .filter(card => card.is_saved === 1)
+        .filter(card => String(card.meaning_vi ?? '').trim() !== '')
         .map(card => ({
           card,
           schedule: reviewSchedule.find(

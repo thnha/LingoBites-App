@@ -20,6 +20,7 @@ import {
   resolveLessonDestination,
   startLessonFromConfirmedText,
 } from '@shared/lesson/startLessonFromConfirmedText';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<CreateStackParamList, 'PasteText'>;
 
@@ -41,6 +42,8 @@ export function PasteTextScreen({navigation, route}: Props) {
   const [screenState, setScreenState] = useState<ScreenState>({type: 'input'});
   const [creating, setCreating] = useState(false);
   const wordCount = useMemo(() => countWords(text), [text]);
+  const hasText = text.trim().length > 0;
+  const floatingClearance = useFloatingTabBarClearance();
 
   // Lỗi phân tích được màn "Đang phân tích" trả về qua param khi quay lại đây.
   const analyzeError = route.params?.analyzeError;
@@ -102,7 +105,7 @@ export function PasteTextScreen({navigation, route}: Props) {
       <ScrollView
         contentContainerStyle={{
           gap: theme.spacing.lg,
-          paddingBottom: theme.spacing.lg,
+          paddingBottom: floatingClearance,
           paddingHorizontal: theme.gutter,
           paddingTop: theme.spacing.sm,
         }}
@@ -136,7 +139,8 @@ export function PasteTextScreen({navigation, route}: Props) {
         <Pressable
           accessibilityLabel="Xóa văn bản"
           accessibilityRole="button"
-          disabled={!text}
+          accessibilityState={{disabled: !hasText}}
+          disabled={!hasText}
           onPress={() => {
             setText('');
             setScreenState({type: 'input'});
@@ -147,12 +151,29 @@ export function PasteTextScreen({navigation, route}: Props) {
             flexDirection: 'row',
             gap: 6,
             minHeight: 44,
-            opacity: !text || pressed ? theme.states.pressedOpacity : 1,
+            opacity: !hasText
+              ? theme.states.disabledOpacity
+              : pressed
+                ? theme.states.pressedOpacity
+                : 1,
             paddingHorizontal: theme.spacing.sm,
           })}
         >
-          <MaterialIcon color={theme.colors.primary} name="delete" size={20} />
-          <AppText style={{color: theme.colors.primary, fontWeight: '600'}}>
+          <MaterialIcon
+            color={
+              !hasText ? theme.colors.text.muted : theme.colors.primary
+            }
+            name="delete"
+            size={20}
+          />
+          <AppText
+            style={{
+              color: !hasText
+                ? theme.colors.text.muted
+                : theme.colors.primary,
+              fontWeight: '600',
+            }}
+          >
             Xóa văn bản
           </AppText>
         </Pressable>
@@ -165,10 +186,18 @@ export function PasteTextScreen({navigation, route}: Props) {
             gap: 8,
           }}
         >
-          <Chip label="Phát hiện: Tiếng Anh" tone="accentSoft" />
+          {hasText ? (
+            <Chip label="Phát hiện: Tiếng Anh" tone="accentSoft" />
+          ) : null}
           <Chip label={`${wordCount} từ`} tone="neutral" />
           <Chip label={`${text.trim().length} ký tự`} tone="neutral" />
         </View>
+
+        {!hasText ? (
+          <AppText color="secondary" variant="body">
+            Cần ít nhất 1 từ để trích xuất từ vựng.
+          </AppText>
+        ) : null}
 
         {screenState.type === 'error' ? (
           <ErrorCard
@@ -183,12 +212,12 @@ export function PasteTextScreen({navigation, route}: Props) {
         style={{
           backgroundColor: theme.colors.background,
           borderTopColor: theme.colors.outlineVariant,
-          paddingBottom: theme.spacing.lg,
+          paddingBottom: floatingClearance,
         }}
       >
         <PrimaryActionButton
           accessibilityLabel="Trích xuất từ vựng"
-          disabled={creating}
+          disabled={creating || !hasText}
           onPress={() => void handleAnalyze()}
           label={creating ? 'Đang khởi tạo bài học…' : 'Trích xuất từ vựng'}
         />

@@ -14,7 +14,10 @@ import {LessonsTabContent} from './components/LessonsTabContent';
 import {SearchAndFilterBar} from './components/SearchAndFilterBar';
 import {SegmentedTabBar} from './components/SegmentedTabBar';
 import {VocabularyTabContent} from './components/VocabularyTabContent';
+import type {PracticeQuestion} from '@shared/schemas/ai-output-v1';
+import {resolveQuickPractice} from '../practice/resolveQuickPractice';
 import {useFlashcardLibrary} from './useFlashcardLibrary';
+import {useLessonRepository} from './useLessonRepository';
 import {useLibrarySegments} from './useLibrarySegments';
 
 type Props = NativeStackScreenProps<LessonsStackParamList, 'LessonsList'>;
@@ -36,7 +39,10 @@ export function LessonsHistoryScreen({navigation}: Props) {
   const themedStyles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
   const {getDueFlashcards} = useFlashcardLibrary();
+  const {getLessonById, listLessons} = useLessonRepository();
   const [dueCount, setDueCount] = useState(0);
+  const [quickQuestions, setQuickQuestions] = useState<PracticeQuestion[]>([]);
+  const [quickTitle, setQuickTitle] = useState('');
 
   const [activeTab, setActiveTab] = useState<
     'lessons' | 'vocabulary' | 'grammar'
@@ -61,42 +67,59 @@ export function LessonsHistoryScreen({navigation}: Props) {
       bootstrapContentPackage().catch(() => {});
       refresh();
       setDueCount(getDueFlashcards().length);
-    }, [refresh, getDueFlashcards]),
+      const personal = listLessons();
+      const {questions, title} = resolveQuickPractice(personal, getLessonById);
+      setQuickQuestions(questions);
+      setQuickTitle(title);
+    }, [refresh, getDueFlashcards, getLessonById, listLessons]),
   );
 
-  const practiceChips: PracticeChip[] = [
-    {
-      icon: 'refresh',
-      value: t('home.shortcut_review_meta', {count: dueCount}),
-      labelKey: 'home.shortcut_review',
-      backgroundKey: 'accentSoft',
-      inkKey: 'primary',
-      onPress: () => navigation.navigate('FlashcardList'),
-      testID: 'library-practice-review',
-    },
-    {
-      icon: 'mic',
-      value: t('home.shortcut_speaking_meta'),
-      labelKey: 'home.shortcut_speaking',
-      backgroundKey: 'tertiarySoft',
-      inkKey: 'onTertiaryContainer',
-      onPress: () => navigation.navigate('SpeakingRoom'),
-      testID: 'library-practice-speaking',
-    },
-    {
-      icon: 'bolt',
-      value: t('home.shortcut_quick_meta'),
-      labelKey: 'home.shortcut_quick',
-      backgroundKey: 'secondarySoft',
-      inkKey: 'secondary',
-      onPress: () =>
-        navigation.navigate('Practice', {
-          questions: [],
-          title: t('home.shortcut_quick'),
-        }),
-      testID: 'library-practice-quick',
-    },
-  ];
+  const practiceChips: PracticeChip[] = useMemo(() => {
+    const chips: PracticeChip[] = [
+      {
+        icon: 'refresh',
+        value: t('home.shortcut_review_meta', {count: dueCount}),
+        labelKey: 'home.shortcut_review',
+        backgroundKey: 'accentSoft',
+        inkKey: 'primary',
+        onPress: () => navigation.navigate('FlashcardList'),
+        testID: 'library-practice-review',
+      },
+      {
+        icon: 'mic',
+        value: t('home.shortcut_speaking_meta'),
+        labelKey: 'home.shortcut_speaking',
+        backgroundKey: 'tertiarySoft',
+        inkKey: 'onTertiaryContainer',
+        onPress: () => navigation.navigate('SpeakingRoom'),
+        testID: 'library-practice-speaking',
+      },
+    ];
+    if (quickQuestions.length > 0) {
+      const questions = quickQuestions;
+      const title = quickTitle || t('home.shortcut_quick');
+      chips.push({
+        icon: 'bolt',
+        value: t('home.shortcut_quick_meta'),
+        labelKey: 'home.shortcut_quick',
+        backgroundKey: 'secondarySoft',
+        inkKey: 'secondary',
+        onPress: () =>
+          navigation.navigate('Practice', {
+            questions,
+            title,
+          }),
+        testID: 'library-practice-quick',
+      });
+    }
+    return chips;
+  }, [
+    dueCount,
+    navigation,
+    quickQuestions,
+    quickTitle,
+    t,
+  ]);
 
   const currentFilter =
     activeTab === 'lessons'

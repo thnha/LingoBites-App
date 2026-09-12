@@ -1,7 +1,9 @@
 import React from 'react';
+import {StyleSheet} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {RatingControl} from '../RatingControl';
-import {AppThemeProvider} from '@theme';
+import {AppThemeProvider, useAppTheme} from '@theme';
+import type {AppTheme} from '@theme';
 import {FeatureFlagProvider} from '@/release';
 import {
   findMaskedContent,
@@ -107,6 +109,72 @@ describe('RatingControl - Accessibility (NFR-ACC-004)', () => {
       expect(check.passes).toBe(true);
       expect(check.hasIcon).toBe(true);
       expect(check.hasText).toBe(true);
+    }
+  });
+
+  it('keeps disabled buttons readable with no opacity wash (SETE-254)', async () => {
+    let activeTheme!: AppTheme;
+    function Probe() {
+      activeTheme = useAppTheme().theme;
+      return null;
+    }
+
+    const enabledTree = await render(
+      <>
+        <RatingControl
+          onRate={mockHandlers.onRate}
+          onSkip={mockHandlers.onSkip}
+        />
+        <Probe />
+      </>,
+    );
+    const disabledTree = await render(
+      <RatingControl
+        disabled={true}
+        onRate={mockHandlers.onRate}
+        onSkip={mockHandlers.onSkip}
+      />,
+    );
+
+    for (const testID of [
+      'rating-remembered',
+      'rating-forgot',
+      'rating-skip',
+    ]) {
+      const enabledStyle = StyleSheet.flatten(
+        enabledTree.root.findByProps({testID}).props.style,
+      );
+      const disabledStyle = StyleSheet.flatten(
+        disabledTree.root.findByProps({testID}).props.style,
+      );
+
+      // The bug mechanism: a whole-button opacity wash collapses glyph
+      // contrast to ~1.7-2.0:1. Disabled buttons must render at full opacity.
+      expect(disabledStyle.opacity ?? 1).toBe(1);
+      // ... on an explicitly muted fill that still differs from the
+      // enabled treatment, so the inactive state stays signalled.
+      expect(disabledStyle.backgroundColor).toBe(
+        activeTheme.colors.surfaceMuted,
+      );
+      expect(disabledStyle.backgroundColor).not.toBe(
+        enabledStyle.backgroundColor,
+      );
+    }
+
+    // Label ink stays at full-strength secondary in the disabled state
+    // (secondary on surfaceMuted is >=3:1 on every theme — see the
+    // contrastCompliance suite), instead of a washed-out tone. The skip
+    // label carries its color internally (no style prop on the wrapper),
+    // so only nodes that resolve a color participate.
+    for (const label of ['Nhớ', 'Quên', 'Bỏ qua']) {
+      const nodes = disabledTree.root.findAllByProps({children: label});
+      const colors = nodes
+        .map(node => StyleSheet.flatten(node.props.style)?.color)
+        .filter(color => color !== undefined);
+      expect(colors.length).toBeGreaterThan(0);
+      for (const color of colors) {
+        expect(color).toBe(activeTheme.colors.text.secondary);
+      }
     }
   });
 

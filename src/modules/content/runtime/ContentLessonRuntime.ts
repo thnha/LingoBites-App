@@ -77,6 +77,19 @@ export class LessonRuntimeSession {
     return this.index >= this.steps.length;
   }
 
+  /** Moves back one step so the learner can revisit the previous card. */
+  goToPreviousStep(): boolean {
+    if (this.index <= 0) {
+      return false;
+    }
+    this.index -= 1;
+    const step = this.getCurrentStep();
+    if (step) {
+      this.attempts.set(step.id, 'pending');
+    }
+    return true;
+  }
+
   /** Records the current step's outcome and advances to the next one. */
   recordAttempt(state: RuntimeAttemptState): void {
     const step = this.getCurrentStep();

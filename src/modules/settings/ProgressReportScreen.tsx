@@ -41,8 +41,8 @@ export function ProgressReportScreen({navigation}: Props) {
     const jsonStr = JSON.stringify(data, null, 2);
     setExportJson(jsonStr);
     Alert.alert(
-      'Xuất Metrics Privacy-Safe',
-      'Metrics đã được xuất dạng JSON bảo mật (không chứa văn bản, âm thanh hay đường dẫn tệp).',
+      'Xuất chỉ số học tập',
+      'Chỉ số đã được xuất dạng JSON ẩn danh (không chứa văn bản, âm thanh hay đường dẫn tệp).',
     );
   }
 
@@ -71,7 +71,7 @@ export function ProgressReportScreen({navigation}: Props) {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <SectionHeader title="Chỉ số năng lực học tập (REQ-39)" />
+        <SectionHeader title="Chỉ số năng lực học tập" />
 
         {/* 1. Spoken without looking */}
         <AppCard style={styles.metricCard}>
@@ -179,7 +179,7 @@ export function ProgressReportScreen({navigation}: Props) {
               name="check_circle"
               size={24}
             />
-            <AppText variant="h3">Tình huống đã đạt (Situations)</AppText>
+            <AppText variant="h3">Tình huống đã đạt</AppText>
           </View>
           <AppText style={[styles.metricValue, {color: theme.colors.primary}]}>
             {report.passedSituationsCount > 0
@@ -187,8 +187,8 @@ export function ProgressReportScreen({navigation}: Props) {
               : 'Chưa đủ dữ liệu'}
           </AppText>
           <AppText color="secondary" variant="caption">
-            Số lượng bài kiểm tra tình huống tuần & stage check đạt kết quả
-            `pass`.
+            Số lượng bài kiểm tra tình huống (tuần và theo giai đoạn) đã đạt
+            yêu cầu.
           </AppText>
         </AppCard>
 
@@ -240,11 +240,11 @@ export function ProgressReportScreen({navigation}: Props) {
           </AppText>
         </AppCard>
 
-        {/* Export privacy-safe metrics button */}
+        {/* Export anonymized learning metrics */}
         <View style={{marginTop: theme.spacing.md}}>
           <AppButton
-            accessibilityLabel="Xuất dữ liệu metrics privacy-safe"
-            title="Xuất Metrics Privacy-Safe (JSON)"
+            accessibilityLabel="Xuất dữ liệu chỉ số học tập"
+            title="Xuất chỉ số học tập (JSON)"
             onPress={handleExportMetrics}
             variant="primary"
           />
@@ -254,7 +254,7 @@ export function ProgressReportScreen({navigation}: Props) {
           <AppCard
             style={{marginTop: 12, backgroundColor: theme.colors.surface}}
           >
-            <AppText variant="h3">Metrics Export (CON-6 Privacy-Safe):</AppText>
+            <AppText variant="h3">Chỉ số đã xuất (JSON ẩn danh):</AppText>
             <AppText
               style={{
                 fontFamily: 'Courier',

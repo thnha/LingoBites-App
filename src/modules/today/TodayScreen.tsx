@@ -5,7 +5,9 @@ import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
+  RootTabParamList,
 } from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
 import {AppCard} from '@components/AppCard';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
@@ -13,12 +15,20 @@ import {Chip} from '@components/Chip';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {SectionHeader} from '@components/SectionHeader';
 import {useAppTheme, type AppTheme} from '@theme';
-import {generateStudyBlock} from './adaptationEngine';
+import {generateStudyBlock, REASON_CODE_VI_LABELS} from './adaptationEngine';
 import {getLearnerStateSnapshot} from './todayAdapter';
 import type {StudyActivityItem, StudyBlockPlan, TodayMode} from './types';
 
-type TodayNavigationParamList = HomeStackParamList & LessonsStackParamList;
+type TodayNavigationParamList = HomeStackParamList &
+  LessonsStackParamList &
+  RootTabParamList;
 type NavigationProp = NativeStackNavigationProp<TodayNavigationParamList>;
+
+const TARGET_MINUTES: Record<TodayMode, number> = {
+  '5-minute': 5,
+  normal: 20,
+  'deep-practice': 45,
+};
 
 export function TodayScreen() {
   const {theme} = useAppTheme();
@@ -75,9 +85,7 @@ export function TodayScreen() {
             name="event_note"
             size={26}
           />
-          <AppText style={themedStyles.headerTitle}>
-            Hôm nay (Today Study Center)
-          </AppText>
+          <AppText style={themedStyles.headerTitle}>Hôm nay</AppText>
         </View>
       </View>
 
@@ -159,7 +167,7 @@ export function TodayScreen() {
                       variant="caption"
                       style={themedStyles.reasonCodeText}
                     >
-                      #{code}
+                      {REASON_CODE_VI_LABELS[code]}
                     </AppText>
                   </View>
                 ))}
@@ -215,6 +223,26 @@ export function TodayScreen() {
               </View>
             </Pressable>
           ))}
+          {plan && plan.totalEstimatedMinutes < TARGET_MINUTES[mode] ? (
+            <View
+              style={themedStyles.shortfallContainer}
+              testID="shortfall-container"
+            >
+              <AppText
+                color="secondary"
+                variant="body"
+                style={styles.shortfallText}
+              >
+                Chỉ còn ~{plan.totalEstimatedMinutes} phút nội dung đến hạn hôm nay.
+              </AppText>
+              <AppButton
+                title="Thêm bài mới"
+                variant="outline"
+                onPress={() => navigation.navigate('Create')}
+                testID="shortfall-action"
+              />
+            </View>
+          ) : null}
         </View>
       </ScrollView>
     </AppScreen>
@@ -255,6 +283,7 @@ const styles = StyleSheet.create({
   },
   modeSelector: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   reasonCodeList: {
@@ -262,6 +291,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 6,
     marginTop: 4,
+  },
+  shortfallText: {
+    textAlign: 'center',
   },
 });
 
@@ -326,6 +358,15 @@ function makeStyles(theme: AppTheme) {
       paddingBottom: 28,
       paddingHorizontal: theme.gutter,
       paddingTop: theme.spacing.sm,
+    },
+    shortfallContainer: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.accentSoft,
+      borderRadius: theme.radius.lg,
+      borderWidth: 1,
+      gap: theme.spacing.md,
+      padding: theme.spacing.lg,
     },
   });
 }

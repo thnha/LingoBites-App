@@ -20,6 +20,7 @@ import {
 } from '@shared/db/ContentLessonStateRepository';
 import {useFlashcardLibrary, useLessonRepository} from '../lesson';
 import type {PracticeQuestion} from '@shared/schemas/ai-output-v1';
+import {resolveQuickPractice} from '../practice/resolveQuickPractice';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {useTranslation} from 'react-i18next';
@@ -127,20 +128,10 @@ export function HomeScreen({navigation}: Props) {
           })),
       );
 
-      // Quick practice needs real questions: first lesson (newest first)
-      // that actually ships practice items. Empty means the chip stays
-      // hidden instead of opening an empty Practice screen.
-      let quick: PracticeQuestion[] = [];
-      let quickLessonTitle = '';
-      for (const item of personal) {
-        const record = getLessonById(item.id);
-        const questions = record?.aiOutput.practice ?? [];
-        if (questions.length > 0) {
-          quick = questions;
-          quickLessonTitle = record?.title ?? item.title;
-          break;
-        }
-      }
+      const {questions: quick, title: quickLessonTitle} = resolveQuickPractice(
+        personal,
+        getLessonById,
+      );
       setQuickQuestions(quick);
       setQuickTitle(quickLessonTitle);
 

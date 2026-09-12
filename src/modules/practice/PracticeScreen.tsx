@@ -4,13 +4,13 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
   LessonsStackParamList,
+  RootTabParamList,
 } from '@/app/navigation/types';
 import {AppButton} from '@components/AppButton';
 import {AppCard} from '@components/AppCard';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
-import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {QuizOption, type QuizOptionState} from '@components/QuizOption';
 import {ScreenHeader} from '@components/ScreenHeader';
@@ -89,15 +89,6 @@ function SessionPracticeScreen({
     <AppScreen>
       <ScreenHeader
         onBack={() => navigation.goBack()}
-        rightAction={
-          <IconButton
-            accessibilityLabel="Đóng"
-            icon="close"
-            iconSize={24}
-            onPress={() => navigation.goBack()}
-            tone="bare"
-          />
-        }
         title={headerTitle}
       />
       <ScrollView
@@ -330,26 +321,30 @@ function LegacyPracticeScreen({
   const quiz = useQuiz(questions);
   const headerTitle = title ?? 'Luyện tập nhanh';
 
+  const tabNavigation = navigation.getParent<
+    import('@react-navigation/native').NavigationProp<RootTabParamList>
+  >();
+
   if (questions.length === 0) {
     return (
       <AppScreen>
         <ScreenHeader
           onBack={() => navigation.goBack()}
-          rightAction={
-            <IconButton
-              accessibilityLabel="Đóng"
-              icon="close"
-              iconSize={24}
-              onPress={() => navigation.goBack()}
-              tone="bare"
-            />
-          }
           title={headerTitle}
         />
-        <View style={themedStyles.emptyState}>
-          <AppText color="muted" style={styles.centerText}>
-            {t('errors.empty_section')}
+        <View style={themedStyles.emptyState} testID="practice-quick-empty">
+          <AppText style={styles.centerText} variant="label">
+            {t('practice.quick_empty_cause')}
           </AppText>
+          <AppText color="secondary" style={styles.centerText}>
+            {t('practice.quick_empty_explain')}
+          </AppText>
+          <AppButton
+            accessibilityLabel={t('home.empty_create_a11y')}
+            onPress={() => tabNavigation?.navigate('Create')}
+            testID="practice-quick-empty-create"
+            title={t('home.empty_create')}
+          />
         </View>
       </AppScreen>
     );
@@ -362,15 +357,6 @@ function LegacyPracticeScreen({
     <AppScreen>
       <ScreenHeader
         onBack={() => navigation.goBack()}
-        rightAction={
-          <IconButton
-            accessibilityLabel="Đóng"
-            icon="close"
-            iconSize={24}
-            onPress={() => navigation.goBack()}
-            tone="bare"
-          />
-        }
         title={headerTitle}
       />
       <ScrollView
@@ -549,6 +535,7 @@ function makeStyles(theme: AppTheme) {
     emptyState: {
       alignItems: 'center',
       flex: 1,
+      gap: theme.spacing.md,
       justifyContent: 'center',
       padding: theme.spacing.xl,
     },

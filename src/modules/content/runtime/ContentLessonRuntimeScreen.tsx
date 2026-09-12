@@ -1,8 +1,10 @@
 import React, {useCallback, useState} from 'react';
-import {Alert, ScrollView, View} from 'react-native';
+import {Alert, Pressable, ScrollView, View} from 'react-native';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {ErrorCard} from '@components/ErrorCard';
+import {HandoffProgressTrack} from '@components/HandoffProgressTrack';
+import {IconButton} from '@components/IconButton';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {useAppTheme} from '@theme';
 import {createLessonRuntimeSession} from './ContentLessonRuntime';
@@ -16,6 +18,7 @@ import {GuidedPracticeCard} from './activities/GuidedPracticeCard';
 import {RolePlayCard} from './activities/RolePlayCard';
 import {ShadowingCard} from './activities/ShadowingCard';
 import type {FeedbackStepData} from './types';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 
 type Props = {
   navigation: {goBack: () => void};
@@ -24,6 +27,7 @@ type Props = {
 
 export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
+  const floatingClearance = useFloatingTabBarClearance();
   const {lessonId} = route.params;
   const [session] = useState(() => createLessonRuntimeSession(lessonId));
   // Re-render on step advance / attempt recording — the session mutates in
@@ -38,6 +42,9 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   const step = session?.getCurrentStep() ?? null;
   const stepIndex = session?.getStepIndex() ?? 0;
   const totalSteps = session?.steps.length ?? 0;
+  const learnerStepTotal = Math.max(totalSteps - 1, 1);
+  const learnerStepNumber = Math.min(stepIndex + 1, learnerStepTotal);
+  const progressFraction = learnerStepNumber / learnerStepTotal;
 
   const requestExit = useCallback(() => {
     if (!session || finished) {
@@ -51,9 +58,9 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
     }
     Alert.alert(
       'Thoát bài học?',
-      'Tiến độ lượt học này chưa được lưu. Bạn có chắc muốn thoát?',
+      `Tiến độ bước ${learnerStepNumber}/${learnerStepTotal} sẽ không được lưu.`,
       [
-        {text: 'Ở lại', style: 'cancel'},
+        {text: 'Huỷ', style: 'cancel'},
         {
           text: 'Thoát',
           style: 'destructive',
@@ -61,7 +68,17 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
         },
       ],
     );
-  }, [finished, navigation, session]);
+  }, [finished, learnerStepNumber, learnerStepTotal, navigation, session]);
+
+  const closeAction = (
+    <IconButton
+      accessibilityLabel="Đóng bài học"
+      icon="close"
+      onPress={requestExit}
+      tone="bare"
+      testID="lesson-runtime-close"
+    />
+  );
 
   function handlePlayAudio(assetId: string | null) {
     if (!session) {
@@ -69,6 +86,15 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
     }
     const result = playContentAudio(assetId, session.data.audioAssets);
     setAudioError(result.ok ? null : {assetId, message: result.message});
+  }
+
+  function handlePreviousStep() {
+    if (!session) {
+      return;
+    }
+    if (session.goToPreviousStep()) {
+      forceRerender(tick => tick + 1);
+    }
   }
 
   function advance(
@@ -111,7 +137,7 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
   if (!session) {
     return (
       <AppScreen>
-        <ScreenHeader onBack={requestExit} title="Bài học" />
+        <ScreenHeader title="Bài học" rightAction={closeAction} />
         <View
           style={{
             alignItems: 'center',
@@ -128,9 +154,48 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader onBack={requestExit} title={session.data.lesson.titleVi} />
+      <ScreenHeader
+        title={session.data.lesson.titleVi}
+        rightAction={closeAction}
+      />
+      {!finished && totalSteps > 0 ? (
+        <View
+          style={{
+            gap: theme.spacing.sm,
+            paddingHorizontal: theme.gutter,
+            paddingBottom: theme.spacing.sm,
+          }}
+        >
+          <View testID="lesson-runtime-progress">
+            <HandoffProgressTrack
+              label={`${learnerStepNumber}/${learnerStepTotal}`}
+              progress={progressFraction}
+            />
+          </View>
+          {stepIndex > 0 ? (
+            <Pressable
+              accessibilityLabel="Bước trước"
+              accessibilityRole="button"
+              onPress={handlePreviousStep}
+              style={{alignSelf: 'flex-start'}}
+              testID="lesson-runtime-previous-step"
+            >
+              <AppText color="primary" variant="label">
+                ← Bước trước
+              </AppText>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
       <ScrollView
-        contentContainerStyle={{gap: theme.spacing.lg, padding: theme.gutter}}
+        contentContainerStyle={{
+          flexGrow: 1,
+          gap: theme.spacing.lg,
+          justifyContent: 'center',
+          padding: theme.gutter,
+          paddingBottom: floatingClearance,
+        }}
+        style={{flex: 1}}
       >
         {audioError ? (
           <ErrorCard
@@ -138,15 +203,6 @@ export function ContentLessonRuntimeScreen({navigation, route}: Props) {
             onRetry={() => handlePlayAudio(audioError.assetId)}
             retryLabel="Thử lại"
           />
-        ) : null}
-        {!finished && totalSteps > 0 ? (
-          <AppText
-            color="secondary"
-            testID="lesson-runtime-progress"
-            variant="label"
-          >
-            Bước {Math.min(stepIndex + 1, totalSteps)}/{totalSteps}
-          </AppText>
         ) : null}
         {finished ? (
           <FeedbackCard data={finished} onFinish={() => navigation.goBack()} />

@@ -328,16 +328,21 @@ function ProfileStackNavigator() {
         name="ProgressReport"
         options={{headerShown: false}}
       />
-      <ProfileStack.Screen
-        component={FeatureStatusScreen}
-        name="FeatureStatus"
-        options={{headerShown: false}}
-      />
-      <ProfileStack.Screen
-        component={TtsSpikeScreen}
-        name="TtsSpike"
-        options={{headerShown: false}}
-      />
+      {/* Developer-only screens — not registered on production builds. */}
+      {__DEV__ ? (
+        <ProfileStack.Screen
+          component={FeatureStatusScreen}
+          name="FeatureStatus"
+          options={{headerShown: false}}
+        />
+      ) : null}
+      {__DEV__ ? (
+        <ProfileStack.Screen
+          component={TtsSpikeScreen}
+          name="TtsSpike"
+          options={{headerShown: false}}
+        />
+      ) : null}
       {canMount('ProgressiveLesson') && (
         <ProfileStack.Screen
           component={ProgressiveLessonScreen}

@@ -39,6 +39,42 @@ describe('Flashcard UI - WCAG AA Contrast Compliance', () => {
         expect(result.ratio).toBeGreaterThanOrEqual(4.5);
       });
 
+      it('Forgot button (actual ink): danger icon+text on surface background', () => {
+        // RatingControl renders the forgot outcome in danger ink, so the
+        // enabled-state guarantee must hold for that exact pair.
+        const result = checkContrast(theme.colors.danger, theme.colors.surface);
+
+        expect(result.passes).toBe(true);
+        expect(result.level).toMatch(/^(AA|AAA)$/);
+        expect(result.ratio).toBeGreaterThanOrEqual(4.5);
+      });
+
+      describe('Disabled State (SETE-254)', () => {
+        it('Disabled rating buttons: secondary ink on surfaceMuted background', () => {
+          // Pre-flip the controls are disabled but must stay readable:
+          // a disabled control still needs at least 3:1 (WCAG 1.4.3 large-text floor).
+          const result = checkContrast(
+            theme.colors.text.secondary,
+            theme.colors.surfaceMuted,
+          );
+
+          expect(result.passes).toBe(true);
+          expect(result.ratio).toBeGreaterThanOrEqual(3);
+        });
+
+        it('Disabled button border on surfaceMuted background', () => {
+          // Borders are a WCAG 1.4.11 UI component (3:1), not text (4.5:1).
+          const result = checkContrast(
+            theme.colors.border,
+            theme.colors.surfaceMuted,
+            {largeText: true},
+          );
+
+          expect(result.passes).toBe(true);
+          expect(result.ratio).toBeGreaterThanOrEqual(3);
+        });
+      });
+
       it('Skip button: icon+text on surface background', () => {
         // Skip button uses surface background with text.secondary
         const result = checkContrast(

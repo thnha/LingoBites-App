@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
+import {Alert} from 'react-native';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
 import {DB_NAME} from '@shared/db/constants';
@@ -99,9 +100,13 @@ describe('DailyReviewScreen', () => {
       <DailyReviewScreen navigation={nav as never} softCap={5} />,
     );
 
+    const progress = tree.root.findByProps({testID: 'review-progress'});
+    expect(progress.findAllByProps({children: '1 / 5'}).length).toBeGreaterThan(
+      0,
+    );
     expect(
-      tree.root.findByProps({testID: 'review-progress'}).props.children,
-    ).toBe('1 / 5');
+      progress.findAllByProps({accessibilityRole: 'progressbar'}).length,
+    ).toBeGreaterThan(0);
     expect(
       tree.root.findAllByProps({children: 'còn 2 thẻ để dành lần ôn sau'})
         .length,
@@ -196,6 +201,7 @@ describe('DailyReviewScreen', () => {
   });
 
   it('exits without confirmation', async () => {
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     seedCards(1);
     const nav = navigation();
     const tree = await renderScreen(
@@ -206,7 +212,89 @@ describe('DailyReviewScreen', () => {
       tree.root.findByProps({testID: 'review-close'}).props.onPress();
     });
 
+    // First card, no answers given: nothing at stake, no prompt (SETE-255).
+    expect(alertSpy).not.toHaveBeenCalled();
     expect(nav.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('confirms before exiting when rated progress would be lost (SETE-255)', async () => {
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    seedCards(2);
+    const nav = navigation();
+    const tree = await renderScreen(
+      <DailyReviewScreen navigation={nav as never} />,
+    );
+
+    await revealCard(tree);
+    await act(async () => {
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
+    });
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'review-close'}).props.onPress();
+    });
+
+    expect(alertSpy).toHaveBeenCalledTimes(1);
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Thoát buổi ôn tập?',
+      'Tiến độ 1/2 sẽ không được lưu.',
+      expect.arrayContaining([
+        expect.objectContaining({text: 'Huỷ', style: 'cancel'}),
+        expect.objectContaining({text: 'Thoát', style: 'destructive'}),
+      ]),
+    );
+    expect(nav.goBack).not.toHaveBeenCalled();
+
+    const quitButton = (
+      alertSpy.mock.calls[0][2] as Array<{
+        text: string;
+        style?: string;
+        onPress?: () => void;
+      }>
+    ).find(button => button.style === 'destructive');
+    await act(async () => {
+      quitButton?.onPress?.();
+    });
+
+    expect(nav.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('stays in the session when the exit confirmation is cancelled', async () => {
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    seedCards(2);
+    const nav = navigation();
+    const tree = await renderScreen(
+      <DailyReviewScreen navigation={nav as never} />,
+    );
+
+    await revealCard(tree);
+    await act(async () => {
+      tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
+    });
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'review-close'}).props.onPress();
+    });
+
+    expect(alertSpy).toHaveBeenCalledTimes(1);
+    const stayButton = (
+      alertSpy.mock.calls[0][2] as Array<{
+        text: string;
+        style?: string;
+        onPress?: () => void;
+      }>
+    ).find(button => button.style === 'cancel');
+    await act(async () => {
+      stayButton?.onPress?.();
+    });
+
+    expect(nav.goBack).not.toHaveBeenCalled();
+    // Still mid-session on the second card.
+    expect(
+      tree.root
+        .findByProps({testID: 'review-progress'})
+        .findAllByProps({children: '2 / 2'}).length,
+    ).toBeGreaterThan(0);
   });
 
   it('keeps rating controls disabled until the card is revealed', async () => {
@@ -258,9 +346,10 @@ describe('DailyReviewScreen', () => {
     });
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(
-      tree.root.findByProps({testID: 'review-progress'}).props.children,
-    ).toBe('1 / 1');
+    const progress = tree.root.findByProps({testID: 'review-progress'});
+    expect(progress.findAllByProps({children: '1 / 1'}).length).toBeGreaterThan(
+      0,
+    );
     expect(tree.root.findAllByProps({testID: 'review-summary'})).toHaveLength(
       0,
     );
@@ -280,5 +369,34 @@ describe('DailyReviewScreen', () => {
     expect(
       tree.root.findByProps({testID: 'summary-reviewed-count'}).props.children,
     ).toBe(1);
+  });
+
+  it('shows an English-only prompt on the front and the Vietnamese answer on the back (SETE-253)', async () => {
+    seedCards(1);
+    const tree = await renderScreen(
+      <DailyReviewScreen navigation={navigation() as never} />,
+    );
+
+    const frontTexts = tree.root
+      .findByProps({testID: 'review-card-front'})
+      .findAll(node => typeof node.props?.children === 'string')
+      .map(node => node.props.children as string);
+    expect(frontTexts).toContain('word-1');
+    expect(frontTexts.join('\n')).not.toContain('meaning-1');
+    expect(tree.root.findByProps({testID: 'review-speak-front'})).toBeTruthy();
+    expect(
+      tree.root.findAllByProps({children: 'Nhấn để xem nghĩa'}).length,
+    ).toBeGreaterThan(0);
+
+    await revealCard(tree);
+
+    const backTexts = tree.root
+      .findByProps({testID: 'review-card-back'})
+      .findAll(node => typeof node.props?.children === 'string')
+      .map(node => node.props.children as string);
+    expect(backTexts).toContain('meaning-1');
+    expect(backTexts).toContain('word-1');
+    expect(backTexts.join('\n')).not.toBe(frontTexts.join('\n'));
+    expect(tree.root.findByProps({testID: 'review-speak-back'})).toBeTruthy();
   });
 });

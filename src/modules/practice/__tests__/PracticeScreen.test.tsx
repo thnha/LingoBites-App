@@ -7,9 +7,12 @@ import type {HomeStackParamList} from '@/app/navigation/types';
 import {AppThemeProvider} from '@theme';
 import {PracticeScreen} from '../PracticeScreen';
 
+const tabNavigate = jest.fn();
+
 const navigation = {
   goBack: jest.fn(),
   navigate: jest.fn(),
+  getParent: () => ({navigate: tabNavigate}),
 } as unknown as NativeStackNavigationProp<HomeStackParamList, 'Practice'>;
 
 function renderWith(params: HomeStackParamList['Practice']) {
@@ -47,9 +50,22 @@ function findText(
 describe('PracticeScreen', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('shows an empty message when there are no questions', () => {
+  it('shows quick-practice empty state with a create CTA when there are no questions', () => {
     const tree = renderWith({questions: []});
-    expect(findText(tree, 'Chưa có nội dung cho phần này.')).toBe(true);
+    expect(
+      findText(tree, 'Chưa có bài học nào để luyện nhanh.'),
+    ).toBe(true);
+    expect(
+      findText(
+        tree,
+        'Luyện nhanh lấy câu từ các bài học bạn đã tạo.',
+      ),
+    ).toBe(true);
+    const create = tree.root.findByProps({testID: 'practice-quick-empty-create'});
+    ReactTestRenderer.act(() => {
+      create.props.onPress();
+    });
+    expect(tabNavigate).toHaveBeenCalledWith('Create');
   });
 
   it('renders the first question and grades a correct answer', () => {

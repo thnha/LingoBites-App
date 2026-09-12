@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import {Text} from 'react-native';
+import {Text, useColorScheme} from 'react-native';
 import ReactTestRenderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '../ThemeProvider';
@@ -8,11 +8,14 @@ import {THEME_STORAGE_KEY} from '../themeStorage';
 import {useAppTheme} from '../useAppTheme';
 
 function ThemeProbe() {
-  const {themeId, setThemeId} = useAppTheme();
+  const {theme, themeId, setThemeId} = useAppTheme();
   return (
-    <Text onPress={() => setThemeId('dark')} testID="probe">
-      {themeId}
-    </Text>
+    <>
+      <Text onPress={() => setThemeId('dark')} testID="probe">
+        {themeId}
+      </Text>
+      <Text testID="probe-theme">{theme.id}</Text>
+    </>
   );
 }
 
@@ -79,10 +82,10 @@ describe('AppThemeProvider', () => {
     consoleSpy.mockRestore();
   });
 
-  it('defaults to pastel-kids when nothing is persisted', async () => {
+  it('defaults to the light theme when nothing is persisted', async () => {
     const tree = await renderWithProviders();
     expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
-      'pastel-kids',
+      'default',
     );
   });
 
@@ -94,11 +97,11 @@ describe('AppThemeProvider', () => {
     );
   });
 
-  it('falls back to pastel-kids for an unknown/removed persisted id', async () => {
+  it('falls back to the light theme for an unknown/removed persisted id', async () => {
     await AsyncStorage.setItem(THEME_STORAGE_KEY, 'ocean-removed');
     const tree = await renderWithProviders();
     expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
-      'pastel-kids',
+      'default',
     );
   });
 
@@ -132,5 +135,50 @@ describe('AppThemeProvider', () => {
       'dark',
     );
     expect(await AsyncStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+  });
+
+  it('restores the system preference and resolves it to a concrete theme', async () => {
+    await AsyncStorage.setItem(THEME_STORAGE_KEY, 'system');
+    const tree = await renderWithProviders();
+    // Jest has no OS color scheme, so system resolves to the light theme.
+    expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+      'system',
+    );
+    expect(tree.root.findByProps({testID: 'probe-theme'}).props.children).toBe(
+      'default',
+    );
+  });
+
+  it('resolves the system preference to the dark theme when the OS is dark', async () => {
+    // The RN jest preset mocks useColorScheme as jest.fn(() => 'light').
+    const mockUseColorScheme = useColorScheme as unknown as jest.Mock;
+    mockUseColorScheme.mockReturnValue('dark');
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, 'system');
+      const tree = await renderWithProviders();
+      expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+        'system',
+      );
+      expect(
+        tree.root.findByProps({testID: 'probe-theme'}).props.children,
+      ).toBe('dark');
+    } finally {
+      mockUseColorScheme.mockReturnValue('light');
+    }
+  });
+
+  it('falls back to the light theme for a persisted experimental theme on production', async () => {
+    const originalDev = (globalThis as {__DEV__?: boolean}).__DEV__;
+    (globalThis as {__DEV__?: boolean}).__DEV__ = false;
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, 'pastel-kids');
+      const tree = await renderWithProviders();
+      expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+        'default',
+      );
+      expect(await AsyncStorage.getItem(THEME_STORAGE_KEY)).toBe('default');
+    } finally {
+      (globalThis as {__DEV__?: boolean}).__DEV__ = originalDev;
+    }
   });
 });

@@ -12,6 +12,24 @@ export const MODE_BUDGETS_MINUTES: Record<TodayMode, number> = {
   'deep-practice': 45,
 };
 
+/**
+ * User-facing Vietnamese labels for internal reason codes.
+ * The raw enum (e.g. `SPEAKING_GAP_PRIORITY`) must never be rendered —
+ * the plain-language `explanationVi` above the chips already explains why,
+ * these short tags exist only for at-a-glance scanning.
+ */
+export const REASON_CODE_VI_LABELS: Record<ReasonCode, string> = {
+  BACKLOG_CONSOLIDATION: 'Củng cố tồn đọng',
+  REMEDIATE_RECENT_ERRORS: 'Chữa lỗi gần đây',
+  LISTENING_REMEDIATION: 'Luyện nghe',
+  ACTIVE_RECALL_WEAKNESS: 'Phản xạ chủ động',
+  PREREQUISITE_NEEDED: 'Kiến thức nền',
+  FAST_MASTERY_VARIATION: 'Biến thể thực hành',
+  SPEAKING_GAP_PRIORITY: 'Ưu tiên phát âm',
+  INTERVIEW_PORTFOLIO_PRIORITY: 'Luyện phỏng vấn',
+  STANDARD_PROGRESSION: 'Lộ trình chuẩn',
+};
+
 function isSpeakingGap(snapshot: LearnerStateSnapshot, nowMs: number): boolean {
   if (
     !snapshot.speakingRecordings ||

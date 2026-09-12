@@ -41,4 +41,33 @@ describe('ContextCard', () => {
     const phraseText = tree.root.findByProps({testID: 'context-phrase-en'});
     expect(phraseText.props.style).toMatchObject({flex: 1, flexShrink: 1});
   });
+
+  it('hides context sentences that only repeat the headline phrase', () => {
+    let tree!: renderer.ReactTestRenderer;
+    act(() => {
+      tree = renderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <ContextCard
+              data={{
+                ...data,
+                contextSentenceEn:
+                  'In our daily work: "This is an intentionally long English phrase that should wrap instead of pushing controls away".',
+                contextSentenceVi:
+                  'Trong công việc hàng ngày: "Cụm từ dài".',
+              }}
+              onComplete={jest.fn()}
+              onPlayAudio={jest.fn()}
+              onSkip={jest.fn()}
+            />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    expect(tree.root.findByProps({testID: 'context-explanation-vi'})).toBeTruthy();
+    const rendered = JSON.stringify(tree.toJSON());
+    expect(rendered).not.toContain('In our daily work');
+    expect(rendered).not.toContain('Trong công việc hàng ngày');
+  });
 });

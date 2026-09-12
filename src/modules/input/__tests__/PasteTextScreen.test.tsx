@@ -115,6 +115,55 @@ describe('PasteTextScreen', () => {
     expect(tree!.root.findByType(TextInput).props.value).toBe('');
   });
 
+  it('hides detection, gates CTA, and marks controls disabled while empty (SETE-264)', async () => {
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+
+    await ReactTestRenderer.act(async () => {
+      tree = renderPasteTextScreen();
+    });
+
+    const detectionChips = () =>
+      tree!.root
+        .findAllByType(Text)
+        .filter(node => node.props.children === 'Phát hiện: Tiếng Anh');
+    const helperTexts = () =>
+      tree!.root
+        .findAllByType(Text)
+        .filter(
+          node =>
+            node.props.children === 'Cần ít nhất 1 từ để trích xuất từ vựng.',
+        );
+    const cta = () => findPressableByLabel(tree!.root, 'Trích xuất từ vựng')!;
+    const clear = () => findPressableByLabel(tree!.root, 'Xóa văn bản')!;
+
+    expect(detectionChips()).toHaveLength(0);
+    expect(helperTexts()).toHaveLength(1);
+
+    expect(cta().props.disabled).toBe(true);
+    expect(cta().props.accessibilityState).toEqual({disabled: true});
+    expect(cta().props.style({pressed: false})[0].opacity).toBeLessThan(1);
+
+    expect(clear().props.disabled).toBe(true);
+    expect(clear().props.accessibilityState).toEqual({disabled: true});
+    expect(clear().props.style({pressed: false}).opacity).toBeLessThan(1);
+
+    const input = tree!.root.findByType(TextInput);
+    await ReactTestRenderer.act(async () => {
+      input.props.onChangeText('Hello world');
+    });
+
+    expect(detectionChips()).toHaveLength(1);
+    expect(helperTexts()).toHaveLength(0);
+
+    expect(cta().props.disabled).toBe(false);
+    expect(cta().props.accessibilityState).toEqual({disabled: false});
+    expect(cta().props.style({pressed: false})[0].opacity).toBe(1);
+
+    expect(clear().props.disabled).toBe(false);
+    expect(clear().props.accessibilityState).toEqual({disabled: false});
+    expect(clear().props.style({pressed: false}).opacity).toBe(1);
+  });
+
   it('blocks empty submission and does not navigate (TC-008)', async () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
 

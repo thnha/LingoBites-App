@@ -1,6 +1,9 @@
 import {
+  SYSTEM_THEME_ID,
   defaultThemeId,
   isThemeId,
+  isThemePreference,
+  productionThemeOptions,
   themeIds,
   themeList,
   themeReleaseFlag,
@@ -27,7 +30,7 @@ describe('themeRegistry', () => {
 
   it('defaultThemeId points to an existing theme', () => {
     expect(themes[defaultThemeId]).toBeDefined();
-    expect(defaultThemeId).toBe('pastel-kids');
+    expect(defaultThemeId).toBe('default');
   });
 
   it('isThemeId accepts known ids and rejects everything else', () => {
@@ -46,5 +49,12 @@ describe('themeRegistry', () => {
     expect(themeReleaseFlag.comic).toBe('comicTheme');
     expect(themeReleaseFlag.cartoon).toBe('cartoonTheme');
     expect(themeReleaseFlag.default).toBeUndefined();
+  });
+
+  it('exposes the production picker options plus the system preference', () => {
+    expect(productionThemeOptions).toEqual(['default', 'dark', SYSTEM_THEME_ID]);
+    expect(isThemePreference('system')).toBe(true);
+    expect(isThemePreference('dark')).toBe(true);
+    expect(isThemePreference('nope')).toBe(false);
   });
 });

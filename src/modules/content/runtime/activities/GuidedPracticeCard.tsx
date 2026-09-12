@@ -35,6 +35,7 @@ export function GuidedPracticeCard({data, onComplete, onSkip}: Props) {
             ) : (
               <AppButton
                 onPress={() => setRevealed(prev => new Set(prev).add(item.id))}
+                testID={`guided-reveal-${item.id}`}
                 title="Xem đáp án"
                 variant="secondary"
               />

@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type {ThemeId} from './themeRegistry';
+import type {ThemePreference} from './themeRegistry';
 
 export const THEME_STORAGE_KEY = 'app_theme_id';
 
-export async function saveThemeId(id: ThemeId): Promise<void> {
+export async function saveThemeId(id: ThemePreference): Promise<void> {
   try {
     await AsyncStorage.setItem(THEME_STORAGE_KEY, id);
   } catch {

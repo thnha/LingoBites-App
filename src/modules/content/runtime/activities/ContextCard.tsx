@@ -4,6 +4,7 @@ import {AppCard} from '@components/AppCard';
 import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
 import {useAppTheme} from '@theme';
+import {isRedundantContextSentence} from '../contextSentenceDisplay';
 import type {ContextStepData} from '../types';
 import {StepActions} from './StepActions';
 
@@ -17,6 +18,13 @@ type Props = {
 /** Context-first input: the English phrase in context + a Vietnamese explanation. */
 export function ContextCard({data, onPlayAudio, onComplete, onSkip}: Props) {
   const {theme} = useAppTheme();
+  const showContextEn =
+    data.contextSentenceEn &&
+    !isRedundantContextSentence(data.contextSentenceEn, data.phraseEn);
+  const showContextVi =
+    data.contextSentenceVi &&
+    !isRedundantContextSentence(data.contextSentenceVi, data.phraseVi);
+
   return (
     <View style={{gap: theme.spacing.lg}}>
       <AppCard style={{gap: theme.spacing.md}}>
@@ -46,10 +54,10 @@ export function ContextCard({data, onPlayAudio, onComplete, onSkip}: Props) {
         <AppText color="primary" variant="h3">
           {data.phraseVi}
         </AppText>
-        {data.contextSentenceEn ? (
+        {showContextEn ? (
           <AppText color="secondary">{data.contextSentenceEn}</AppText>
         ) : null}
-        {data.contextSentenceVi ? (
+        {showContextVi ? (
           <AppText color="muted">{data.contextSentenceVi}</AppText>
         ) : null}
         <AppText testID="context-explanation-vi">{data.explanationVi}</AppText>

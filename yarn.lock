@@ -5981,6 +5981,11 @@ react-native-keychain@^10.0.0:
   resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-10.0.0.tgz#1de6f54d27b2376deaac4d51883c066f53b7be7b"
   integrity sha512-YzPKSAnSzGEJ12IK6CctNLU79T1W15WDrElRQ+1/FsOazGX9ucFPTQwgYe8Dy8jiSEDJKM4wkVa3g4lD2Z+Pnw==
 
+react-native-permissions@^5.6.1:
+  version "5.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-5.6.1.tgz#a2f5324bacc3ac124831544b53a1c980389bfd4d"
+  integrity sha512-9FwecmnUCHPwUZ+uwfcB7+CHES8cmwyY2gcVZQsZ3zloQCumle10KbDWuaOtgaEqNdzjLd5cyCpb7hKLw8H16A==
+
 react-native-quick-sqlite@^8.2.7:
   version "8.2.7"
   resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-8.2.7.tgz#93b5c90b94dc54b882dbbc4b59338e4b4820dde3"

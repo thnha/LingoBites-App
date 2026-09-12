@@ -56,7 +56,7 @@ describe('TodayScreen UI', () => {
     mockNavigate.mockClear();
   });
 
-  it('renders Today Study Center screen with mode selector and explainability card', async () => {
+  it('renders Today screen with mode selector and explainability card', async () => {
     const tree = await renderTodayScreen();
 
     const screen = tree.root.findByProps({testID: 'today-screen'});
@@ -69,6 +69,19 @@ describe('TodayScreen UI', () => {
       testID: 'explainability-card',
     });
     expect(explainabilityCard).toBeTruthy();
+  });
+
+  it('shows Vietnamese reason labels instead of raw reason-code enums', async () => {
+    const tree = await renderTodayScreen();
+
+    const text = JSON.stringify(tree.toJSON());
+    expect(text).toContain('Hôm nay');
+    expect(text).not.toContain('Today Study Center');
+    expect(text).not.toContain('#SPEAKING_GAP_PRIORITY');
+    expect(text).not.toContain('SPEAKING_GAP_PRIORITY');
+    // A fresh DB has no speaking history, so the speaking-gap tag appears
+    // with its Vietnamese label.
+    expect(text).toContain('Ưu tiên phát âm');
   });
 
   it('allows changing Today mode and updates plan display', async () => {

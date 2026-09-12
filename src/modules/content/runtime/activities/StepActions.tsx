@@ -1,26 +1,43 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Pressable, View} from 'react-native';
 import {AppButton} from '@components/AppButton';
+import {AppText} from '@components/AppText';
 import {useAppTheme} from '@theme';
 
 type Props = {
   onComplete: () => void;
   onSkip?: () => void;
   completeLabel?: string;
+  completeTestID?: string;
+  skipTestID?: string;
 };
 
 /** Shared complete/skip action row used by every activity card. */
 export function StepActions({
   onComplete,
   onSkip,
-  completeLabel = 'Hoàn thành',
+  completeLabel = 'Tiếp tục',
+  completeTestID = 'lesson-step-complete',
+  skipTestID = 'lesson-step-skip',
 }: Props) {
   const {theme} = useAppTheme();
   return (
-    <View style={{gap: theme.spacing.sm}}>
-      <AppButton onPress={onComplete} title={completeLabel} />
+    <View style={{gap: theme.spacing.lg}}>
+      <AppButton
+        onPress={onComplete}
+        testID={completeTestID}
+        title={completeLabel}
+      />
       {onSkip ? (
-        <AppButton onPress={onSkip} title="Bỏ qua" variant="ghost" />
+        <Pressable
+          accessibilityLabel="Bỏ qua"
+          accessibilityRole="button"
+          onPress={onSkip}
+          style={{alignSelf: 'center', paddingVertical: theme.spacing.xs}}
+          testID={skipTestID}
+        >
+          <AppText color="secondary" variant="label">Bỏ qua</AppText>
+        </Pressable>
       ) : null}
     </View>
   );

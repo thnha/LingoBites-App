@@ -164,6 +164,35 @@ describe('buildLessonSteps', () => {
     expect(guided?.qaItemIds).toEqual(['qa-1']);
   });
 
+  it('places an activity immediately after its last referenced chunk context', () => {
+    const c1 = chunk({id: 'c1', order: 0});
+    const c2 = chunk({id: 'c2', order: 1});
+    const data = baseData({
+      chunks: [c1, c2],
+      activities: [
+        {
+          id: 'act-1',
+          lessonId: 'lesson-1',
+          packageId: 'pkg-1',
+          slug: 'act-1',
+          type: 'listen_and_repeat',
+          titleVi: 'Shadowing',
+          chunkRefIds: ['c1'],
+          qaRefIds: [],
+          instructionsVi: null,
+        },
+      ],
+    });
+    const kinds = buildLessonSteps(data).map(step => step.kind);
+    expect(kinds).toEqual([
+      'context',
+      'shadowing',
+      'context',
+      'exit_check',
+      'feedback',
+    ]);
+  });
+
   it('exit_check samples up to 3 qa items across chunks', () => {
     const qaFor = (id: string) => ({
       id,

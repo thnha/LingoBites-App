@@ -2,6 +2,7 @@ import React from 'react';
 import {Pressable, StyleSheet, View, type ViewStyle} from 'react-native';
 import {AppCard} from './AppCard';
 import {AppText} from './AppText';
+import {MaterialIcon} from './MaterialIcon';
 import {useAppTheme} from '../theme';
 
 export interface FlipCardProps {
@@ -9,6 +10,8 @@ export interface FlipCardProps {
   onFlip: () => void;
   front: React.ReactNode;
   back: React.ReactNode;
+  frontHint?: string;
+  backHint?: string;
   style?: ViewStyle;
   testID?: string;
 }
@@ -18,6 +21,8 @@ export function FlipCard({
   onFlip,
   front,
   back,
+  frontHint = 'Nhấn để xem mặt sau',
+  backHint = 'Nhấn để xem mặt trước',
   style,
   testID = 'flip-card',
 }: FlipCardProps) {
@@ -35,7 +40,7 @@ export function FlipCard({
       <AppCard
         style={StyleSheet.flatten([
           {
-            minHeight: 220,
+            minHeight: 320,
             justifyContent: 'center',
             alignItems: 'center',
             borderWidth: 1.5,
@@ -45,15 +50,21 @@ export function FlipCard({
         ])}
       >
         <View style={styles.contentContainer}>{flipped ? back : front}</View>
-        <AppText
+        <View
           accessibilityElementsHidden
-          color="muted"
           importantForAccessibility="no-hide-descendants"
-          style={styles.hintText}
-          variant="caption"
+          style={styles.hintRow}
+          testID="flip-card-hint"
         >
-          {flipped ? '🔄 Nhấn để xem mặt trước' : '🔄 Nhấn để xem mặt sau'}
-        </AppText>
+          <MaterialIcon
+            color={theme.colors.text.muted}
+            name="refresh"
+            size={16}
+          />
+          <AppText color="muted" style={styles.hintText} variant="caption">
+            {flipped ? backHint : frontHint}
+          </AppText>
+        </View>
       </AppCard>
     </Pressable>
   );
@@ -66,8 +77,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
-  hintText: {
+  hintRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
     marginTop: 12,
+  },
+  hintText: {
     textAlign: 'center',
   },
 });

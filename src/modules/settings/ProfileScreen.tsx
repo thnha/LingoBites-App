@@ -2,6 +2,7 @@ import React, {useCallback, useState} from 'react';
 import {
   Alert,
   Linking,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -10,12 +11,14 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {ProfileStackParamList} from '@/app/navigation/types';
+import {AppButton} from '@components/AppButton';
 import {AppCard} from '@components/AppCard';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {ProfileSettingsRow} from '@components/ProfileSettingsRow';
 import {SectionHeader} from '@components/SectionHeader';
+import {TextField} from '@components/TextField';
 import {ThemePicker} from '@components/ThemePicker';
 import {getSupportEmail} from '@shared/api/appConfig';
 import {
@@ -51,7 +54,8 @@ const PROFILE_PLACEHOLDER = {
   subtitle: 'Học tiếng Anh · Trình độ Beginner',
 } as const;
 
-const INCOMPLETE_TRAILING = {chip: 'Incomplete', chipTone: 'neutral' as const};
+/** Settings without a backing store yet — show an honest "not set" value. */
+const UNSET_TRAILING = {chip: 'Chưa đặt', chipTone: 'neutral' as const};
 
 export function ProfileScreen({navigation}: Props) {
   const {theme} = useAppTheme();
@@ -60,6 +64,8 @@ export function ProfileScreen({navigation}: Props) {
   const {isFeatureEnabled} = useFeatureFlags();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isClearDataModalVisible, setIsClearDataModalVisible] = useState(false);
+  const [clearDataConfirmText, setClearDataConfirmText] = useState('');
   const supportEmail = getSupportEmail();
   const {getAudioCacheStats, listReadyAudioAssets} = useAudioLibrary();
   const {getCapabilityProgressReport} = useProgressReport();
@@ -102,28 +108,19 @@ export function ProfileScreen({navigation}: Props) {
       ? 'Tiếp tục duy trì — học gì đó hôm nay nhé!'
       : 'Hoàn thành một phiên ôn tập để bắt đầu chuỗi.';
 
-  function handleClearData() {
-    Alert.alert('Xóa dữ liệu local', t('settings.clear_data_confirm'), [
-      {text: 'Hủy', style: 'cancel'},
-      {
-        text: 'Xóa',
-        style: 'destructive',
-        onPress: () => {
-          void (async () => {
-            const result = await clearAllLocalDataWithFiles();
-            if (!result.dbCleared) {
-              setStatusMessage(t('settings.clear_data_partial_failure'));
-              return;
-            }
-            setStatusMessage(
-              result.ok
-                ? t('settings.clear_data_done')
-                : t('settings.clear_data_partial_failure'),
-            );
-          })();
-        },
-      },
-    ]);
+  function executeClearData() {
+    void (async () => {
+      const result = await clearAllLocalDataWithFiles();
+      if (!result.dbCleared) {
+        setStatusMessage(t('settings.clear_data_partial_failure'));
+        return;
+      }
+      setStatusMessage(
+        result.ok
+          ? t('settings.clear_data_done')
+          : t('settings.clear_data_partial_failure'),
+      );
+    })();
   }
 
   function handleClearSpeakingData() {
@@ -209,47 +206,50 @@ export function ProfileScreen({navigation}: Props) {
           </View>
         </View>
 
-        <View style={styles.metricsRow}>
-          <View style={[styles.metricCard, themedStyles.metricTertiary]}>
-            <AppText style={themedStyles.metricValueTertiary}>
-              {gamification.totalXp}
-            </AppText>
-            <AppText style={themedStyles.metricLabelTertiary}>
-              XP đã đạt
-            </AppText>
+        <View style={styles.metricsContainer}>
+          <View style={styles.metricsRow}>
+            <View style={[styles.metricCard, themedStyles.metricTertiary]}>
+              <AppText style={themedStyles.metricValueTertiary}>
+                {gamification.totalXp}
+              </AppText>
+              <AppText style={themedStyles.metricLabelTertiary}>
+                XP đã đạt
+              </AppText>
+            </View>
+            <View style={[styles.metricCard, themedStyles.metricSecondary]}>
+              <AppText style={themedStyles.metricValueSecondary}>
+                {gamification.badges.length}
+              </AppText>
+              <AppText style={themedStyles.metricLabelSecondary}>
+                Huy hiệu
+              </AppText>
+            </View>
+            <View style={[styles.metricCard, themedStyles.metricAccent]}>
+              <AppText style={themedStyles.metricValuePrimary}>
+                {t(`gamification.pet_stage.${gamification.pet.stageId}`)}
+              </AppText>
+              <AppText style={themedStyles.metricLabelPrimary}>Cây ảo</AppText>
+            </View>
           </View>
-          <View style={[styles.metricCard, themedStyles.metricSecondary]}>
-            <AppText style={themedStyles.metricValueSecondary}>
-              {gamification.badges.length}
-            </AppText>
-            <AppText style={themedStyles.metricLabelSecondary}>
-              Huy hiệu
-            </AppText>
-          </View>
-          <View style={[styles.metricCard, themedStyles.metricAccent]}>
-            <AppText style={themedStyles.petMetricValue}>
-              {t(`gamification.pet_stage.${gamification.pet.stageId}`)}
-            </AppText>
-            <AppText style={themedStyles.metricLabelPrimary}>Cây ảo</AppText>
-          </View>
-        </View>
 
-        <View style={styles.metricsRow}>
-          <View style={[styles.metricCard, themedStyles.metricTertiary]}>
-            <AppText style={themedStyles.metricValueTertiary}>
-              {learningMetrics.wordsKnownLabel}
-            </AppText>
-            <AppText style={themedStyles.metricLabelTertiary}>
-              Từ đã biết
-            </AppText>
-          </View>
-          <View style={[styles.metricCard, themedStyles.metricSecondary]}>
-            <AppText style={themedStyles.metricValueSecondary}>
-              {learningMetrics.accuracyLabel}
-            </AppText>
-            <AppText style={themedStyles.metricLabelSecondary}>
-              Độ chính xác
-            </AppText>
+          <View style={styles.metricsRow}>
+            <View style={[styles.metricCard, themedStyles.metricTertiary]}>
+              <AppText style={themedStyles.metricValueTertiary}>
+                {learningMetrics.wordsKnownLabel}
+              </AppText>
+              <AppText style={themedStyles.metricLabelTertiary}>
+                Từ đã biết
+              </AppText>
+            </View>
+            <View style={[styles.metricCard, themedStyles.metricSecondary]}>
+              <AppText style={themedStyles.metricValueSecondary}>
+                {learningMetrics.accuracyLabel}
+              </AppText>
+              <AppText style={themedStyles.metricLabelSecondary}>
+                Độ chính xác
+              </AppText>
+            </View>
+            <View style={{flex: 1}} />
           </View>
         </View>
 
@@ -259,25 +259,25 @@ export function ProfileScreen({navigation}: Props) {
             icon="flag"
             label="Mục tiêu hàng ngày"
             medallionTone="teal"
-            trailing={INCOMPLETE_TRAILING}
+            trailing={UNSET_TRAILING}
           />
           <ProfileSettingsRow
             icon="translate"
             label="Ngôn ngữ app"
             medallionTone="coral"
-            trailing={INCOMPLETE_TRAILING}
+            trailing={UNSET_TRAILING}
           />
           <ProfileSettingsRow
             icon="subtitles"
             label="Dịch sang"
             medallionTone="gold"
-            trailing={INCOMPLETE_TRAILING}
+            trailing={UNSET_TRAILING}
           />
           <ProfileSettingsRow
             icon="notifications"
             label="Nhắc nhở"
             medallionTone="teal"
-            trailing={INCOMPLETE_TRAILING}
+            trailing={UNSET_TRAILING}
           />
           <ProfileSettingsRow
             accessibilityLabel="Dung lượng âm thanh chương học đã tải về máy — bấm để nghe thử clip đã tải"
@@ -311,22 +311,28 @@ export function ProfileScreen({navigation}: Props) {
             onPress={handleSupport}
             trailing="chevron"
           />
-          <ProfileSettingsRow
-            accessibilityLabel={t('settings.feature_status')}
-            icon="bolt"
-            label={t('settings.feature_status')}
-            medallionTone="teal"
-            onPress={() => navigation.navigate('FeatureStatus')}
-            trailing="chevron"
-          />
-          <ProfileSettingsRow
-            accessibilityLabel="Mở bản demo native TTS"
-            icon="volume_up"
-            label="Demo native TTS"
-            medallionTone="coral"
-            onPress={() => navigation.navigate('TtsSpike')}
-            trailing="chevron"
-          />
+          {/* Developer diagnostics — hidden on production builds (__DEV__ is read
+              at render time so tests can toggle it). */}
+          {__DEV__ ? (
+            <ProfileSettingsRow
+              accessibilityLabel={t('settings.feature_status')}
+              icon="bolt"
+              label={t('settings.feature_status')}
+              medallionTone="teal"
+              onPress={() => navigation.navigate('FeatureStatus')}
+              trailing="chevron"
+            />
+          ) : null}
+          {__DEV__ ? (
+            <ProfileSettingsRow
+              accessibilityLabel="Mở bản demo native TTS"
+              icon="volume_up"
+              label="Demo native TTS"
+              medallionTone="coral"
+              onPress={() => navigation.navigate('TtsSpike')}
+              trailing="chevron"
+            />
+          ) : null}
         </View>
 
         {showThemePicker ? (
@@ -339,49 +345,122 @@ export function ProfileScreen({navigation}: Props) {
           </AppCard>
         ) : null}
 
-        <Pressable
-          accessibilityLabel="Xóa dữ liệu luyện nói"
-          accessibilityRole="button"
-          onPress={handleClearSpeakingData}
-          style={({pressed}) => [
-            themedStyles.dangerButton,
-            pressed && themedStyles.pressed,
-          ]}
-        >
-          <AppText color="danger" style={themedStyles.dangerButtonText}>
-            Xóa dữ liệu luyện nói & ghi âm
-          </AppText>
-        </Pressable>
+        <View style={styles.settingsSection}>
+          <SectionHeader title="Vùng nguy hiểm" />
+          
+          <View style={styles.dangerActionContainer}>
+            <Pressable
+              accessibilityLabel="Xóa dữ liệu luyện nói"
+              accessibilityRole="button"
+              onPress={handleClearSpeakingData}
+              style={({pressed}) => [
+                themedStyles.dangerButton,
+                pressed && themedStyles.pressed,
+              ]}
+            >
+              <AppText color="danger" style={themedStyles.dangerButtonText}>
+                Xóa dữ liệu luyện nói & ghi âm
+              </AppText>
+            </Pressable>
+            <AppText color="secondary" variant="caption" style={styles.dangerCaption}>
+              Xóa toàn bộ bản ghi âm và lịch sử luyện nói. Không thể khôi phục.
+            </AppText>
+          </View>
 
-        <Pressable
-          accessibilityLabel="Xóa dữ liệu học trên máy"
-          accessibilityRole="button"
-          onPress={handleClearData}
-          style={({pressed}) => [
-            themedStyles.dangerButton,
-            pressed && themedStyles.pressed,
-          ]}
-        >
-          <AppText color="danger" style={themedStyles.dangerButtonText}>
-            Xóa dữ liệu học trên máy
-          </AppText>
-        </Pressable>
+          <View style={styles.dangerActionContainer}>
+            <Pressable
+              accessibilityLabel="Xóa dữ liệu học trên máy"
+              accessibilityRole="button"
+              onPress={() => setIsClearDataModalVisible(true)}
+              style={({pressed}) => [
+                themedStyles.dangerButton,
+                pressed && themedStyles.pressed,
+              ]}
+            >
+              <AppText color="danger" style={themedStyles.dangerButtonText}>
+                Xóa dữ liệu học trên máy
+              </AppText>
+            </Pressable>
+            <AppText color="secondary" variant="caption" style={styles.dangerCaption}>
+              Xóa toàn bộ tiến trình học, XP, và lịch sử. Không thể khôi phục.
+            </AppText>
+          </View>
+        </View>
 
         {statusMessage ? (
           <AppText color="secondary">{statusMessage}</AppText>
         ) : null}
       </ScrollView>
+
+      <Modal
+        animationType="fade"
+        transparent
+        visible={isClearDataModalVisible}
+        onRequestClose={() => setIsClearDataModalVisible(false)}
+      >
+        <View style={themedStyles.modalOverlay}>
+          <AppCard style={themedStyles.modalContent}>
+            <AppText variant="h2" style={{marginBottom: 8}}>
+              Xóa dữ liệu học trên máy
+            </AppText>
+            <AppText color="secondary" style={{marginBottom: 16}}>
+              Hành động này sẽ xóa toàn bộ tiến trình học, XP, và lịch sử. Không thể khôi phục.
+            </AppText>
+            <AppText style={{marginBottom: 8}}>
+              Nhập chữ <AppText style={{fontWeight: 'bold'}}>XOA</AppText> để xác nhận:
+            </AppText>
+            <TextField
+              value={clearDataConfirmText}
+              onChangeText={setClearDataConfirmText}
+              placeholder="XOA"
+              autoCapitalize="characters"
+            />
+            <View style={themedStyles.modalActions}>
+              <AppButton
+                title="Hủy"
+                variant="secondary"
+                onPress={() => {
+                  setIsClearDataModalVisible(false);
+                  setClearDataConfirmText('');
+                }}
+                style={{flex: 1}}
+              />
+              <AppButton
+                title="Xóa"
+                variant="primary"
+                disabled={clearDataConfirmText !== 'XOA'}
+                onPress={() => {
+                  setIsClearDataModalVisible(false);
+                  setClearDataConfirmText('');
+                  executeClearData();
+                }}
+                style={{backgroundColor: theme.colors.danger, flex: 1}}
+              />
+            </View>
+          </AppCard>
+        </View>
+      </Modal>
     </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
+  dangerActionContainer: {
+    gap: 6,
+    marginBottom: 8,
+  },
+  dangerCaption: {
+    textAlign: 'center',
+  },
   metricCard: {
     alignItems: 'center',
     borderRadius: 18,
     flex: 1,
     paddingHorizontal: 12,
     paddingVertical: 16,
+  },
+  metricsContainer: {
+    gap: 12,
   },
   metricsRow: {
     flexDirection: 'row',
@@ -472,6 +551,11 @@ function makeStyles(theme: AppTheme) {
     metricTertiary: {
       backgroundColor: theme.colors.tertiarySoft,
     },
+    metricValuePrimary: {
+      color: theme.colors.primary,
+      fontSize: 26,
+      fontWeight: '700',
+    },
     metricValueSecondary: {
       color: theme.colors.secondary,
       fontSize: 26,
@@ -481,6 +565,21 @@ function makeStyles(theme: AppTheme) {
       color: theme.colors.tertiary,
       fontSize: 26,
       fontWeight: '700',
+    },
+    modalActions: {
+      flexDirection: 'row',
+      gap: theme.spacing.md,
+      marginTop: theme.spacing.md,
+    },
+    modalContent: {
+      gap: theme.spacing.sm,
+      padding: theme.spacing.lg,
+    },
+    modalOverlay: {
+      backgroundColor: theme.colors.overlay,
+      flex: 1,
+      justifyContent: 'center',
+      padding: theme.spacing.xl,
     },
     petMetricValue: {
       color: theme.colors.primary,

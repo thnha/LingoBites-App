@@ -223,9 +223,9 @@ describe('LessonRuntimeSession', () => {
     const kinds = session.steps.map(step => step.kind);
     expect(kinds).toEqual([
       'context',
-      'context',
       'shadowing',
       'role_play',
+      'context',
       'guided_practice',
       'active_recall',
       'exit_check',
@@ -237,9 +237,9 @@ describe('LessonRuntimeSession', () => {
     const session = createLessonRuntimeSession(LESSON_ID)!;
 
     session.recordAttempt('completed'); // context chunk-1
-    session.recordAttempt('skipped'); // context chunk-2
     session.recordAttempt('completed'); // shadowing
     session.recordAttempt('completed'); // role_play (dt-1)
+    session.recordAttempt('skipped'); // context chunk-2
     session.recordAttempt('skipped'); // guided_practice (qa-2 via act-fill)
     session.recordAttempt('completed'); // active_recall (qa-2 via act-mc)
     session.recordAttempt('completed'); // exit_check
@@ -272,6 +272,16 @@ describe('LessonRuntimeSession', () => {
         new Date('2026-09-07T12:00:00.000Z').getTime(),
       );
     }
+  });
+
+  it('goToPreviousStep rewinds the index and clears the prior attempt', () => {
+    const session = createLessonRuntimeSession(LESSON_ID)!;
+    session.recordAttempt('completed');
+    expect(session.getStepIndex()).toBe(1);
+    expect(session.goToPreviousStep()).toBe(true);
+    expect(session.getStepIndex()).toBe(0);
+    expect(session.getAttempt('context:chunk-1')).toBe('pending');
+    expect(session.goToPreviousStep()).toBe(false);
   });
 
   it('replaying finish() never duplicates review rows', () => {

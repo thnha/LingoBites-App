@@ -167,16 +167,50 @@ describe('DailyReviewScreen - Accessibility', () => {
         <DailyReviewScreen navigation={navigation() as never} />,
       );
 
-      const ratingButtons = ['rating-forgot', 'rating-remembered'];
+      const ratingButtons = [
+        'rating-forgot',
+        'rating-remembered',
+        'rating-skip',
+      ];
       for (const testID of ratingButtons) {
-        expect(tree.root.findByProps({testID}).props.disabled).toBe(true);
+        const button = tree.root.findByProps({testID});
+        expect(button.props.disabled).toBe(true);
+        // SETE-254: the announced state must match the real disabled prop —
+        // a greyed-but-live control is the false affordance this gates.
+        expect(button.props.accessibilityState).toEqual({disabled: true});
       }
 
       await revealCard(tree);
 
       for (const testID of ratingButtons) {
-        expect(tree.root.findByProps({testID}).props.disabled).toBe(false);
+        const button = tree.root.findByProps({testID});
+        expect(button.props.disabled).toBe(false);
+        expect(button.props.accessibilityState).toEqual({disabled: false});
       }
+    });
+
+    it('ignores a pre-flip rating so it cannot corrupt the schedule (SETE-254)', async () => {
+      seedCards(1);
+      const tree = await renderScreen(
+        <DailyReviewScreen navigation={navigation() as never} />,
+      );
+
+      // A tap on a disabled control never fires on device; invoking the
+      // handler directly proves the screen-level flip gate holds regardless.
+      await act(async () => {
+        tree.root.findByProps({testID: 'rating-remembered'}).props.onPress();
+      });
+      await act(async () => {
+        tree.root.findByProps({testID: 'rating-skip'}).props.onPress();
+      });
+
+      const progress = tree.root.findByProps({testID: 'review-progress'});
+      expect(
+        progress.findAllByProps({children: '1 / 1'}).length,
+      ).toBeGreaterThan(0);
+      expect(tree.root.findAllByProps({testID: 'review-summary'}).length).toBe(
+        0,
+      );
     });
 
     it('has accessible progress indicator', async () => {
@@ -187,7 +221,13 @@ describe('DailyReviewScreen - Accessibility', () => {
 
       const progress = tree.root.findByProps({testID: 'review-progress'});
       expect(progress).toBeTruthy();
-      expect(progress.props.children).toBe('1 / 3');
+      expect(
+        progress.findAllByProps({children: '1 / 3'}).length,
+      ).toBeGreaterThan(0);
+      // The counter is a real progressbar, not plain text (SETE-255).
+      expect(
+        progress.findAllByProps({accessibilityRole: 'progressbar'}).length,
+      ).toBeGreaterThan(0);
     });
   });
 

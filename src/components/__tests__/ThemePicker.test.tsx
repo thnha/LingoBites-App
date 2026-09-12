@@ -43,10 +43,21 @@ describe('ThemePicker', () => {
     expect(labelsOf(tree)).toEqual([]);
   });
 
-  it('shows all seven themes in full-feature-showcase', async () => {
+  it('shows all seven dev themes plus the system option in full-feature-showcase', async () => {
     const labels = labelsOf(await render('full-feature-showcase'));
-    expect(labels).toHaveLength(7);
-    expect(labels).toEqual(themeIds.map(id => themes[id].name));
+    expect(labels).toHaveLength(8);
+    expect(labels).toEqual([...themeIds.map(id => themes[id].name), 'Theo hệ thống']);
+  });
+
+  it('offers exactly Sáng / Tối / Theo hệ thống on production builds', async () => {
+    const originalDev = (globalThis as {__DEV__?: boolean}).__DEV__;
+    (globalThis as {__DEV__?: boolean}).__DEV__ = false;
+    try {
+      const labels = labelsOf(await render('full-feature-showcase'));
+      expect(labels).toEqual(['Sáng', 'Tối', 'Theo hệ thống']);
+    } finally {
+      (globalThis as {__DEV__?: boolean}).__DEV__ = originalDev;
+    }
   });
 
   it('hides dark when its flag is off (close-beta-1)', async () => {
