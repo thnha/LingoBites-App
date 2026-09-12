@@ -97,3 +97,4 @@ workdir/
 .vscode/*
 .vibeguard/*
 .worktrees/
+.tmp-sim/*
