@@ -350,13 +350,15 @@ function makeStyles(theme: AppTheme) {
       right: 0,
     },
     shelfContainer: {
-      // The pill face sizes itself as 92% of the screen width. That
-      // percentage only resolves when this container spans the wrap:
-      // previously it shrink-wrapped to content, collapsing the bar to
-      // ~264pt (4 x 64pt min-width) and pushing "Hồ sơ" past the pill
-      // edge on iPhone 17 Pro instead of the designed ~340pt.
-      alignSelf: 'stretch',
-      alignItems: 'center',
+      // The bar width lives on this container (direct child of the
+      // centered wrap) so the 92% resolves against the screen width.
+      // The face below fills it at 100% so the shelf hugs the face and
+      // peeks only downward per the Sticker spec — a stretched container
+      // with a 92% face would leave 15pt shelf "ears" on each side.
+      // 4 tabs → ~340pt on iPhone 17 Pro (SETE-247).
+      maxWidth: 380,
+      minWidth: 240,
+      width: '92%',
     },
     pill: {
       alignItems: 'center',
@@ -365,13 +367,11 @@ function makeStyles(theme: AppTheme) {
       elevation: 16,
       flexDirection: 'row',
       justifyContent: 'space-around',
-      // ~92% screen width for 4 tabs (SETE-247): 4 × 64pt floor = 256pt
-      // fits the 320pt-screen inner pill (~257pt); labels shrink via
-      // adjustsFontSizeToFit instead of truncating. maxWidth stops it
-      // stretching on tablets.
-      maxWidth: 380,
-      minWidth: 240,
-      width: '92%',
+      // Fills the shelf container (which carries the 92% / min / max
+      // width): 4 × 64pt floor = 256pt fits the 320pt-screen inner pill
+      // (~257pt); labels shrink via adjustsFontSizeToFit instead of
+      // truncating.
+      width: '100%',
       // NOTE: no `overflow: 'hidden'` here — on iOS it clips the shadow
       // and the pill loses all lift (SETE-214 screenshot feedback).
       // Children are all inside the bounds so nothing needs clipping.

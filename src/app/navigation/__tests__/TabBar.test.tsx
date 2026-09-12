@@ -101,29 +101,27 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(wrap.alignItems).toBe('center');
   });
 
-  it('sizes the pill at ~92% width (near full width for 4 tabs)', () => {
+  it('sizes the bar at ~92% width (near full width for 4 tabs)', () => {
     const {tree} = renderBar(defaultTheme);
-    const pill = StyleSheet.flatten(
-      tree.root.findByProps({testID: 'tab-bar-glass'}).props.style,
-    );
-    expect(pill.width).toBe('92%');
-    expect(pill.minWidth).toBe(240);
-    expect(pill.maxWidth).toBe(380);
-  });
-
-  it('stretches the pill container so the 92% face covers all 4 tabs', () => {
-    const {tree} = renderBar(defaultTheme);
-    // The face width is a percentage: it only resolves against a
-    // full-width container. Without the stretch the container
-    // shrink-wraps to content (~264pt), cramming the tabs and pushing
-    // "Hồ sơ" past the pill edge on iPhone 17 Pro.
+    // The width lives on the shelf container (direct child of the
+    // centered wrap) so the percentage resolves against the screen.
     const container = StyleSheet.flatten(
       tree.root.findByProps({testID: 'tab-bar-container'}).props.style,
     );
-    expect(container.alignSelf).toBe('stretch');
-    expect(container.alignItems).toBe('center');
-    // iPhone 17 Pro (402pt): (402 − 2×16 margin) × 92% ≈ 340pt face,
-    // ≈ 83pt per tab — comfortably above the 64pt tab minimum.
+    expect(container.width).toBe('92%');
+    expect(container.minWidth).toBe(240);
+    expect(container.maxWidth).toBe(380);
+    // The face fills the container so the shelf hugs it and peeks only
+    // downward — no shelf "ears" on the sides (SETE-269 follow-up).
+    const pill = StyleSheet.flatten(
+      tree.root.findByProps({testID: 'tab-bar-glass'}).props.style,
+    );
+    expect(pill.width).toBe('100%');
+  });
+
+  it('gives each tab room on iPhone 17 Pro (402pt)', () => {
+    // (402 − 2×16 margin) × 92% ≈ 340pt face, ≈ 83pt per tab —
+    // comfortably above the 64pt tab minimum, so "Hồ sơ" stays inside.
     const faceWidth = (402 - 2 * 16) * 0.92;
     expect((faceWidth - 2 * 4) / 4).toBeGreaterThan(64);
   });
