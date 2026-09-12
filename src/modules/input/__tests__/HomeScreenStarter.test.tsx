@@ -10,7 +10,6 @@ import {
   saveContentLesson,
   startContentLesson,
 } from '@shared/db/ContentLessonStateRepository';
-import {saveFlashcard} from '@shared/db/FlashcardRepository';
 import {listActivePackageLessons} from '@shared/db/ContentRuntimeRepository';
 import {validFullOutput} from '@shared/fixtures';
 import {AppThemeProvider} from '@theme';
@@ -58,13 +57,35 @@ function seedPersonalLesson() {
   return lesson.lessonId;
 }
 
-describe('HomeScreen starter card (SETE-250 Option B)', () => {
+describe('HomeScreen hero card (SETE-279)', () => {
   beforeEach(() => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
   });
 
-  it('shows all three starter rows when the library and history exist', async () => {
+  it('shows a single create CTA on first open — never a dead end', async () => {
+    const tabNavigate = jest.fn();
+    const tree = await renderHome(navigation(tabNavigate));
+    // No started lesson → the starter hero shows the bare variant because
+    // the library is empty and there is no past lesson.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-section')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-continue-section')
+        .length,
+    ).toBe(0);
+    // Single CTA: only the first-create button, no pick row.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-pick')
+        .length,
+    ).toBe(0);
+    await act(async () => pressByTestID(tree, 'home-starter-first'));
+    expect(tabNavigate).toHaveBeenCalledWith('Create');
+  });
+
+  it('shows a single pick CTA when the packaged library exists', async () => {
     const installed = await bootstrapContentPackage();
     expect(installed.ok).toBe(true);
     seedPersonalLesson();
@@ -76,44 +97,44 @@ describe('HomeScreen starter card (SETE-250 Option B)', () => {
       tree.root.findAll(node => node.props.testID === 'home-starter-pick')
         .length,
     ).toBeGreaterThan(0);
+    // One CTA only: create stays hidden while pick leads.
     expect(
       tree.root.findAll(node => node.props.testID === 'home-starter-create')
         .length,
-    ).toBeGreaterThan(0);
+    ).toBe(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
+      tree.root.findAll(node => node.props.testID === 'home-starter-first')
         .length,
-    ).toBeGreaterThan(0);
+    ).toBe(0);
 
     await act(async () => pressByTestID(tree, 'home-starter-pick'));
     expect(tabNavigate).toHaveBeenCalledWith('Lessons', {
       screen: 'ContentLessonList',
     });
-    await act(async () => pressByTestID(tree, 'home-starter-create'));
-    expect(tabNavigate).toHaveBeenCalledWith('Create');
   });
 
-  it('drops the relearn row when nothing was ever studied', async () => {
-    const installed = await bootstrapContentPackage();
-    expect(installed.ok).toBe(true);
-    // Library exists but there is no personal or saved lesson, so the card
-    // keeps pick + create while the relearn row stays hidden.
-    const tree = await renderHome();
+  it('falls back to a single create CTA when the library is empty', async () => {
+    // A past personal lesson exists but the packaged library was never
+    // installed, so the hero offers create — the past lesson stays
+    // reachable through the rail below.
+    const lessonId = seedPersonalLesson();
+    const tabNavigate = jest.fn();
+    const tree = await renderHome(navigation(tabNavigate));
     expect(
       tree.root.findAll(node => node.props.testID === 'home-starter-pick')
         .length,
-    ).toBeGreaterThan(0);
+    ).toBe(0);
     expect(
       tree.root.findAll(node => node.props.testID === 'home-starter-create')
         .length,
     ).toBeGreaterThan(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
-        .length,
-    ).toBe(0);
-    expect(
-      tree.root.findAllByProps({children: 'Bắt đầu từ đâu?'}).length,
+      tree.root.findAll(
+        node => node.props.testID === `home-recent-item-${lessonId}`,
+      ).length,
     ).toBeGreaterThan(0);
+    await act(async () => pressByTestID(tree, 'home-starter-create'));
+    expect(tabNavigate).toHaveBeenCalledWith('Create');
   });
 
   it('interpolates the real library count into the pick subtitle', async () => {
@@ -130,19 +151,58 @@ describe('HomeScreen starter card (SETE-250 Option B)', () => {
     ).toBeGreaterThan(0);
   });
 
-  it('routes the relearn row straight to the newest personal lesson', async () => {
+  it('shows the continue hero for a started lesson with no fake numbers', async () => {
     const installed = await bootstrapContentPackage();
     expect(installed.ok).toBe(true);
-    const lessonId = seedPersonalLesson();
+    const packaged = listActivePackageLessons()[0];
+    expect(packaged).toBeDefined();
+    const started = startContentLesson({lessonId: packaged.id});
+    expect(started.ok).toBe(true);
     const nav = navigation();
     const tree = await renderHome(nav);
-    await act(async () => pressByTestID(tree, 'home-starter-relearn'));
-    expect(nav.navigate).toHaveBeenCalledWith('SavedLessonDetail', {
-      lessonId,
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-continue-section')
+        .length,
+    ).toBeGreaterThan(0);
+    // The starter hero never shows alongside Continue.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-starter-section')
+        .length,
+    ).toBe(0);
+    // No streak tag, no weekly-goal card, no progress bar or hard-coded 0%.
+    expect(tree.root.findAllByProps({children: '0%'}).length).toBe(0);
+    await act(async () => pressByTestID(tree, 'home-continue-action'));
+    expect(nav.navigate).toHaveBeenCalledWith('ContentLessonRuntime', {
+      lessonId: packaged.id,
     });
   });
 
-  it('routes the relearn row to a saved packaged lesson runtime', async () => {
+  it('lists the started lesson once, first, in the rail', async () => {
+    const installed = await bootstrapContentPackage();
+    expect(installed.ok).toBe(true);
+    const packaged = listActivePackageLessons();
+    expect(packaged.length).toBeGreaterThan(1);
+    expect(startContentLesson({lessonId: packaged[0].id}).ok).toBe(true);
+    const tree = await renderHome();
+    // Continue hero shows instead of the starter hero.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-continue-section')
+        .length,
+    ).toBeGreaterThan(0);
+    // The started lesson leads the rail exactly once — never duplicated.
+    // (Only nodes with onPress count: the RN mock spreads testID onto
+    // inner views.)
+    const pressablesFor = (id: string) =>
+      tree.root.findAll(
+        node =>
+          node.props.testID === `home-recent-item-${id}` &&
+          typeof node.props.onPress === 'function',
+      );
+    expect(pressablesFor(packaged[0].id).length).toBe(1);
+    expect(pressablesFor(packaged[1].id).length).toBeGreaterThan(0);
+  });
+
+  it('routes a saved packaged lesson from the rail to its runtime', async () => {
     const installed = await bootstrapContentPackage();
     expect(installed.ok).toBe(true);
     const packaged = listActivePackageLessons()[0];
@@ -151,116 +211,27 @@ describe('HomeScreen starter card (SETE-250 Option B)', () => {
     const nav = navigation();
     const tree = await renderHome(nav);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
-        .length,
+      tree.root.findAll(
+        node => node.props.testID === `home-recent-item-${packaged.id}`,
+      ).length,
     ).toBeGreaterThan(0);
-    await act(async () => pressByTestID(tree, 'home-starter-relearn'));
+    await act(async () =>
+      pressByTestID(tree, `home-recent-item-${packaged.id}`),
+    );
     expect(nav.navigate).toHaveBeenCalledWith('ContentLessonRuntime', {
       lessonId: packaged.id,
     });
   });
 
-  it('excludes the started lesson from the offline suggestions', async () => {
-    const installed = await bootstrapContentPackage();
-    expect(installed.ok).toBe(true);
-    const packaged = listActivePackageLessons();
-    expect(packaged.length).toBeGreaterThan(1);
-    expect(startContentLesson({lessonId: packaged[0].id}).ok).toBe(true);
-    const tree = await renderHome();
-    // Continue shows instead of the starter; suggestions skip the started id.
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-continue-section')
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAll(
-        node =>
-          node.props.testID === `home-offline-suggestion-${packaged[0].id}`,
-      ).length,
-    ).toBe(0);
-    expect(
-      tree.root.findAll(
-        node =>
-          node.props.testID === `home-offline-suggestion-${packaged[1].id}`,
-      ).length,
-    ).toBeGreaterThan(0);
-  });
-
-  it('shows the done state instead of 0 on the review chip', async () => {
-    seedPersonalLesson();
-    const tree = await renderHome();
-    const chip = tree.root
-      .findAll(item => item.props.testID === 'home-today-review')
-      .find(item => typeof item.props.onPress === 'function');
-    if (!chip) throw new Error('No today review chip found');
-    expect(
-      chip.findAll(item => item.props.children === 'Xong ✓').length,
-    ).toBeGreaterThan(0);
-    expect(chip.findAll(item => item.props.children === '0').length).toBe(0);
-  });
-
-  it('shows the live due count when cards are due', async () => {
+  it('routes a personal lesson from the rail to its detail', async () => {
     const lessonId = seedPersonalLesson();
-    saveFlashcard({
-      lessonId,
-      vocabulary: validFullOutput.vocabulary[0],
-      now: '2026-08-17T00:00:00.000Z',
-    });
-    const tree = await renderHome();
-    const chip = tree.root
-      .findAll(item => item.props.testID === 'home-today-review')
-      .find(item => typeof item.props.onPress === 'function');
-    if (!chip) throw new Error('No today review chip found');
-    expect(
-      chip.findAll(item => item.props.children === '1').length,
-    ).toBeGreaterThan(0);
-  });
-
-  it('uses the proposal-2 copy set exactly once per screen', async () => {
-    seedPersonalLesson();
-    const tree = await renderHome();
-    expect(
-      tree.root.findAllByProps({children: 'Chào bạn 👋'}).length,
-    ).toBeGreaterThan(0);
-    // The old question header is gone from Home…
-    expect(
-      tree.root.findAllByProps({children: 'Hôm nay bạn học gì?'}).length,
-    ).toBe(0);
-    expect(tree.root.findAllByProps({children: 'Hôm nay học gì'}).length).toBe(
-      0,
+    const nav = navigation();
+    const tree = await renderHome(nav);
+    await act(async () =>
+      pressByTestID(tree, `home-recent-item-${lessonId}`),
     );
-    // …replaced by the practice + your-lessons titles.
-    expect(
-      tree.root.findAllByProps({children: 'Luyện tập hôm nay'}).length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAllByProps({children: 'Bài học của bạn'}).length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAllByProps({children: 'Bắt đầu từ đâu?'}).length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAllByProps({children: 'Xem kế hoạch'}).length,
-    ).toBeGreaterThan(0);
-  });
-
-  it('gives every starter row a full-sentence accessibility label', async () => {
-    const installed = await bootstrapContentPackage();
-    expect(installed.ok).toBe(true);
-    seedPersonalLesson();
-    const tree = await renderHome();
-    for (const testID of [
-      'home-starter-pick',
-      'home-starter-create',
-      'home-starter-relearn',
-    ]) {
-      const row = tree.root
-        .findAll(item => item.props.testID === testID)
-        .find(item => typeof item.props.onPress === 'function');
-      if (!row) throw new Error(`No starter row found for ${testID}`);
-      const label = row.props.accessibilityLabel as string;
-      // Title + subtitle context, not just the title.
-      expect(label.split('.').length).toBeGreaterThan(1);
-    }
+    expect(nav.navigate).toHaveBeenCalledWith('SavedLessonDetail', {
+      lessonId,
+    });
   });
 });

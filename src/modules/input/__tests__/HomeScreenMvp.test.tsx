@@ -39,7 +39,16 @@ function seedLesson() {
   if (!lesson.ok) throw new Error('Could not seed lesson');
 }
 
-async function pressChip(
+function seedMinimalLesson() {
+  const lesson = saveLesson({
+    confirmedText: validMinimalOutput.original_text,
+    sourceType: 'paste_text',
+    lesson: validMinimalOutput,
+  });
+  if (!lesson.ok) throw new Error('Could not seed minimal lesson');
+}
+
+async function pressCell(
   tree: ReactTestRenderer.ReactTestRenderer,
   testID: string,
 ) {
@@ -50,67 +59,61 @@ async function pressChip(
   await act(async () => target.props.onPress());
 }
 
-describe('HomeScreen today chips (SETE-247)', () => {
+const CELLS = [
+  'home-explore-video',
+  'home-explore-news',
+  'home-explore-offline',
+  'home-explore-practice',
+];
+
+describe('HomeScreen explore grid (SETE-279)', () => {
   beforeEach(() => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
   });
 
-  it('routes the review chip to DailyReview', async () => {
+  it('renders the section title and all four cells', async () => {
     seedLesson();
-    const nav = navigation();
-    const tree = await renderHome(nav);
-    await pressChip(tree, 'home-today-review');
-    expect(nav.navigate).toHaveBeenCalledWith('DailyReview');
+    const tree = await renderHome();
+    expect(
+      tree.root.findAll(node => node.props.testID === 'home-explore-section')
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      tree.root.findAllByProps({children: 'Bạn muốn học gì?'}).length,
+    ).toBeGreaterThan(0);
+    for (const testID of CELLS) {
+      expect(
+        tree.root.findAll(node => node.props.testID === testID).length,
+      ).toBeGreaterThan(0);
+    }
   });
 
-  it('routes the speaking chip to the library SpeakingRoom', async () => {
+  it('routes every cell to the Lessons tab (temporary destination)', async () => {
+    seedLesson();
+    for (const testID of CELLS) {
+      const tabNavigate = jest.fn();
+      const tree = await renderHome(navigation(tabNavigate));
+      await pressCell(tree, testID);
+      expect(tabNavigate).toHaveBeenCalledWith('Lessons');
+    }
+  });
+
+  it('routes "view all" to the Lessons tab', async () => {
     seedLesson();
     const tabNavigate = jest.fn();
     const tree = await renderHome(navigation(tabNavigate));
-    await pressChip(tree, 'home-today-speaking');
-    expect(tabNavigate).toHaveBeenCalledWith('Lessons', {
-      screen: 'SpeakingRoom',
-    });
+    await pressCell(tree, 'home-explore-view-all');
+    expect(tabNavigate).toHaveBeenCalledWith('Lessons');
   });
 
-  it('routes the quick-practice chip with real questions (never empty)', async () => {
-    seedLesson();
-    const nav = navigation();
-    const tree = await renderHome(nav);
-    await pressChip(tree, 'home-today-quick');
-    expect(nav.navigate).toHaveBeenCalledWith(
-      'Practice',
-      expect.objectContaining({
-        questions: expect.arrayContaining([expect.anything()]),
-      }),
-    );
-    const [, params] = (nav.navigate as jest.Mock).mock.calls.find(
-      ([screen]: [string]) => screen === 'Practice',
-    ) as [string, {questions: unknown[]}];
-    expect(params.questions.length).toBeGreaterThan(0);
-  });
-
-  it('hides the quick-practice chip when no lesson has questions', async () => {
-    const lesson = saveLesson({
-      confirmedText: validMinimalOutput.original_text,
-      sourceType: 'paste_text',
-      lesson: validMinimalOutput,
-    });
-    if (!lesson.ok) throw new Error('Could not seed minimal lesson');
+  it('shows the grid even with no lessons (never a dead end)', async () => {
+    seedMinimalLesson();
     const tree = await renderHome();
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-today-quick')
-        .length,
-    ).toBe(0);
-    // Review + speaking stay available — the row never goes fully missing.
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-today-review')
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
-      tree.root.findAll(node => node.props.testID === 'home-today-speaking')
-        .length,
-    ).toBeGreaterThan(0);
+    for (const testID of CELLS) {
+      expect(
+        tree.root.findAll(node => node.props.testID === testID).length,
+      ).toBeGreaterThan(0);
+    }
   });
 });

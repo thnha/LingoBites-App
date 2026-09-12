@@ -1,15 +1,5 @@
-import {fontSize, gutter, typographyPresets} from '../tokens';
+import {fontSize, gutter, spacing, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
-
-const handoffSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
-  xxxl: 48,
-};
 
 export const stickerSoftTheme: AppTheme = {
   id: 'sticker-soft',
@@ -69,7 +59,7 @@ export const stickerSoftTheme: AppTheme = {
     },
   },
   gutter,
-  spacing: {...handoffSpacing},
+  spacing: {...spacing},
   radius: {sm: 12, md: 18, lg: 22, xl: 28, pill: 999},
   shadow: {
     soft: {},
@@ -91,6 +81,19 @@ export const stickerSoftTheme: AppTheme = {
   },
   components: {
     button: {
+      primary: {
+        background: '#2dd4bf',
+        text: '#00413a',
+        height: 52,
+        radius: 999,
+      },
+      secondary: {
+        background: 'transparent',
+        text: '#006b5f',
+        border: '#bacac5',
+        height: 48,
+        radius: 999,
+      },
       'primary-accent': {
         background: '#2dd4bf',
         text: '#00413a',

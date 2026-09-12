@@ -50,6 +50,11 @@ export function AppButton({
     theme.components.button['primary-accent'] ||
     theme.components.button['primary'] ||
     Object.values(theme.components.button)[0];
+  if (__DEV__ && !theme.components.button[variant]) {
+    console.warn(
+      `[AppButton] variant "${variant}" is not defined in theme "${theme.id}" — fell back. Add it to components.button instead of relying on fallback.`,
+    );
+  }
   const isDisabled = disabled || loading;
   const buttonAccessibilityState = loading
     ? {disabled: true, busy: true}

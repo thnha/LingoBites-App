@@ -64,7 +64,39 @@ const PAIRINGS = [
     inkKey: 'onTertiaryContainer',
   },
   {name: 'quick', backgroundKey: 'secondarySoft', inkKey: 'secondary'},
+  // SETE-279 paper-cut home: the fourth explore cell reuses the standard
+  // body pairing.
+  {
+    name: 'explore-practice',
+    backgroundKey: 'surfaceContainer',
+    inkKey: 'text.primary',
+  },
 ] as const;
+
+// SETE-281: the hero CTA uses fixed brand colors (yellow on the fixed
+// deep-blue card) in every theme, so it is checked directly instead of
+// through theme tokens.
+const HERO_CTA_BG = '#FFD35E';
+const HERO_CTA_INK = '#40320D';
+const HERO_BADGE_BG = '#DAF1FA';
+const HERO_BADGE_INK = '#134F7E';
+const HERO_TITLE = '#FFFFFF';
+const HERO_BLUE = '#226FAB';
+
+const FIXED_PAIRINGS = [
+  {name: 'hero-cta', background: HERO_CTA_BG, ink: HERO_CTA_INK},
+  {name: 'hero-badge', background: HERO_BADGE_BG, ink: HERO_BADGE_INK},
+  {name: 'hero-title', background: HERO_BLUE, ink: HERO_TITLE},
+] as const;
+
+function resolveColor(
+  theme: (typeof themes)[keyof typeof themes],
+  key: string,
+): string {
+  if (key === 'text.primary') return theme.colors.text.primary;
+  if (key === 'text.inverse') return theme.colors.text.inverse;
+  return theme.colors[key as keyof typeof theme.colors] as string;
+}
 
 describe('practice chip contrast (SETE-249 D2)', () => {
   for (const id of themeIds) {
@@ -72,12 +104,19 @@ describe('practice chip contrast (SETE-249 D2)', () => {
       it(`${pairing.name} chip is readable in the ${id} theme`, () => {
         const theme = themes[id];
         const background = compositeOver(
-          theme.colors[pairing.backgroundKey],
+          resolveColor(theme, pairing.backgroundKey),
           theme.colors.background,
         );
-        const ink = parseColor(theme.colors[pairing.inkKey]).rgb;
+        const ink = parseColor(resolveColor(theme, pairing.inkKey)).rgb;
         expect(contrast(background, ink)).toBeGreaterThanOrEqual(4.5);
       });
     }
+  }
+  for (const pairing of FIXED_PAIRINGS) {
+    it(`${pairing.name} hero pairing is readable (fixed brand colors)`, () => {
+      const background = parseColor(pairing.background).rgb;
+      const ink = parseColor(pairing.ink).rgb;
+      expect(contrast(background, ink)).toBeGreaterThanOrEqual(4.5);
+    });
   }
 });

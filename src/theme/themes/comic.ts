@@ -1,18 +1,9 @@
-import {fontSize, gutter, typographyPresets} from '../tokens';
+import {fontSize, gutter, spacing, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
 
 // Ported from LingoScan standalone [data-theme="comic"]: comic-book ink. Warm
 // paper, bold blue + red, near-black 3px borders, hard offset shadows, modest
 // rounding.
-const handoffSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
-  xxxl: 48,
-};
 
 export const comicTheme: AppTheme = {
   id: 'comic',
@@ -63,7 +54,7 @@ export const comicTheme: AppTheme = {
     presets: {...typographyPresets},
   },
   gutter,
-  spacing: {...handoffSpacing},
+  spacing: {...spacing},
   radius: {sm: 8, md: 12, lg: 14, xl: 14, pill: 999},
   shadow: {
     soft: {
@@ -96,6 +87,37 @@ export const comicTheme: AppTheme = {
         text: '#1b1c17',
         border: '#1a1a1a',
         height: 48,
+        radius: 12,
+      },
+      'primary-accent': {
+        background: '#2b65ec',
+        text: '#ffffff',
+        height: 50,
+        radius: 12,
+      },
+      'secondary-coral': {
+        background: '#ff6b6b',
+        text: '#6d0010',
+        height: 50,
+        radius: 12,
+      },
+      outline: {
+        background: '#ffffff',
+        text: '#004ccb',
+        border: '#1a1a1a',
+        height: 50,
+        radius: 12,
+      },
+      ghost: {
+        background: '#f5f4ec',
+        text: '#004ccb',
+        height: 50,
+        radius: 12,
+      },
+      deep: {
+        background: '#004ccb',
+        text: '#ffffff',
+        height: 50,
         radius: 12,
       },
     },

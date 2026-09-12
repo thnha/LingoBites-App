@@ -1,18 +1,9 @@
-import {fontSize, gutter, typographyPresets} from '../tokens';
+import {fontSize, gutter, spacing, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
 
 // Ported from LingoScan standalone [data-theme="neo"]: neo-brutalism. Cream
 // paper, violet accent, hard black borders, square corners, hard offset
 // shadows (no blur).
-const handoffSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
-  xxxl: 48,
-};
 
 export const neoTheme: AppTheme = {
   id: 'neo',
@@ -63,7 +54,7 @@ export const neoTheme: AppTheme = {
     presets: {...typographyPresets},
   },
   gutter,
-  spacing: {...handoffSpacing},
+  spacing: {...spacing},
   radius: {sm: 0, md: 0, lg: 0, xl: 0, pill: 0},
   shadow: {
     soft: {
@@ -96,6 +87,37 @@ export const neoTheme: AppTheme = {
         text: '#1c1c13',
         border: '#000000',
         height: 48,
+        radius: 0,
+      },
+      'primary-accent': {
+        background: '#7c3aed',
+        text: '#ffffff',
+        height: 52,
+        radius: 0,
+      },
+      'secondary-coral': {
+        background: '#1c1c13',
+        text: '#ffffff',
+        height: 52,
+        radius: 0,
+      },
+      outline: {
+        background: '#ffffff',
+        text: '#1c1c13',
+        border: '#000000',
+        height: 52,
+        radius: 0,
+      },
+      ghost: {
+        background: 'transparent',
+        text: '#630ed4',
+        height: 52,
+        radius: 0,
+      },
+      deep: {
+        background: '#630ed4',
+        text: '#ffffff',
+        height: 52,
         radius: 0,
       },
     },

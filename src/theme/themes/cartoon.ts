@@ -1,18 +1,9 @@
-import {fontSize, gutter, typographyPresets} from '../tokens';
+import {fontSize, gutter, spacing, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
 
 // Ported from LingoScan standalone [data-theme="cartoon"]: soft "lumi" look.
 // Cool light surfaces, teal accent, gentle light-gray bottom shadows, big
 // friendly rounding.
-const handoffSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
-  xxxl: 48,
-};
 
 export const cartoonTheme: AppTheme = {
   id: 'cartoon',
@@ -63,7 +54,7 @@ export const cartoonTheme: AppTheme = {
     presets: {...typographyPresets},
   },
   gutter,
-  spacing: {...handoffSpacing},
+  spacing: {...spacing},
   radius: {sm: 12, md: 18, lg: 24, xl: 30, pill: 999},
   shadow: {
     soft: {
@@ -96,6 +87,37 @@ export const cartoonTheme: AppTheme = {
         text: '#5a0017',
         border: '#ff8a98',
         height: 48,
+        radius: 24,
+      },
+      'primary-accent': {
+        background: '#2dd4bf',
+        text: '#00413a',
+        height: 52,
+        radius: 24,
+      },
+      'secondary-coral': {
+        background: '#ff8a98',
+        text: '#5a0017',
+        height: 52,
+        radius: 24,
+      },
+      outline: {
+        background: '#ffffff',
+        text: '#006b5f',
+        border: '#006b5f',
+        height: 52,
+        radius: 24,
+      },
+      ghost: {
+        background: '#e6e8ea',
+        text: '#006b5f',
+        height: 52,
+        radius: 24,
+      },
+      deep: {
+        background: '#006b5f',
+        text: '#ffffff',
+        height: 52,
         radius: 24,
       },
     },

@@ -85,6 +85,37 @@ export const darkTheme: AppTheme = {
         height: 44,
         radius: 8,
       },
+      'primary-accent': {
+        background: '#22d3ee',
+        text: '#083344',
+        height: 48,
+        radius: 8,
+      },
+      'secondary-coral': {
+        background: '#7f1d1d',
+        text: '#fecaca',
+        height: 48,
+        radius: 8,
+      },
+      outline: {
+        background: 'transparent',
+        text: '#f8fafc',
+        border: '#94a3b8',
+        height: 44,
+        radius: 8,
+      },
+      ghost: {
+        background: 'transparent',
+        text: '#93c5fd',
+        height: 44,
+        radius: 8,
+      },
+      deep: {
+        background: '#2563eb',
+        text: '#dbeafe',
+        height: 48,
+        radius: 8,
+      },
     },
     card: {background: '#1e293b', radius: 8, padding: 12, shadow: 'medium'},
     input: {

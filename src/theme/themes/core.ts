@@ -1,17 +1,8 @@
-import {fontSize, gutter, typographyPresets} from '../tokens';
+import {fontSize, gutter, spacing, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
 
 // Ported from LingoScan standalone [data-theme="core"]: clean blue, cool
 // off-white surfaces, soft blurred shadows, generously rounded corners.
-const handoffSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
-  xxxl: 48,
-};
 
 export const coreTheme: AppTheme = {
   id: 'core',
@@ -62,7 +53,7 @@ export const coreTheme: AppTheme = {
     presets: {...typographyPresets},
   },
   gutter,
-  spacing: {...handoffSpacing},
+  spacing: {...spacing},
   radius: {sm: 10, md: 14, lg: 16, xl: 20, pill: 999},
   shadow: {
     soft: {
@@ -95,6 +86,37 @@ export const coreTheme: AppTheme = {
         text: '#0058be',
         border: '#c2c6d6',
         height: 48,
+        radius: 16,
+      },
+      'primary-accent': {
+        background: '#2170e4',
+        text: '#ffffff',
+        height: 52,
+        radius: 16,
+      },
+      'secondary-coral': {
+        background: '#10b981',
+        text: '#063d2c',
+        height: 52,
+        radius: 16,
+      },
+      outline: {
+        background: 'transparent',
+        text: '#0058be',
+        border: '#0058be',
+        height: 52,
+        radius: 16,
+      },
+      ghost: {
+        background: '#f0f3ff',
+        text: '#0058be',
+        height: 52,
+        radius: 16,
+      },
+      deep: {
+        background: '#0058be',
+        text: '#ffffff',
+        height: 52,
         radius: 16,
       },
     },

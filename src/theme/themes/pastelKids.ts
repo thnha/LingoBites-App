@@ -1,15 +1,5 @@
-import {fontSize, gutter, typographyPresets} from '../tokens';
+import {fontSize, gutter, spacing, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
-
-const handoffSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
-  xxxl: 48,
-};
 
 export const pastelKidsTheme: AppTheme = {
   id: 'pastel-kids',
@@ -60,7 +50,7 @@ export const pastelKidsTheme: AppTheme = {
     presets: {...typographyPresets},
   },
   gutter,
-  spacing: {...handoffSpacing},
+  spacing: {...spacing},
   radius: {sm: 8, md: 18, lg: 24, xl: 32, pill: 999},
   shadow: {
     soft: {
@@ -115,6 +105,20 @@ export const pastelKidsTheme: AppTheme = {
   },
   components: {
     button: {
+      primary: {
+        background: '#2dd4bf',
+        text: '#00574d',
+        height: 52,
+        radius: 999,
+        shadow: 'buttonPrimary',
+      },
+      secondary: {
+        background: 'transparent',
+        text: '#006b5f',
+        border: '#9aacab',
+        height: 48,
+        radius: 999,
+      },
       'primary-accent': {
         background: '#2dd4bf',
         text: '#00574d',

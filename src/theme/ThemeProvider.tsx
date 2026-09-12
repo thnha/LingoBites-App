@@ -5,6 +5,7 @@ import {
   SYSTEM_THEME_ID,
   defaultThemeId,
   isThemePreference,
+  productionThemeOptions,
   themeReleaseFlag,
   themes,
   type ThemePreference,
@@ -28,9 +29,11 @@ export function AppThemeProvider({children}: Props) {
         return true;
       }
       if (!__DEV__) {
-        // Production builds offer only Sáng/Tối — experimental themes
-        // (pastel-kids, core, neo, comic, cartoon) are dev-only.
-        if (id !== 'default' && id !== 'dark') {
+        // Production builds offer exactly the picker options —
+        // experimental themes (pastel-kids, core, neo, comic, cartoon)
+        // are dev-only. productionThemeOptions is the single source of
+        // truth so the gate cannot drift from the picker (SETE-280).
+        if (!productionThemeOptions.includes(id)) {
           return false;
         }
       }

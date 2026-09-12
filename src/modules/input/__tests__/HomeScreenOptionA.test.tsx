@@ -64,28 +64,28 @@ describe('HomeScreen learning-only layout (SETE-250 Option B)', () => {
       tree.root.findAll(node => node.props.testID === 'home-continue-section')
         .length,
     ).toBe(0);
-    // The old full-screen empty card is gone; practice + lessons sections
-    // decide their own state and stay visible.
+    // The old full-screen empty card is gone; the explore grid and the
+    // rail decide their own state and stay visible.
     expect(
       tree.root.findAll(node => node.props.testID === 'home-empty-section')
         .length,
     ).toBe(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-today-section')
+      tree.root.findAll(node => node.props.testID === 'home-explore-section')
         .length,
     ).toBeGreaterThan(0);
     expect(
       tree.root.findAll(node => node.props.testID === 'home-lessons-section')
         .length,
     ).toBeGreaterThan(0);
-    // Bare variant: a single create CTA, no rows leading anywhere empty,
+    // Bare variant: a single create CTA (home-starter-first), no pick CTA,
     // and no second create CTA at the bottom of the page.
     expect(
       tree.root.findAll(node => node.props.testID === 'home-starter-pick')
         .length,
     ).toBe(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
+      tree.root.findAll(node => node.props.testID === 'home-starter-create')
         .length,
     ).toBe(0);
     expect(
@@ -110,7 +110,7 @@ describe('HomeScreen learning-only layout (SETE-250 Option B)', () => {
     }
   });
 
-  it('shows starter + today + lessons once a personal lesson exists', async () => {
+  it('shows starter hero + explore grid + rail once a personal lesson exists', async () => {
     const lesson = saveLesson({
       confirmedText: validFullOutput.original_text,
       sourceType: 'paste_text',
@@ -118,8 +118,8 @@ describe('HomeScreen learning-only layout (SETE-250 Option B)', () => {
     });
     if (!lesson.ok) throw new Error('Could not seed lesson');
     const tree = await renderHome();
-    // Starter shows create + relearn rows; the pick row stays hidden while
-    // the packaged library is empty.
+    // Single hero CTA: create (the packaged library is empty, so no pick);
+    // the past lesson stays reachable through the rail.
     expect(
       tree.root.findAll(node => node.props.testID === 'home-starter-section')
         .length,
@@ -129,15 +129,11 @@ describe('HomeScreen learning-only layout (SETE-250 Option B)', () => {
         .length,
     ).toBeGreaterThan(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-starter-relearn')
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
       tree.root.findAll(node => node.props.testID === 'home-starter-pick')
         .length,
     ).toBe(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'home-today-section')
+      tree.root.findAll(node => node.props.testID === 'home-explore-section')
         .length,
     ).toBeGreaterThan(0);
     expect(
@@ -151,17 +147,17 @@ describe('HomeScreen learning-only layout (SETE-250 Option B)', () => {
     ).toBe(0);
   });
 
-  it('opens the Today screen from the plan entry point', async () => {
+  it('opens Lessons from the rail view-all entry point', async () => {
     const lesson = saveLesson({
       confirmedText: validFullOutput.original_text,
       sourceType: 'paste_text',
       lesson: validFullOutput,
     });
     if (!lesson.ok) throw new Error('Could not seed lesson');
-    const nav = navigation();
-    const tree = await renderHome(nav);
-    await act(async () => pressByTestID(tree, 'home-today-swap'));
-    expect(nav.navigate).toHaveBeenCalledWith('Today');
+    const tabNavigate = jest.fn();
+    const tree = await renderHome(navigation(tabNavigate));
+    await act(async () => pressByTestID(tree, 'home-recent-view-all'));
+    expect(tabNavigate).toHaveBeenCalledWith('Lessons');
   });
 
   it('shows saved lessons in the lessons section and routes taps', async () => {

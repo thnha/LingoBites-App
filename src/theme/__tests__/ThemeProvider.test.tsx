@@ -168,6 +168,20 @@ describe('AppThemeProvider', () => {
     }
   });
 
+  it('restores a persisted sticker-soft theme on production (it is a production option)', async () => {
+    const originalDev = (globalThis as {__DEV__?: boolean}).__DEV__;
+    (globalThis as {__DEV__?: boolean}).__DEV__ = false;
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, 'sticker-soft');
+      const tree = await renderWithProviders();
+      expect(tree.root.findByProps({testID: 'probe'}).props.children).toBe(
+        'sticker-soft',
+      );
+    } finally {
+      (globalThis as {__DEV__?: boolean}).__DEV__ = originalDev;
+    }
+  });
+
   it('falls back to the light theme for a persisted experimental theme on production', async () => {
     const originalDev = (globalThis as {__DEV__?: boolean}).__DEV__;
     (globalThis as {__DEV__?: boolean}).__DEV__ = false;

@@ -1,17 +1,8 @@
-import {fontSize, gutter, typographyPresets} from '../tokens';
+import {fontSize, gutter, spacing, typographyPresets} from '../tokens';
 import type {AppTheme} from '../types';
 
 // LingoScan design handoff is the brand default — palette/tokens ported from
 // design_handoff_lingoscan/app.css (:root).
-const handoffSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
-  xxxl: 48,
-};
 
 export const defaultTheme: AppTheme = {
   id: 'default',
@@ -62,7 +53,7 @@ export const defaultTheme: AppTheme = {
     presets: {...typographyPresets},
   },
   gutter,
-  spacing: {...handoffSpacing},
+  spacing: {...spacing},
   radius: {sm: 8, md: 18, lg: 24, xl: 32, pill: 999},
   shadow: {
     soft: {
@@ -95,6 +86,37 @@ export const defaultTheme: AppTheme = {
         text: '#006b5f',
         border: '#bacac5',
         height: 48,
+        radius: 24,
+      },
+      'primary-accent': {
+        background: '#2dd4bf',
+        text: '#00574d',
+        height: 52,
+        radius: 24,
+      },
+      'secondary-coral': {
+        background: '#fe7488',
+        text: '#730425',
+        height: 52,
+        radius: 24,
+      },
+      outline: {
+        background: '#ffffff',
+        text: '#006b5f',
+        border: '#006b5f',
+        height: 52,
+        radius: 24,
+      },
+      ghost: {
+        background: '#ebe9d5',
+        text: '#006b5f',
+        height: 52,
+        radius: 24,
+      },
+      deep: {
+        background: '#006b5f',
+        text: '#ffffff',
+        height: 52,
         radius: 24,
       },
     },
