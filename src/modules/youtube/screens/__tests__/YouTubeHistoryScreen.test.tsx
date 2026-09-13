@@ -233,6 +233,7 @@ describe('YouTubeHistoryScreen', () => {
       navigate: mockNavigate,
       goBack: mockGoBack,
       popToTop,
+      canGoBack: () => true,
       getParent: () => ({navigate: tabNavigate}),
     } as unknown as React.ComponentProps<
       typeof YouTubeHistoryScreen
@@ -249,6 +250,37 @@ describe('YouTubeHistoryScreen', () => {
     pressHeaderBack(tree);
 
     expect(popToTop).toHaveBeenCalledTimes(1);
+    expect(tabNavigate).toHaveBeenCalledWith('Home');
+    expect(mockGoBack).not.toHaveBeenCalled();
+  });
+
+  it('skips popToTop when opened from Home as the only stack entry (DEFECT-SETE-286-01)', () => {
+    mockListYouTubeLessons.mockReturnValue([
+      makeLesson('dQw4w9WgXcQ', 'First video'),
+    ]);
+    const tabNavigate = jest.fn();
+    const popToTop = jest.fn();
+    const singleEntryNav = {
+      navigate: mockNavigate,
+      goBack: mockGoBack,
+      popToTop,
+      canGoBack: () => false,
+      getParent: () => ({navigate: tabNavigate}),
+    } as unknown as React.ComponentProps<
+      typeof YouTubeHistoryScreen
+    >['navigation'];
+    const fromHomeRoute = {
+      key: 'YouTubeHistory',
+      name: 'YouTubeHistory',
+      params: {fromHome: true},
+    } as unknown as React.ComponentProps<
+      typeof YouTubeHistoryScreen
+    >['route'];
+
+    const tree = renderScreen(singleEntryNav, fromHomeRoute);
+    pressHeaderBack(tree);
+
+    expect(popToTop).not.toHaveBeenCalled();
     expect(tabNavigate).toHaveBeenCalledWith('Home');
     expect(mockGoBack).not.toHaveBeenCalled();
   });

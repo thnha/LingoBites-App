@@ -9,14 +9,14 @@
 
 ## 1. Tóm tắt kết quả kiểm thử (Executive Summary)
 
-- **Kết luận:** **PASS (ĐẠT TOÀN DIỆN)** — Sẵn sàng phát hành (Confidence to ship).
+- **Kết luận:** **PASS WITH DEFECT (ĐẠT CHỨC NĂNG - PHÁT HIỆN 1 DEFECT ĐIỀU HƯỚNG)**
 - **Môi trường thử nghiệm:**
   - Thiết bị giả lập: **iPhone 17 Pro** (`E8253964-95DD-483A-8C54-A5234D23537C`), iOS 26.5.
   - Công cụ điều khiển: **Orca CLI** (`orca emulator attach`, `tap`, `ax`, `kill`).
   - Bundle: `com.lingobites.dev` (LingoBites Dev).
   - Cơ sở dữ liệu: SQLite (`lingobites.db` trong app container).
 - **Tổng số test cases:** 10 kịch bản kiểm thử chức năng & điều hướng, 106 automated unit/component tests.
-- **Tỷ lệ đạt:** 100% (10/10 manual/sim scenarios pass, 106/106 automated tests pass, 0 typecheck errors).
+- **Defect phát hiện:** 1 Defect (Medium Severity): `DEFECT-SETE-286-01` — Lỗi Console Error / LogBox `The action 'POP_TO_TOP' was not handled by any navigator` khi bấm Quay lại từ màn hình mở trực tiếp từ Home.
 
 ---
 
@@ -26,8 +26,8 @@
 |---|---|---|---|---|---|---|---|---|
 | **TC-HVB-01** | Điều hướng khi có bài học đã lưu (HVB-01) | App đang ở màn Home; DB có ít nhất 1 bài YouTube (`youtube_lessons` count > 0) | Video `Mz-Hne9h_aE` ("The Little Bear...") | 1. Nhấn nút "Học qua video" (`home-explore-video`). | Điều hướng thẳng vào `YouTubeHistoryScreen` (`Create` tab, `fromHome: true`). Hiển thị danh sách bài đã lưu và nút CTA "Tạo bài học từ video YouTube mới". | Đúng kỳ vọng. Màn hình "Bài YouTube đã lưu" hiển thị với ID `youtube-history-item-Mz-Hne9h_aE`. | P0 (Critical) | **PASS** |
 | **TC-HVB-02** | Điều hướng khi chưa có bài học nào (HVB-01) | App đang ở màn Home; DB không có bài YouTube nào (`youtube_lessons` count = 0) | Bảng `youtube_lessons` rỗng | 1. Nhấn nút "Học qua video" (`home-explore-video`). | Điều hướng thẳng vào `YouTubeInputScreen` (`Create` tab, `fromHome: true`). Hiển thị trường nhập link YouTube và các nút hành động. | Đúng kỳ vọng. Màn hình "Học từ YouTube" hiển thị trường nhập `youtube-url-input`. | P0 (Critical) | **PASS** |
-| **TC-HVB-03** | Quay lại từ History về Home (HVB-04) | Đang ở màn `YouTubeHistoryScreen` được mở từ Home (`fromHome: true`) | Không có | 1. Nhấn nút "Quay lại" ở góc trên bên trái header. | App gọi `navigation.popToTop()` và chuyển thẳng về tab `Home`, không dừng ở màn hình `CreateMain`. | Đúng kỳ vọng. Quay về màn hình Trang chủ (`HomeScreen`). | P0 (Critical) | **PASS** |
-| **TC-HVB-04** | Quay lại từ Input về Home (HVB-04) | Đang ở màn `YouTubeInputScreen` được mở từ Home (khi rỗng bài) (`fromHome: true`) | Không có | 1. Nhấn nút "Quay lại" ở góc trên bên trái header. | App gọi `navigation.popToTop()` và chuyển thẳng về tab `Home`, không dừng ở màn hình `CreateMain`. | Đúng kỳ vọng. Quay về màn hình Trang chủ (`HomeScreen`). | P0 (Critical) | **PASS** |
+| **TC-HVB-03** | Quay lại từ History về Home (HVB-04) | Đang ở màn `YouTubeHistoryScreen` được mở từ Home (`fromHome: true`) | Không có | 1. Nhấn nút "Quay lại" ở góc trên bên trái header. | App gọi `navigation.popToTop()` và chuyển thẳng về tab `Home`, không dừng ở màn hình `CreateMain`. Không phát sinh Console Error / LogBox. | Chuyển về Home thành công, nhưng kích hoạt RedBox / Console Error do `popToTop()` trên stack depth = 1 (Xem `DEFECT-SETE-286-01`). | P0 (Critical) | **PASS W/ DEFECT** |
+| **TC-HVB-04** | Quay lại từ Input về Home (HVB-04) | Đang ở màn `YouTubeInputScreen` được mở từ Home (khi rỗng bài) (`fromHome: true`) | Không có | 1. Nhấn nút "Quay lại" ở góc trên bên trái header. | App gọi `navigation.popToTop()` và chuyển thẳng về tab `Home`, không dừng ở màn hình `CreateMain`. Không phát sinh Console Error / LogBox. | Chuyển về Home thành công, nhưng kích hoạt RedBox / Console Error do `popToTop()` trên stack depth = 1 (Xem `DEFECT-SETE-286-01`). | P0 (Critical) | **PASS W/ DEFECT** |
 | **TC-HVB-05** | Mở bài học đã lưu từ History | Đang ở màn `YouTubeHistoryScreen` có bài học đã lưu | Card bài học `youtube-history-item-Mz-Hne9h_aE` | 1. Nhấn vào card bài học đã lưu. | Điều hướng vào `YouTubeLessonScreen`. Khởi tạo player video YouTube, các nút điều khiển (tốc độ, lặp câu, bật/tắt dịch, IPA) và danh sách transcript đồng bộ. | Đúng kỳ vọng. Player hiển thị video, danh sách câu thoại với nút lưu từ vựng/câu. | P0 (Critical) | **PASS** |
 | **TC-HVB-06** | Quay lại từ Lesson về History | Đang ở màn `YouTubeLessonScreen` | Không có | 1. Nhấn nút "Quay lại" trên header. | Quay lại màn `YouTubeHistoryScreen`. Danh sách bài học vẫn đầy đủ. | Đúng kỳ vọng. Quay về màn "Bài YouTube đã lưu". | P1 (High) | **PASS** |
 | **TC-HVB-07** | Tạo bài mới từ History (HVB-11) | Đang ở màn `YouTubeHistoryScreen` | Nút CTA `youtube-history-create-new` | 1. Nhấn nút "Tạo bài học từ video YouTube mới". | Điều hướng vào `YouTubeInputScreen` với input rỗng (không có flag `fromHome`). | Đúng kỳ vọng. Màn hình "Học từ YouTube" mở ra, ô link rỗng. | P1 (High) | **PASS** |
@@ -144,11 +144,70 @@
 
 ---
 
-## 5. Rủi ro còn lại & Đánh giá (Residual Risk & Recommendations)
+## 5. Báo cáo Lỗi Chi tiết (Defect Report)
 
-1. **Cảnh báo dev-only `POP_TO_TOP`:**
-   - Trong môi trường phát triển (Dev build), khi màn hình đầu tiên trong Stack gọi `navigation.popToTop()` trước khi gọi `navigate('Home')`, React Navigation có log warning: `"The action 'POP_TO_TOP' was not handled by any navigator"`.
-   - *Đánh giá rủi ro:* Rủi ro thấp (Low risk). Đây là warning chỉ xuất hiện trong React Native dev mode; trong bản Production build warning này bị strip hoàn toàn và hành vi quay về Home hoàn toàn mượt mà, đúng chuẩn kiến trúc.
-2. **Khuyến nghị tiếp theo:**
-   - Duy trì test suite `HomeScreenMvp.test.tsx` trong CI để chặn hồi quy (regression gate) cho bất kỳ thay đổi nào tại grid khám phá Home.
-   - Sẵn sàng chuyển giao tính năng cho người dùng và Product team nghiệm thu UAT.
+### **DEFECT-SETE-286-01: Console Error / RedBox modal `The action 'POP_TO_TOP' was not handled by any navigator` khi bấm Quay lại từ màn hình mở từ Home**
+
+- **Tiêu đề:** RedBox LogBox Console Error khi nhấn nút "Quay lại" tại `YouTubeHistoryScreen` hoặc `YouTubeInputScreen` có tham số `fromHome: true`.
+- **Môi trường:** iOS Simulator (iPhone 17 Pro, iOS 26.5), React Native 0.85.3 (Debug / Dev build).
+- **Mức độ nghiêm trọng (Severity):** Medium (Chặn trải nghiệm nhà phát triển / QA với pop-up RedBox LogBox toàn màn hình; trong production build warning bị strip nhưng bản chất code đang dispatch một action không hợp lệ vào navigator).
+- **Mức độ ưu tiên (Priority):** P2.
+- **Tần suất xuất hiện (Frequency):** 100% (Mỗi lần nhấn nút "Quay lại" khi màn hình được mở lần đầu từ Home).
+- **Bằng chứng:** Ảnh chụp màn hình LogBox đính kèm từ người dùng: `simulator_screenshot_D27A0938-B164-485A-A7D4-57FC0065F7E6.png`.
+- **Các bước tái hiện (Steps to Reproduce):**
+  1. Khởi động app LingoBites ở môi trường Dev trên Simulator.
+  2. Tại màn hình Trang chủ (`HomeScreen`), nhấn nút "Học qua video" (`home-explore-video`).
+  3. Ứng dụng điều hướng vào `YouTubeHistoryScreen` (hoặc `YouTubeInputScreen` nếu DB rỗng) với tham số `{fromHome: true}`.
+  4. Nhấn nút "Quay lại" (Header Back button).
+  5. **Kết quả thực tế (Actual Result):** Ứng dụng điều hướng về Home nhưng đồng thời hiển thị RedBox LogBox lỗi console:
+     ```
+     Console Error
+     The action 'POP_TO_TOP' was not handled by any navigator.
+     Is there any screen to go back to?
+     This is a development-only warning and won't be shown in production.
+     ```
+- **Phân tích nguyên nhân gốc rễ (Root Cause Analysis):**
+  - Tại `HomeScreen.tsx` (dòng 238-246):
+    ```ts
+    tabNavigation?.navigate('Create', {
+      screen: 'YouTubeHistory', // hoặc 'YouTubeInput'
+      params: {fromHome: true},
+    });
+    ```
+  - Khi điều hướng sang Tab `Create` với một sub-screen cụ thể, nếu `CreateStack` chưa từng được mount trước đó với `CreateMain`, thì `CreateStack` khởi tạo với route đầu tiên và duy nhất là `YouTubeHistory` (hoặc `YouTubeInput`), tức độ sâu stack (depth) = 1.
+  - Tại `YouTubeHistoryScreen.tsx` (dòng 89) và `YouTubeInputScreen.tsx` (dòng 35):
+    ```ts
+    const goBack = useCallback(() => {
+      if (route.params?.fromHome === true) {
+        navigation.popToTop(); // <--- GỌI VÔ ĐIỀU KIỆN KHI STACK CHỈ CÓ 1 SCREEN
+        navigation.getParent<NavigationProp<RootTabParamList>>()?.navigate('Home');
+        return;
+      }
+      navigation.goBack();
+    }, [navigation, route.params]);
+    ```
+  - Vì stack lúc này chỉ có 1 screen, không có bất kỳ màn hình nào phía trước để pop về, React Navigation v7 coi action `POP_TO_TOP` là unhandled và kích hoạt `console.error`.
+- **Lỗ hổng trong Automated Unit Test (Test Gap):**
+  - Trong `YouTubeHistoryScreen.test.tsx` (dòng 231) và `YouTubeInputScreen.test.tsx` (dòng 83), navigation object được mock thủ công với `popToTop = jest.fn()`, sau đó assert `expect(popToTop).toHaveBeenCalledTimes(1)`.
+  - Mock này không giả lập cơ chế kiểm tra `canGoBack()` thực tế của React Navigation, dẫn đến unit test pass 100% nhưng môi trường runtime thật ném lỗi unhandled action.
+- **Giải pháp khuyến nghị (Recommended Fix):**
+  - Kiểm tra `navigation.canGoBack()` trước khi gọi `popToTop()`:
+    ```ts
+    const goBack = useCallback(() => {
+      if (route.params?.fromHome === true) {
+        if (navigation.canGoBack()) {
+          navigation.popToTop();
+        }
+        navigation.getParent<NavigationProp<RootTabParamList>>()?.navigate('Home');
+        return;
+      }
+      navigation.goBack();
+    }, [navigation, route.params]);
+    ```
+
+---
+
+## 6. Rủi ro còn lại & Khuyến nghị (Residual Risk & Recommendations)
+
+1. **Khắc phục Defect DEFECT-SETE-286-01:** Áp dụng guard `if (navigation.canGoBack()) navigation.popToTop()` tại cả `YouTubeHistoryScreen.tsx` và `YouTubeInputScreen.tsx` để xóa bỏ hoàn toàn Console Error LogBox trong môi trường Dev, đồng thời cập nhật unit test để mô phỏng chính xác trường hợp stack depth = 1.
+2. **Khuyến nghị kiểm thử hồi quy:** Duy trì bộ test suite `HomeScreenMvp.test.tsx` và `youtube` trong CI pipeline.

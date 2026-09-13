@@ -32,7 +32,12 @@ export function YouTubeInputScreen({navigation, route}: Props) {
   // Back returns to Home, never to CreateMain.
   const goBack = useCallback(() => {
     if (route.params?.fromHome === true) {
-      navigation.popToTop();
+      // DEFECT-SETE-286-01: when opened directly from Home, this screen is
+      // the only entry in the Create stack, so an unconditional popToTop()
+      // dispatches an unhandled POP_TO_TOP action (RedBox in dev). Guard it.
+      if (navigation.canGoBack()) {
+        navigation.popToTop();
+      }
       navigation
         .getParent<NavigationProp<RootTabParamList>>()
         ?.navigate('Home');

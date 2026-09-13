@@ -86,6 +86,7 @@ describe('YouTubeInputScreen', () => {
       goBack,
       navigate: mockNavigate,
       popToTop,
+      canGoBack: () => true,
       getParent: () => ({navigate: tabNavigate}),
     } as unknown as React.ComponentProps<
       typeof YouTubeInputScreen
@@ -115,6 +116,48 @@ describe('YouTubeInputScreen', () => {
     });
 
     expect(popToTop).toHaveBeenCalledTimes(1);
+    expect(tabNavigate).toHaveBeenCalledWith('Home');
+    expect(goBack).not.toHaveBeenCalled();
+  });
+
+  it('skips popToTop when opened from Home as the only stack entry (DEFECT-SETE-286-01)', () => {
+    const tabNavigate = jest.fn();
+    const popToTop = jest.fn();
+    const goBack = jest.fn();
+    const singleEntryNav = {
+      goBack,
+      navigate: mockNavigate,
+      popToTop,
+      canGoBack: () => false,
+      getParent: () => ({navigate: tabNavigate}),
+    } as unknown as React.ComponentProps<
+      typeof YouTubeInputScreen
+    >['navigation'];
+    const fromHomeRoute = {
+      key: 'YouTubeInput',
+      name: 'YouTubeInput',
+      params: {fromHome: true},
+    } as unknown as React.ComponentProps<typeof YouTubeInputScreen>['route'];
+
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <YouTubeInputScreen
+              navigation={singleEntryNav}
+              route={fromHomeRoute}
+            />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    act(() => {
+      tree.root.findByType(ScreenHeader).props.onBack();
+    });
+
+    expect(popToTop).not.toHaveBeenCalled();
     expect(tabNavigate).toHaveBeenCalledWith('Home');
     expect(goBack).not.toHaveBeenCalled();
   });
