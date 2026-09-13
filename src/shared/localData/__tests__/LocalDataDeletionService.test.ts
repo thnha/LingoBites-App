@@ -180,4 +180,22 @@ describe('LocalDataDeletionService', () => {
     expect(result.failedFilePaths).toEqual(['/tmp/chapter-audio.mp3']);
     expect(listReadyAudioAssets()).toHaveLength(0);
   });
+
+  it('returns dbCleared: false if database clearing throws', async () => {
+    const clearDbSpy = jest
+      .spyOn(LessonRepository, 'clearAllLocalData')
+      .mockImplementation(async () => {
+        throw new Error('DB error');
+      });
+
+    const result = await clearAllLocalDataWithFiles();
+
+    expect(result).toEqual({
+      ok: false,
+      dbCleared: false,
+      failedFilePaths: [],
+    });
+
+    clearDbSpy.mockRestore();
+  });
 });

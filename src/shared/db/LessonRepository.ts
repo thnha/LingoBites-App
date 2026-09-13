@@ -251,5 +251,7 @@ export function clearAllLocalData(): Promise<void> {
   db.execute('DELETE FROM grammar_bookmarks;');
   db.execute('DELETE FROM content_lesson_state;');
   db.execute('DELETE FROM lesson_v2;');
+  db.execute('DELETE FROM youtube_sentences;');
+  db.execute('DELETE FROM youtube_lessons;');
   return tokenCleanup;
 }
