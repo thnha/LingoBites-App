@@ -13,6 +13,7 @@ import {MaterialIcon} from '@components/MaterialIcon';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {useTranslation} from 'react-i18next';
+import {useYouTubeServerEnabled} from '@shared/api/youtubeCapabilities';
 import {useFeatureFlags} from '@/release';
 
 type Props = NativeStackScreenProps<CreateStackParamList, 'CreateMain'>;
@@ -40,7 +41,13 @@ export function CreateScreen({navigation}: Props) {
     config.features.imageInput &&
     config.features.ocrScanner &&
     config.features.ocrReviewEdit;
-  const youtubeEnabled = config.features.youtubeLearning;
+  // SETE-290 (DEV-1): the creation tile needs the server capability too —
+  // without it the tile is hidden so no transcript request can start here.
+  // The history link stays flag-gated: saved lessons are local data.
+  const youtubeServerEnabled = useYouTubeServerEnabled();
+  const youtubeEnabled =
+    config.features.youtubeLearning && youtubeServerEnabled;
+  const youtubeHistoryEnabled = config.features.youtubeLearning;
   const pasteEnabled = config.features.pasteTextInput;
 
   const openCamera = useCallback(
@@ -169,7 +176,7 @@ export function CreateScreen({navigation}: Props) {
                 ))}
               </View>
             ) : null}
-            {youtubeEnabled ? (
+            {youtubeHistoryEnabled ? (
               <Pressable
                 accessibilityLabel={t('home.youtube_history_a11y')}
                 accessibilityRole="button"

@@ -182,6 +182,7 @@
     "transcript_source_blocked": "YouTube blocked caption access. Please add the transcript manually.",
     "transcript_unparsable": "We couldn't read that transcript. Try this format:\n0:00 Hello there\n0:04 How are you?",
     "transcript_too_large": "That transcript is too large. Please shorten it and try again.",
+    "enrichment_failed": "The translation service couldn't finish this video. Please try again.",
     "rate_limit_exceeded": "Too many requests. Please try again shortly.",
     "youtube_failed": "We couldn't create a YouTube lesson. Please try again.",
     "youtube_timeout": "The YouTube lesson took too long. Please try again."
@@ -244,6 +245,7 @@
     "history_retry": "Try again",
     "lesson_not_found_title": "Lesson not found",
     "lesson_not_found_body": "This saved lesson is no longer on this device.",
+    "lesson_warnings_title": "About this lesson",
     "processing_title": "Creating lesson",
     "processing": "Preparing your lesson…",
     "processing_wait": "Waiting for the server…",

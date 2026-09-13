@@ -53,11 +53,12 @@ export interface YouTubePlayerProps {
   playbackRate?: number;
   onReady?: () => void;
   onTimeUpdate?: (time: number) => void;
+  onEnded?: () => void;
   onError?: (error: YouTubePlayerErrorCode) => void;
 }
 
 export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
-  ({videoId, playbackRate = 1, onReady, onTimeUpdate, onError}, ref) => {
+  ({videoId, playbackRate = 1, onReady, onTimeUpdate, onEnded, onError}, ref) => {
     const playerRef = useRef<YoutubeIframeRef>(null);
     const [playing, setPlaying] = useState(false);
     const [ready, setReady] = useState(false);
@@ -79,16 +80,24 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
       onReady?.();
     }, [onReady]);
 
-    const handleChangeState = useCallback((state: string) => {
-      if (state === 'playing') {
-        setPlaying(true);
-        return;
-      }
+    // SETE-290 (DEV-3): 'ended' marks the lesson completed so the next
+    // open starts from the beginning instead of resuming the tail.
+    const handleChangeState = useCallback(
+      (state: string) => {
+        if (state === 'playing') {
+          setPlaying(true);
+          return;
+        }
 
-      if (state === 'paused' || state === 'ended') {
-        setPlaying(false);
-      }
-    }, []);
+        if (state === 'paused' || state === 'ended') {
+          setPlaying(false);
+        }
+        if (state === 'ended') {
+          onEnded?.();
+        }
+      },
+      [onEnded],
+    );
 
     const handleError = useCallback(
       (error: string) => {

@@ -182,6 +182,7 @@
     "transcript_source_blocked": "YouTube đã chặn việc lấy phụ đề. Vui lòng nạp transcript thủ công.",
     "transcript_unparsable": "Không đọc được transcript này. Hãy thử định dạng:\n0:00 Hello there\n0:04 How are you?",
     "transcript_too_large": "Transcript quá lớn. Vui lòng rút ngắn rồi thử lại.",
+    "enrichment_failed": "Dịch thuật chưa hoàn tất cho video này. Vui lòng thử lại.",
     "rate_limit_exceeded": "Bạn gửi quá nhiều yêu cầu. Vui lòng thử lại sau ít phút.",
     "youtube_failed": "Chưa thể tạo bài học YouTube. Vui lòng thử lại.",
     "youtube_timeout": "Tạo bài học YouTube mất quá nhiều thời gian. Vui lòng thử lại."
@@ -244,6 +245,7 @@
     "history_retry": "Thử lại",
     "lesson_not_found_title": "Không tìm thấy bài học",
     "lesson_not_found_body": "Bài đã lưu này không còn trên thiết bị.",
+    "lesson_warnings_title": "Về bài học này",
     "processing_title": "Đang tạo bài học",
     "processing": "Đang chuẩn bị bài học…",
     "processing_wait": "Đang chờ máy chủ…",

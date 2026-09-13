@@ -174,6 +174,8 @@ export function YouTubeHistoryScreen({navigation}: Props) {
     );
   }
 
+  // SETE-290: the empty state keeps a creation CTA so deleting the last
+  // lesson never strands the user without a way forward.
   if (lessons.length === 0) {
     return (
       <AppScreen>
@@ -186,6 +188,15 @@ export function YouTubeHistoryScreen({navigation}: Props) {
           <AppText color="secondary">
             {t('youtube.history_empty_body')}
           </AppText>
+          <AppButton
+            accessibilityLabel={t('youtube.history_create_new_a11y')}
+            accessibilityHint={t('youtube.history_create_new_hint')}
+            iconLeft="play_circle"
+            onPress={createNew}
+            testID="youtube-history-empty-create-new"
+            title={t('youtube.history_create_new')}
+            variant="secondary"
+          />
         </View>
       </AppScreen>
     );

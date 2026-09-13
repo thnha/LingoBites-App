@@ -19,6 +19,7 @@ import {
   listStartedLessons,
 } from '@shared/db/ContentLessonStateRepository';
 import {listYouTubeLessons} from '@shared/db/YoutubeLessonRepository';
+import {useYouTubeServerEnabled} from '@shared/api/youtubeCapabilities';
 import {useFeatureFlags} from '@/release';
 import {useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '@theme';
@@ -222,7 +223,12 @@ export function HomeScreen({navigation}: Props) {
   // SETE-279: temporary destinations. The three non-video cells still land
   // on the Lessons tab until their real routes are mapped.
   const goLessonsTab = () => tabNavigation?.navigate('Lessons');
-  const youtubeEnabled = config.features.youtubeLearning;
+  // SETE-290 (DEV-1): the video entry is enabled only when both the app
+  // flag and the server capability agree. While the probe is in flight or
+  // fails, the cell stays disabled and no transcript request is sent.
+  const youtubeServerEnabled = useYouTubeServerEnabled();
+  const youtubeEnabled =
+    config.features.youtubeLearning && youtubeServerEnabled;
 
   // SETE-283 (HVB-01, HVB-01E, HVB-02): the video cell has a real,
   // data-driven destination. Saved lessons → History, empty store → Input,

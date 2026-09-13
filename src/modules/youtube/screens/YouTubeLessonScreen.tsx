@@ -17,15 +17,22 @@ import type {
 } from '@shared/schemas/youtube-transcript-v1';
 import {getYouTubeLesson} from '@shared/db/YoutubeLessonRepository';
 import {
+  clearYouTubeProgress,
+  getYouTubeProgress,
+  saveYouTubeProgress,
+} from '@shared/db/YouTubeProgressRepository';
+import {
   YouTubePlayer,
   type YouTubePlayerErrorCode,
   type YouTubePlayerRef,
 } from '../components/YouTubePlayer';
 import {TranscriptLine} from '../components/TranscriptLine';
 import {useTranscriptSync, TRANSCRIPT_SYNC_POLL_INTERVAL_MS} from '../sync/useTranscriptSync';
+import type {NavigationProp} from '@react-navigation/native';
 import type {
   CreateStackParamList,
   RootStackParamList,
+  RootTabParamList,
 } from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -136,6 +143,14 @@ export function YouTubeLessonScreen({
   // readable while every playback-dependent control is disabled.
   const isOfflineReading = playerError != null;
 
+  // SETE-290 (DEV-2/DEV-4): a toggle must never present itself as on while
+  // its content is empty — partial enrichment is a failed job upstream, but
+  // the UI still fails closed for any lesson that carries empty fields.
+  const hasVietnamese = lesson.segments.some(segment => segment.vi !== '');
+  const hasIpa = lesson.segments.some(segment => segment.ipa !== '');
+  const showVietnameseEffective = showVietnamese && hasVietnamese;
+  const showIpaEffective = showIpa && hasIpa;
+
   const {vocabularySaveState, onVocabularySave, onVocabularyUnsave} =
     useBookmarkOptimistic(lesson.video.id);
   const {listFlashcards} = useFlashcardLibrary();
@@ -158,6 +173,53 @@ export function YouTubeLessonScreen({
     const seconds = await playerRef.current?.getCurrentTime();
     return (seconds ?? 0) * 1000;
   }, []);
+
+  // SETE-290 (DEV-3): resume progress — timestamp + active sentence, saved
+  // per video and surviving app restarts. Reopening seeks to the saved
+  // position but stays paused; the user presses Play to continue. Unsaved
+  // lessons (saveWarning) never persist progress.
+  const progressEnabled = !saveWarning;
+  const [resume] = useState(() =>
+    progressEnabled ? getYouTubeProgress(lesson.video.id) : null,
+  );
+  const progressRef = useRef({
+    positionMs: resume?.positionMs ?? 0,
+    segmentIndex: resume?.segmentIndex ?? 0,
+  });
+
+  const persistProgress = useCallback(() => {
+    if (!progressEnabled) {
+      return;
+    }
+    const {positionMs, segmentIndex} = progressRef.current;
+    // Never create a row for a lesson that was opened but never played.
+    if (
+      positionMs <= 0 &&
+      segmentIndex <= 0 &&
+      getYouTubeProgress(lesson.video.id) == null
+    ) {
+      return;
+    }
+    saveYouTubeProgress({
+      lessonId: lesson.video.id,
+      positionMs,
+      segmentIndex,
+    });
+  }, [lesson.video.id, progressEnabled]);
+
+  const handlePlayerReady = useCallback(() => {
+    if (resume && resume.positionMs > 0) {
+      playerRef.current?.seekTo(resume.positionMs / 1000);
+    }
+  }, [resume]);
+
+  const handlePlayerEnded = useCallback(() => {
+    // Completed: the next open starts from 0:00, first sentence, paused.
+    progressRef.current = {positionMs: 0, segmentIndex: 0};
+    if (progressEnabled) {
+      clearYouTubeProgress(lesson.video.id);
+    }
+  }, [lesson.video.id, progressEnabled]);
 
   const {activeIndex, seekToIndex} = useTranscriptSync({
     segments: lesson.segments,
@@ -227,6 +289,26 @@ export function YouTubeLessonScreen({
       }
     };
   }, []);
+
+  // Persist progress as the active sentence advances, and flush the latest
+  // known position on unmount (exit mid-video).
+  useEffect(() => {
+    if (!progressEnabled || activeIndex < 0) {
+      return;
+    }
+    progressRef.current.segmentIndex = activeIndex;
+    void (async () => {
+      const timeMs = await getCurrentTimeMs();
+      progressRef.current.positionMs = Math.max(0, Math.floor(timeMs));
+      persistProgress();
+    })();
+  }, [activeIndex, getCurrentTimeMs, persistProgress, progressEnabled]);
+
+  useEffect(() => {
+    return () => {
+      persistProgress();
+    };
+  }, [persistProgress]);
 
   useEffect(() => {
     if (autoScrollPaused || activeIndex < 0) {
@@ -359,8 +441,8 @@ export function YouTubeLessonScreen({
         isActive={item.index === activeIndex}
         onPress={handleLinePress}
         segment={item}
-        showIpa={showIpa}
-        showVietnamese={showVietnamese}
+        showIpa={showIpaEffective}
+        showVietnamese={showVietnameseEffective}
         isSaved={vocabularySaveState.getIsSaved(
           item.id,
           savedVocabularyIds.has(item.id),
@@ -373,8 +455,8 @@ export function YouTubeLessonScreen({
       activeIndex,
       handleLinePress,
       isOfflineReading,
-      showIpa,
-      showVietnamese,
+      showIpaEffective,
+      showVietnameseEffective,
       vocabularySaveState,
       savedVocabularyIds,
       handleToggleSave,
@@ -386,24 +468,28 @@ export function YouTubeLessonScreen({
       <IconButton
         accessibilityHint={t('youtube.display_vietnamese_hint')}
         accessibilityLabel={
-          showVietnamese
+          showVietnameseEffective
             ? t('youtube.translation_hide_a11y')
             : t('youtube.translation_show_a11y')
         }
+        disabled={!hasVietnamese}
         icon="translate"
         onPress={toggleVietnamese}
         testID="youtube-toggle-vietnamese"
-        tone={showVietnamese ? 'accent' : 'surface'}
+        tone={showVietnameseEffective ? 'accent' : 'surface'}
       />
       <IconButton
         accessibilityHint={t('youtube.display_ipa_hint')}
         accessibilityLabel={
-          showIpa ? t('youtube.ipa_hide_a11y') : t('youtube.ipa_show_a11y')
+          showIpaEffective
+            ? t('youtube.ipa_hide_a11y')
+            : t('youtube.ipa_show_a11y')
         }
+        disabled={!hasIpa}
         icon="subtitles"
         onPress={toggleIpa}
         testID="youtube-toggle-ipa"
-        tone={showIpa ? 'accent' : 'surface'}
+        tone={showIpaEffective ? 'accent' : 'surface'}
       />
       <IconButton
         accessibilityHint={t('youtube.playback_rate_hint')}
@@ -498,9 +584,23 @@ export function YouTubeLessonScreen({
           <AppText color="secondary">{t('youtube.save_failed_body')}</AppText>
         </View>
       ) : null}
+      {!saveWarning && lesson.warnings.length > 0 ? (
+        <View style={styles.saveWarningBanner} testID="youtube-lesson-warnings">
+          <AppText variant="label">
+            {t('youtube.lesson_warnings_title')}
+          </AppText>
+          {lesson.warnings.map(warning => (
+            <AppText color="secondary" key={warning}>
+              {warning}
+            </AppText>
+          ))}
+        </View>
+      ) : null}
       <View style={styles.playerWrap}>
         <YouTubePlayer
+          onEnded={handlePlayerEnded}
           onError={setPlayerError}
+          onReady={handlePlayerReady}
           playbackRate={playbackRate}
           ref={playerRef}
           videoId={lesson.video.id}
@@ -584,6 +684,50 @@ export function YouTubeLessonRouteScreen({
   const saveFailed =
     'lesson' in params && params.lesson && params.saveFailed === true;
 
+  // SETE-290 (DEV-4): a freshly created lesson ends at Home — every Back
+  // path (header, Android system, gesture) leaves the entry flow instead of
+  // returning to the URL input. Saved lessons (lessonId, either stack) keep
+  // the plain goBack contract owned by SETE-289.
+  const isFreshLesson = 'lesson' in params && params.lesson != null;
+  const exitToHome = useCallback(() => {
+    // Same reset-then-tab pattern as YouTubeInputScreen.exitToHome
+    // (SETE-287): no stale nested state, land on the Home tab. Only
+    // reachable for fresh lessons, which live on the Create stack — hence
+    // the Create-stack narrowing (same convention as `nav` above).
+    const createNav = navigation as NativeStackScreenProps<
+      CreateStackParamList,
+      'YouTubeLesson'
+    >['navigation'];
+    createNav.reset({
+      index: 0,
+      routes: [{name: 'CreateMain'}],
+    });
+    createNav
+      .getParent<NavigationProp<RootTabParamList>>()
+      ?.navigate('Home');
+  }, [navigation]);
+
+  useEffect(() => {
+    if (!isFreshLesson) {
+      return undefined;
+    }
+    return navigation.addListener('beforeRemove', e => {
+      if (e.data.action.type !== 'POP') {
+        return;
+      }
+      e.preventDefault();
+      exitToHome();
+    });
+  }, [navigation, isFreshLesson, exitToHome]);
+
+  const handleBack = useCallback(() => {
+    if (isFreshLesson) {
+      exitToHome();
+      return;
+    }
+    navigation.goBack();
+  }, [navigation, isFreshLesson, exitToHome]);
+
   const handleStartPractice = useCallback(() => {
     if (!lesson) return;
     const questions = mapTranscriptToPractice(lesson.segments, 10);
@@ -617,7 +761,7 @@ export function YouTubeLessonRouteScreen({
   return (
     <YouTubeLessonScreen
       lesson={lesson}
-      onBack={() => navigation.goBack()}
+      onBack={handleBack}
       onStartPractice={handleStartPractice}
       saveWarning={saveFailed === true}
     />

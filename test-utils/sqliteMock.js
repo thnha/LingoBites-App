@@ -49,6 +49,8 @@ function createMockDatabase() {
   // SETE-229 / T11: saved YouTube lessons
   const youtubeLessons = [];
   const youtubeSentences = [];
+  // SETE-290 / DEV-3: per-video resume progress
+  const youtubeProgress = [];
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -152,6 +154,37 @@ function createMockDatabase() {
           String(b.updated_at).localeCompare(String(a.updated_at)),
         ),
       );
+    }
+
+    if (normalized.startsWith('insert or replace into youtube_progress')) {
+      const index = youtubeProgress.findIndex(
+        row => row.lesson_id === params[0],
+      );
+      const row = {
+        lesson_id: params[0],
+        position_ms: params[1],
+        segment_index: params[2],
+        updated_at: params[3],
+      };
+      if (index === -1) youtubeProgress.push(row);
+      else youtubeProgress[index] = row;
+      return {rowsAffected: 1};
+    }
+
+    if (normalized.startsWith('select * from youtube_progress where lesson_id')) {
+      return toRows(
+        youtubeProgress.filter(row => row.lesson_id === params[0]),
+      );
+    }
+
+    if (normalized.startsWith('delete from youtube_progress where lesson_id')) {
+      const before = youtubeProgress.length;
+      const remaining = youtubeProgress.filter(
+        row => row.lesson_id !== params[0],
+      );
+      youtubeProgress.length = 0;
+      youtubeProgress.push(...remaining);
+      return {rowsAffected: before - remaining.length};
     }
 
     if (

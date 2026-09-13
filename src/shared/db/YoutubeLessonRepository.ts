@@ -202,6 +202,10 @@ export function deleteYouTubeLesson(lessonId: string): boolean {
       db.execute('DELETE FROM youtube_sentences WHERE lesson_id = ?;', [
         lessonId,
       ]);
+      // SETE-290 (DEV-3): resume progress lives and dies with its lesson.
+      db.execute('DELETE FROM youtube_progress WHERE lesson_id = ?;', [
+        lessonId,
+      ]);
       const result = db.execute('DELETE FROM youtube_lessons WHERE id = ?;', [
         lessonId,
       ]);

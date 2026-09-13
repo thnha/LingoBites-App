@@ -18,6 +18,9 @@ export const YouTubeErrorCodeSchema = z.enum([
   'TRANSCRIPT_SOURCE_BLOCKED',
   'TRANSCRIPT_UNPARSABLE',
   'TRANSCRIPT_TOO_LARGE',
+  // SETE-290: backend fails the job when enrichment cannot fill every
+  // segment's vi/ipa — mirrors api-server YouTubeErrorCodeSchema.
+  'ENRICHMENT_FAILED',
   'RATE_LIMIT_EXCEEDED',
 ]);
 

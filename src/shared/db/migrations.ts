@@ -510,6 +510,15 @@ const MIGRATIONS = [
   );`,
   `CREATE INDEX IF NOT EXISTS idx_youtube_sentences_lesson_id
     ON youtube_sentences (lesson_id, idx);`,
+  // ---- SETE-290 / DEV-3: per-video resume progress ----
+  `CREATE TABLE IF NOT EXISTS youtube_progress (
+    lesson_id TEXT PRIMARY KEY NOT NULL,
+    position_ms INTEGER NOT NULL,
+    segment_index INTEGER NOT NULL,
+    updated_at TEXT NOT NULL
+  );`,
+  `CREATE INDEX IF NOT EXISTS idx_youtube_progress_updated_at
+    ON youtube_progress (updated_at DESC);`,
 ];
 
 /**
@@ -590,6 +599,11 @@ const DOWN_MIGRATIONS_M9: string[] = [
   `DROP TABLE IF EXISTS youtube_sentences;`,
   `DROP INDEX IF EXISTS idx_youtube_lessons_updated_at;`,
   `DROP TABLE IF EXISTS youtube_lessons;`,
+];
+
+const DOWN_MIGRATIONS_M10: string[] = [
+  `DROP INDEX IF EXISTS idx_youtube_progress_updated_at;`,
+  `DROP TABLE IF EXISTS youtube_progress;`,
 ];
 
 const DOWN_MIGRATIONS_M2: string[] = [
@@ -702,6 +716,15 @@ export function downgradeYouTubeLessonMigrations(
   db: QuickSQLiteConnection,
 ): void {
   for (const sql of DOWN_MIGRATIONS_M9) {
+    db.execute(sql);
+  }
+}
+
+/** Reverse the SETE-290 YouTube resume-progress schema migration. */
+export function downgradeYouTubeProgressMigrations(
+  db: QuickSQLiteConnection,
+): void {
+  for (const sql of DOWN_MIGRATIONS_M10) {
     db.execute(sql);
   }
 }

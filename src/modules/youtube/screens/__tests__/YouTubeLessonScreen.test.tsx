@@ -1,8 +1,19 @@
 import React from 'react';
 import renderer, {act} from 'react-test-renderer';
+import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
+import {ScreenHeader} from '@components/ScreenHeader';
+import {DB_NAME} from '@shared/db/constants';
+import {getDatabase, resetDatabaseForTests} from '@shared/db/database';
+import {runMigrations} from '@shared/db/migrations';
+import {
+  getYouTubeProgress,
+  saveYouTubeProgress,
+} from '@shared/db/YouTubeProgressRepository';
+import {saveYouTubeLesson} from '@shared/db/YoutubeLessonRepository';
 import type {YouTubeTranscript} from '@shared/schemas/youtube-transcript-v1';
+import {__resetMockDatabases} from '../../../../../test-utils/sqliteMock';
 import {
   YouTubeLessonRouteScreen,
   YouTubeLessonScreen,
@@ -339,6 +350,46 @@ describe('YouTubeLessonScreen', () => {
 
     expect(mockSeekTo).not.toHaveBeenCalled();
   });
+
+  it('disables VI/IPA toggles when their content is empty (SETE-290)', async () => {
+    const lesson = makeLesson();
+    const empty = {
+      ...lesson,
+      segments: lesson.segments.map(segment => ({
+        ...segment,
+        vi: '',
+        ipa: '',
+      })),
+    };
+    const tree = await renderScreen(empty);
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-toggle-vietnamese'}).props
+        .disabled,
+    ).toBe(true);
+    expect(
+      tree.root.findByProps({testID: 'youtube-toggle-ipa'}).props.disabled,
+    ).toBe(true);
+  });
+
+  it('shows lesson warnings when the payload carries them (SETE-290)', async () => {
+    const tree = await renderScreen({
+      ...makeLesson(),
+      warnings: ['partial audio'],
+    });
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-lesson-warnings'}),
+    ).toBeTruthy();
+  });
+
+  it('shows no warnings banner for a clean lesson', async () => {
+    const tree = await renderScreen();
+
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-lesson-warnings'}),
+    ).toThrow();
+  });
 });
 
 describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
@@ -351,8 +402,22 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
     jest.useRealTimers();
   });
 
-  async function renderRoute(params: unknown) {
-    const navigation = {goBack: jest.fn(), navigate: jest.fn()};
+  async function renderRoute(params: unknown, navigationOverrides = {}) {
+    const tabNavigate = jest.fn();
+    const navigation: {
+      goBack: jest.Mock;
+      navigate: jest.Mock;
+      reset: jest.Mock;
+      getParent: jest.Mock;
+      addListener: jest.Mock;
+    } = {
+      goBack: jest.fn(),
+      navigate: jest.fn(),
+      reset: jest.fn(),
+      getParent: jest.fn(() => ({navigate: tabNavigate})),
+      addListener: jest.fn(() => jest.fn()),
+      ...navigationOverrides,
+    };
     const route = {key: 'YouTubeLesson', name: 'YouTubeLesson', params};
     let tree!: renderer.ReactTestRenderer;
     await act(async () => {
@@ -368,11 +433,22 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
       );
       await Promise.resolve();
     });
-    return tree;
+    return {tree, navigation, tabNavigate};
+  }
+
+  function pressRouteBack(tree: renderer.ReactTestRenderer) {
+    const header = tree.root.findByType(ScreenHeader);
+    if (typeof header.props.onBack !== 'function') {
+      throw new Error('No route back handler');
+    }
+    return act(async () => {
+      header.props.onBack();
+      await Promise.resolve();
+    });
   }
 
   it('warns that the lesson was not saved when saveFailed is set', async () => {
-    const tree = await renderRoute({lesson: makeLesson(), saveFailed: true});
+    const {tree} = await renderRoute({lesson: makeLesson(), saveFailed: true});
 
     expect(
       tree.root.findByProps({testID: 'youtube-lesson-save-warning'}),
@@ -384,7 +460,7 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
   });
 
   it('shows no warning for a normally saved lesson', async () => {
-    const tree = await renderRoute({lesson: makeLesson()});
+    const {tree} = await renderRoute({lesson: makeLesson()});
 
     expect(() =>
       tree.root.findByProps({testID: 'youtube-lesson-save-warning'}),
@@ -392,5 +468,127 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
     expect(
       tree.root.findByProps({testID: 'youtube-transcript-list'}),
     ).toBeTruthy();
+  });
+
+  it('exits a fresh lesson to Home, never back to the URL input (SETE-290)', async () => {
+    const {tree, navigation, tabNavigate} = await renderRoute({
+      lesson: makeLesson(),
+    });
+
+    await pressRouteBack(tree);
+
+    expect(navigation.reset).toHaveBeenCalledWith({
+      index: 0,
+      routes: [{name: 'CreateMain'}],
+    });
+    expect(tabNavigate).toHaveBeenCalledWith('Home');
+    expect(navigation.goBack).not.toHaveBeenCalled();
+  });
+
+  it('intercepts system Back on a fresh lesson and exits to Home (SETE-290)', async () => {
+    const {navigation, tabNavigate} = await renderRoute({
+      lesson: makeLesson(),
+    });
+
+    expect(navigation.addListener).toHaveBeenCalledWith(
+      'beforeRemove',
+      expect.any(Function),
+    );
+    const listener = navigation.addListener.mock.calls[0]?.[1] as
+      | ((event: {data: {action: {type: string}}; preventDefault: () => void}) => void)
+      | undefined;
+    if (!listener) throw new Error('beforeRemove listener not registered');
+    const preventDefault = jest.fn();
+    listener({data: {action: {type: 'POP'}}, preventDefault});
+
+    expect(preventDefault).toHaveBeenCalledTimes(1);
+    expect(navigation.reset).toHaveBeenCalledWith({
+      index: 0,
+      routes: [{name: 'CreateMain'}],
+    });
+    expect(tabNavigate).toHaveBeenCalledWith('Home');
+  });
+
+  it('keeps plain goBack for a saved lesson (SETE-289 preserved)', async () => {
+    __resetMockDatabases();
+    resetDatabaseForTests(open({name: DB_NAME}));
+    runMigrations(getDatabase());
+    expect(saveYouTubeLesson({lesson: makeLesson()}).ok).toBe(true);
+
+    const {tree, navigation} = await renderRoute({lessonId: 'dQw4w9WgXcQ'});
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-transcript-list'}),
+    ).toBeTruthy();
+    await pressRouteBack(tree);
+
+    expect(navigation.goBack).toHaveBeenCalledTimes(1);
+    expect(navigation.reset).not.toHaveBeenCalled();
+  });
+});
+
+describe('YouTubeLessonScreen resume (SETE-290 DEV-3)', () => {
+  beforeEach(() => {
+    __resetMockDatabases();
+    resetDatabaseForTests(open({name: DB_NAME}));
+    runMigrations(getDatabase());
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-09-10T10:00:00.000Z'));
+    mockCurrentTimeSeconds = 0;
+    mockSeekTo.mockClear();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('seeks to the saved position on ready and stays paused', async () => {
+    saveYouTubeProgress({
+      lessonId: 'dQw4w9WgXcQ',
+      positionMs: 4500,
+      segmentIndex: 1,
+    });
+    const tree = await renderScreen();
+    expect(mockSeekTo).not.toHaveBeenCalled();
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-iframe'}).props.onReady();
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).toHaveBeenCalledWith(4.5);
+    // The contract is seek-but-paused: the user presses Play to continue.
+    expect(
+      tree.root.findByProps({testID: 'youtube-iframe'}).props.play,
+    ).toBe(false);
+  });
+
+  it('does not seek when there is no saved progress', async () => {
+    const tree = await renderScreen();
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-iframe'}).props.onReady();
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).not.toHaveBeenCalled();
+  });
+
+  it('clears progress when the video ends so the next open starts over', async () => {
+    saveYouTubeProgress({
+      lessonId: 'dQw4w9WgXcQ',
+      positionMs: 4500,
+      segmentIndex: 1,
+    });
+    const tree = await renderScreen();
+
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'youtube-iframe'})
+        .props.onChangeState('ended');
+      await Promise.resolve();
+    });
+
+    expect(getYouTubeProgress('dQw4w9WgXcQ')).toBeNull();
   });
 });

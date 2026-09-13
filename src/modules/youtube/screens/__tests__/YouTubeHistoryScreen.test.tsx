@@ -210,6 +210,26 @@ describe('YouTubeHistoryScreen', () => {
     ).toThrow();
   });
 
+  it('shows an empty-state CTA that opens a fresh Input (SETE-290)', () => {
+    mockListYouTubeLessons.mockReturnValue([]);
+
+    const tree = renderScreen();
+
+    const cta = tree.root.findByProps({
+      testID: 'youtube-history-empty-create-new',
+    });
+    expect(cta.props.accessibilityLabel).toBeTruthy();
+
+    act(() => {
+      cta.props.onPress();
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('Tabs', {
+      screen: 'Create',
+      params: {screen: 'YouTubeInput'},
+    });
+  });
+
   it('hides the create-new CTA on load error and keeps retry (HVB-01E)', () => {
     mockListYouTubeLessons.mockImplementation(() => {
       throw new Error('db locked');

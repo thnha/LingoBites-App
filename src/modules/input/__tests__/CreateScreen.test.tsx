@@ -11,6 +11,15 @@ import {
 import {AppThemeProvider} from '@theme';
 import {CreateScreen} from '../CreateScreen';
 
+const mockUseYouTubeServerEnabled = jest.fn();
+
+// SETE-290: the creation tile needs the server capability too — control it
+// here so tile tests stay deterministic without network.
+jest.mock('@shared/api/youtubeCapabilities', () => ({
+  useYouTubeServerEnabled: (...args: unknown[]) =>
+    mockUseYouTubeServerEnabled(...args),
+}));
+
 function navigation() {
   const rootNavigate = jest.fn();
   return {
@@ -84,6 +93,7 @@ describe('CreateScreen (SETE-247)', () => {
   });
 
   it('shows YouTube entry points only when the flag is on', async () => {
+    mockUseYouTubeServerEnabled.mockReturnValue(true);
     const flaggedOff = await renderCreate();
     expect(
       flaggedOff.root.findAll(
@@ -101,6 +111,23 @@ describe('CreateScreen (SETE-247)', () => {
     await pressByTestID(flaggedOn, 'create-history-link');
     // SETE-289: History is a RootStack route above the tabs.
     expect(nav.rootNavigate).toHaveBeenCalledWith('YouTubeHistory');
+  });
+
+  it('hides the creation tile but keeps history when the server is off (SETE-290)', async () => {
+    mockUseYouTubeServerEnabled.mockReturnValue(false);
+    const tree = await renderCreate(
+      navigation(),
+      makeTestReleaseConfig(ALL_IMPLEMENTED_FEATURES),
+    );
+    expect(
+      tree.root.findAll(node => node.props.testID === 'create-tile-youtube')
+        .length,
+    ).toBe(0);
+    // Saved lessons are local data — history stays reachable.
+    expect(
+      tree.root.findAll(node => node.props.testID === 'create-history-link')
+        .length,
+    ).toBeGreaterThan(0);
   });
 
   it('renders an empty state instead of a blank screen when all sources are off', async () => {

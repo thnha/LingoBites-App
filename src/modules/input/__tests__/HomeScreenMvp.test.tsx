@@ -12,9 +12,17 @@ import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {HomeScreen} from '../HomeScreen';
 
 const mockListYouTubeLessons = jest.fn();
+const mockUseYouTubeServerEnabled = jest.fn();
 
 jest.mock('@shared/db/YoutubeLessonRepository', () => ({
   listYouTubeLessons: (...args: unknown[]) => mockListYouTubeLessons(...args),
+}));
+
+// SETE-290: the video cell needs the server capability too — control it
+// here so navigation tests stay deterministic without network.
+jest.mock('@shared/api/youtubeCapabilities', () => ({
+  useYouTubeServerEnabled: (...args: unknown[]) =>
+    mockUseYouTubeServerEnabled(...args),
 }));
 
 function navigation(tabNavigate = jest.fn(), rootNavigate = jest.fn()) {
@@ -152,6 +160,7 @@ describe('HomeScreen video card (SETE-283)', () => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
     jest.clearAllMocks();
+    mockUseYouTubeServerEnabled.mockReturnValue(true);
   });
 
   function videoPressable(tree: ReactTestRenderer.ReactTestRenderer) {
@@ -165,6 +174,21 @@ describe('HomeScreen video card (SETE-283)', () => {
   it('disables the card with an explanation when the flag is off (HVB-03)', async () => {
     seedLesson();
     const tree = await renderHome();
+    const cell = videoPressable(tree);
+
+    expect(cell.props.disabled).toBe(true);
+    expect(cell.props.accessibilityState).toEqual({disabled: true});
+    expect(
+      tree.root.findAllByProps({
+        children: 'Tính năng đang chưa khả dụng',
+      }).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('disables the card when the server capability is off even with the flag on (SETE-290)', async () => {
+    seedLesson();
+    mockUseYouTubeServerEnabled.mockReturnValue(false);
+    const tree = await renderHomeWithYouTube();
     const cell = videoPressable(tree);
 
     expect(cell.props.disabled).toBe(true);
