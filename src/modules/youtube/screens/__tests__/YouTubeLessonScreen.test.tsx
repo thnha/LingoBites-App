@@ -3,7 +3,10 @@ import renderer, {act} from 'react-test-renderer';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
 import type {YouTubeTranscript} from '@shared/schemas/youtube-transcript-v1';
-import {YouTubeLessonScreen} from '../YouTubeLessonScreen';
+import {
+  YouTubeLessonRouteScreen,
+  YouTubeLessonScreen,
+} from '../YouTubeLessonScreen';
 
 let mockCurrentTimeSeconds = 0;
 const mockSeekTo = jest.fn((seconds: number) => {
@@ -335,5 +338,59 @@ describe('YouTubeLessonScreen', () => {
     });
 
     expect(mockSeekTo).not.toHaveBeenCalled();
+  });
+});
+
+describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-09-10T10:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  async function renderRoute(params: unknown) {
+    const navigation = {goBack: jest.fn(), navigate: jest.fn()};
+    const route = {key: 'YouTubeLesson', name: 'YouTubeLesson', params};
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <YouTubeLessonRouteScreen
+              navigation={navigation as never}
+              route={route as never}
+            />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+      await Promise.resolve();
+    });
+    return tree;
+  }
+
+  it('warns that the lesson was not saved when saveFailed is set', async () => {
+    const tree = await renderRoute({lesson: makeLesson(), saveFailed: true});
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-lesson-save-warning'}),
+    ).toBeTruthy();
+    // The lesson itself still opens — content is not blocked.
+    expect(
+      tree.root.findByProps({testID: 'youtube-transcript-list'}),
+    ).toBeTruthy();
+  });
+
+  it('shows no warning for a normally saved lesson', async () => {
+    const tree = await renderRoute({lesson: makeLesson()});
+
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-lesson-save-warning'}),
+    ).toThrow();
+    expect(
+      tree.root.findByProps({testID: 'youtube-transcript-list'}),
+    ).toBeTruthy();
   });
 });

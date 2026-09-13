@@ -8,6 +8,7 @@ import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
 import type {CreateStackParamList} from '@/app/navigation/types';
 import {parseManualTranscript} from '../transcript/parser';
+import {ensureYouTubeDisclosureAcknowledged} from '../utils/youtubeDisclosure';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '@theme';
 
@@ -20,16 +21,30 @@ export function YouTubeManualTranscriptScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const submit = () => {
+  // SETE-283 (HVB-08a): manual transcript submits go through the same
+  // first-submit disclosure — a hand-entered transcript leaves the device
+  // exactly like a fetched one.
+  const submit = async () => {
+    let cues;
     try {
-      const cues = parseManualTranscript(text);
-      navigation.replace('YouTubeProcessing', {
-        url: route.params.url,
-        manualCues: cues,
-      });
+      cues = parseManualTranscript(text);
     } catch {
       setError(t('errors.transcript_unparsable'));
+      return;
     }
+    const acknowledged = await ensureYouTubeDisclosureAcknowledged({
+      title: t('youtube.disclosure_title'),
+      body: t('youtube.disclosure_body'),
+      confirmLabel: t('youtube.disclosure_confirm'),
+      cancelLabel: t('youtube.disclosure_cancel'),
+    });
+    if (!acknowledged) {
+      return;
+    }
+    navigation.replace('YouTubeProcessing', {
+      url: route.params.url,
+      manualCues: cues,
+    });
   };
   return (
     <AppScreen>

@@ -17,6 +17,8 @@ import {
   listSavedLessons,
   listStartedLessons,
 } from '@shared/db/ContentLessonStateRepository';
+import {listYouTubeLessons} from '@shared/db/YoutubeLessonRepository';
+import {useFeatureFlags} from '@/release';
 import {useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
@@ -80,10 +82,12 @@ const HERO_CTA_INK = '#40320D';
  * otherwise a single pick/create entry — so no data combination leaves the
  * screen without an action. No fake numbers: no streak tag (no data source),
  * no weekly-goal ring (no weekly-goal source), no progress bar — just meta.
- * Explore cells point at the Lessons tab until their real routes are mapped.
+ * The video explore cell has its real data-driven destination (SETE-283);
+ * the other three still point at the Lessons tab until mapped.
  */
 export function HomeScreen({navigation}: Props) {
   const {theme} = useAppTheme();
+  const {config} = useFeatureFlags();
   const feedClearance = useFloatingTabBarClearance();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
@@ -212,9 +216,36 @@ export function HomeScreen({navigation}: Props) {
   // if any, stays reachable through the rail below.
   const heroPick = showStarter && !starterBare && (libraryCount ?? 0) > 0;
 
-  // SETE-279: temporary destinations. The user maps each cell to its real
-  // route later — until then every cell lands on the Lessons tab.
+  // SETE-279: temporary destinations. The three non-video cells still land
+  // on the Lessons tab until their real routes are mapped.
   const goLessonsTab = () => tabNavigation?.navigate('Lessons');
+  const youtubeEnabled = config.features.youtubeLearning;
+
+  // SETE-283 (HVB-01, HVB-01E, HVB-02): the video cell has a real,
+  // data-driven destination. Saved lessons → History, empty store → Input,
+  // and a failed read → History as well — History owns the error + retry
+  // state, so a failure is never silently treated as "no lessons yet".
+  // Single hop, never through CreateMain or Lessons.
+  const openVideoCell = () => {
+    let hasSavedLessons = false;
+    let readFailed = false;
+    try {
+      hasSavedLessons = listYouTubeLessons().length > 0;
+    } catch {
+      readFailed = true;
+    }
+    if (readFailed || hasSavedLessons) {
+      tabNavigation?.navigate('Create', {
+        screen: 'YouTubeHistory',
+        params: {fromHome: true},
+      });
+    } else {
+      tabNavigation?.navigate('Create', {
+        screen: 'YouTubeInput',
+        params: {fromHome: true},
+      });
+    }
+  };
   const exploreCells: ExploreCell[] = [
     {
       icon: 'play_circle',
@@ -423,15 +454,26 @@ export function HomeScreen({navigation}: Props) {
                 cell.inkKey === 'text.primary'
                   ? theme.colors.text.primary
                   : theme.colors[cell.inkKey];
-              const a11yLabel = `${t(cell.titleKey)}. ${t(cell.metaKey)}`;
+              // SETE-283 (HVB-03): with the flag off the video cell is
+              // disabled with an explanation — never a dead-end route.
+              const isVideoCell = cell.testID === 'home-explore-video';
+              const isDisabled = isVideoCell && !youtubeEnabled;
+              const a11yLabel = isDisabled
+                ? `${t(cell.titleKey)}. ${t('home.explore_video_unavailable')}`
+                : `${t(cell.titleKey)}. ${t(cell.metaKey)}`;
               return (
                 <Pressable
                   accessibilityLabel={a11yLabel}
                   accessibilityRole="button"
+                  accessibilityState={isDisabled ? {disabled: true} : undefined}
+                  disabled={isDisabled}
                   key={cell.testID}
-                  onPress={goLessonsTab}
+                  onPress={isVideoCell ? openVideoCell : goLessonsTab}
                   testID={cell.testID}
-                  style={styles.exploreCellWrap}
+                  style={[
+                    styles.exploreCellWrap,
+                    isDisabled && styles.exploreCellDisabled,
+                  ]}
                 >
                   {({pressed}) => (
                     <View
@@ -461,7 +503,9 @@ export function HomeScreen({navigation}: Props) {
                         style={[styles.exploreMeta, {color: ink}]}
                         numberOfLines={2}
                       >
-                        {t(cell.metaKey)}
+                        {isDisabled
+                          ? t('home.explore_video_unavailable')
+                          : t(cell.metaKey)}
                       </AppText>
                     </View>
                   )}
@@ -778,6 +822,9 @@ function makeStyles(theme: AppTheme) {
       flexBasis: '47%',
       flexGrow: 1,
       minWidth: 140,
+    },
+    exploreCellDisabled: {
+      opacity: theme.states.disabledOpacity,
     },
     exploreCell: {
       borderRadius: theme.radius.lg,

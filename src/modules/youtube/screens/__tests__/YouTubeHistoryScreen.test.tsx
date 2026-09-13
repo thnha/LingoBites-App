@@ -3,6 +3,7 @@ import ReactTestRenderer, {act} from 'react-test-renderer';
 import {Alert} from 'react-native';
 import {AppThemeProvider} from '@theme';
 import {FeatureFlagProvider} from '@/release';
+import {ScreenHeader} from '@components/ScreenHeader';
 import type {YouTubeTranscript} from '@shared/schemas/youtube-transcript-v1';
 import {YouTubeHistoryScreen} from '../YouTubeHistoryScreen';
 
@@ -69,18 +70,29 @@ const route = {
   name: 'YouTubeHistory',
 } as unknown as React.ComponentProps<typeof YouTubeHistoryScreen>['route'];
 
-function renderScreen() {
+function renderScreen(
+  nav = navigation,
+  screenRoute = route,
+) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   act(() => {
     tree = ReactTestRenderer.create(
       <FeatureFlagProvider>
         <AppThemeProvider>
-          <YouTubeHistoryScreen navigation={navigation} route={route} />
+          <YouTubeHistoryScreen navigation={nav} route={screenRoute} />
         </AppThemeProvider>
       </FeatureFlagProvider>,
     );
   });
   return tree;
+}
+
+function pressHeaderBack(tree: ReactTestRenderer.ReactTestRenderer) {
+  const onBack = tree.root.findByType(ScreenHeader).props.onBack;
+  if (typeof onBack !== 'function') throw new Error('No back handler');
+  act(() => {
+    onBack();
+  });
 }
 
 describe('YouTubeHistoryScreen', () => {
@@ -153,6 +165,103 @@ describe('YouTubeHistoryScreen', () => {
     expect(
       tree.root.findByProps({testID: 'youtube-history-empty'}),
     ).toBeTruthy();
+  });
+
+  it('shows the create-new CTA with items and opens a fresh Input on press (HVB-11)', () => {
+    mockListYouTubeLessons.mockReturnValue([
+      makeLesson('dQw4w9WgXcQ', 'First video'),
+      makeLesson('abcdefghijk', 'Second video'),
+    ]);
+
+    const tree = renderScreen();
+
+    const cta = tree.root.findByProps({testID: 'youtube-history-create-new'});
+    expect(cta.props.accessibilityLabel).toBeTruthy();
+
+    act(() => {
+      cta.props.onPress();
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('YouTubeInput');
+    // Existing rows are untouched by opening the composer.
+    expect(
+      tree.root.findByProps({testID: 'youtube-history-item-dQw4w9WgXcQ'}),
+    ).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-history-item-abcdefghijk'}),
+    ).toBeTruthy();
+  });
+
+  it('hides the create-new CTA when the store is empty', () => {
+    mockListYouTubeLessons.mockReturnValue([]);
+
+    const tree = renderScreen();
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-history-empty'}),
+    ).toBeTruthy();
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-history-create-new'}),
+    ).toThrow();
+  });
+
+  it('hides the create-new CTA on load error and keeps retry (HVB-01E)', () => {
+    mockListYouTubeLessons.mockImplementation(() => {
+      throw new Error('db locked');
+    });
+
+    const tree = renderScreen();
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-history-error'}),
+    ).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-history-retry'}),
+    ).toBeTruthy();
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-history-create-new'}),
+    ).toThrow();
+  });
+
+  it('returns to Home from Back when opened from Home (HVB-04)', () => {
+    mockListYouTubeLessons.mockReturnValue([
+      makeLesson('dQw4w9WgXcQ', 'First video'),
+    ]);
+    const tabNavigate = jest.fn();
+    const popToTop = jest.fn();
+    const fromHomeNav = {
+      navigate: mockNavigate,
+      goBack: mockGoBack,
+      popToTop,
+      getParent: () => ({navigate: tabNavigate}),
+    } as unknown as React.ComponentProps<
+      typeof YouTubeHistoryScreen
+    >['navigation'];
+    const fromHomeRoute = {
+      key: 'YouTubeHistory',
+      name: 'YouTubeHistory',
+      params: {fromHome: true},
+    } as unknown as React.ComponentProps<
+      typeof YouTubeHistoryScreen
+    >['route'];
+
+    const tree = renderScreen(fromHomeNav, fromHomeRoute);
+    pressHeaderBack(tree);
+
+    expect(popToTop).toHaveBeenCalledTimes(1);
+    expect(tabNavigate).toHaveBeenCalledWith('Home');
+    expect(mockGoBack).not.toHaveBeenCalled();
+  });
+
+  it('uses stack Back when opened from inside Create (HVB-04)', () => {
+    mockListYouTubeLessons.mockReturnValue([
+      makeLesson('dQw4w9WgXcQ', 'First video'),
+    ]);
+
+    const tree = renderScreen();
+    pressHeaderBack(tree);
+
+    expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
 
   it('surfaces an inline error when deletion fails', () => {

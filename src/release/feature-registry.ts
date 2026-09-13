@@ -256,7 +256,8 @@ export const featureRegistry = [
     required: false,
     releaseGroup: 'expansion',
     status: 'beta',
-    entryPoint: 'HomeScreen -> YouTubeInput',
+    entryPoint:
+      'Home video card -> Create/YouTubeHistory when lessons are saved, Create/YouTubeInput when empty (card disabled while the flag is off)',
   },
 ] as const satisfies readonly FeatureRegistryEntry[];
 

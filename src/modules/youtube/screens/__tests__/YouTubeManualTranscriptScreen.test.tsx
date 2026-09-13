@@ -6,6 +6,19 @@ import {AppThemeProvider} from '@theme';
 import {YouTubeManualTranscriptScreen} from '../YouTubeManualTranscriptScreen';
 import {YouTubeInputScreen} from '../YouTubeInputScreen';
 
+const mockEnsureDisclosure = jest.fn();
+
+jest.mock('../../utils/youtubeDisclosure', () => ({
+  ensureYouTubeDisclosureAcknowledged: (...args: unknown[]) =>
+    mockEnsureDisclosure(...args),
+}));
+
+async function flushSubmit() {
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+}
+
 function renderWithProviders(element: React.ReactElement) {
   let tree: renderer.ReactTestRenderer;
   act(() => {
@@ -42,6 +55,7 @@ describe('YouTubeManualTranscriptScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockEnsureDisclosure.mockResolvedValue(true);
   });
 
   it('renders correctly with header and submit button inside ScrollView', () => {
@@ -58,7 +72,7 @@ describe('YouTubeManualTranscriptScreen', () => {
     expect(scrollViews.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('shows error when submitted with empty text or invalid transcript format', () => {
+  it('shows error when submitted with empty text or invalid transcript format', async () => {
     const props = createProps();
     const tree = renderWithProviders(
       <YouTubeManualTranscriptScreen {...props} />,
@@ -67,8 +81,9 @@ describe('YouTubeManualTranscriptScreen', () => {
     const submitBtn = tree.root.findByProps({testID: 'youtube-manual-submit'});
 
     // Submit with empty text
-    act(() => {
+    await act(async () => {
       submitBtn.props.onPress();
+      await flushSubmit();
     });
 
     expect(mockReplace).not.toHaveBeenCalled();
@@ -81,14 +96,15 @@ describe('YouTubeManualTranscriptScreen', () => {
       textInput.props.onChangeText('plain text without timestamp');
     });
 
-    act(() => {
+    await act(async () => {
       submitBtn.props.onPress();
+      await flushSubmit();
     });
 
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
-  it('parses valid transcript and navigates back to YouTubeProcessing', () => {
+  it('parses valid transcript and navigates back to YouTubeProcessing', async () => {
     const props = createProps('https://www.youtube.com/watch?v=OlulrDOixEg');
     const tree = renderWithProviders(
       <YouTubeManualTranscriptScreen {...props} />,
@@ -105,10 +121,12 @@ describe('YouTubeManualTranscriptScreen', () => {
       );
     });
 
-    act(() => {
+    await act(async () => {
       submitBtn.props.onPress();
+      await flushSubmit();
     });
 
+    expect(mockEnsureDisclosure).toHaveBeenCalledTimes(1);
     expect(mockReplace).toHaveBeenCalledWith('YouTubeProcessing', {
       url: 'https://www.youtube.com/watch?v=OlulrDOixEg',
       manualCues: [
@@ -124,6 +142,33 @@ describe('YouTubeManualTranscriptScreen', () => {
         },
       ],
     });
+  });
+
+  it('blocks the manual submit until the disclosure is confirmed (HVB-08a)', async () => {
+    mockEnsureDisclosure.mockResolvedValue(false);
+    const props = createProps('https://www.youtube.com/watch?v=OlulrDOixEg');
+    const tree = renderWithProviders(
+      <YouTubeManualTranscriptScreen {...props} />,
+    );
+
+    const textInput = tree.root.findByProps({
+      placeholder: '0:00 Hello there\n0:04 How are you?',
+    });
+    const submitBtn = tree.root.findByProps({testID: 'youtube-manual-submit'});
+
+    act(() => {
+      textInput.props.onChangeText(
+        '0:09 Exercise 1: Health problems\n0:15 Listen to the conversation.',
+      );
+    });
+
+    await act(async () => {
+      submitBtn.props.onPress();
+      await flushSubmit();
+    });
+
+    expect(mockEnsureDisclosure).toHaveBeenCalledTimes(1);
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });
 
@@ -146,6 +191,7 @@ describe('YouTubeInputScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockEnsureDisclosure.mockResolvedValue(true);
   });
 
   it('validates invalid URL and shows error', () => {
@@ -173,7 +219,7 @@ describe('YouTubeInputScreen', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it('navigates to YouTubeProcessing on valid YouTube URL', () => {
+  it('navigates to YouTubeProcessing on valid YouTube URL', async () => {
     const props = createProps();
     const tree = renderWithProviders(<YouTubeInputScreen {...props} />);
 
@@ -187,12 +233,38 @@ describe('YouTubeInputScreen', () => {
         'https://www.youtube.com/watch?v=OlulrDOixEg&list=PLnGTZv-nqOPqy42APYZywQIch__nFugFx',
       );
     });
-    act(() => {
+    await act(async () => {
       submitBtn.props.onPress();
+      await flushSubmit();
     });
 
+    expect(mockEnsureDisclosure).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('YouTubeProcessing', {
       url: 'https://www.youtube.com/watch?v=OlulrDOixEg&list=PLnGTZv-nqOPqy42APYZywQIch__nFugFx',
     });
+  });
+
+  it('blocks the URL submit until the disclosure is confirmed (HVB-08a)', async () => {
+    mockEnsureDisclosure.mockResolvedValue(false);
+    const props = createProps();
+    const tree = renderWithProviders(<YouTubeInputScreen {...props} />);
+
+    const textInput = tree.root.findByProps({
+      placeholder: 'https://www.youtube.com/watch?v=…',
+    });
+    const submitBtn = tree.root.findByProps({testID: 'youtube-submit'});
+
+    act(() => {
+      textInput.props.onChangeText(
+        'https://www.youtube.com/watch?v=OlulrDOixEg',
+      );
+    });
+    await act(async () => {
+      submitBtn.props.onPress();
+      await flushSubmit();
+    });
+
+    expect(mockEnsureDisclosure).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

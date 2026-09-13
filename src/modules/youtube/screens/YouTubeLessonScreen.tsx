@@ -41,6 +41,11 @@ export type YouTubeLessonScreenProps = {
   lesson: YouTubeTranscript;
   onBack?: () => void;
   onStartPractice?: () => void;
+  /**
+   * SETE-283 (HVB-07): the lesson opened even though the local save failed.
+   * Shows a persistent not-saved warning instead of any saved state.
+   */
+  saveWarning?: boolean;
 };
 
 function ListSeparator() {
@@ -71,6 +76,11 @@ function createStyles(theme: AppTheme) {
       paddingHorizontal: theme.gutter,
       paddingVertical: theme.spacing.sm,
     },
+    saveWarningBanner: {
+      gap: theme.spacing.xs,
+      paddingHorizontal: theme.gutter,
+      paddingVertical: theme.spacing.sm,
+    },
     offlineBanner: {
       gap: theme.spacing.xs,
       paddingHorizontal: theme.gutter,
@@ -93,6 +103,7 @@ export function YouTubeLessonScreen({
   lesson,
   onBack,
   onStartPractice,
+  saveWarning = false,
 }: YouTubeLessonScreenProps) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
@@ -474,6 +485,16 @@ export function YouTubeLessonScreen({
         rightAction={headerActions}
         title={lesson.video.title}
       />
+      {saveWarning ? (
+        <View
+          style={styles.saveWarningBanner}
+          testID="youtube-lesson-save-warning">
+          <AppText accessibilityRole="alert" variant="label">
+            {t('youtube.save_failed_title')}
+          </AppText>
+          <AppText color="secondary">{t('youtube.save_failed_body')}</AppText>
+        </View>
+      ) : null}
       <View style={styles.playerWrap}>
         <YouTubePlayer
           onError={setPlayerError}
@@ -537,6 +558,11 @@ export function YouTubeLessonRouteScreen({
     'lesson' in params && params.lesson
       ? params.lesson
       : getYouTubeLesson('lessonId' in params ? params.lessonId : '');
+  // SETE-283 (HVB-07): the lesson opened even though the local save failed —
+  // warn instead of presenting it as saved. Nothing was written, so History
+  // gains no phantom row.
+  const saveFailed =
+    'lesson' in params && params.lesson && params.saveFailed === true;
 
   const handleStartPractice = useCallback(() => {
     if (!lesson) return;
@@ -573,6 +599,7 @@ export function YouTubeLessonRouteScreen({
       lesson={lesson}
       onBack={() => navigation.goBack()}
       onStartPractice={handleStartPractice}
+      saveWarning={saveFailed === true}
     />
   );
 }

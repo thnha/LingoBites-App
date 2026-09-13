@@ -11,15 +11,24 @@ import {AppThemeProvider} from '@theme';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {HomeScreen} from '../HomeScreen';
 
+const mockListYouTubeLessons = jest.fn();
+
+jest.mock('@shared/db/YoutubeLessonRepository', () => ({
+  listYouTubeLessons: (...args: unknown[]) => mockListYouTubeLessons(...args),
+}));
+
 function navigation(tabNavigate = jest.fn()) {
   return {navigate: jest.fn(), getParent: () => ({navigate: tabNavigate})};
 }
 
-async function renderHome(nav = navigation()) {
+async function renderHome(
+  nav = navigation(),
+  releaseConfig = makeTestReleaseConfig(CORE_WITH_REVIEW),
+) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
-      <FeatureFlagProvider releaseConfig={makeTestReleaseConfig(CORE_WITH_REVIEW)}>
+      <FeatureFlagProvider releaseConfig={releaseConfig}>
         <AppThemeProvider>
           <HomeScreen navigation={nav as never} route={{} as never} />
         </AppThemeProvider>
@@ -28,6 +37,13 @@ async function renderHome(nav = navigation()) {
     await Promise.resolve();
   });
   return tree;
+}
+
+function renderHomeWithYouTube(nav = navigation()) {
+  return renderHome(
+    nav,
+    makeTestReleaseConfig({...CORE_WITH_REVIEW, youtubeLearning: true}),
+  );
 }
 
 function seedLesson() {
@@ -66,10 +82,16 @@ const CELLS = [
   'home-explore-practice',
 ];
 
+// The three non-video cells keep the temporary Lessons destination (HVB-02:
+// the video card must never share their destination).
+const LEGACY_CELLS = CELLS.filter(testID => testID !== 'home-explore-video');
+
 describe('HomeScreen explore grid (SETE-279)', () => {
   beforeEach(() => {
     __resetMockDatabases();
     resetDatabaseForTests(open({name: DB_NAME}));
+    jest.clearAllMocks();
+    mockListYouTubeLessons.mockReturnValue([]);
   });
 
   it('renders the section title and all four cells', async () => {
@@ -89,9 +111,9 @@ describe('HomeScreen explore grid (SETE-279)', () => {
     }
   });
 
-  it('routes every cell to the Lessons tab (temporary destination)', async () => {
+  it('routes the three non-video cells to the Lessons tab (temporary destination)', async () => {
     seedLesson();
-    for (const testID of CELLS) {
+    for (const testID of LEGACY_CELLS) {
       const tabNavigate = jest.fn();
       const tree = await renderHome(navigation(tabNavigate));
       await pressCell(tree, testID);
@@ -114,6 +136,98 @@ describe('HomeScreen explore grid (SETE-279)', () => {
       expect(
         tree.root.findAll(node => node.props.testID === testID).length,
       ).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('HomeScreen video card (SETE-283)', () => {
+  beforeEach(() => {
+    __resetMockDatabases();
+    resetDatabaseForTests(open({name: DB_NAME}));
+    jest.clearAllMocks();
+  });
+
+  function videoPressable(tree: ReactTestRenderer.ReactTestRenderer) {
+    const target = tree.root
+      .findAll(node => node.props.testID === 'home-explore-video')
+      .find(node => typeof node.props.onPress === 'function');
+    if (!target) throw new Error('No pressable found for home-explore-video');
+    return target;
+  }
+
+  it('disables the card with an explanation when the flag is off (HVB-03)', async () => {
+    seedLesson();
+    const tree = await renderHome();
+    const cell = videoPressable(tree);
+
+    expect(cell.props.disabled).toBe(true);
+    expect(cell.props.accessibilityState).toEqual({disabled: true});
+    expect(
+      tree.root.findAllByProps({
+        children: 'Tính năng đang chưa khả dụng',
+      }).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('opens History when saved lessons exist (HVB-01)', async () => {
+    seedLesson();
+    mockListYouTubeLessons.mockReturnValue([{video: {id: 'abc123'}}]);
+    const tabNavigate = jest.fn();
+    const tree = await renderHomeWithYouTube(navigation(tabNavigate));
+
+    await pressCell(tree, 'home-explore-video');
+
+    expect(tabNavigate).toHaveBeenCalledWith('Create', {
+      screen: 'YouTubeHistory',
+      params: {fromHome: true},
+    });
+    expect(tabNavigate).not.toHaveBeenCalledWith('Lessons');
+  });
+
+  it('opens Input when nothing is saved yet (HVB-01)', async () => {
+    seedLesson();
+    mockListYouTubeLessons.mockReturnValue([]);
+    const tabNavigate = jest.fn();
+    const tree = await renderHomeWithYouTube(navigation(tabNavigate));
+
+    await pressCell(tree, 'home-explore-video');
+
+    expect(tabNavigate).toHaveBeenCalledWith('Create', {
+      screen: 'YouTubeInput',
+      params: {fromHome: true},
+    });
+    expect(tabNavigate).not.toHaveBeenCalledWith('Lessons');
+  });
+
+  it('opens History (not empty Input) when the local read fails (HVB-01E)', async () => {
+    seedLesson();
+    mockListYouTubeLessons.mockImplementation(() => {
+      throw new Error('db locked');
+    });
+    const tabNavigate = jest.fn();
+    const tree = await renderHomeWithYouTube(navigation(tabNavigate));
+
+    await pressCell(tree, 'home-explore-video');
+
+    // History owns the error + retry state, so the failure surfaces there
+    // instead of being mistaken for an empty store.
+    expect(tabNavigate).toHaveBeenCalledWith('Create', {
+      screen: 'YouTubeHistory',
+      params: {fromHome: true},
+    });
+  });
+
+  it('never routes the video card to Lessons (HVB-02)', async () => {
+    seedLesson();
+    for (const store of [[{video: {id: 'abc123'}}], []]) {
+      mockListYouTubeLessons.mockReturnValue(store);
+      const tabNavigate = jest.fn();
+      const tree = await renderHomeWithYouTube(navigation(tabNavigate));
+      await pressCell(tree, 'home-explore-video');
+      const calls = tabNavigate.mock.calls.filter(
+        ([name]) => name === 'Lessons',
+      );
+      expect(calls).toHaveLength(0);
     }
   });
 });

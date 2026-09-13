@@ -37,8 +37,15 @@ export function YouTubeProcessingScreen({navigation, route}: Props) {
       controller.signal,
     ).then(result => {
       if (result.ok) {
-        saveYouTubeLesson({lesson: result.lesson});
-        navigation.replace('YouTubeLesson', {lesson: result.lesson});
+        // SETE-283 (HVB-07): a failed local save must not block the lesson
+        // and must never be presented as saved — the Lesson screen warns.
+        const saved = saveYouTubeLesson({lesson: result.lesson});
+        navigation.replace(
+          'YouTubeLesson',
+          saved.ok
+            ? {lesson: result.lesson}
+            : {lesson: result.lesson, saveFailed: true},
+        );
       } else if ('cancelled' in result && result.cancelled) {
         return;
       } else {

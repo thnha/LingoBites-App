@@ -53,8 +53,14 @@ export type HomeStackParamList = {
  */
 export type CreateStackParamList = {
   CreateMain: undefined;
-  YouTubeInput: undefined;
-  YouTubeHistory: undefined;
+  /**
+   * SETE-283 (HVB-04): opened from the Home video card with
+   * `fromHome: true` so Back returns to Home instead of CreateMain.
+   * Opened from inside the Create stack (e.g. History CTA) without it,
+   * so Back follows the stack.
+   */
+  YouTubeInput: {fromHome?: boolean} | undefined;
+  YouTubeHistory: {fromHome?: boolean} | undefined;
   YouTubeProcessing: {
     url: string;
     manualCues?: import('@shared/schemas/youtube-transcript-v1').RawCue[];
@@ -66,6 +72,12 @@ export type CreateStackParamList = {
   YouTubeLesson:
     | {
         lesson: import('@shared/schemas/youtube-transcript-v1').YouTubeTranscript;
+        /**
+         * SETE-283 (HVB-07): set when the lesson reached the player even
+         * though local persistence failed — the screen must warn instead
+         * of presenting the lesson as saved.
+         */
+        saveFailed?: boolean;
       }
     | {
         lessonId: string;

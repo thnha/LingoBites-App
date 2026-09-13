@@ -5,6 +5,7 @@ import {AppThemeProvider} from '@theme';
 import {YouTubeProcessingScreen} from '../YouTubeProcessingScreen';
 
 const mockRunYouTubeJob = jest.fn();
+const mockSaveYouTubeLesson = jest.fn();
 const mockReplace = jest.fn();
 const mockGoBack = jest.fn();
 
@@ -13,8 +14,23 @@ jest.mock('../../api/youtubeApi', () => ({
 }));
 
 jest.mock('@shared/db/YoutubeLessonRepository', () => ({
-  saveYouTubeLesson: jest.fn(),
+  saveYouTubeLesson: (...args: unknown[]) => mockSaveYouTubeLesson(...args),
 }));
+
+const sampleLesson = {
+  schema_version: 'youtube-transcript-v1',
+  video: {
+    id: 'dQw4w9WgXcQ',
+    title: 'Sample video',
+    channel_title: 'Sample channel',
+    duration_seconds: 20,
+    language: 'en',
+    embeddable: true,
+  },
+  transcript_source: 'auto_caption',
+  segments: [],
+  warnings: [],
+};
 
 const navigation = {
   replace: mockReplace,
@@ -49,6 +65,7 @@ async function flushPromises() {
 describe('YouTubeProcessingScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSaveYouTubeLesson.mockReturnValue({ok: true, lessonId: 'dQw4w9WgXcQ'});
   });
 
   it('surfaces job stage and percent while the job is running', async () => {
@@ -78,6 +95,47 @@ describe('YouTubeProcessingScreen', () => {
     expect(
       tree.root.findByProps({testID: 'youtube-progress'}).props.children,
     ).toEqual([40, '%']);
+  });
+
+  it('opens the lesson without a warning when the local save succeeds (HVB-07)', async () => {
+    mockRunYouTubeJob.mockResolvedValue({ok: true, lesson: sampleLesson});
+    mockSaveYouTubeLesson.mockReturnValue({
+      ok: true,
+      lessonId: 'dQw4w9WgXcQ',
+      duplicate: false,
+    });
+
+    act(() => {
+      renderScreen();
+    });
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(mockSaveYouTubeLesson).toHaveBeenCalledTimes(1);
+    expect(mockReplace).toHaveBeenCalledWith('YouTubeLesson', {
+      lesson: sampleLesson,
+    });
+  });
+
+  it('still opens the lesson with a save-failed flag when the local save fails (HVB-07)', async () => {
+    mockRunYouTubeJob.mockResolvedValue({ok: true, lesson: sampleLesson});
+    mockSaveYouTubeLesson.mockReturnValue({
+      ok: false,
+      errorCode: 'LOCAL_DB_ERROR',
+    });
+
+    act(() => {
+      renderScreen();
+    });
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(mockReplace).toHaveBeenCalledWith('YouTubeLesson', {
+      lesson: sampleLesson,
+      saveFailed: true,
+    });
   });
 
   it('offers retry with the same URL after failure', async () => {

@@ -1,13 +1,17 @@
 import React, {useCallback, useState} from 'react';
 import {Alert, FlatList, Pressable, StyleSheet, View} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, type NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {ScreenHeader} from '@components/ScreenHeader';
-import type {CreateStackParamList} from '@/app/navigation/types';
+import type {
+  CreateStackParamList,
+  RootTabParamList,
+} from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useTranslation} from 'react-i18next';
@@ -68,7 +72,7 @@ function createStyles(theme: AppTheme) {
   });
 }
 
-export function YouTubeHistoryScreen({navigation}: Props) {
+export function YouTubeHistoryScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
   const feedClearance = useFloatingTabBarClearance();
@@ -76,6 +80,20 @@ export function YouTubeHistoryScreen({navigation}: Props) {
   const [lessons, setLessons] = useState<YouTubeTranscript[]>([]);
   const [loadError, setLoadError] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  // SETE-283 (HVB-04): when opened as the first entry screen from Home,
+  // Back returns to Home — never stopping at CreateMain. The Create stack
+  // is popped first so a later visit to the Create tab starts clean.
+  const goBack = useCallback(() => {
+    if (route.params?.fromHome === true) {
+      navigation.popToTop();
+      navigation
+        .getParent<NavigationProp<RootTabParamList>>()
+        ?.navigate('Home');
+      return;
+    }
+    navigation.goBack();
+  }, [navigation, route.params]);
 
   const refresh = useCallback(() => {
     try {
@@ -98,6 +116,13 @@ export function YouTubeHistoryScreen({navigation}: Props) {
     },
     [navigation],
   );
+
+  // SETE-283 (HVB-11): entry to a fresh lesson. No fromHome flag — Back
+  // from Input returns here via the stack. Input always starts with an
+  // empty URL and existing rows are never touched.
+  const createNew = useCallback(() => {
+    navigation.navigate('YouTubeInput');
+  }, [navigation]);
 
   const confirmDelete = useCallback(
     (lesson: YouTubeTranscript) => {
@@ -130,7 +155,7 @@ export function YouTubeHistoryScreen({navigation}: Props) {
     return (
       <AppScreen>
         <ScreenHeader
-          onBack={() => navigation.goBack()}
+          onBack={goBack}
           title={t('youtube.history_title')}
         />
         <View style={styles.errorWrap}>
@@ -153,7 +178,7 @@ export function YouTubeHistoryScreen({navigation}: Props) {
     return (
       <AppScreen>
         <ScreenHeader
-          onBack={() => navigation.goBack()}
+          onBack={goBack}
           title={t('youtube.history_title')}
         />
         <View style={styles.emptyWrap} testID="youtube-history-empty">
@@ -169,9 +194,20 @@ export function YouTubeHistoryScreen({navigation}: Props) {
   return (
     <AppScreen>
       <ScreenHeader
-        onBack={() => navigation.goBack()}
+        onBack={goBack}
         title={t('youtube.history_title')}
       />
+      <View style={{paddingHorizontal: theme.gutter}}>
+        <AppButton
+          accessibilityLabel={t('youtube.history_create_new_a11y')}
+          accessibilityHint={t('youtube.history_create_new_hint')}
+          iconLeft="play_circle"
+          onPress={createNew}
+          testID="youtube-history-create-new"
+          title={t('youtube.history_create_new')}
+          variant="secondary"
+        />
+      </View>
       {deleteError ? (
         <View style={{paddingHorizontal: theme.gutter}}>
           <AppText color="danger" testID="youtube-history-delete-error">

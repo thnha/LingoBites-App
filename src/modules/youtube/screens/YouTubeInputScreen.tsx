@@ -1,31 +1,61 @@
 import React, {useCallback, useState} from 'react';
 import {ScrollView, View} from 'react-native';
+import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
-import type {CreateStackParamList} from '@/app/navigation/types';
+import type {
+  CreateStackParamList,
+  RootTabParamList,
+} from '@/app/navigation/types';
 import {
   YOUTUBE_MAX_DURATION_SECONDS,
   YOUTUBE_MAX_SEGMENTS,
 } from '@shared/schemas/youtube-transcript-v1';
 import {parseYouTubeVideoId} from '../api/youtubeApi';
+import {ensureYouTubeDisclosureAcknowledged} from '../utils/youtubeDisclosure';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '@theme';
 
 type Props = NativeStackScreenProps<CreateStackParamList, 'YouTubeInput'>;
 
-export function YouTubeInputScreen({navigation}: Props) {
+export function YouTubeInputScreen({navigation, route}: Props) {
   const {t} = useTranslation();
   const {theme} = useAppTheme();
   const [url, setUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const submit = () => {
+  // SETE-283 (HVB-04): same entry-from-Home contract as YouTubeHistory —
+  // Back returns to Home, never to CreateMain.
+  const goBack = useCallback(() => {
+    if (route.params?.fromHome === true) {
+      navigation.popToTop();
+      navigation
+        .getParent<NavigationProp<RootTabParamList>>()
+        ?.navigate('Home');
+      return;
+    }
+    navigation.goBack();
+  }, [navigation, route.params]);
+
+  // SETE-283 (HVB-08a): the first submit requires explicit privacy
+  // consent — the transcript leaves the device for translation/IPA.
+  // Later submits skip the disclosure.
+  const submit = async () => {
     if (!parseYouTubeVideoId(url)) {
       setError(t('errors.youtube_invalid_url'));
+      return;
+    }
+    const acknowledged = await ensureYouTubeDisclosureAcknowledged({
+      title: t('youtube.disclosure_title'),
+      body: t('youtube.disclosure_body'),
+      confirmLabel: t('youtube.disclosure_confirm'),
+      cancelLabel: t('youtube.disclosure_cancel'),
+    });
+    if (!acknowledged) {
       return;
     }
     navigation.navigate('YouTubeProcessing', {url: url.trim()});
@@ -61,10 +91,7 @@ export function YouTubeInputScreen({navigation}: Props) {
 
   return (
     <AppScreen>
-      <ScreenHeader
-        onBack={() => navigation.goBack()}
-        title={t('youtube.input_title')}
-      />
+      <ScreenHeader onBack={goBack} title={t('youtube.input_title')} />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
