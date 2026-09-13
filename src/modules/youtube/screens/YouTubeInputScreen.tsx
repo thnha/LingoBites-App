@@ -30,14 +30,14 @@ export function YouTubeInputScreen({navigation, route}: Props) {
 
   // SETE-283 (HVB-04): same entry-from-Home contract as YouTubeHistory —
   // Back returns to Home, never to CreateMain.
+  // SETE-287: reset (not popToTop) so a depth-1 direct entry from Home
+  // leaves no stale nested state behind.
   const goBack = useCallback(() => {
     if (route.params?.fromHome === true) {
-      // DEFECT-SETE-286-01: when opened directly from Home, this screen is
-      // the only entry in the Create stack, so an unconditional popToTop()
-      // dispatches an unhandled POP_TO_TOP action (RedBox in dev). Guard it.
-      if (navigation.canGoBack()) {
-        navigation.popToTop();
-      }
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'CreateMain'}],
+      });
       navigation
         .getParent<NavigationProp<RootTabParamList>>()
         ?.navigate('Home');

@@ -83,15 +83,16 @@ export function YouTubeHistoryScreen({navigation, route}: Props) {
 
   // SETE-283 (HVB-04): when opened as the first entry screen from Home,
   // Back returns to Home — never stopping at CreateMain. The Create stack
-  // is popped first so a later visit to the Create tab starts clean.
+  // is reset first so a later visit to the Create tab starts clean.
+  // SETE-287: reset (not popToTop) so a depth-1 direct entry from Home
+  // leaves no stale nested state behind — popToTop is unhandled at depth 1
+  // and preserves YouTubeHistory as the tab root.
   const goBack = useCallback(() => {
     if (route.params?.fromHome === true) {
-      // DEFECT-SETE-286-01: when opened directly from Home, this screen is
-      // the only entry in the Create stack, so an unconditional popToTop()
-      // dispatches an unhandled POP_TO_TOP action (RedBox in dev). Guard it.
-      if (navigation.canGoBack()) {
-        navigation.popToTop();
-      }
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'CreateMain'}],
+      });
       navigation
         .getParent<NavigationProp<RootTabParamList>>()
         ?.navigate('Home');

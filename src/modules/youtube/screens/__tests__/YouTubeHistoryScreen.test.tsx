@@ -228,11 +228,11 @@ describe('YouTubeHistoryScreen', () => {
       makeLesson('dQw4w9WgXcQ', 'First video'),
     ]);
     const tabNavigate = jest.fn();
-    const popToTop = jest.fn();
+    const reset = jest.fn();
     const fromHomeNav = {
       navigate: mockNavigate,
       goBack: mockGoBack,
-      popToTop,
+      reset,
       canGoBack: () => true,
       getParent: () => ({navigate: tabNavigate}),
     } as unknown as React.ComponentProps<
@@ -249,20 +249,27 @@ describe('YouTubeHistoryScreen', () => {
     const tree = renderScreen(fromHomeNav, fromHomeRoute);
     pressHeaderBack(tree);
 
-    expect(popToTop).toHaveBeenCalledTimes(1);
+    // SETE-287: exiting fromHome must reset the Create stack so the next
+    // visit to the Create tab mounts CreateMain.
+    expect(reset).toHaveBeenCalledWith({
+      index: 0,
+      routes: [{name: 'CreateMain'}],
+    });
     expect(tabNavigate).toHaveBeenCalledWith('Home');
     expect(mockGoBack).not.toHaveBeenCalled();
   });
 
-  it('skips popToTop when opened from Home as the only stack entry (DEFECT-SETE-286-01)', () => {
+  it('resets to CreateMain when opened from Home as the only stack entry (SETE-287)', () => {
     mockListYouTubeLessons.mockReturnValue([
       makeLesson('dQw4w9WgXcQ', 'First video'),
     ]);
     const tabNavigate = jest.fn();
+    const reset = jest.fn();
     const popToTop = jest.fn();
     const singleEntryNav = {
       navigate: mockNavigate,
       goBack: mockGoBack,
+      reset,
       popToTop,
       canGoBack: () => false,
       getParent: () => ({navigate: tabNavigate}),
@@ -280,6 +287,10 @@ describe('YouTubeHistoryScreen', () => {
     const tree = renderScreen(singleEntryNav, fromHomeRoute);
     pressHeaderBack(tree);
 
+    expect(reset).toHaveBeenCalledWith({
+      index: 0,
+      routes: [{name: 'CreateMain'}],
+    });
     expect(popToTop).not.toHaveBeenCalled();
     expect(tabNavigate).toHaveBeenCalledWith('Home');
     expect(mockGoBack).not.toHaveBeenCalled();
