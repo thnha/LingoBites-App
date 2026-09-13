@@ -182,7 +182,12 @@ describe('YouTubeHistoryScreen', () => {
       cta.props.onPress();
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith('YouTubeInput');
+    // SETE-289: Input lives in the Create tab, so the CTA leaves the
+    // History route and enters Tabs > Create > YouTubeInput.
+    expect(mockNavigate).toHaveBeenCalledWith('Tabs', {
+      screen: 'Create',
+      params: {screen: 'YouTubeInput'},
+    });
     // Existing rows are untouched by opening the composer.
     expect(
       tree.root.findByProps({testID: 'youtube-history-item-dQw4w9WgXcQ'}),
@@ -223,80 +228,7 @@ describe('YouTubeHistoryScreen', () => {
     ).toThrow();
   });
 
-  it('returns to Home from Back when opened from Home (HVB-04)', () => {
-    mockListYouTubeLessons.mockReturnValue([
-      makeLesson('dQw4w9WgXcQ', 'First video'),
-    ]);
-    const tabNavigate = jest.fn();
-    const reset = jest.fn();
-    const fromHomeNav = {
-      navigate: mockNavigate,
-      goBack: mockGoBack,
-      reset,
-      canGoBack: () => true,
-      getParent: () => ({navigate: tabNavigate}),
-    } as unknown as React.ComponentProps<
-      typeof YouTubeHistoryScreen
-    >['navigation'];
-    const fromHomeRoute = {
-      key: 'YouTubeHistory',
-      name: 'YouTubeHistory',
-      params: {fromHome: true},
-    } as unknown as React.ComponentProps<
-      typeof YouTubeHistoryScreen
-    >['route'];
-
-    const tree = renderScreen(fromHomeNav, fromHomeRoute);
-    pressHeaderBack(tree);
-
-    // SETE-287: exiting fromHome must reset the Create stack so the next
-    // visit to the Create tab mounts CreateMain.
-    expect(reset).toHaveBeenCalledWith({
-      index: 0,
-      routes: [{name: 'CreateMain'}],
-    });
-    expect(tabNavigate).toHaveBeenCalledWith('Home');
-    expect(mockGoBack).not.toHaveBeenCalled();
-  });
-
-  it('resets to CreateMain when opened from Home as the only stack entry (SETE-287)', () => {
-    mockListYouTubeLessons.mockReturnValue([
-      makeLesson('dQw4w9WgXcQ', 'First video'),
-    ]);
-    const tabNavigate = jest.fn();
-    const reset = jest.fn();
-    const popToTop = jest.fn();
-    const singleEntryNav = {
-      navigate: mockNavigate,
-      goBack: mockGoBack,
-      reset,
-      popToTop,
-      canGoBack: () => false,
-      getParent: () => ({navigate: tabNavigate}),
-    } as unknown as React.ComponentProps<
-      typeof YouTubeHistoryScreen
-    >['navigation'];
-    const fromHomeRoute = {
-      key: 'YouTubeHistory',
-      name: 'YouTubeHistory',
-      params: {fromHome: true},
-    } as unknown as React.ComponentProps<
-      typeof YouTubeHistoryScreen
-    >['route'];
-
-    const tree = renderScreen(singleEntryNav, fromHomeRoute);
-    pressHeaderBack(tree);
-
-    expect(reset).toHaveBeenCalledWith({
-      index: 0,
-      routes: [{name: 'CreateMain'}],
-    });
-    expect(popToTop).not.toHaveBeenCalled();
-    expect(tabNavigate).toHaveBeenCalledWith('Home');
-    expect(mockGoBack).not.toHaveBeenCalled();
-  });
-
-  it('uses stack Back when opened from inside Create (HVB-04)', () => {
+  it('always pops via goBack — no fromHome branch, no reset (SETE-289, AC-3/AC-9)', () => {
     mockListYouTubeLessons.mockReturnValue([
       makeLesson('dQw4w9WgXcQ', 'First video'),
     ]);
@@ -304,7 +236,30 @@ describe('YouTubeHistoryScreen', () => {
     const tree = renderScreen();
     pressHeaderBack(tree);
 
+    // History is a RootStack route: popping returns to whichever tab
+    // opened it (Home or Create) with that tab's state untouched.
     expect(mockGoBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('opens a saved lesson on the root stack (SETE-289, AC-8)', () => {
+    mockListYouTubeLessons.mockReturnValue([
+      makeLesson('dQw4w9WgXcQ', 'First video'),
+    ]);
+
+    const tree = renderScreen();
+
+    act(() => {
+      tree.root
+        .findByProps({testID: 'youtube-history-item-dQw4w9WgXcQ'})
+        .props.onPress();
+    });
+
+    // Root-level YouTubeLesson: Back returns to History, the active tab
+    // never changes.
+    expect(mockNavigate).toHaveBeenCalledWith('YouTubeLesson', {
+      lessonId: 'dQw4w9WgXcQ',
+    });
   });
 
   it('surfaces an inline error when deletion fails', () => {

@@ -1,6 +1,7 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {Alert, FlatList, Pressable, StyleSheet, View} from 'react-native';
-import {useFocusEffect, type NavigationProp} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
+import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
@@ -8,11 +9,7 @@ import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {ScreenHeader} from '@components/ScreenHeader';
-import type {
-  CreateStackParamList,
-  RootTabParamList,
-} from '@/app/navigation/types';
-import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
+import type {RootStackParamList} from '@/app/navigation/types';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useTranslation} from 'react-i18next';
 import {
@@ -21,7 +18,7 @@ import {
 } from '@shared/db/YoutubeLessonRepository';
 import type {YouTubeTranscript} from '@shared/schemas/youtube-transcript-v1';
 
-type Props = NativeStackScreenProps<CreateStackParamList, 'YouTubeHistory'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'YouTubeHistory'>;
 
 function HistorySeparator() {
   const {theme} = useAppTheme();
@@ -72,34 +69,26 @@ function createStyles(theme: AppTheme) {
   });
 }
 
-export function YouTubeHistoryScreen({navigation, route}: Props) {
+export function YouTubeHistoryScreen({navigation}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
-  const feedClearance = useFloatingTabBarClearance();
+  // SETE-289: History renders on the RootStack above the tabs, so there is
+  // no floating tab bar to clear — only the bottom safe-area inset keeps
+  // the last row clear of the home indicator. Read via context (not the
+  // throwing hook) so Jest renders fall back to a zero inset.
+  const insets = useContext(SafeAreaInsetsContext);
+  const bottomClearance =
+    (insets?.bottom ?? 0) + theme.spacing.md;
   const styles = React.useMemo(() => createStyles(theme), [theme]);
   const [lessons, setLessons] = useState<YouTubeTranscript[]>([]);
   const [loadError, setLoadError] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  // SETE-283 (HVB-04): when opened as the first entry screen from Home,
-  // Back returns to Home — never stopping at CreateMain. The Create stack
-  // is reset first so a later visit to the Create tab starts clean.
-  // SETE-287: reset (not popToTop) so a depth-1 direct entry from Home
-  // leaves no stale nested state behind — popToTop is unhandled at depth 1
-  // and preserves YouTubeHistory as the tab root.
+  // SETE-289: History is a RootStack route, so Back always pops to the tab
+  // that opened it (Home or Create) — no fromHome branch, no reset.
   const goBack = useCallback(() => {
-    if (route.params?.fromHome === true) {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'CreateMain'}],
-      });
-      navigation
-        .getParent<NavigationProp<RootTabParamList>>()
-        ?.navigate('Home');
-      return;
-    }
     navigation.goBack();
-  }, [navigation, route.params]);
+  }, [navigation]);
 
   const refresh = useCallback(() => {
     try {
@@ -123,11 +112,16 @@ export function YouTubeHistoryScreen({navigation, route}: Props) {
     [navigation],
   );
 
-  // SETE-283 (HVB-11): entry to a fresh lesson. No fromHome flag — Back
-  // from Input returns here via the stack. Input always starts with an
-  // empty URL and existing rows are never touched.
+  // SETE-283 (HVB-11): entry to a fresh lesson. Input always starts with
+  // an empty URL and existing rows are never touched.
+  // SETE-289: Input lives in the Create tab, so this leaves the History
+  // route and enters Tabs > Create > YouTubeInput; Back from there lands
+  // on CreateMain.
   const createNew = useCallback(() => {
-    navigation.navigate('YouTubeInput');
+    navigation.navigate('Tabs', {
+      screen: 'Create',
+      params: {screen: 'YouTubeInput'},
+    });
   }, [navigation]);
 
   const confirmDelete = useCallback(
@@ -222,7 +216,7 @@ export function YouTubeHistoryScreen({navigation, route}: Props) {
         </View>
       ) : null}
       <FlatList
-        contentContainerStyle={[styles.list, {paddingBottom: feedClearance}]}
+        contentContainerStyle={[styles.list, {paddingBottom: bottomClearance}]}
         data={lessons}
         ItemSeparatorComponent={HistorySeparator}
         keyExtractor={item => item.video.id}

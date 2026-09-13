@@ -1,7 +1,12 @@
 import React, {useCallback} from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {CreateStackParamList} from '@/app/navigation/types';
+import type {
+  CreateStackParamList,
+  RootStackParamList,
+  RootTabParamList,
+} from '@/app/navigation/types';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {MaterialIcon} from '@components/MaterialIcon';
@@ -168,7 +173,17 @@ export function CreateScreen({navigation}: Props) {
               <Pressable
                 accessibilityLabel={t('home.youtube_history_a11y')}
                 accessibilityRole="button"
-                onPress={() => navigation.navigate('YouTubeHistory')}
+                // SETE-289: History is a RootStack route above the tabs —
+                // reach it through the tab parent so the stack-id lookup
+                // stays type-safe (screen nav props carry no navigator id).
+                onPress={() =>
+                  navigation
+                    .getParent<NavigationProp<RootTabParamList>>()
+                    ?.getParent<NavigationProp<RootStackParamList>>(
+                      'RootStack',
+                    )
+                    ?.navigate('YouTubeHistory')
+                }
                 style={({pressed}) => [
                   styles.historyLink,
                   pressed && styles.pressed,

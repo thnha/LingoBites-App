@@ -12,7 +12,17 @@ import {AppThemeProvider} from '@theme';
 import {CreateScreen} from '../CreateScreen';
 
 function navigation() {
-  return {navigate: jest.fn(), getParent: () => ({navigate: jest.fn()})};
+  const rootNavigate = jest.fn();
+  return {
+    navigate: jest.fn(),
+    rootNavigate,
+    // SETE-289: the history link reaches the RootStack through the tab
+    // parent.
+    getParent: () => ({
+      navigate: jest.fn(),
+      getParent: () => ({navigate: rootNavigate}),
+    }),
+  };
 }
 
 async function renderCreate(
@@ -89,7 +99,8 @@ describe('CreateScreen (SETE-247)', () => {
     await pressByTestID(flaggedOn, 'create-tile-youtube');
     expect(nav.navigate).toHaveBeenCalledWith('YouTubeInput');
     await pressByTestID(flaggedOn, 'create-history-link');
-    expect(nav.navigate).toHaveBeenCalledWith('YouTubeHistory');
+    // SETE-289: History is a RootStack route above the tabs.
+    expect(nav.rootNavigate).toHaveBeenCalledWith('YouTubeHistory');
   });
 
   it('renders an empty state instead of a blank screen when all sources are off', async () => {

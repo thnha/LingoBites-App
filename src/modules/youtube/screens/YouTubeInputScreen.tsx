@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
 import type {
   CreateStackParamList,
+  RootStackParamList,
   RootTabParamList,
 } from '@/app/navigation/types';
 import {
@@ -32,19 +33,40 @@ export function YouTubeInputScreen({navigation, route}: Props) {
   // Back returns to Home, never to CreateMain.
   // SETE-287: reset (not popToTop) so a depth-1 direct entry from Home
   // leaves no stale nested state behind.
+  const exitToHome = useCallback(() => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'CreateMain'}],
+    });
+    navigation.getParent<NavigationProp<RootTabParamList>>()?.navigate('Home');
+  }, [navigation]);
+
   const goBack = useCallback(() => {
     if (route.params?.fromHome === true) {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'CreateMain'}],
-      });
-      navigation
-        .getParent<NavigationProp<RootTabParamList>>()
-        ?.navigate('Home');
+      exitToHome();
       return;
     }
     navigation.goBack();
-  }, [navigation, route.params]);
+  }, [navigation, route.params, exitToHome]);
+
+  // SETE-289: the header Back button is not the only way out. The iOS
+  // swipe gesture is disabled for this screen (see AppNavigator), but the
+  // Android system Back and any other native pop bypass onBack and would
+  // land on CreateMain, dropping the fromHome contract. Intercept those
+  // pops so every exit honors it. Non-POP removals (e.g. our own reset)
+  // and non-fromHome entries pass through untouched.
+  useEffect(() => {
+    if (route.params?.fromHome !== true) {
+      return undefined;
+    }
+    return navigation.addListener('beforeRemove', e => {
+      if (e.data.action.type !== 'POP') {
+        return;
+      }
+      e.preventDefault();
+      exitToHome();
+    });
+  }, [navigation, route.params, exitToHome]);
 
   // SETE-283 (HVB-08a): the first submit requires explicit privacy
   // consent — the transcript leaves the device for translation/IPA.
@@ -144,7 +166,15 @@ export function YouTubeInputScreen({navigation, route}: Props) {
             title={t('youtube.start')}
           />
           <AppButton
-            onPress={() => navigation.navigate('YouTubeHistory')}
+            // SETE-289: History is a RootStack route above the tabs —
+            // reach it through the tab parent so the stack-id lookup
+            // stays type-safe (screen nav props carry no navigator id).
+            onPress={() =>
+              navigation
+                .getParent<NavigationProp<RootTabParamList>>()
+                ?.getParent<NavigationProp<RootStackParamList>>('RootStack')
+                ?.navigate('YouTubeHistory')
+            }
             testID="youtube-open-history"
             title={t('youtube.open_history')}
             variant="secondary"

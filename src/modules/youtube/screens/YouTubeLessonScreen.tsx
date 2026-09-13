@@ -23,7 +23,10 @@ import {
 } from '../components/YouTubePlayer';
 import {TranscriptLine} from '../components/TranscriptLine';
 import {useTranscriptSync, TRANSCRIPT_SYNC_POLL_INTERVAL_MS} from '../sync/useTranscriptSync';
-import type {CreateStackParamList} from '@/app/navigation/types';
+import type {
+  CreateStackParamList,
+  RootStackParamList,
+} from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useBookmarkOptimistic} from '../../lesson/useBookmarkOptimistic';
@@ -546,10 +549,27 @@ export function YouTubeLessonScreen({
   );
 }
 
+/**
+ * SETE-289: registered on both the Create stack (fresh-create flow:
+ * `YouTubeProcessing.replace('YouTubeLesson')`) and the RootStack
+ * (opening a saved lesson from `YouTubeHistory` above the tabs).
+ */
+type YouTubeLessonRouteProps =
+  | NativeStackScreenProps<CreateStackParamList, 'YouTubeLesson'>
+  | NativeStackScreenProps<RootStackParamList, 'YouTubeLesson'>;
+
 export function YouTubeLessonRouteScreen({
   navigation,
   route,
-}: NativeStackScreenProps<CreateStackParamList, 'YouTubeLesson'>) {
+}: YouTubeLessonRouteProps) {
+  // Same convention as GrammarDetailScreen: the union navigation prop is
+  // only directly callable for shared signatures (goBack); narrow to one
+  // stack for navigate — both stacks register Practice with identical
+  // params, so the call behaves the same at either level.
+  const nav = navigation as NativeStackScreenProps<
+    CreateStackParamList,
+    'YouTubeLesson'
+  >['navigation'];
   const {t} = useTranslation();
   const {theme} = useAppTheme();
   const fallbackStyles = useMemo(() => createStyles(theme), [theme]);
@@ -568,12 +588,12 @@ export function YouTubeLessonRouteScreen({
     if (!lesson) return;
     const questions = mapTranscriptToPractice(lesson.segments, 10);
     if (questions.length > 0) {
-      navigation.navigate('Practice', {
+      nav.navigate('Practice', {
         questions,
         title: t('youtube.practice_title', {defaultValue: 'Luyện tập'}),
       });
     }
-  }, [lesson, navigation, t]);
+  }, [lesson, nav, t]);
 
   if (!lesson) {
     return (

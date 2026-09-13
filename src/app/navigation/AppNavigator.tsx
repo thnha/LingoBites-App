@@ -7,6 +7,7 @@ import type {
   HomeStackParamList,
   LessonsStackParamList,
   ProfileStackParamList,
+  RootStackParamList,
   RootTabParamList,
 } from './types';
 import {
@@ -45,6 +46,7 @@ import {
 import {TtsSpikeScreen} from '@modules/tts';
 import {useFeatureFlags} from '@/release';
 import {TabBar} from './TabBar';
+import {getRootStackRouteNames} from './rootStackRoutes';
 import {tabBarVisibilityOptions} from './immersiveTabRoutes';
 import {isIngestionRouteEnabled} from './ingestionRouteGate';
 import {
@@ -60,6 +62,7 @@ const CreateStack = createNativeStackNavigator<CreateStackParamList>();
 const LessonsStack = createNativeStackNavigator<LessonsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 function HomeStackNavigator() {
   return (
@@ -135,13 +138,15 @@ function CreateStackNavigator() {
           <CreateStack.Screen
             component={YouTubeInputScreen}
             name="YouTubeInput"
-            options={{headerShown: false}}
+            // SETE-289: the fromHome exit contract lives in the header
+            // Back handler — the iOS swipe gesture would bypass it and
+            // pop to CreateMain, so it stays disabled (same as
+            // YouTubeProcessing below). Android system Back is
+            // intercepted via beforeRemove in the screen itself.
+            options={{headerShown: false, gestureEnabled: false}}
           />
-          <CreateStack.Screen
-            component={YouTubeHistoryScreen}
-            name="YouTubeHistory"
-            options={{headerShown: false}}
-          />
+          {/* SETE-289: YouTubeHistory lives on the RootStack (above the
+              tabs), so it is no longer a CreateStack route. */}
           <CreateStack.Screen
             component={YouTubeProcessingScreen}
             name="YouTubeProcessing"
@@ -354,46 +359,92 @@ function ProfileStackNavigator() {
   );
 }
 
+function TabNavigator() {
+  return (
+    <Tab.Navigator
+      screenOptions={{headerShown: false}}
+      tabBar={props => <TabBar {...props} />}
+    >
+      <Tab.Screen
+        component={HomeStackNavigator}
+        name="Home"
+        options={({route}) => ({
+          title: 'Home',
+          ...tabBarVisibilityOptions({route}),
+        })}
+      />
+      <Tab.Screen
+        component={CreateStackNavigator}
+        name="Create"
+        options={({route}) => ({
+          title: 'Create',
+          ...tabBarVisibilityOptions({route}),
+        })}
+      />
+      <Tab.Screen
+        component={LessonsStackNavigator}
+        name="Lessons"
+        options={({route}) => ({
+          title: 'Lessons',
+          ...tabBarVisibilityOptions({route}),
+        })}
+      />
+      <Tab.Screen
+        component={ProfileStackNavigator}
+        name="Profile"
+        options={({route}) => ({
+          title: 'Profile',
+          ...tabBarVisibilityOptions({route}),
+        })}
+      />
+    </Tab.Navigator>
+  );
+}
+
+/**
+ * SETE-289: a root stack above the Tab.Navigator. `YouTubeHistory` (and
+ * the lesson/detail screens it opens) render here, so no bottom bar is
+ * shown and no tab state is touched — the "independent of the bottom tab"
+ * behavior comes from the navigation structure, not a tab-bar workaround.
+ */
 export function AppNavigator() {
+  const {config} = useFeatureFlags();
+  const rootRouteNames = getRootStackRouteNames(config.features);
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={{headerShown: false}}
-        tabBar={props => <TabBar {...props} />}
-      >
-        <Tab.Screen
-          component={HomeStackNavigator}
-          name="Home"
-          options={({route}) => ({
-            title: 'Home',
-            ...tabBarVisibilityOptions({route}),
-          })}
-        />
-        <Tab.Screen
-          component={CreateStackNavigator}
-          name="Create"
-          options={({route}) => ({
-            title: 'Create',
-            ...tabBarVisibilityOptions({route}),
-          })}
-        />
-        <Tab.Screen
-          component={LessonsStackNavigator}
-          name="Lessons"
-          options={({route}) => ({
-            title: 'Lessons',
-            ...tabBarVisibilityOptions({route}),
-          })}
-        />
-        <Tab.Screen
-          component={ProfileStackNavigator}
-          name="Profile"
-          options={({route}) => ({
-            title: 'Profile',
-            ...tabBarVisibilityOptions({route}),
-          })}
-        />
-      </Tab.Navigator>
+      <RootStack.Navigator id="RootStack" screenOptions={{headerShown: false}}>
+        <RootStack.Screen component={TabNavigator} name="Tabs" />
+        {rootRouteNames.includes('YouTubeHistory') && (
+          <RootStack.Screen
+            component={YouTubeHistoryScreen}
+            name="YouTubeHistory"
+          />
+        )}
+        {rootRouteNames.includes('YouTubeLesson') && (
+          <RootStack.Screen
+            component={YouTubeLessonRouteScreen}
+            name="YouTubeLesson"
+          />
+        )}
+        {rootRouteNames.includes('SentenceDetail') && (
+          <RootStack.Screen
+            component={SentenceDetailScreen}
+            name="SentenceDetail"
+          />
+        )}
+        {rootRouteNames.includes('WordDetail') && (
+          <RootStack.Screen component={WordDetailScreen} name="WordDetail" />
+        )}
+        {rootRouteNames.includes('GrammarDetail') && (
+          <RootStack.Screen
+            component={GrammarDetailScreen}
+            name="GrammarDetail"
+          />
+        )}
+        {rootRouteNames.includes('Practice') && (
+          <RootStack.Screen component={PracticeScreen} name="Practice" />
+        )}
+      </RootStack.Navigator>
     </NavigationContainer>
   );
 }

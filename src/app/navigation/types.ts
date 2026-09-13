@@ -58,9 +58,12 @@ export type CreateStackParamList = {
    * `fromHome: true` so Back returns to Home instead of CreateMain.
    * Opened from inside the Create stack (e.g. History CTA) without it,
    * so Back follows the stack.
+   *
+   * SETE-289: YouTubeHistory moved to the RootStack (no `fromHome`
+   * needed there — a plain goBack pops to the source tab), so only
+   * YouTubeInput keeps the flag.
    */
   YouTubeInput: {fromHome?: boolean} | undefined;
-  YouTubeHistory: {fromHome?: boolean} | undefined;
   YouTubeProcessing: {
     url: string;
     manualCues?: import('@shared/schemas/youtube-transcript-v1').RawCue[];
@@ -139,3 +142,19 @@ export type RootTabParamList = {
   Lessons: NavigatorScreenParams<LessonsStackParamList> | undefined;
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
+
+/**
+ * SETE-289: root stack above the Tab.Navigator. `YouTubeHistory` lives
+ * here so it renders without the bottom bar and without touching tab
+ * state — a plain `goBack()` pops back to the source tab. `YouTubeLesson`
+ * and the `LearningDetail` screens are registered here as well so opening
+ * a saved lesson from History stays above the tabs. The Create stack keeps
+ * its own `YouTubeLesson` registration for the fresh-create flow
+ * (`YouTubeProcessing.replace('YouTubeLesson')`), matching the existing
+ * multi-stack convention (`SavedLessonDetail`, `ProgressiveLesson`).
+ */
+export type RootStackParamList = {
+  Tabs: NavigatorScreenParams<RootTabParamList> | undefined;
+  YouTubeHistory: undefined;
+  YouTubeLesson: CreateStackParamList['YouTubeLesson'];
+} & LearningDetailParamList;

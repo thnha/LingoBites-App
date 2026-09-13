@@ -17,8 +17,15 @@ jest.mock('@shared/db/YoutubeLessonRepository', () => ({
   listYouTubeLessons: (...args: unknown[]) => mockListYouTubeLessons(...args),
 }));
 
-function navigation(tabNavigate = jest.fn()) {
-  return {navigate: jest.fn(), getParent: () => ({navigate: tabNavigate})};
+function navigation(tabNavigate = jest.fn(), rootNavigate = jest.fn()) {
+  return {
+    navigate: jest.fn(),
+    getParent: () => ({
+      navigate: tabNavigate,
+      getParent: () => ({navigate: rootNavigate}),
+    }),
+    rootNavigate,
+  };
 }
 
 async function renderHome(
@@ -169,18 +176,18 @@ describe('HomeScreen video card (SETE-283)', () => {
     ).toBeGreaterThan(0);
   });
 
-  it('opens History when saved lessons exist (HVB-01)', async () => {
+  it('opens History at the root stack when saved lessons exist (HVB-01, SETE-289)', async () => {
     seedLesson();
     mockListYouTubeLessons.mockReturnValue([{video: {id: 'abc123'}}]);
     const tabNavigate = jest.fn();
-    const tree = await renderHomeWithYouTube(navigation(tabNavigate));
+    const rootNavigate = jest.fn();
+    const tree = await renderHomeWithYouTube(
+      navigation(tabNavigate, rootNavigate),
+    );
 
     await pressCell(tree, 'home-explore-video');
 
-    expect(tabNavigate).toHaveBeenCalledWith('Create', {
-      screen: 'YouTubeHistory',
-      params: {fromHome: true},
-    });
+    expect(rootNavigate).toHaveBeenCalledWith('YouTubeHistory');
     expect(tabNavigate).not.toHaveBeenCalledWith('Lessons');
   });
 
@@ -188,7 +195,10 @@ describe('HomeScreen video card (SETE-283)', () => {
     seedLesson();
     mockListYouTubeLessons.mockReturnValue([]);
     const tabNavigate = jest.fn();
-    const tree = await renderHomeWithYouTube(navigation(tabNavigate));
+    const rootNavigate = jest.fn();
+    const tree = await renderHomeWithYouTube(
+      navigation(tabNavigate, rootNavigate),
+    );
 
     await pressCell(tree, 'home-explore-video');
 
@@ -197,24 +207,25 @@ describe('HomeScreen video card (SETE-283)', () => {
       params: {fromHome: true},
     });
     expect(tabNavigate).not.toHaveBeenCalledWith('Lessons');
+    // AC-5: the empty branch never opens History.
+    expect(rootNavigate).not.toHaveBeenCalled();
   });
 
-  it('opens History (not empty Input) when the local read fails (HVB-01E)', async () => {
+  it('opens History (not empty Input) when the local read fails (HVB-01E, SETE-289)', async () => {
     seedLesson();
     mockListYouTubeLessons.mockImplementation(() => {
       throw new Error('db locked');
     });
-    const tabNavigate = jest.fn();
-    const tree = await renderHomeWithYouTube(navigation(tabNavigate));
+    const rootNavigate = jest.fn();
+    const tree = await renderHomeWithYouTube(
+      navigation(jest.fn(), rootNavigate),
+    );
 
     await pressCell(tree, 'home-explore-video');
 
     // History owns the error + retry state, so the failure surfaces there
     // instead of being mistaken for an empty store.
-    expect(tabNavigate).toHaveBeenCalledWith('Create', {
-      screen: 'YouTubeHistory',
-      params: {fromHome: true},
-    });
+    expect(rootNavigate).toHaveBeenCalledWith('YouTubeHistory');
   });
 
   it('never routes the video card to Lessons (HVB-02)', async () => {

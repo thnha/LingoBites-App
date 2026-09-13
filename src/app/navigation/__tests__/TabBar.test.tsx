@@ -220,6 +220,106 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(nav.navigate).not.toHaveBeenCalled();
   });
 
+  it('resets to CreateMain when the Create stack holds a stale fromHome entry (SETE-287 follow-up)', () => {
+    // SETE-289: YouTubeHistory moved to the RootStack, so the stale-entry
+    // fixture uses YouTubeInput — the branch that still carries fromHome.
+    const props = makeProps(0);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create'
+          ? {
+              ...r,
+              state: {
+                index: 0,
+                routes: [
+                  {key: 'yt-input', name: 'YouTubeInput', params: {fromHome: true}},
+                ],
+              },
+            }
+          : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    // Bottom-bar exit (Home tab) skipped the header-Back reset, so the
+    // Create re-entry must clear the stale video list.
+    expect(nav.navigate).toHaveBeenCalledWith('Create', {
+      screen: 'CreateMain',
+    });
+  });
+
+  it('resets a deepened stale stack when any entry carries fromHome (SETE-287 follow-up)', () => {
+    // SETE-289: YouTubeHistory moved to the RootStack, so the stale-entry
+    // fixture uses YouTubeInput — the branch that still carries fromHome.
+    const props = makeProps(0);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create'
+          ? {
+              ...r,
+              state: {
+                index: 1,
+                routes: [
+                  {key: 'create-main', name: 'CreateMain', params: undefined},
+                  {key: 'yt-input', name: 'YouTubeInput', params: {fromHome: true}},
+                ],
+              },
+            }
+          : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    expect(nav.navigate).toHaveBeenCalledWith('Create', {
+      screen: 'CreateMain',
+    });
+  });
+
+  it('preserves a normal in-tab YouTube stack without fromHome', () => {
+    const props = makeProps(0);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create'
+          ? {
+              ...r,
+              state: {
+                index: 1,
+                routes: [
+                  {key: 'create-main', name: 'CreateMain', params: undefined},
+                  {key: 'yt-input', name: 'YouTubeInput', params: undefined},
+                ],
+              },
+            }
+          : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    // No fromHome marker: standard tab preserve behavior, no forced reset.
+    expect(nav.navigate).toHaveBeenCalledWith('Create');
+  });
+
   it('uses a single sliding accent indicator instead of per-tab fills', () => {
     const {tree} = renderBar(defaultTheme);
     measureFirstTab(tree, 100);

@@ -1,9 +1,10 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {Image, Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, type NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {
   HomeStackParamList,
+  RootStackParamList,
   RootTabParamList,
 } from '@/app/navigation/types';
 import {AppButton} from '@components/AppButton';
@@ -92,9 +93,11 @@ export function HomeScreen({navigation}: Props) {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const {t} = useTranslation();
   const tabNavigation =
-    navigation.getParent<
-      import('@react-navigation/native').NavigationProp<RootTabParamList>
-    >();
+    navigation.getParent<NavigationProp<RootTabParamList>>();
+  // SETE-289: the RootStack sits above the tabs; History is a root route
+  // reached via the stack id so the call stays type-safe.
+  const rootNavigation =
+    tabNavigation?.getParent<NavigationProp<RootStackParamList>>('RootStack');
   const {getContentLessonById, listActivePackageLessons} = useContentLibrary();
   const {getLessonById, listLessons} = useLessonRepository();
   const [startedLesson, setStartedLesson] = useState<ContentLessonRow | null>(
@@ -226,6 +229,8 @@ export function HomeScreen({navigation}: Props) {
   // and a failed read → History as well — History owns the error + retry
   // state, so a failure is never silently treated as "no lessons yet".
   // Single hop, never through CreateMain or Lessons.
+  // SETE-289: History is a RootStack route above the tabs; the empty-store
+  // branch keeps the Create > YouTubeInput (fromHome) destination.
   const openVideoCell = () => {
     let hasSavedLessons = false;
     let readFailed = false;
@@ -235,10 +240,7 @@ export function HomeScreen({navigation}: Props) {
       readFailed = true;
     }
     if (readFailed || hasSavedLessons) {
-      tabNavigation?.navigate('Create', {
-        screen: 'YouTubeHistory',
-        params: {fromHome: true},
-      });
+      rootNavigation?.navigate('YouTubeHistory');
     } else {
       tabNavigation?.navigate('Create', {
         screen: 'YouTubeInput',

@@ -58,6 +58,37 @@ describe('YouTubeInputScreen', () => {
     ).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
   });
 
+  it('opens History on the root stack (SETE-289, AC-3)', () => {
+    const rootNavigate = jest.fn();
+    const historyNav = {
+      goBack: jest.fn(),
+      navigate: mockNavigate,
+      getParent: () => ({
+        navigate: jest.fn(),
+        getParent: () => ({navigate: rootNavigate}),
+      }),
+    } as unknown as React.ComponentProps<
+      typeof YouTubeInputScreen
+    >['navigation'];
+
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <YouTubeInputScreen navigation={historyNav} route={route} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    act(() => {
+      tree.root.findByProps({testID: 'youtube-open-history'}).props.onPress();
+    });
+
+    expect(rootNavigate).toHaveBeenCalledWith('YouTubeHistory');
+  });
+
   it('shows server limits before submit', () => {
     let tree!: ReactTestRenderer.ReactTestRenderer;
     act(() => {
@@ -88,6 +119,8 @@ describe('YouTubeInputScreen', () => {
       reset,
       canGoBack: () => true,
       getParent: () => ({navigate: tabNavigate}),
+      // SETE-289: fromHome subscribes a beforeRemove interceptor.
+      addListener: () => () => {},
     } as unknown as React.ComponentProps<
       typeof YouTubeInputScreen
     >['navigation'];
@@ -137,6 +170,8 @@ describe('YouTubeInputScreen', () => {
       popToTop,
       canGoBack: () => false,
       getParent: () => ({navigate: tabNavigate}),
+      // SETE-289: fromHome subscribes a beforeRemove interceptor.
+      addListener: () => () => {},
     } as unknown as React.ComponentProps<
       typeof YouTubeInputScreen
     >['navigation'];
@@ -198,5 +233,110 @@ describe('YouTubeInputScreen', () => {
     });
 
     expect(goBack).toHaveBeenCalledTimes(1);
+  });
+
+  // SETE-289: the header Back button is bypassed by the iOS swipe
+  // gesture and the Android system Back (native POP). From Home, those
+  // paths must honor fromHome instead of landing on CreateMain.
+  function renderFromHomeInput(addListener: jest.Mock) {
+    const tabNavigate = jest.fn();
+    const reset = jest.fn();
+    const nav = {
+      goBack: jest.fn(),
+      navigate: mockNavigate,
+      reset,
+      canGoBack: () => true,
+      getParent: () => ({navigate: tabNavigate}),
+      addListener,
+    } as unknown as React.ComponentProps<
+      typeof YouTubeInputScreen
+    >['navigation'];
+    const fromHomeRoute = {
+      key: 'YouTubeInput',
+      name: 'YouTubeInput',
+      params: {fromHome: true},
+    } as unknown as React.ComponentProps<typeof YouTubeInputScreen>['route'];
+
+    act(() => {
+      ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <YouTubeInputScreen navigation={nav} route={fromHomeRoute} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+    return {reset, tabNavigate};
+  }
+
+  function beforeRemoveListener(addListener: jest.Mock) {
+    const call = addListener.mock.calls.find(
+      ([event]) => event === 'beforeRemove',
+    );
+    if (!call) throw new Error('No beforeRemove subscription');
+    return call[1] as (e: {
+      preventDefault: jest.Mock;
+      data: {action: {type: string}};
+    }) => void;
+  }
+
+  it('intercepts a native POP from Home and exits to Home (not CreateMain)', () => {
+    const addListener = jest.fn(() => () => {});
+    const {reset, tabNavigate} = renderFromHomeInput(addListener);
+
+    const preventDefault = jest.fn();
+    act(() => {
+      beforeRemoveListener(addListener)({
+        preventDefault,
+        data: {action: {type: 'POP'}},
+      });
+    });
+
+    expect(preventDefault).toHaveBeenCalledTimes(1);
+    expect(reset).toHaveBeenCalledWith({
+      index: 0,
+      routes: [{name: 'CreateMain'}],
+    });
+    expect(tabNavigate).toHaveBeenCalledWith('Home');
+  });
+
+  it('lets non-POP removals through (e.g. our own reset)', () => {
+    const addListener = jest.fn(() => () => {});
+    const {reset, tabNavigate} = renderFromHomeInput(addListener);
+
+    const preventDefault = jest.fn();
+    act(() => {
+      beforeRemoveListener(addListener)({
+        preventDefault,
+        data: {action: {type: 'RESET'}},
+      });
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(reset).not.toHaveBeenCalled();
+    expect(tabNavigate).not.toHaveBeenCalled();
+  });
+
+  it('subscribes no interceptor without fromHome', () => {
+    const addListener = jest.fn(() => () => {});
+    const nav = {
+      goBack: jest.fn(),
+      navigate: mockNavigate,
+      addListener,
+    } as unknown as React.ComponentProps<
+      typeof YouTubeInputScreen
+    >['navigation'];
+
+    act(() => {
+      ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <YouTubeInputScreen navigation={nav} route={route} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    expect(addListener).not.toHaveBeenCalled();
   });
 });

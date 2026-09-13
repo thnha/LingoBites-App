@@ -18,7 +18,15 @@ import {bootstrapContentPackage} from '../../content/bootstrap/contentBootstrap'
 import {HomeScreen} from '../HomeScreen';
 
 function navigation(tabNavigate = jest.fn()) {
-  return {navigate: jest.fn(), getParent: () => ({navigate: tabNavigate})};
+  return {
+    navigate: jest.fn(),
+    getParent: () => ({
+      navigate: tabNavigate,
+      // SETE-289: HomeScreen resolves the RootStack through the tab parent
+      // on every render.
+      getParent: () => ({navigate: jest.fn()}),
+    }),
+  };
 }
 
 async function renderHome(nav = navigation()) {

@@ -37,6 +37,33 @@ const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
 
 const TAB_ITEM_HIT_SLOP = {top: 8, bottom: 8, left: 8, right: 8};
 const TAB_ICON_SIZE = 21;
+
+/**
+ * SETE-287 follow-up: Home opens YouTubeInput directly in the Create stack
+ * with `fromHome: true` (SETE-289: YouTubeHistory moved to the RootStack
+ * above the tabs, so it no longer contributes entries here). If the user
+ * leaves via the bottom bar (Home tab) instead of the header Back button,
+ * the Create stack stays rooted at that YouTube screen. The next Create
+ * tap must reset to CreateMain instead of resurfacing the stale screen.
+ * Returns true when any route in the nested Create stack carries
+ * `params.fromHome === true`.
+ */
+export function createStackHasFromHomeEntry(
+  tabState: BottomTabBarProps['state'],
+): boolean {
+  const createRoute = tabState.routes.find(r => r.name === 'Create');
+  const nested = (createRoute as {state?: {routes?: Array<{params?: unknown}>}} | undefined)
+    ?.state;
+  const nestedRoutes = nested?.routes;
+  if (!nestedRoutes) {
+    return false;
+  }
+  return nestedRoutes.some(
+    r =>
+      (r.params as {fromHome?: boolean} | undefined)?.fromHome === true,
+  );
+}
+
 const INDICATOR_DURATION_MS = 200;
 /**
  * Symmetric inset of the sliding indicator inside each tab slot
@@ -316,7 +343,24 @@ export function TabBar({
                     target: route.key,
                     canPreventDefault: true,
                   });
-                  if (!focused && !event.defaultPrevented) {
+                  if (event.defaultPrevented) {
+                    return;
+                  }
+                  // SETE-287 follow-up: a stale fromHome YouTube entry
+                  // survives a bottom-bar exit (Home tab) because the
+                  // header-Back reset never ran. Reset on Create re-entry
+                  // so the lesson composer is reachable again. Normal
+                  // in-tab stacks (no fromHome) keep standard preserve
+                  // behavior. Handles the focused-tab tap too as an
+                  // escape hatch when already stuck on the stale screen.
+                  if (
+                    route.name === 'Create' &&
+                    createStackHasFromHomeEntry(state)
+                  ) {
+                    navigation.navigate('Create', {screen: 'CreateMain'});
+                    return;
+                  }
+                  if (!focused) {
                     navigation.navigate(route.name);
                   }
                 }}
