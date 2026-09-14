@@ -21,6 +21,7 @@ export const HANDOFF_ICONS = [
   'chevron_right',
   'circle',
   'close',
+  'content_copy',
   'content_paste',
   'delete',
   'description',

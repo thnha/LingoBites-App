@@ -48,6 +48,7 @@ jest.mock('react-native-keychain', () => ({
   setGenericPassword: jest.fn().mockResolvedValue({service: 'mock'}),
   getGenericPassword: jest.fn().mockResolvedValue(false),
   resetGenericPassword: jest.fn().mockResolvedValue(true),
+  getAllGenericPasswordServices: jest.fn().mockResolvedValue([]),
 }));
 
 jest.mock('react-native-config', () => ({

@@ -328,5 +328,35 @@
       "water_10": "10 lượt ôn đúng hạn",
       "water_50": "50 lượt ôn đúng hạn"
     }
+  },
+  "account": {
+    "onboarding_title": "Mình nên gọi bạn là gì?",
+    "onboarding_subtitle": "Tên này hiển thị trong app và không thể dùng để đăng nhập ở máy khác.",
+    "onboarding_footnote": "Bạn có thể đổi tên bất cứ lúc nào trong Hồ sơ.",
+    "name_field_label": "Tên hiển thị",
+    "name_placeholder": "Ví dụ: An",
+    "name_required": "Vui lòng nhập tên để tiếp tục.",
+    "name_too_long": "Tên quá dài (tối đa 80 ký tự).",
+    "name_invalid_characters": "Tên chứa ký tự không hợp lệ.",
+    "continue": "Tiếp tục",
+    "profile_title": "Tài khoản",
+    "public_code_label": "Mã người dùng",
+    "public_code_hint": "Mã này không bao giờ đổi. Đọc mã cho admin khi cần gộp tài khoản sau khi cài lại app.",
+    "copied": "Đã sao chép.",
+    "display_name_label": "Tên hiển thị",
+    "phone_label": "Số điện thoại (không bắt buộc)",
+    "phone_hint": "Chỉ dùng để admin tìm tài khoản khi bạn nhờ hỗ trợ. App không gửi mã xác minh về số này.",
+    "phone_invalid": "Số điện thoại phải gồm mã quốc gia, ví dụ +84901234567.",
+    "save": "Lưu",
+    "saved": "Đã lưu thay đổi.",
+    "merge_in_progress": "Tài khoản đang được gộp. Vui lòng thử lại sau.",
+    "offline_title": "Mất kết nối",
+    "boot_failed": "Không thể mở tài khoản. Vui lòng thử lại.",
+    "name_field_hint": "Nhập tên hiển thị, tối đa 80 ký tự",
+    "phone_field_hint": "Nhập số điện thoại gồm mã quốc gia, ví dụ +84",
+    "copy_code_hint": "Sao chép mã người dùng vào clipboard",
+    "save_hint": "Lưu tên hiển thị và số điện thoại",
+    "retry_hint": "Thử lại thao tác vừa rồi",
+    "continue_hint": "Tạo tài khoản với tên đã nhập"
   }
 }

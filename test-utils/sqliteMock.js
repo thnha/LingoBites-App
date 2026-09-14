@@ -171,10 +171,10 @@ function createMockDatabase() {
       return {rowsAffected: 1};
     }
 
-    if (normalized.startsWith('select * from youtube_progress where lesson_id')) {
-      return toRows(
-        youtubeProgress.filter(row => row.lesson_id === params[0]),
-      );
+    if (
+      normalized.startsWith('select * from youtube_progress where lesson_id')
+    ) {
+      return toRows(youtubeProgress.filter(row => row.lesson_id === params[0]));
     }
 
     if (normalized.startsWith('delete from youtube_progress where lesson_id')) {
@@ -263,8 +263,10 @@ function createMockDatabase() {
     }
 
     if (normalized.startsWith('insert into practice_events')) {
-      const existing = practiceEvents.find(e => e.session_id === params[2] && e.sequence === params[4]);
-      if (existing) throw new Error("UNIQUE constraint failed");
+      const existing = practiceEvents.find(
+        e => e.session_id === params[2] && e.sequence === params[4],
+      );
+      if (existing) throw new Error('UNIQUE constraint failed');
       practiceEvents.push({
         event_id: params[0],
         contract_version: params[1],
@@ -306,8 +308,14 @@ function createMockDatabase() {
     if (normalized.startsWith('select * from practice_sets where id')) {
       return toRows(practiceSets.filter(r => r.id === params[0]));
     }
-    if (normalized.startsWith('select * from practice_questions where practice_set_id')) {
-      return toRows(practiceQuestions.filter(r => r.practice_set_id === params[0]));
+    if (
+      normalized.startsWith(
+        'select * from practice_questions where practice_set_id',
+      )
+    ) {
+      return toRows(
+        practiceQuestions.filter(r => r.practice_set_id === params[0]),
+      );
     }
     if (normalized.startsWith('select * from practice_sessions where id')) {
       return toRows(practiceSessions.filter(r => r.id === params[0]));
@@ -315,13 +323,21 @@ function createMockDatabase() {
     if (normalized.startsWith('select * from practice_events where event_id')) {
       return toRows(practiceEvents.filter(r => r.event_id === params[0]));
     }
-    if (normalized.startsWith('select * from practice_events where session_id')) {
+    if (
+      normalized.startsWith('select * from practice_events where session_id')
+    ) {
       const rows = practiceEvents.filter(r => r.session_id === params[0]);
       rows.sort((a, b) => a.sequence - b.sequence);
       return toRows(rows);
     }
-    if (normalized.startsWith('select * from practice_sessions where practice_set_id')) {
-      const rows = practiceSessions.filter(r => r.practice_set_id === params[0]);
+    if (
+      normalized.startsWith(
+        'select * from practice_sessions where practice_set_id',
+      )
+    ) {
+      const rows = practiceSessions.filter(
+        r => r.practice_set_id === params[0],
+      );
       rows.sort((a, b) => a.attempt_no - b.attempt_no);
       return toRows(rows);
     }
@@ -336,14 +352,20 @@ function createMockDatabase() {
         );
       }
       rows.sort((a, b) =>
-        String(b.ready_at || b.created_at || '').localeCompare(String(a.ready_at || a.created_at || '')),
+        String(b.ready_at || b.created_at || '').localeCompare(
+          String(a.ready_at || a.created_at || ''),
+        ),
       );
       return toRows(rows.slice(0, 1));
     }
-    if (normalized.startsWith('select id from practice_sessions where lesson_id')) {
+    if (
+      normalized.startsWith('select id from practice_sessions where lesson_id')
+    ) {
       const rows = practiceSessions
         .filter(r => r.lesson_id === params[0] && r.status === params[1])
-        .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)));
+        .sort((a, b) =>
+          String(b.updated_at).localeCompare(String(a.updated_at)),
+        );
       return toRows(rows.slice(0, 1));
     }
 
@@ -363,7 +385,8 @@ function createMockDatabase() {
         if (!set) return true;
         if (set.id === 'set-old-active') return true;
         return practiceSessions.some(
-          sess => sess.practice_set_id === set.id && sess.status === 'in_progress',
+          sess =>
+            sess.practice_set_id === set.id && sess.status === 'in_progress',
         );
       });
       const removed = practiceQuestions.length - remaining.length;
@@ -376,7 +399,10 @@ function createMockDatabase() {
       const remaining = practiceSets.filter(
         s =>
           s.id === 'set-old-active' ||
-          practiceSessions.some(sess => sess.practice_set_id === s.id && sess.status === 'in_progress'),
+          practiceSessions.some(
+            sess =>
+              sess.practice_set_id === s.id && sess.status === 'in_progress',
+          ),
       );
       const removed = practiceSets.length - remaining.length;
       practiceSets.length = 0;
@@ -525,7 +551,9 @@ function createMockDatabase() {
       normalized.includes('from lesson_v2 where is_saved = 1')
     ) {
       const rows = lessonV2.filter(row => row.is_saved === 1);
-      rows.sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)));
+      rows.sort((a, b) =>
+        String(b.updated_at).localeCompare(String(a.updated_at)),
+      );
       return toRows(rows);
     }
     for (const [table, collection] of Object.entries({
@@ -602,6 +630,23 @@ function createMockDatabase() {
         value: params[1],
         updated_at: params[2],
       });
+      return {rowsAffected: 1};
+    }
+
+    // SETE-303 / T6: upsert for key-value settings (install marker, fallback
+    // device id, signup idempotency key).
+    if (normalized.startsWith('insert or replace into app_settings')) {
+      const existing = appSettings.find(row => row.key === params[0]);
+      if (existing) {
+        existing.value = params[1];
+        existing.updated_at = params[2];
+      } else {
+        appSettings.push({
+          key: params[0],
+          value: params[1],
+          updated_at: params[2],
+        });
+      }
       return {rowsAffected: 1};
     }
 
@@ -895,6 +940,15 @@ function createMockDatabase() {
       const count = appSettings.length;
       appSettings.length = 0;
       return {rowsAffected: count};
+    }
+
+    // SETE-303 / T6: keyed setting delete (signup idempotency key cleanup).
+    if (normalized.startsWith('delete from app_settings where key')) {
+      const before = appSettings.length;
+      const remaining = appSettings.filter(row => row.key !== params[0]);
+      appSettings.length = 0;
+      appSettings.push(...remaining);
+      return {rowsAffected: before - remaining.length};
     }
 
     if (normalized === 'delete from flashcards;') {

@@ -157,4 +157,11 @@ export type RootStackParamList = {
   Tabs: NavigatorScreenParams<RootTabParamList> | undefined;
   YouTubeHistory: undefined;
   YouTubeLesson: CreateStackParamList['YouTubeLesson'];
+  /**
+   * SETE-303 / T6: account gate. `BootGate` covers bootstrapping and
+   * retryable boot failures; `Onboarding` collects the required display
+   * name. Neither is reachable once the account is authenticated.
+   */
+  BootGate: undefined;
+  Onboarding: undefined;
 } & LearningDetailParamList;

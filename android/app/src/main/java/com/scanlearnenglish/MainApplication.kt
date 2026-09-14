@@ -16,6 +16,8 @@ class MainApplication : Application(), ReactApplication {
         PackageList(this).packages.apply {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // add(MyReactNativePackage())
+          // SETE-303 / T6: first-party device-identifier adapter.
+          add(DeviceIdentityPackage())
         },
     )
   }

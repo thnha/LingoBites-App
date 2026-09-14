@@ -39,15 +39,16 @@ import {useLibraryStore} from '@/store/useLibraryStore';
 import {useFeatureFlags} from '@/release';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
-import {
-  formatProfileAccuracy,
-  formatProfileWordCount,
-} from './profileMetrics';
+import {formatProfileAccuracy, formatProfileWordCount} from './profileMetrics';
 import {useProgressReport} from './useProgressReport';
+import {AccountProfileSection, useAccountStore} from '@modules/account';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
 
-/** Phase 0 placeholders — visual parity with handoff mock until profile store ships. */
+/**
+ * Header copy: the account store (SETE-303 / T6) drives the display name
+ * once boot completes; the placeholder below only shows pre-auth.
+ */
 const PROFILE_PLACEHOLDER = {
   initials: 'HV',
   name: 'Học viên',
@@ -58,6 +59,17 @@ const PROFILE_PLACEHOLDER = {
 const UNSET_TRAILING = {chip: 'Chưa đặt', chipTone: 'neutral' as const};
 
 export function ProfileScreen({navigation}: Props) {
+  const accountUser = useAccountStore(state => state.user);
+  const displayName = accountUser?.display_name ?? PROFILE_PLACEHOLDER.name;
+  const initials =
+    accountUser?.display_name
+      ?.normalize('NFC')
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(part => [...part][0] ?? '')
+      .join('')
+      .toUpperCase() || PROFILE_PLACEHOLDER.initials;
   const {theme} = useAppTheme();
   const feedClearance = useFloatingTabBarClearance();
   const {t} = useTranslation();
@@ -96,7 +108,9 @@ export function ProfileScreen({navigation}: Props) {
       const report = getCapabilityProgressReport();
       setLearningMetrics({
         wordsKnownLabel: formatProfileWordCount(summary.wordCount),
-        accuracyLabel: formatProfileAccuracy(report.firstListenComprehensionRate),
+        accuracyLabel: formatProfileAccuracy(
+          report.firstListenComprehensionRate,
+        ),
       });
     }, [getSummary, getCapabilityProgressReport]),
   );
@@ -175,22 +189,25 @@ export function ProfileScreen({navigation}: Props) {
       </View>
 
       <ScrollView
-        contentContainerStyle={[themedStyles.scrollContent, {paddingBottom: feedClearance}]}
+        contentContainerStyle={[
+          themedStyles.scrollContent,
+          {paddingBottom: feedClearance},
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <AppCard style={styles.profileCard}>
           <View style={themedStyles.avatar}>
-            <AppText style={themedStyles.avatarText}>
-              {PROFILE_PLACEHOLDER.initials}
-            </AppText>
+            <AppText style={themedStyles.avatarText}>{initials}</AppText>
           </View>
           <View style={styles.profileCopy}>
-            <AppText variant="h3">{PROFILE_PLACEHOLDER.name}</AppText>
+            <AppText variant="h3">{displayName}</AppText>
             <AppText color="secondary" variant="caption">
               {PROFILE_PLACEHOLDER.subtitle}
             </AppText>
           </View>
         </AppCard>
+
+        <AccountProfileSection />
 
         <View style={themedStyles.streakCard}>
           <MaterialIcon
@@ -347,7 +364,7 @@ export function ProfileScreen({navigation}: Props) {
 
         <View style={styles.settingsSection}>
           <SectionHeader title="Vùng nguy hiểm" />
-          
+
           <View style={styles.dangerActionContainer}>
             <Pressable
               accessibilityLabel="Xóa dữ liệu luyện nói"
@@ -362,7 +379,11 @@ export function ProfileScreen({navigation}: Props) {
                 Xóa dữ liệu luyện nói & ghi âm
               </AppText>
             </Pressable>
-            <AppText color="secondary" variant="caption" style={styles.dangerCaption}>
+            <AppText
+              color="secondary"
+              variant="caption"
+              style={styles.dangerCaption}
+            >
               Xóa toàn bộ bản ghi âm và lịch sử luyện nói. Không thể khôi phục.
             </AppText>
           </View>
@@ -381,7 +402,11 @@ export function ProfileScreen({navigation}: Props) {
                 Xóa dữ liệu học trên máy
               </AppText>
             </Pressable>
-            <AppText color="secondary" variant="caption" style={styles.dangerCaption}>
+            <AppText
+              color="secondary"
+              variant="caption"
+              style={styles.dangerCaption}
+            >
               Xóa toàn bộ tiến trình học, XP, và lịch sử. Không thể khôi phục.
             </AppText>
           </View>
@@ -404,10 +429,12 @@ export function ProfileScreen({navigation}: Props) {
               Xóa dữ liệu học trên máy
             </AppText>
             <AppText color="secondary" style={{marginBottom: 16}}>
-              Hành động này sẽ xóa toàn bộ tiến trình học, XP, và lịch sử. Không thể khôi phục.
+              Hành động này sẽ xóa toàn bộ tiến trình học, XP, và lịch sử. Không
+              thể khôi phục.
             </AppText>
             <AppText style={{marginBottom: 8}}>
-              Nhập chữ <AppText style={{fontWeight: 'bold'}}>XOA</AppText> để xác nhận:
+              Nhập chữ <AppText style={{fontWeight: 'bold'}}>XOA</AppText> để
+              xác nhận:
             </AppText>
             <TextField
               value={clearDataConfirmText}

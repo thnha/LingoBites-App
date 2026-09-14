@@ -1,5 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
+import {
+  BootGateScreen,
+  OnboardingNameScreen,
+  useAccountStore,
+} from '@modules/account';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import type {
@@ -46,6 +51,7 @@ import {
 import {TtsSpikeScreen} from '@modules/tts';
 import {useFeatureFlags} from '@/release';
 import {TabBar} from './TabBar';
+import {accountGateRouteForPhase} from './accountGate';
 import {getRootStackRouteNames} from './rootStackRoutes';
 import {tabBarVisibilityOptions} from './immersiveTabRoutes';
 import {isIngestionRouteEnabled} from './ingestionRouteGate';
@@ -410,6 +416,30 @@ function TabNavigator() {
 export function AppNavigator() {
   const {config} = useFeatureFlags();
   const rootRouteNames = getRootStackRouteNames(config.features);
+  const phase = useAccountStore(state => state.phase);
+  const boot = useAccountStore(state => state.boot);
+  useEffect(() => {
+    void boot();
+  }, [boot]);
+  if (accountGateRouteForPhase(phase) !== 'Tabs') {
+    return (
+      <NavigationContainer>
+        <RootStack.Navigator
+          id="RootStack"
+          screenOptions={{headerShown: false}}
+        >
+          {accountGateRouteForPhase(phase) === 'Onboarding' ? (
+            <RootStack.Screen
+              component={OnboardingNameScreen}
+              name="Onboarding"
+            />
+          ) : (
+            <RootStack.Screen component={BootGateScreen} name="BootGate" />
+          )}
+        </RootStack.Navigator>
+      </NavigationContainer>
+    );
+  }
   return (
     <NavigationContainer>
       <RootStack.Navigator id="RootStack" screenOptions={{headerShown: false}}>
