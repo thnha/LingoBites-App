@@ -102,6 +102,13 @@ function makeLesson(): YouTubeTranscript {
   };
 }
 
+async function openOverflowMenu(tree: renderer.ReactTestRenderer) {
+  await act(async () => {
+    tree.root.findByProps({testID: 'youtube-more-options'}).props.onPress();
+    await Promise.resolve();
+  });
+}
+
 async function renderScreen(lesson: YouTubeTranscript = makeLesson()) {
   let tree!: renderer.ReactTestRenderer;
   await act(async () => {
@@ -202,6 +209,7 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
+    await openOverflowMenu(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'youtube-toggle-repeat'}).props.onPress();
       await Promise.resolve();
@@ -225,6 +233,7 @@ describe('YouTubeLessonScreen', () => {
       tree.root.findByProps({testID: 'youtube-iframe'}).props.playbackRate,
     ).toBe(1);
 
+    await openOverflowMenu(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'youtube-playback-rate'}).props.onPress();
       await Promise.resolve();
@@ -244,6 +253,7 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
+    await openOverflowMenu(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'youtube-ab-loop-a'}).props.onPress();
       await Promise.resolve();
@@ -255,6 +265,8 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
+    // Selecting A closes the menu, so reopen it before setting B.
+    await openOverflowMenu(tree);
     await act(async () => {
       tree.root.findByProps({testID: 'youtube-ab-loop-b'}).props.onPress();
       await Promise.resolve();
@@ -326,6 +338,7 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
+    await openOverflowMenu(tree);
     for (const testID of [
       'youtube-playback-rate',
       'youtube-toggle-repeat',

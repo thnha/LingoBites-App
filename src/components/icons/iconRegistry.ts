@@ -44,6 +44,7 @@ export const HANDOFF_ICONS = [
   'local_fire_department',
   'menu_book',
   'mic',
+  'more_vert',
   'notifications',
   'person',
   'photo_camera',

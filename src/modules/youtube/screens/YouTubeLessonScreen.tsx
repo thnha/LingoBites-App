@@ -27,6 +27,7 @@ import {
   type YouTubePlayerRef,
 } from '../components/YouTubePlayer';
 import {TranscriptLine} from '../components/TranscriptLine';
+import {YouTubeLessonOverflowMenu} from './YouTubeLessonOverflowMenu';
 import {useTranscriptSync, TRANSCRIPT_SYNC_POLL_INTERVAL_MS} from '../sync/useTranscriptSync';
 import type {NavigationProp} from '@react-navigation/native';
 import type {
@@ -40,7 +41,6 @@ import {useBookmarkOptimistic} from '../../lesson/useBookmarkOptimistic';
 import {useFlashcardLibrary} from '../../lesson/useFlashcardLibrary';
 import {mapTranscriptToPractice} from '../utils/practiceMapper';
 import {
-  formatYouTubePlaybackRate,
   nextYouTubePlaybackRate,
   type YouTubePlaybackRate,
 } from '../utils/playbackRate';
@@ -133,6 +133,10 @@ export function YouTubeLessonScreen({
   );
   const [abLoopEndIndex, setAbLoopEndIndex] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState<YouTubePlaybackRate>(1);
+  // SETE-305 (Option B): playback controls live in the overflow menu, so the
+  // header always holds exactly 4 controls (VI, IPA, Practice, More) and Back
+  // can never be squeezed out no matter how many loop points are set.
+  const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
   const [autoScrollPaused, setAutoScrollPaused] = useState(false);
   const [playerError, setPlayerError] = useState<YouTubePlayerErrorCode | null>(
     null,
@@ -405,6 +409,14 @@ export function YouTubeLessonScreen({
     setPlaybackRate(current => nextYouTubePlaybackRate(current));
   }, []);
 
+  const openOverflowMenu = useCallback(() => {
+    setIsOverflowMenuOpen(true);
+  }, []);
+
+  const closeOverflowMenu = useCallback(() => {
+    setIsOverflowMenuOpen(false);
+  }, []);
+
   const handleToggleSave = useCallback(
     async (segment: YouTubeSegment) => {
       const dbValue = savedVocabularyIds.has(segment.id);
@@ -492,78 +504,22 @@ export function YouTubeLessonScreen({
         tone={showIpaEffective ? 'accent' : 'surface'}
       />
       <IconButton
-        accessibilityHint={t('youtube.playback_rate_hint')}
-        accessibilityLabel={t('youtube.playback_rate_a11y', {
-          rate: formatYouTubePlaybackRate(playbackRate),
-        })}
-        disabled={isOfflineReading}
-        icon="schedule"
-        onPress={cyclePlaybackRate}
-        testID="youtube-playback-rate"
-        tone={playbackRate === 1 ? 'surface' : 'accent'}
+        accessibilityHint={t('youtube.practice_hint', {defaultValue: 'Luyện tập câu'})}
+        accessibilityLabel={t('youtube.practice_title', {defaultValue: 'Luyện tập'})}
+        disabled={!onStartPractice}
+        icon="school"
+        onPress={() => onStartPractice?.()}
+        testID="youtube-start-practice"
+        tone="surface"
       />
       <IconButton
-        accessibilityHint={t('youtube.ab_loop_a_hint')}
-        accessibilityLabel={t('youtube.ab_loop_a_a11y', {
-          index:
-            abLoopStartIndex != null
-              ? abLoopStartIndex + 1
-              : t('youtube.ab_loop_unset'),
-        })}
-        disabled={isOfflineReading}
-        icon="flag"
-        onPress={setAbLoopPointA}
-        testID="youtube-ab-loop-a"
-        tone={abLoopStartIndex != null ? 'accent' : 'surface'}
+        accessibilityHint={t('youtube.more_options_hint')}
+        accessibilityLabel={t('youtube.more_options_a11y')}
+        icon="more_vert"
+        onPress={openOverflowMenu}
+        testID="youtube-more-options"
+        tone={isOverflowMenuOpen ? 'accent' : 'surface'}
       />
-      <IconButton
-        accessibilityHint={t('youtube.ab_loop_b_hint')}
-        accessibilityLabel={t('youtube.ab_loop_b_a11y', {
-          index:
-            abLoopEndIndex != null
-              ? abLoopEndIndex + 1
-              : t('youtube.ab_loop_unset'),
-        })}
-        disabled={isOfflineReading}
-        icon="compare"
-        onPress={setAbLoopPointB}
-        testID="youtube-ab-loop-b"
-        tone={abLoopActive ? 'accent' : 'surface'}
-      />
-      {abLoopStartIndex != null || abLoopEndIndex != null ? (
-        <IconButton
-          accessibilityHint={t('youtube.ab_loop_clear_hint')}
-          accessibilityLabel={t('youtube.ab_loop_clear_a11y')}
-          disabled={isOfflineReading}
-          icon="close"
-          onPress={clearAbLoop}
-          testID="youtube-ab-loop-clear"
-          tone="surface"
-        />
-      ) : null}
-      <IconButton
-        accessibilityHint={t('youtube.repeat_toggle_hint')}
-        accessibilityLabel={
-          repeatIndex !== null
-            ? t('youtube.repeat_off_a11y')
-            : t('youtube.repeat_on_a11y')
-        }
-        disabled={isOfflineReading}
-        icon="repeat"
-        onPress={toggleRepeat}
-        testID="youtube-toggle-repeat"
-        tone={repeatIndex !== null ? 'accent' : 'surface'}
-      />
-      {onStartPractice && (
-        <IconButton
-          accessibilityHint={t('youtube.practice_hint', {defaultValue: 'Luyện tập câu'})}
-          accessibilityLabel={t('youtube.practice_title', {defaultValue: 'Luyện tập'})}
-          icon="school"
-          onPress={onStartPractice}
-          testID="youtube-start-practice"
-          tone="surface"
-        />
-      )}
     </View>
   );
 
@@ -573,6 +529,21 @@ export function YouTubeLessonScreen({
         onBack={onBack}
         rightAction={headerActions}
         title={lesson.video.title}
+      />
+      <YouTubeLessonOverflowMenu
+        abLoopActive={abLoopActive}
+        abLoopEndIndex={abLoopEndIndex}
+        abLoopStartIndex={abLoopStartIndex}
+        disabledOffline={isOfflineReading}
+        onClearAbLoop={clearAbLoop}
+        onClose={closeOverflowMenu}
+        onCyclePlaybackRate={cyclePlaybackRate}
+        onSetAbLoopPointA={setAbLoopPointA}
+        onSetAbLoopPointB={setAbLoopPointB}
+        onToggleRepeat={toggleRepeat}
+        playbackRate={playbackRate}
+        repeatActive={repeatIndex !== null}
+        visible={isOverflowMenuOpen}
       />
       {saveWarning ? (
         <View
