@@ -24,6 +24,8 @@ function mapRowToRecord(row: GrammarBookmarkRow): GrammarBookmark {
     reactivatedAt: row.reactivated_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    revision: row.revision || 0,
+    tombstone: Boolean(row.tombstone),
   };
 }
 

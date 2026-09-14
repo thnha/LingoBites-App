@@ -1,3 +1,4 @@
+import { authenticatedFetch } from './authenticatedFetch';
 import i18n from '@/i18n';
 import type {PracticeEventPayload} from '../db/types';
 import {PRACTICE_CONTRACT_VERSION} from '../schemas/practice';
@@ -38,7 +39,7 @@ export type PushPracticeEventsResult =
     };
 
 type PushPracticeEventsDeps = {
-  fetchImpl?: typeof fetch;
+  fetchImpl?: typeof authenticatedFetch;
 };
 
 function isSuccessBody(body: unknown): body is {
@@ -72,7 +73,7 @@ export async function pushPracticeEvents(
   deps: PushPracticeEventsDeps = {},
 ): Promise<PushPracticeEventsResult> {
   const {apiBaseUrl} = getAppConfig();
-  const fetchImpl = deps.fetchImpl ?? fetch;
+  const fetchImpl = deps.fetchImpl ?? authenticatedFetch;
 
   let response: Response;
   try {

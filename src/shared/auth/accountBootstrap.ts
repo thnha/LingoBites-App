@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
 import {createRequestId} from '../api/requestId';
-import {getDatabase} from '../db/database';
+import {getDatabase, wipeDatabase} from '../db/database';
 import {
   canonicalizeIdentifier,
   resolveDeviceIdentifier,
@@ -235,6 +235,7 @@ async function runBoot(deps: BootDeps): Promise<BootResult> {
       };
     }
     setInstallMarker();
+    enforceAccountIsolation(bootstrapped.user.id);
     return {status: 'authenticated', user: bootstrapped.user};
   }
 
@@ -245,6 +246,16 @@ async function runBoot(deps: BootDeps): Promise<BootResult> {
     bootstrapTicketExpiresAt: bootstrapped.bootstrap_ticket_expires_at,
     identifier,
   };
+}
+
+
+function enforceAccountIsolation(userId: string): void {
+  const db = getDatabase();
+  const current = readSetting('current_account_id');
+  if (current && current !== userId) {
+    wipeDatabase(db);
+  }
+  writeSetting('current_account_id', userId);
 }
 
 function getOrCreateSignupKey(): string {
@@ -340,5 +351,6 @@ export async function submitOnboardingName(
   }
   clearSignupKey();
   setInstallMarker();
+  enforceAccountIsolation(created.user.id);
   return {status: 'authenticated', user: created.user};
 }

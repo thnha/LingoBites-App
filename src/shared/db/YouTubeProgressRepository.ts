@@ -44,7 +44,9 @@ export function getYouTubeProgress(lessonId: string): YouTubeProgress | null {
       positionMs,
       segmentIndex,
       updatedAt: row.updated_at,
-    };
+    revision: row.revision || 0,
+    tombstone: Boolean(row.tombstone),
+  };
   } catch {
     return null;
   }

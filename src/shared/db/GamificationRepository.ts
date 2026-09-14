@@ -19,6 +19,8 @@ function mapGamificationEventRow(
     sourceEventId: row.source_event_id ?? '',
     points: row.points,
     createdAt: row.created_at,
+    revision: row.revision || 0,
+    tombstone: Boolean(row.tombstone),
   };
 }
 

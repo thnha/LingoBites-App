@@ -65,6 +65,8 @@ function mapFlashcardRow(row: FlashcardRow): FlashcardRecord {
     isSaved: row.is_saved === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    revision: row.revision || 0,
+    tombstone: Boolean(row.tombstone),
   };
 }
 
@@ -304,7 +306,6 @@ export function recordFlashcardRating(
         createdAt: reviewedAt,
         payload: {
           schema_version: REVIEW_EVENT_SCHEMA_VERSION,
-          anonymous_user_id: anonymousUserId,
           card_id: input.flashcardId,
           lesson_id: schedule.lesson_id,
           rating: input.rating,

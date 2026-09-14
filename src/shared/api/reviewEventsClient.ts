@@ -1,3 +1,4 @@
+import { authenticatedFetch } from './authenticatedFetch';
 import i18n from '@/i18n';
 import type {ReviewEventPayload} from '../db/types';
 import {getAppConfig} from './appConfig';
@@ -24,7 +25,7 @@ export type PushReviewEventsResult =
     };
 
 type PushReviewEventsDeps = {
-  fetchImpl?: typeof fetch;
+  fetchImpl?: typeof authenticatedFetch;
 };
 
 function isSuccessBody(body: unknown): body is {
@@ -58,7 +59,7 @@ export async function pushReviewEvents(
   deps: PushReviewEventsDeps = {},
 ): Promise<PushReviewEventsResult> {
   const {apiBaseUrl} = getAppConfig();
-  const fetchImpl = deps.fetchImpl ?? fetch;
+  const fetchImpl = deps.fetchImpl ?? authenticatedFetch;
 
   let response: Response;
   try {

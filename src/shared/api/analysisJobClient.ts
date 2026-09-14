@@ -1,3 +1,4 @@
+import { authenticatedFetch } from './authenticatedFetch';
 import {Platform} from 'react-native';
 import {createRequestId} from './requestId';
 import {getAppConfig} from './appConfig';
@@ -262,7 +263,7 @@ export async function runAnalysisJob(
       signal,
     );
     try {
-      createResponse = await fetch(`${apiBaseUrl}${CREATE_PATH}`, {
+      createResponse = await authenticatedFetch(`${apiBaseUrl}${CREATE_PATH}`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -334,7 +335,7 @@ export async function runAnalysisJob(
         signal,
       );
       try {
-        pollResponse = await fetch(statusUrl, {
+        pollResponse = await authenticatedFetch(statusUrl, {
           method: 'GET',
           headers: {Accept: 'application/json'},
           signal: fetchSignal,

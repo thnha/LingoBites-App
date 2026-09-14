@@ -53,6 +53,8 @@ export type SaveLessonResult =
 export type ReviewRating = 'remembered' | 'forgot';
 
 export type FlashcardRecord = {
+  revision: number;
+  tombstone: boolean;
   id: string;
   lessonId: string;
   vocabularyId: string;
@@ -72,6 +74,8 @@ export type FlashcardRecord = {
 };
 
 export type ReviewScheduleRecord = {
+  revision: number;
+  tombstone: boolean;
   cardId: string;
   lessonId: string;
   intervalDays: number;
@@ -187,6 +191,8 @@ export type GamificationEventInput = {
 
 /** A stored gamification event row (ADR-4 single source of truth). */
 export type GamificationEventRecord = GamificationEventInput & {
+  revision: number;
+  tombstone: boolean;
   id: string;
 };
 
@@ -196,7 +202,6 @@ export type GamificationEventRecord = GamificationEventInput & {
  */
 export type ReviewEventPayload = {
   schema_version: 1;
-  anonymous_user_id: string;
   card_id: string;
   lesson_id: string;
   rating: ReviewRating;
@@ -277,6 +282,8 @@ export type SyncOutboxRecord = {
 export type ContentReviewItemMasteryState = ContentMasteryState;
 
 export type ContentReviewItemRecord = {
+  revision: number;
+  tombstone: boolean;
   id: string;
   srsItemId: string;
   lessonId: string;
@@ -370,6 +377,8 @@ export type CaptureErrorEventInput = {
 
 /** Persisted state of a packaged content lesson (SETE-145 / M6). */
 export type ContentLessonState = {
+  revision: number;
+  tombstone: boolean;
   lessonId: string;
   isSaved: boolean;
   isStarted: boolean;
@@ -390,6 +399,8 @@ export type SaveContentLessonResult =
 
 /** Bookmark of a grammar item (not in SRS). Upsert/reactivate pattern. */
 export type GrammarBookmark = {
+  revision: number;
+  tombstone: boolean;
   lessonId: string;
   grammarId: string;
   packageId: string;

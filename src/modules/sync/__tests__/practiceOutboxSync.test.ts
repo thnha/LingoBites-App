@@ -261,7 +261,6 @@ describe('P12 practice outbox sync', () => {
       entityId: 'card-1',
       payload: {
         schema_version: 1,
-        anonymous_user_id: 'user-1',
         card_id: 'card-1',
         lesson_id: 'lesson-1',
         rating: 'remembered',

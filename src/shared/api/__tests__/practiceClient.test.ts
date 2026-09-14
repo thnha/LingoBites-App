@@ -1,4 +1,4 @@
-import * as TokenStore from '@shared/security/lessonTokenStore';
+import * as AuthSession from '@shared/auth/authSession';
 import {createPracticeSetApi, getPracticeSetApi} from '../practiceClient';
 
 const mockFetch = jest.fn();
@@ -13,8 +13,8 @@ const config = {
 beforeEach(() => {
   mockFetch.mockReset();
   jest
-    .spyOn(TokenStore, 'getLessonToken')
-    .mockResolvedValue({ok: true, token: 'test-token'});
+    .spyOn(AuthSession, 'ensureValidSession')
+    .mockResolvedValue({status: 'valid', session: {access_token: 'test-token', session_id: '1', refresh_token: '2', access_expires_at: '2050', refresh_expires_at: '2050'}, userId: 'user1'});
 });
 
 afterEach(() => {
@@ -22,7 +22,7 @@ afterEach(() => {
 });
 
 describe('practiceClient auth headers (SETE-209)', () => {
-  it('sends the unwrapped Keychain token, not the result object', async () => {
+  it('sends the authenticated token', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 202,
@@ -41,7 +41,7 @@ describe('practiceClient auth headers (SETE-209)', () => {
     expect(headers.Authorization).not.toContain('[object Object]');
   });
 
-  it('getPracticeSetApi sends the unwrapped token too', async () => {
+  it('getPracticeSetApi sends the token too', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 202,
@@ -58,28 +58,6 @@ describe('practiceClient auth headers (SETE-209)', () => {
     expect((init.headers as Record<string, string>).Authorization).toBe(
       'Bearer test-token',
     );
-  });
-
-  it('throws instead of sending an empty bearer when the token is missing', async () => {
-    jest
-      .spyOn(TokenStore, 'getLessonToken')
-      .mockResolvedValue({ok: true, token: null});
-
-    await expect(
-      createPracticeSetApi('lesson-1', 3, config, 'idem-1'),
-    ).rejects.toThrow('Missing lesson token');
-    expect(mockFetch).not.toHaveBeenCalled();
-  });
-
-  it('throws when secure storage is unavailable', async () => {
-    jest
-      .spyOn(TokenStore, 'getLessonToken')
-      .mockResolvedValue({ok: false, errorCode: 'KEYCHAIN_ERROR', error: 'x'});
-
-    await expect(getPracticeSetApi('lesson-1', 'set-1')).rejects.toThrow(
-      'KEYCHAIN_ERROR',
-    );
-    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('maps HTTP 422 refusal to a typed rejected result, not a throw', async () => {

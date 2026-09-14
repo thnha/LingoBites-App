@@ -14,7 +14,6 @@ import type {ReviewEventPayload} from '../types';
 
 const payload: ReviewEventPayload = {
   schema_version: 1,
-  anonymous_user_id: 'user-1',
   card_id: 'card-1',
   lesson_id: 'lesson-1',
   rating: 'remembered',

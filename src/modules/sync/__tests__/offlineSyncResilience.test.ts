@@ -30,7 +30,6 @@ describe('Offline / Sync Resilience (REQ-45 / VC-23)', () => {
       entityId: 'card-101',
       payload: {
         schema_version: 1,
-        anonymous_user_id: 'user-anon',
         card_id: 'card-101',
         lesson_id: 'lesson-101',
         rating: 'remembered',

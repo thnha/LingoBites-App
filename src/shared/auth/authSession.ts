@@ -139,6 +139,7 @@ async function runRefresh(input: {
  * token is expired. Concurrent callers share one rotation.
  */
 export function ensureValidSession(input: {
+  forceRefresh?: boolean;
   client: AuthHttpClient;
   now?: number;
 }): Promise<EnsureSessionResult> {
@@ -154,7 +155,7 @@ export function ensureValidSession(input: {
       return {status: 'no-session'};
     }
     const {user_id: userId, ...session} = stored.value;
-    if (!isAccessTokenExpired(session, input.now)) {
+    if (!input.forceRefresh && !isAccessTokenExpired(session, input.now)) {
       return {status: 'valid', session, userId};
     }
     return runRefresh({client: input.client, session, userId});

@@ -5,7 +5,6 @@ import {computeLessonInputHash} from './lessonInputHash';
 
 type LessonV2Row = {
   lesson_id: string;
-  anonymous_user_id: string;
   input_hash: string;
   schema_version: string;
   request_id: string;

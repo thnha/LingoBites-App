@@ -1,6 +1,7 @@
 import {AppState} from 'react-native';
 import fixture from '@shared/schemas/__tests__/fixtures/lesson-v2-envelope.json';
 import * as TokenStore from '@shared/security/lessonTokenStore';
+import * as AuthSession from '@shared/auth/authSession';
 import {
   createLessonV2,
   resumeLessonV2,
@@ -38,6 +39,11 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
   let tokenStoreMap: Map<string, string>;
 
   beforeEach(() => {
+    jest.spyOn(AuthSession, 'ensureValidSession').mockResolvedValue({
+      status: 'valid',
+      session: {access_token: 'token-for-retry', session_id: '1', refresh_token: '2', access_expires_at: '2050', refresh_expires_at: '2050'},
+      userId: 'user1'
+    });
     Object.defineProperty(AppState, 'currentState', {
       value: 'active',
       configurable: true,
@@ -304,7 +310,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
 
     expect(result.ok).toBe(true);
     // Verified: Keychain now stores the reissued token
-    expect(tokenStoreMap.get(lessonId)).toBe('new-reissued-token');
+    // Token store no longer used.
   });
 
   // 5. Resume / offline resilience
@@ -370,8 +376,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
       {fetchImpl},
     );
 
-    // Token must be stored in Keychain
-    expect(tokenStoreMap.get(baseLesson.lesson_id)).toBe(secretToken);
+    // No longer uses capability tokens
 
     // SQLite database must NOT contain the secret token anywhere
     const db = getDatabase();
@@ -417,9 +422,7 @@ describe('lesson-v2 Workflow Integration & Verification (SETE-177)', () => {
     const deleteResult = await deleteLessonV2(lessonId, {fetchImpl});
     expect(deleteResult.ok).toBe(true);
 
-    // Token removed from Keychain
-    expect(tokenStoreMap.has(lessonId)).toBe(false);
-
+    
     // Local lesson purged from SQLite
     expect(getLessonV2ById(lessonId)).toBeNull();
   });

@@ -68,6 +68,8 @@ const mockFlashcard1: FlashcardRecord = {
   isSaved: false,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
+  revision: 0,
+  tombstone: false,
 };
 
 const mockFlashcard2: FlashcardRecord = {

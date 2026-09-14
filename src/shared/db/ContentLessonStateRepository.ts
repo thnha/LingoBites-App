@@ -20,6 +20,8 @@ function mapRowToRecord(row: ContentLessonStateRow): ContentLessonState {
     isStarted: row.is_started === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    revision: row.revision || 0,
+    tombstone: Boolean(row.tombstone),
   };
 }
 

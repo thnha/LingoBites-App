@@ -67,7 +67,7 @@ describe('lessonV2Client', () => {
       resumeLessonV2(fixture.lesson.lesson_id, {fetchImpl: jest.fn()}),
     ).resolves.toMatchObject({
       ok: false,
-      errorCode: 'MISSING_TOKEN',
+      errorCode: 'POLLING_STOPPED',
     });
   });
 });

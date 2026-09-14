@@ -1,3 +1,4 @@
+import { authenticatedFetch } from './authenticatedFetch';
 import {useEffect, useState} from 'react';
 import {z} from 'zod';
 import {getAppConfig} from '@shared/api/appConfig';
@@ -24,7 +25,7 @@ export async function fetchYouTubeCapability(
 ): Promise<boolean> {
   try {
     const {apiBaseUrl} = getAppConfig();
-    const response = await fetch(`${apiBaseUrl}/v1/capabilities`, {
+    const response = await authenticatedFetch(`${apiBaseUrl}/v1/capabilities`, {
       headers: {Accept: 'application/json'},
       signal,
     });

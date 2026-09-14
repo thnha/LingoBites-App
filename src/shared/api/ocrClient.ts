@@ -1,3 +1,4 @@
+import { authenticatedFetch } from './authenticatedFetch';
 import {Platform} from 'react-native';
 import {createRequestId} from './requestId';
 import {getAppConfig} from './appConfig';
@@ -113,7 +114,7 @@ export async function extractTextFromImage(
       signal,
     );
     try {
-      response = await fetch(`${apiBaseUrl}/v1/ocr`, {
+      response = await authenticatedFetch(`${apiBaseUrl}/v1/ocr`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',

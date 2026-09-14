@@ -34,6 +34,8 @@ const mockFlashcard: FlashcardRecord = {
   isSaved: false,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
+  revision: 0,
+  tombstone: false,
 };
 
 const mockFlashcardNoExample: FlashcardRecord = {
@@ -345,6 +347,8 @@ describe('VocabularyRowCard', () => {
       isSaved: true,
       createdAt: '2024-01-02T00:00:00Z',
       updatedAt: '2024-01-02T00:00:00Z',
+      revision: 0,
+      tombstone: false,
     };
 
     const tree = render(

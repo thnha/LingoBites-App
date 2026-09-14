@@ -17,8 +17,8 @@ import type {
 } from './types';
 
 type LessonRow = {
-  id: string;
   anonymous_user_id: string;
+  id: string;
   lesson_input_hash: string;
   title: string;
   source_type: string;

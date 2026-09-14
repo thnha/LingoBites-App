@@ -11,11 +11,7 @@ import {
   upsertLessonV2,
   deleteLessonV2 as deleteLocalLessonV2,
 } from '../db/LessonV2Repository';
-import {
-  deleteLessonToken,
-  getLessonToken,
-  saveLessonToken,
-} from '../security/lessonTokenStore';
+import { authenticatedFetch } from './authenticatedFetch';
 import type {AnalyzeSourceType} from './types';
 
 const CREATE_PATH = '/v2/lessons';
@@ -32,7 +28,6 @@ export type LessonV2CreateInput = {
   promptVersion?: string;
   sourceType?: AnalyzeSourceType;
   idempotencyKey?: string;
-  anonymousUserId?: string;
 };
 
 export type LessonV2ClientErrorCode =
@@ -158,7 +153,7 @@ async function readJson(response: Response): Promise<unknown> {
 }
 
 async function request(
-  fetchImpl: FetchImpl,
+  fetchImpl: FetchImpl | undefined,
   url: string,
   init: RequestInit,
   signal: AbortSignal | undefined,
@@ -166,7 +161,7 @@ async function request(
 ): Promise<{response?: Response; error?: LessonV2ClientError}> {
   const timeout = withTimeout(timeoutMs, signal);
   try {
-    return {response: await fetchImpl(url, {...init, signal: timeout.signal})};
+    return {response: await authenticatedFetch(url, {...init, signal: timeout.signal}, fetchImpl)};
   } catch {
     return {
       error: signal?.aborted
@@ -176,30 +171,6 @@ async function request(
   } finally {
     timeout.cleanup();
   }
-}
-
-async function tokenFor(
-  lessonId: string,
-): Promise<{token?: string; error?: LessonV2ClientError}> {
-  const result = await getLessonToken(lessonId);
-  if (!result.ok)
-    return {
-      error: {
-        ok: false,
-        errorCode: result.errorCode,
-        message: 'Secure token storage is unavailable.',
-      },
-    };
-  return result.token
-    ? {token: result.token}
-    : {
-        error: {
-          ok: false,
-          errorCode: 'MISSING_TOKEN',
-          message: 'This lesson is not available for resume.',
-          retryable: false,
-        },
-      };
 }
 
 async function persistLesson(
@@ -228,7 +199,7 @@ export async function createLessonV2Skeleton(
       ? Platform.OS
       : undefined;
   const requestResult = await request(
-    options.fetchImpl ?? fetch,
+    options.fetchImpl,
     `${apiBaseUrl}${CREATE_PATH}`,
     {
       method: 'POST',
@@ -244,7 +215,7 @@ export async function createLessonV2Skeleton(
         native_language: 'Vietnamese',
         source_type: input.sourceType ?? 'paste_text',
         prompt_version: input.promptVersion ?? DEFAULT_PROMPT_VERSION,
-        client_context: {platform, anonymous_user_id: input.anonymousUserId},
+        client_context: {platform},
       }),
     },
     options.signal,
@@ -262,16 +233,6 @@ export async function createLessonV2Skeleton(
       message: 'Server returned an invalid lesson.',
     };
 
-  const tokenResult = await saveLessonToken(
-    parsed.data.lesson.lesson_id,
-    parsed.data.access_token,
-  );
-  if (!tokenResult.ok)
-    return {
-      ok: false,
-      errorCode: tokenResult.errorCode,
-      message: 'Secure token storage is unavailable.',
-    };
   const persistError = await persistLesson(parsed.data.lesson);
   if (persistError) return persistError;
 
@@ -314,10 +275,8 @@ export async function pollLessonV2(
   lessonId: string,
   options: PollOptions = {},
 ): Promise<LessonV2ClientResult> {
-  const token = await tokenFor(lessonId);
-  if (token.error) return token.error;
   const {apiBaseUrl} = getAppConfig();
-  const fetchImpl = options.fetchImpl ?? fetch;
+  const fetchImpl = options.fetchImpl;
   const now = options.now ?? Date.now;
   const deadline = now() + POLL_DEADLINE_MS;
   let lesson = options.initialLesson ?? null;
@@ -356,7 +315,6 @@ export async function pollLessonV2(
           };
     const headers: Record<string, string> = {
       Accept: 'application/json',
-      Authorization: `Bearer ${token.token}`,
     };
     if (etag) headers['If-None-Match'] = etag;
     const result = await request(
@@ -427,17 +385,14 @@ async function mutateLessonV2(
   path: string,
   options: ClientOptions = {},
 ): Promise<LessonV2ClientResult> {
-  const token = await tokenFor(lessonId);
-  if (token.error) return token.error;
   const {apiBaseUrl} = getAppConfig();
   const result = await request(
-    options.fetchImpl ?? fetch,
+    options.fetchImpl,
     `${apiBaseUrl}${path}`,
     {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${token.token}`,
         'Idempotency-Key': createRequestId(),
       },
     },
@@ -488,17 +443,14 @@ export async function deleteLessonV2(
   lessonId: string,
   options: ClientOptions = {},
 ): Promise<{ok: true} | LessonV2ClientError> {
-  const token = await tokenFor(lessonId);
-  if (token.error) return token.error;
   const {apiBaseUrl} = getAppConfig();
   const result = await request(
-    options.fetchImpl ?? fetch,
+    options.fetchImpl,
     `${apiBaseUrl}${CREATE_PATH}/${lessonId}`,
     {
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${token.token}`,
       },
     },
     options.signal,
@@ -507,14 +459,7 @@ export async function deleteLessonV2(
   if (result.error) return result.error;
   if (!result.response!.ok && result.response!.status !== 404)
     return errorFromBody(result.response!, await readJson(result.response!));
-  const keychainResult = await deleteLessonToken(lessonId);
   deleteLocalLessonV2(lessonId);
-  if (!keychainResult.ok)
-    return {
-      ok: false,
-      errorCode: keychainResult.errorCode,
-      message: 'Secure token storage is unavailable.',
-    };
   return {ok: true};
 }
 

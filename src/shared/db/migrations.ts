@@ -519,6 +519,26 @@ const MIGRATIONS = [
   );`,
   `CREATE INDEX IF NOT EXISTS idx_youtube_progress_updated_at
     ON youtube_progress (updated_at DESC);`,
+  `ALTER TABLE flashcards ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE flashcards ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE review_schedule ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE review_schedule ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE review_sessions ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE review_sessions ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE gamification_events ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE gamification_events ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE content_review_items ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE content_review_items ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE content_lesson_state ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE content_lesson_state ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE grammar_bookmarks ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE grammar_bookmarks ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE youtube_lessons ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE youtube_lessons ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE youtube_sentences ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE youtube_sentences ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE youtube_progress ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;`,
+  `ALTER TABLE youtube_progress ADD COLUMN tombstone INTEGER NOT NULL DEFAULT 0;`,
 ];
 
 /**
