@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {FeatureRegistryEntry} from './types';
 
 export const featureRegistry = [

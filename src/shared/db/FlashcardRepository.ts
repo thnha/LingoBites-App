@@ -35,6 +35,8 @@ type FlashcardRow = {
   is_saved: number;
   created_at: string;
   updated_at: string;
+  revision?: number;
+  tombstone?: number;
 };
 
 type ReviewScheduleRow = {

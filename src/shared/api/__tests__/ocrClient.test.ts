@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import i18n from '@/i18n';
 import {extractTextFromImage} from '../ocrClient';
 
@@ -98,10 +99,18 @@ describe('extractTextFromImage', () => {
   it('returns cancelled when the signal aborts while the request is in flight', async () => {
     const controller = new AbortController();
     let resolveFetch: (value: unknown) => void = () => {};
-    mockFetch.mockImplementationOnce(
-      () =>
-        new Promise(resolve => {
+    mockFetch.mockImplementation(
+      (_url, options) =>
+        new Promise((resolve, reject) => {
           resolveFetch = resolve;
+          if (options.signal.aborted) {
+             const err = new Error('abort'); err.name = 'AbortError';
+             return reject(err);
+          }
+          options.signal.addEventListener('abort', () => {
+             const err = new Error('abort'); err.name = 'AbortError';
+             reject(err);
+          });
         }),
     );
 
@@ -112,13 +121,12 @@ describe('extractTextFromImage', () => {
       },
       controller.signal,
     );
-    await Promise.resolve();
+    // Let ensureValidSession run
+    await new Promise(r => setTimeout(r, 0));
     controller.abort();
-    resolveFetch({
-      ok: true,
-      json: async () => successBody,
-    });
-
+    
+    // We don't resolveFetch here because it should reject via abort!
+    
     await expect(pending).resolves.toEqual({ok: false, cancelled: true});
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });

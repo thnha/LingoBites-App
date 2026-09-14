@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Repository for the lesson runtime (SETE-108 / M3).
  *
@@ -11,7 +12,9 @@
  * `node:crypto` import into the RN bundle.
  */
 
-import {getDatabase} from './database';
+import { getDatabase, withTransaction } from './database';
+import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
+import { createRequestId } from '../api/requestId';
 import {getActivePackage} from './ContentPackageRepository';
 import type {ContentReviewItemRecord} from './types';
 import type {
@@ -160,6 +163,8 @@ type ContentReviewItemDbRow = {
   next_review_at: string;
   created_at: string;
   updated_at: string;
+  revision?: number;
+  tombstone?: number;
 };
 
 function mapLessonRow(row: ContentLessonDbRow): ContentLessonRow {
@@ -236,6 +241,8 @@ function mapReviewItemRow(
     front: row.front,
     back: row.back,
     hintVi: row.hint_vi,
+    revision: row.revision || 0,
+    tombstone: Boolean(row.tombstone),
     masteryState: row.mastery_state as ContentReviewItemRecord['masteryState'],
     nextReviewAt: row.next_review_at,
     createdAt: row.created_at,
@@ -498,12 +505,27 @@ export function recordContentReviewEvent(
     reviewedAt,
   });
 
-  db.execute(
-    `UPDATE content_review_items
-      SET mastery_state = ?, next_review_at = ?, updated_at = ?
-      WHERE id = ?;`,
-    [next.state, next.nextReviewAt, reviewedAt, input.reviewItemId],
-  );
+  withTransaction(db, () => {
+    db.execute(
+      `UPDATE content_review_items
+        SET mastery_state = ?, next_review_at = ?, updated_at = ?
+        WHERE id = ?;`,
+      [next.state, next.nextReviewAt, reviewedAt, input.reviewItemId],
+    );
+    
+    enqueueSyncOutboxEvent({
+      id: createRequestId(),
+      eventType: 'content_review_items',
+      entityId: input.reviewItemId,
+      payload: { 
+        reviewItemId: input.reviewItemId, 
+        masteryState: next.state,
+        nextReviewAt: next.nextReviewAt,
+        updatedAt: reviewedAt
+      },
+      createdAt: reviewedAt
+    });
+  });
 
   return {ok: true, masteryState: next.state, nextReviewAt: next.nextReviewAt};
 }

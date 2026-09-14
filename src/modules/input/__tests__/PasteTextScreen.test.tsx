@@ -48,7 +48,7 @@ const route = {
 
 function renderPasteTextScreen() {
   return ReactTestRenderer.create(
-    <FeatureFlagProvider>
+    <FeatureFlagProvider releaseConfig={{releaseName: 'test', features: {lessonV2: false}}}>
       <AppThemeProvider>
         <PasteTextScreen navigation={navigation} route={route} />
       </AppThemeProvider>

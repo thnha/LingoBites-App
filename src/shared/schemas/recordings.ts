@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { z } from 'zod';
 
 /**
@@ -61,3 +62,7 @@ export const DeleteRecordingSuccessResponseSchema = z.object({
 export type CreateRecordingRequest = z.infer<
   typeof CreateRecordingRequestSchema
 >;
+export type CreateRecordingSuccessResponse = z.infer<typeof CreateRecordingSuccessResponseSchema>;
+export type RecordingSuccessResponse = z.infer<typeof RecordingSuccessResponseSchema>;
+export type ListRecordingsSuccessResponse = z.infer<typeof ListRecordingsSuccessResponseSchema>;
+export type DeleteRecordingSuccessResponse = z.infer<typeof DeleteRecordingSuccessResponseSchema>;

@@ -22,6 +22,8 @@ export function makeContentLessonState(
     isStarted: false,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
+    revision: 0,
+    tombstone: false,
     ...overrides,
   };
 }
@@ -44,6 +46,8 @@ export function makeFlashcard(overrides: Partial<FlashcardRecord>): FlashcardRec
     isSaved: false,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
+    revision: 0,
+    tombstone: false,
     ...overrides,
   };
 }
@@ -59,6 +63,8 @@ export function makeGrammarBookmark(
     reactivatedAt: '2026-01-01T00:00:00.000Z',
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
+    revision: 0,
+    tombstone: false,
     title: 'Past Tense',
     content: 'The past tense describes actions that happened in the past',
     ...overrides,

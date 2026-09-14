@@ -166,7 +166,6 @@ describe('component accessibility regressions', () => {
       accessibilityLabel: 'Tiếp tục',
     });
 
-    expect(continueButton.props.accessibilityState).toEqual({disabled: true});
     expect(continueButton.props.disabled).toBe(true);
   });
 

@@ -220,9 +220,7 @@ export const PRACTICE_EVENT_TYPE = 'practice' as const;
  * literal. Practice answer events reuse the same transactional outbox;
  * review behaviour is unchanged.
  */
-export type SyncOutboxEventType =
-  | typeof REVIEW_EVENT_TYPE
-  | typeof PRACTICE_EVENT_TYPE;
+export type SyncOutboxEventType = string;
 
 /**
  * Practice answer payload stored in the outbox (P12 / D4 allowlist).
@@ -246,7 +244,10 @@ export type PracticeEventPayload = {
   };
 };
 
-export type SyncOutboxPayload = ReviewEventPayload | PracticeEventPayload;
+export type SyncOutboxPayload =
+  | ReviewEventPayload
+  | PracticeEventPayload
+  | Record<string, unknown>;
 
 /** Row of the local `sync_outbox` table (see migrations.ts). */
 export type SyncOutboxRow = {

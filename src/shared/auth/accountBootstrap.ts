@@ -156,11 +156,15 @@ export function bootAccount(deps: BootDeps = {}): Promise<BootResult> {
   return task;
 }
 
+import {executeLegacyClear} from '../db/legacyClear';
+
 async function runBoot(deps: BootDeps): Promise<BootResult> {
   const platform =
     deps.platform ?? (Platform.OS === 'android' ? 'android' : 'ios');
   const client = deps.client ?? createAuthClient();
   const randomUuid = deps.randomUuid ?? createRequestId;
+
+  await executeLegacyClear();
 
   if (!hasInstallMarker()) {
     // Fresh install (or wiped SQLite): Keychain may still hold a

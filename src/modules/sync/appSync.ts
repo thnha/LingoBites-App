@@ -1,5 +1,6 @@
 import {AppState, type AppStateStatus} from 'react-native';
 import {createSyncManager, type SyncManager} from './syncManager';
+import {startPullWorker, stopPullWorker} from './pullWorker';
 
 /**
  * App-lifecycle wiring for the outbox sync manager (SETE-87).
@@ -44,10 +45,12 @@ export function startAppSync(): void {
   syncManager.start();
   subscription?.remove();
   subscription = AppState.addEventListener('change', onAppStateChange);
+  startPullWorker();
 }
 
 export function stopAppSync(): void {
   subscription?.remove();
   subscription = null;
   manager?.stop();
+  stopPullWorker();
 }

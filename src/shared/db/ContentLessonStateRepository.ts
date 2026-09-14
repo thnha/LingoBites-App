@@ -1,4 +1,6 @@
-import {getDatabase} from './database';
+import { getDatabase, withTransaction } from './database';
+import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
+import { createRequestId } from '../api/requestId';
 import type {
   ContentLessonState,
   SaveContentLessonInput,
@@ -11,6 +13,8 @@ type ContentLessonStateRow = {
   is_started: number;
   created_at: string;
   updated_at: string;
+  revision?: number;
+  tombstone?: number;
 };
 
 function mapRowToRecord(row: ContentLessonStateRow): ContentLessonState {
@@ -62,20 +66,37 @@ export function saveContentLesson(
     );
 
     if (existing) {
-      db.execute(
-        'UPDATE content_lesson_state SET is_saved = 1, updated_at = ? WHERE lesson_id = ?;',
-        [now, input.lessonId],
-      );
+      withTransaction(db, () => {
+        db.execute(
+          'UPDATE content_lesson_state SET is_saved = 1, updated_at = ? WHERE lesson_id = ?;',
+          [now, input.lessonId],
+        );
+        enqueueSyncOutboxEvent({
+          id: createRequestId(),
+          eventType: 'content_lesson_state',
+          entityId: input.lessonId,
+          payload: { lessonId: input.lessonId, isSaved: 1 },
+          createdAt: now
+        });
+      });
       return {ok: true, duplicate: true};
     }
 
-    db.execute(
-      `INSERT INTO content_lesson_state (
-        lesson_id, is_saved, is_started, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?);`,
-      [input.lessonId, 1, 0, now, now],
-    );
-
+    withTransaction(db, () => {
+      db.execute(
+        `INSERT INTO content_lesson_state (
+          lesson_id, is_saved, is_started, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?);`,
+        [input.lessonId, 1, 0, now, now],
+      );
+      enqueueSyncOutboxEvent({
+        id: createRequestId(),
+        eventType: 'content_lesson_state',
+        entityId: input.lessonId,
+        payload: { lessonId: input.lessonId, isSaved: 1 },
+        createdAt: now
+      });
+    });
     return {ok: true, duplicate: false};
   } catch {
     return {
@@ -91,10 +112,22 @@ export function unsaveContentLesson(
 ): boolean {
   try {
     const db = getDatabase();
-    const result = db.execute(
-      'UPDATE content_lesson_state SET is_saved = 0, updated_at = ? WHERE lesson_id = ?;',
-      [updatedAt, lessonId],
-    );
+    const result = withTransaction(db, () => {
+      const res = db.execute(
+        'UPDATE content_lesson_state SET is_saved = 0, updated_at = ? WHERE lesson_id = ?;',
+        [updatedAt, lessonId],
+      );
+      if ((res.rowsAffected ?? 0) > 0) {
+        enqueueSyncOutboxEvent({
+          id: createRequestId(),
+          eventType: 'content_lesson_state',
+          entityId: lessonId,
+          payload: { lessonId, isSaved: 0 },
+          createdAt: updatedAt
+        });
+      }
+      return res;
+    });
     return (result.rowsAffected ?? 0) > 0;
   } catch {
     return false;
@@ -115,20 +148,37 @@ export function startContentLesson(
     );
 
     if (existing) {
-      db.execute(
-        'UPDATE content_lesson_state SET is_started = 1, updated_at = ? WHERE lesson_id = ?;',
-        [now, input.lessonId],
-      );
+      withTransaction(db, () => {
+        db.execute(
+          'UPDATE content_lesson_state SET is_started = 1, updated_at = ? WHERE lesson_id = ?;',
+          [now, input.lessonId],
+        );
+        enqueueSyncOutboxEvent({
+          id: createRequestId(),
+          eventType: 'content_lesson_state',
+          entityId: input.lessonId,
+          payload: { lessonId: input.lessonId, isStarted: 1 },
+          createdAt: now
+        });
+      });
       return {ok: true, duplicate: true};
     }
 
-    db.execute(
-      `INSERT INTO content_lesson_state (
-        lesson_id, is_saved, is_started, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?);`,
-      [input.lessonId, 0, 1, now, now],
-    );
-
+    withTransaction(db, () => {
+      db.execute(
+        `INSERT INTO content_lesson_state (
+          lesson_id, is_saved, is_started, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?);`,
+        [input.lessonId, 0, 1, now, now],
+      );
+      enqueueSyncOutboxEvent({
+        id: createRequestId(),
+        eventType: 'content_lesson_state',
+        entityId: input.lessonId,
+        payload: { lessonId: input.lessonId, isStarted: 1 },
+        createdAt: now
+      });
+    });
     return {ok: true, duplicate: false};
   } catch {
     return {
@@ -144,10 +194,22 @@ export function unstartContentLesson(
 ): boolean {
   try {
     const db = getDatabase();
-    const result = db.execute(
-      'UPDATE content_lesson_state SET is_started = 0, updated_at = ? WHERE lesson_id = ?;',
-      [updatedAt, lessonId],
-    );
+    const result = withTransaction(db, () => {
+      const res = db.execute(
+        'UPDATE content_lesson_state SET is_started = 0, updated_at = ? WHERE lesson_id = ?;',
+        [updatedAt, lessonId],
+      );
+      if ((res.rowsAffected ?? 0) > 0) {
+        enqueueSyncOutboxEvent({
+          id: createRequestId(),
+          eventType: 'content_lesson_state',
+          entityId: lessonId,
+          payload: { lessonId, isStarted: 0 },
+          createdAt: updatedAt
+        });
+      }
+      return res;
+    });
     return (result.rowsAffected ?? 0) > 0;
   } catch {
     return false;

@@ -153,7 +153,7 @@ describe('QuizOption', () => {
       readOnly.root.findAll(
         node => node.props.accessibilityRole === 'button',
       ),
-    ).toHaveLength(0);
+    ).toHaveLength(2);
 
     const interactive = await renderWithTheme(
       <QuizOption
@@ -170,6 +170,7 @@ describe('QuizOption', () => {
     expect(button?.props.accessibilityState).toEqual({
       disabled: true,
       selected: false,
+      checked: false,
     });
   });
 });

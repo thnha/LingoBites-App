@@ -3,7 +3,9 @@ import {
   type YouTubeSegment,
   type YouTubeTranscript,
 } from '../schemas/youtube-transcript-v1';
-import {getDatabase, withTransaction} from './database';
+import { getDatabase, withTransaction } from './database';
+import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
+import { createRequestId } from '../api/requestId';
 
 type YouTubeLessonRow = {
   id: string;
@@ -170,6 +172,14 @@ export function saveYouTubeLesson(
           ],
         );
       }
+
+      enqueueSyncOutboxEvent({
+        id: createRequestId(),
+        eventType: 'youtube_lessons',
+        entityId: lesson.video.id,
+        payload: lesson as any,
+        createdAt: now
+      });
     });
     return {ok: true, lessonId: lesson.video.id, duplicate: existing !== null};
   } catch {

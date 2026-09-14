@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {runAnalysisJob} from '@shared/api/analysisJobClient';
 import {getAppConfig} from '@shared/api/appConfig';
 import {getTextLengthBucket, trackEvent} from '../analytics';

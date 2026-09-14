@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useCallback, useMemo, useState} from 'react';
 import {hasPendingPracticeSync} from '@shared/db/PracticeRepository';
 import type {PracticeQuestion} from '@shared/schemas/practice';

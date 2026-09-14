@@ -943,7 +943,22 @@ function createMockDatabase() {
     }
 
     // SETE-303 / T6: keyed setting delete (signup idempotency key cleanup).
+    
+    if (normalized.includes('delete from app_settings where key not in')) {
+      const remaining = appSettings.filter(row => [
+        'account.install_completed_v1',
+        'account.fallback_device_id',
+        'account.signup_idempotency_key',
+        'current_account_id',
+        'account.legacy_clear_completed_v1'
+      ].includes(row.key));
+      const removed = appSettings.length - remaining.length;
+      appSettings.length = 0;
+      appSettings.push(...remaining);
+      return {rowsAffected: removed};
+    }
     if (normalized.startsWith('delete from app_settings where key')) {
+
       const before = appSettings.length;
       const remaining = appSettings.filter(row => row.key !== params[0]);
       appSettings.length = 0;
@@ -1173,7 +1188,13 @@ function createMockDatabase() {
       return {rowsAffected: count};
     }
 
+    
+    if (normalized.includes('select count(*) as count from app_settings where key = ?')) {
+      const key = params[0];
+      return toRows([{count: appSettings.filter(row => row.key === key).length}]);
+    }
     if (normalized.includes('from app_settings where key')) {
+
       const key = params[0];
       return toRows(appSettings.filter(row => row.key === key));
     }

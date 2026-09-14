@@ -30,6 +30,8 @@ function sessionEvent(
     sourceEventId,
     points,
     createdAt: localIsoForDayKey(dayKey),
+    revision: 0,
+    tombstone: false,
   };
 }
 
@@ -43,6 +45,8 @@ function onTimeEvent(
     sourceEventId,
     points: ON_TIME_WATER_POINTS,
     createdAt: localIsoForDayKey(dayKey, 20),
+    revision: 0,
+    tombstone: false,
   };
 }
 

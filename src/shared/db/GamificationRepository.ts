@@ -1,5 +1,6 @@
 import {createRequestId} from '../api/requestId';
-import {getDatabase} from './database';
+import { getDatabase, withTransaction } from './database';
+import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
 import type {GamificationEventInput, GamificationEventRecord} from './types';
 
 type GamificationEventRow = {
@@ -8,6 +9,8 @@ type GamificationEventRow = {
   source_event_id: string | null;
   points: number;
   created_at: string;
+  revision?: number;
+  tombstone?: number;
 };
 
 function mapGamificationEventRow(
@@ -49,19 +52,31 @@ export function insertGamificationEvent(
 ): GamificationEventRecord {
   const db = getDatabase();
   const id = createRequestId();
-  db.execute(
-    `INSERT INTO gamification_events (
-      id, event_type, source_event_id, points, created_at
-    ) VALUES (?, ?, ?, ?, ?);`,
-    [
-      id,
-      input.eventType,
-      input.sourceEventId || null,
-      input.points,
-      input.createdAt,
-    ],
-  );
-  return {id, ...input};
+  
+  withTransaction(db, () => {
+    db.execute(
+      `INSERT INTO gamification_events (
+        id, event_type, source_event_id, points, created_at
+      ) VALUES (?, ?, ?, ?, ?);`,
+      [
+        id,
+        input.eventType,
+        input.sourceEventId || null,
+        input.points,
+        input.createdAt,
+      ],
+    );
+    
+    enqueueSyncOutboxEvent({
+      id: createRequestId(),
+      eventType: 'gamification_events',
+      entityId: id,
+      payload: { ...input, id },
+      createdAt: input.createdAt,
+    });
+  });
+  
+  return {id, revision: 0, tombstone: false, ...input};
 }
 
 /** All stored gamification events, oldest first. Used for state derivation. */

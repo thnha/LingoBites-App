@@ -25,6 +25,8 @@ const mockGrammar: GrammarBookmark & {title?: string; content?: string} = {
   reactivatedAt: null,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
+  revision: 0,
+  tombstone: false,
   title: 'Present Simple Tense',
   content: 'Used for habitual actions and general truths',
 };
@@ -37,6 +39,8 @@ const mockGrammarNoContent: GrammarBookmark & {title?: string; content?: string}
   reactivatedAt: null,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
+  revision: 0,
+  tombstone: false,
   title: 'Present Simple Tense',
   content: undefined,
 };
@@ -307,6 +311,8 @@ describe('GrammarRowCard', () => {
       reactivatedAt: null,
       createdAt: '2024-01-02T00:00:00Z',
       updatedAt: '2024-01-02T00:00:00Z',
+  revision: 0,
+  tombstone: false,
       title: 'Past Continuous',
       content: 'Used for actions that were in progress at a specific time in the past',
     };

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {executeLegacyClear} from '../../db/legacyClear';
+jest.mock('../../db/legacyClear', () => ({ executeLegacyClear: jest.fn().mockResolvedValue(undefined) }));
 import {open} from 'react-native-quick-sqlite';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {DB_NAME} from '../../db/constants';

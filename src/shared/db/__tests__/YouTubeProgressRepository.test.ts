@@ -65,13 +65,16 @@ describe('YouTubeProgressRepository (SETE-290 DEV-3)', () => {
         lessonId: 'video-a',
         positionMs: 4500,
         segmentIndex: 1,
+      
         now: '2026-09-13T00:00:00.000Z',
       }),
     ).toBe(true);
     expect(getYouTubeProgress('video-a')).toEqual({
       lessonId: 'video-a',
       positionMs: 4500,
+      revision: 0,
       segmentIndex: 1,
+      tombstone: false,
       updatedAt: '2026-09-13T00:00:00.000Z',
     });
   });
@@ -84,6 +87,7 @@ describe('YouTubeProgressRepository (SETE-290 DEV-3)', () => {
     expect(getYouTubeProgress('video-a')).toMatchObject({
       positionMs: 2000,
       segmentIndex: 1,
+      
     });
     expect(getYouTubeProgress('video-b')).toMatchObject({
       positionMs: 9000,
@@ -106,6 +110,7 @@ describe('YouTubeProgressRepository (SETE-290 DEV-3)', () => {
       lessonId: transcript.video.id,
       positionMs: 2000,
       segmentIndex: 1,
+      
     });
 
     expect(deleteYouTubeLesson(transcript.video.id)).toBe(true);

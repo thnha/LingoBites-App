@@ -13,7 +13,7 @@ const apply = (file, replacements) => {
     );
   }
 
-  for (const {search, replace} from replacements) {
+  for (const {search, replace} of replacements) {
     content = content.replace(search, replace);
   }
   

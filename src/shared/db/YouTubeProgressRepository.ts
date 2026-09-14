@@ -5,6 +5,8 @@ export type YouTubeProgress = {
   positionMs: number;
   segmentIndex: number;
   updatedAt: string;
+  revision: number;
+  tombstone: boolean;
 };
 
 type YouTubeProgressRow = {
@@ -12,6 +14,8 @@ type YouTubeProgressRow = {
   position_ms: number;
   segment_index: number;
   updated_at: string;
+  revision?: number;
+  tombstone?: number;
 };
 
 function firstRow(result: {
@@ -44,8 +48,8 @@ export function getYouTubeProgress(lessonId: string): YouTubeProgress | null {
       positionMs,
       segmentIndex,
       updatedAt: row.updated_at,
-    revision: row.revision || 0,
-    tombstone: Boolean(row.tombstone),
+      revision: row.revision || 0,
+      tombstone: Boolean(row.tombstone),
   };
   } catch {
     return null;

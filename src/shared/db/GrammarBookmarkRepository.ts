@@ -1,4 +1,6 @@
-import {getDatabase} from './database';
+import { getDatabase, withTransaction } from './database';
+import { enqueueSyncOutboxEvent } from './SyncOutboxRepository';
+import { createRequestId } from '../api/requestId';
 import type {
   GrammarBookmark,
   SaveGrammarBookmarkInput,
@@ -13,6 +15,8 @@ type GrammarBookmarkRow = {
   reactivated_at: string | null;
   created_at: string;
   updated_at: string;
+  revision?: number;
+  tombstone?: number;
 };
 
 function mapRowToRecord(row: GrammarBookmarkRow): GrammarBookmark {
@@ -67,31 +71,48 @@ export function saveGrammarBookmark(
     );
 
     if (existing) {
-      db.execute(
-        `UPDATE grammar_bookmarks
-         SET reactivated_at = ?, saved_at = ?, updated_at = ?
-         WHERE lesson_id = ? AND grammar_id = ?;`,
-        [now, now, now, input.lessonId, input.grammarId],
-      );
+      withTransaction(db, () => {
+        db.execute(
+          `UPDATE grammar_bookmarks
+           SET reactivated_at = ?, saved_at = ?, updated_at = ?
+           WHERE lesson_id = ? AND grammar_id = ?;`,
+          [now, now, now, input.lessonId, input.grammarId],
+        );
+        enqueueSyncOutboxEvent({
+          id: createRequestId(),
+          eventType: 'grammar_bookmarks',
+          entityId: `${input.lessonId}:${input.grammarId}`,
+          payload: { lessonId: input.lessonId, grammarId: input.grammarId, active: true },
+          createdAt: now
+        });
+      });
       return {ok: true, duplicate: true};
     }
 
-    db.execute(
-      `INSERT INTO grammar_bookmarks (
-        lesson_id, grammar_id, package_id, saved_at, reactivated_at,
-        created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
-      [
-        input.lessonId,
-        input.grammarId,
-        input.packageId,
-        now,
-        now,
-        now,
-        now,
-      ],
-    );
-
+    withTransaction(db, () => {
+      db.execute(
+        `INSERT INTO grammar_bookmarks (
+          lesson_id, grammar_id, package_id, saved_at, reactivated_at,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+        [
+          input.lessonId,
+          input.grammarId,
+          input.packageId,
+          now,
+          now,
+          now,
+          now,
+        ],
+      );
+      enqueueSyncOutboxEvent({
+        id: createRequestId(),
+        eventType: 'grammar_bookmarks',
+        entityId: `${input.lessonId}:${input.grammarId}`,
+        payload: { lessonId: input.lessonId, grammarId: input.grammarId, active: true },
+        createdAt: now
+      });
+    });
     return {ok: true, duplicate: false};
   } catch {
     return {
@@ -108,12 +129,24 @@ export function unsaveGrammarBookmark(
 ): boolean {
   try {
     const db = getDatabase();
-    const result = db.execute(
-      `UPDATE grammar_bookmarks
-       SET reactivated_at = NULL, updated_at = ?
-       WHERE lesson_id = ? AND grammar_id = ?;`,
-      [updatedAt, lessonId, grammarId],
-    );
+    const result = withTransaction(db, () => {
+      const res = db.execute(
+        `UPDATE grammar_bookmarks
+         SET reactivated_at = NULL, updated_at = ?
+         WHERE lesson_id = ? AND grammar_id = ?;`,
+        [updatedAt, lessonId, grammarId],
+      );
+      if ((res.rowsAffected ?? 0) > 0) {
+        enqueueSyncOutboxEvent({
+          id: createRequestId(),
+          eventType: 'grammar_bookmarks',
+          entityId: `${lessonId}:${grammarId}`,
+          payload: { lessonId, grammarId, active: false },
+          createdAt: updatedAt
+        });
+      }
+      return res;
+    });
     return (result.rowsAffected ?? 0) > 0;
   } catch {
     return false;

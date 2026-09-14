@@ -59,7 +59,7 @@ describe('OCRReviewScreen', () => {
 
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider>
+        <FeatureFlagProvider releaseConfig={{releaseName: 'test', features: {lessonV2: false}}}>
           <AppThemeProvider>
             <OCRReviewScreen navigation={navigation} route={route} />
           </AppThemeProvider>
@@ -102,7 +102,7 @@ describe('OCRReviewScreen', () => {
 
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider>
+        <FeatureFlagProvider releaseConfig={{releaseName: 'test', features: {lessonV2: false}}}>
           <AppThemeProvider>
             <OCRReviewScreen
               navigation={navigation}
@@ -122,7 +122,7 @@ describe('OCRReviewScreen', () => {
 
     await ReactTestRenderer.act(async () => {
       tree = ReactTestRenderer.create(
-        <FeatureFlagProvider>
+        <FeatureFlagProvider releaseConfig={{releaseName: 'test', features: {lessonV2: false}}}>
           <AppThemeProvider>
             <OCRReviewScreen navigation={navigation} route={route} />
           </AppThemeProvider>

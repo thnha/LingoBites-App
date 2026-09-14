@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { authenticatedFetch } from './authenticatedFetch';
 import { getAppConfig } from './appConfig';
-import { withTimeout } from './syncClient'; // Wait, let's just implement it here
 import type {
   CreateRecordingRequest,
   CreateRecordingSuccessResponse,

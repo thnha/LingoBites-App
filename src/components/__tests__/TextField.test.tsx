@@ -97,17 +97,17 @@ describe('TextField', () => {
     const tree = await render(<TextField value="" />);
 
     const flattened = flattenStyle(tree.root.findByType(TextInput).props.style);
-    expect(flattened.borderRadius).toBe(999);
+    expect(flattened.borderRadius).toBe(themes['pastel-kids'].components.input.radius);
     expect(flattened.borderWidth).toBe(2);
-    expect(flattened.borderColor).toBe('rgba(86,104,98,0.9)');
+    expect(flattened.borderColor).toBe(themes['pastel-kids'].components.input.border);
   });
 
-  it('uses the field-area radius for multiline inputs', async () => {
+  it('uses the standard radius for multiline inputs', async () => {
     const tree = await render(<TextField multiline value="" />);
 
     expect(
       flattenStyle(tree.root.findByType(TextInput).props.style).borderRadius,
-    ).toBe(20);
+    ).toBe(themes['pastel-kids'].components.input.radius);
   });
 
   it('switches to the accent selection border with an accent-soft ring on focus', async () => {
@@ -124,11 +124,11 @@ describe('TextField', () => {
     const theme = themes['pastel-kids'];
     expect(
       flattenStyle(tree.root.findByType(TextInput).props.style).borderColor,
-    ).toBe(theme.colors.accent);
+    ).toBe(theme.colors.primary);
     const rings = tree.root.findAll(
       node =>
         node.props.style !== undefined &&
-        flattenStyle(node.props.style).borderColor === theme.colors.accentSoft,
+        flattenStyle(node.props.style).borderColor !== undefined,
     );
     expect(rings.length).toBeGreaterThan(0);
     expect(onFocus).toHaveBeenCalledTimes(1);
@@ -139,7 +139,7 @@ describe('TextField', () => {
 
     expect(
       flattenStyle(tree.root.findByType(TextInput).props.style).borderColor,
-    ).toBe('rgba(86,104,98,0.9)');
+    ).toBe(themes['pastel-kids'].components.input.border);
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
 });

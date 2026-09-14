@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {getDatabase, withTransaction} from './database';
 import type {
   PracticeSet,

@@ -171,6 +171,12 @@ export function SpeakingShadowingActivity({navigation}: Props) {
       filePath,
       durationMs,
     });
+    
+    // Background upload (T5)
+    import('../recordingUploadWorker').then(({ uploadRecordingBackground }) => {
+      uploadRecordingBackground(filePath, lesson.lessonId, 'shadowing', durationMs);
+    }).catch(() => {});
+
     captureSpeakingErrorIfNeeded({
       id: `${recordingId}-check`,
       source: 'speaking_room',
