@@ -76,6 +76,7 @@
     "explore_offline_meta": "Learn without internet",
     "explore_practice": "Practice",
     "explore_practice_meta": "Review words and grammar",
+    "streak_pill_a11y": "{{count}} day streak",
     "continue_rail_title": "Continue learning",
     "lessons_empty_lead": "Lessons you create or open will show up here.",
     "shortcut_review_done": "Done ✓",

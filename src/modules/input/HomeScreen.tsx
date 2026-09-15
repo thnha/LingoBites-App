@@ -12,6 +12,8 @@ import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
+import {ShelfSurface} from '@components/ShelfSurface';
+import {getGamificationSnapshot} from '@modules/engagement';
 import type {HandoffIconName} from '@components/icons/iconRegistry';
 import {useContentLibrary, type ContentLessonRow} from '../content';
 import {
@@ -43,6 +45,11 @@ type ExploreCell = {
   titleKey: string;
   metaKey: string;
   testID: string;
+  // SETE-311 Option B: data-bearing slots are optional. A card whose metric
+  // has no real source leaves the key unset and the row collapses — never a
+  // placeholder. Today all four cards ship slot-free.
+  badgeKey?: string;
+  tagKey?: string;
 };
 
 type RecentItem = {
@@ -82,8 +89,9 @@ const HERO_CTA_INK = '#40320D';
  * Paper-cut home (SETE-279): hero → 2×2 explore grid → "Tiếp tục học" rail.
  * The hero always shows one CTA — "Học tiếp" while a lesson is started,
  * otherwise a single pick/create entry — so no data combination leaves the
- * screen without an action. No fake numbers: no streak tag (no data source),
- * no weekly-goal ring (no weekly-goal source), no progress bar — just meta.
+ * screen without an action. No fake numbers: no weekly-goal ring
+ * (no weekly-goal source), no progress bar — just meta. The header streak
+ * pill shows the real currentStreak and hides entirely at 0.
  * The video explore cell has its real data-driven destination (SETE-283);
  * the other three still point at the Lessons tab until mapped.
  */
@@ -110,9 +118,16 @@ export function HomeScreen({navigation}: Props) {
   const [relearnTarget, setRelearnTarget] = useState<RelearnTarget | null>(
     null,
   );
+  // SETE-311: header streak pill. Recomputed from the persisted event log on
+  // every focus — the same pattern as ProfileScreen — so the pill can never
+  // show a stale count.
+  const [streak, setStreak] = useState<number>(
+    () => getGamificationSnapshot().currentStreak,
+  );
 
   useFocusEffect(
     useCallback(() => {
+      setStreak(getGamificationSnapshot().currentStreak);
       const started = listStartedLessons()[0];
       const startedRow = started
         ? getContentLessonById(started.lessonId)
@@ -328,6 +343,7 @@ export function HomeScreen({navigation}: Props) {
             {t('home.greeting_top')}
           </AppText>
         </View>
+        <StreakPill count={streak} />
         <IconButton
           accessibilityLabel={t('home.settings_a11y')}
           icon="settings"
@@ -466,9 +482,20 @@ export function HomeScreen({navigation}: Props) {
               // disabled with an explanation — never a dead-end route.
               const isVideoCell = cell.testID === 'home-explore-video';
               const isDisabled = isVideoCell && !youtubeEnabled;
+              // SETE-311 Option B: badge/tag render only when a real metric
+              // exists (today none do) — the rows collapse otherwise.
+              const badgeLabel = cell.badgeKey ? t(cell.badgeKey) : null;
+              const tagLabel = cell.tagKey ? t(cell.tagKey) : null;
               const a11yLabel = isDisabled
                 ? `${t(cell.titleKey)}. ${t('home.explore_video_unavailable')}`
-                : `${t(cell.titleKey)}. ${t(cell.metaKey)}`;
+                : `${t(cell.titleKey)}. ${t(cell.metaKey)}${
+                    badgeLabel ? `. ${badgeLabel}` : ''
+                  }${tagLabel ? `. ${tagLabel}` : ''}`;
+              // Clay depth via the shared ShelfSurface (same pattern as
+              // LessonExploreRow): themes without a shelf get height 0 →
+              // flat, with the legacy pressed fade.
+              const shelf = theme.shelf?.surface;
+              const tileShelf = theme.shelf?.iconButton;
               return (
                 <Pressable
                   accessibilityLabel={a11yLabel}
@@ -478,26 +505,54 @@ export function HomeScreen({navigation}: Props) {
                   key={cell.testID}
                   onPress={isVideoCell ? openVideoCell : goLessonsTab}
                   testID={cell.testID}
-                  style={[
-                    styles.exploreCellWrap,
-                    isDisabled && styles.exploreCellDisabled,
-                  ]}
+                  style={styles.exploreCellWrap}
                 >
                   {({pressed}) => (
-                    <View
-                      style={[
+                    <ShelfSurface
+                      shelfHeight={shelf?.height}
+                      shelfColor={shelf?.color}
+                      borderRadius={theme.radius.lg}
+                      isPressed={pressed}
+                      isDisabled={isDisabled}
+                      containerStyle={theme.shadow.soft}
+                      faceStyle={[
                         styles.exploreCell,
                         {backgroundColor},
-                        pressed && styles.pressed,
+                        !shelf && pressed && !isDisabled && styles.pressed,
                       ]}
                     >
-                      <View
-                        style={[
-                          styles.exploreIconTile,
-                          {backgroundColor: theme.colors.surface},
-                        ]}
-                      >
-                        <MaterialIcon color={ink} name={cell.icon} size={24} />
+                      <View style={styles.exploreTopRow}>
+                        <ShelfSurface
+                          shelfHeight={tileShelf?.height}
+                          shelfColor={tileShelf?.color}
+                          borderRadius={16}
+                          isPressed={pressed}
+                          isDisabled={isDisabled}
+                          faceStyle={[
+                            styles.exploreIconTile,
+                            {backgroundColor: theme.colors.surface},
+                          ]}
+                        >
+                          <MaterialIcon
+                            color={ink}
+                            name={cell.icon}
+                            size={24}
+                          />
+                        </ShelfSurface>
+                        {badgeLabel ? (
+                          <View
+                            style={styles.exploreBadge}
+                            testID={`${cell.testID}-badge`}
+                          >
+                            <AppText
+                              variant="caption"
+                              style={[styles.exploreBadgeLabel, {color: ink}]}
+                              numberOfLines={1}
+                            >
+                              {badgeLabel}
+                            </AppText>
+                          </View>
+                        ) : null}
                       </View>
                       <AppText
                         variant="label"
@@ -515,7 +570,40 @@ export function HomeScreen({navigation}: Props) {
                           ? t('home.explore_video_unavailable')
                           : t(cell.metaKey)}
                       </AppText>
-                    </View>
+                      <View
+                        style={[styles.exploreDivider, {backgroundColor: ink}]}
+                      />
+                      <View style={styles.exploreFooter}>
+                        {tagLabel ? (
+                          <View
+                            style={styles.exploreTag}
+                            testID={`${cell.testID}-tag`}
+                          >
+                            <AppText
+                              variant="caption"
+                              style={[styles.exploreTagLabel, {color: ink}]}
+                              numberOfLines={1}
+                            >
+                              {tagLabel}
+                            </AppText>
+                          </View>
+                        ) : (
+                          <View style={styles.exploreFooterSpacer} />
+                        )}
+                        <View
+                          accessible={false}
+                          importantForAccessibility="no-hide-descendants"
+                          style={[styles.exploreArrow, {borderColor: ink}]}
+                          testID={`${cell.testID}-arrow`}
+                        >
+                          <MaterialIcon
+                            color={ink}
+                            name="chevron_right"
+                            size={16}
+                          />
+                        </View>
+                      </View>
+                    </ShelfSurface>
                   )}
                 </Pressable>
               );
@@ -629,6 +717,35 @@ export function HomeScreen({navigation}: Props) {
 }
 
 /**
+ * SETE-311 Option B: real-data streak indicator in the Home header. Status
+ * only — not pressable in v1 — and hidden entirely when the streak is 0
+ * (a "0 day" pill would turn the greeting into a failure reminder).
+ */
+function StreakPill({count}: {count: number}) {
+  const {theme} = useAppTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+  const {t} = useTranslation();
+  if (count <= 0) return null;
+  return (
+    <View
+      accessibilityLabel={t('home.streak_pill_a11y', {count})}
+      accessibilityRole="text"
+      style={styles.streakPill}
+      testID="home-streak-pill"
+    >
+      <MaterialIcon
+        color={theme.colors.onTertiaryContainer}
+        name="local_fire_department"
+        size={16}
+      />
+      <AppText variant="label" style={styles.streakPillLabel} numberOfLines={1}>
+        {count}
+      </AppText>
+    </View>
+  );
+}
+
+/**
  * CTA drawn on the fixed deep-blue hero surface: yellow background with dark
  * ink (SETE-281 design reference). Fixed colors in every theme — the pairing
  * is contrast-locked in HomeScreenChipContrast.test.tsx.
@@ -717,6 +834,20 @@ function makeStyles(theme: AppTheme) {
       paddingHorizontal: theme.gutter,
     },
     greeting: {flex: 1, gap: 0, minWidth: 0, paddingRight: theme.spacing.sm},
+    streakPill: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.tertiarySoft,
+      borderRadius: theme.radius.pill,
+      flexDirection: 'row',
+      flexShrink: 0,
+      gap: 4,
+      height: 32,
+      paddingHorizontal: 10,
+    },
+    streakPillLabel: {
+      color: theme.colors.onTertiaryContainer,
+      fontWeight: '700',
+    },
     scrollContent: {
       flexGrow: 1,
       gap: theme.spacing.xl,
@@ -824,29 +955,66 @@ function makeStyles(theme: AppTheme) {
     exploreGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: theme.spacing.sm,
+      gap: theme.spacing.md,
     },
     exploreCellWrap: {
       flexBasis: '47%',
       flexGrow: 1,
       minWidth: 140,
     },
-    exploreCellDisabled: {
-      opacity: theme.states.disabledOpacity,
-    },
     exploreCell: {
       borderRadius: theme.radius.lg,
-      gap: 6,
-      minHeight: 132,
+      gap: theme.spacing.sm,
+      minHeight: 180,
       padding: theme.spacing.md,
-      ...theme.shadow.soft,
+    },
+    exploreTopRow: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    exploreBadge: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.pill,
+      height: 22,
+      justifyContent: 'center',
+      paddingHorizontal: theme.spacing.sm,
+    },
+    exploreBadgeLabel: {},
+    exploreDivider: {
+      height: 1,
+      opacity: 0.1,
+    },
+    exploreFooter: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    exploreTag: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.sm,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: 2,
+    },
+    exploreTagLabel: {},
+    exploreFooterSpacer: {
+      flex: 1,
+    },
+    exploreArrow: {
+      alignItems: 'center',
+      borderRadius: 12,
+      borderWidth: 1,
+      height: 24,
+      justifyContent: 'center',
+      width: 24,
     },
     exploreIconTile: {
       alignItems: 'center',
-      borderRadius: 14,
-      height: 44,
+      borderRadius: 16,
+      height: 48,
       justifyContent: 'center',
-      width: 44,
+      width: 48,
     },
     exploreTitle: {},
     exploreMeta: {},

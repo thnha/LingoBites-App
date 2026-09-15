@@ -616,6 +616,27 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     expect(indicatorEnd).toBeLessThanOrEqual(rowStart + tabCount * tabWidth);
   });
 
+  it('uses accentInk for the selected tab label in the Sticker theme (SETE-311 Task B)', () => {
+    // The old Sticker special-case (#ffffff on the accent pill) was 1.86:1 —
+    // the selected tab was the least readable text in the bar. The label now
+    // matches the icon color (accentInk, 6.21:1 on the accent pill).
+    const {tree} = renderBar(stickerSoftTheme, makeProps(0));
+    // Animated.Text matches twice (composite + host) — host nodes only,
+    // still in tab order.
+    const labels = tree.root.findAll(
+      node =>
+        typeof node.type === 'string' &&
+        typeof node.props?.children === 'string' &&
+        StyleSheet.flatten(node.props.style)?.fontSize === 10.5,
+    );
+    expect(labels).toHaveLength(4);
+    const colors = labels.map(
+      node => StyleSheet.flatten(node.props.style)?.color,
+    );
+    expect(colors[0]).toBe(stickerSoftTheme.colors.accentInk);
+    expect(colors.slice(1)).toEqual(['#c8ece7', '#c8ece7', '#c8ece7']);
+  });
+
   it('keeps the selected capsule the same height across themes (SETE-269 follow-up)', () => {
     // The Sticker face is taller (66pt vs ~60pt); a deeper vertical
     // inset keeps the capsule at 50pt so it reads as separated from

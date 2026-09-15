@@ -76,6 +76,7 @@
     "explore_offline_meta": "Học khi mất mạng",
     "explore_practice": "Luyện tập",
     "explore_practice_meta": "Ôn từ và ngữ pháp",
+    "streak_pill_a11y": "Chuỗi {{count}} ngày",
     "continue_rail_title": "Tiếp tục học",
     "lessons_empty_lead": "Các bài bạn tạo hoặc mở sẽ hiện ở đây.",
     "shortcut_review_done": "Xong ✓",
