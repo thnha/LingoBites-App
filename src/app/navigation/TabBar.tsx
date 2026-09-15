@@ -179,7 +179,10 @@ function TabBarItem({
 }: TabBarItemProps) {
   const isSticker = !!theme.shelf;
   const unselectedColor = isSticker ? '#c8ece7' : theme.colors.text.secondary;
-  const selectedTextColor = isSticker ? '#ffffff' : theme.colors.accentInk;
+  // SETE-311 Task B: the selected label uses accentInk like the icon in
+  // every theme. The Sticker special-case (#ffffff on the accent pill) was
+  // 1.86:1 — the selected tab was the least readable text in the bar.
+  const selectedTextColor = theme.colors.accentInk;
   const selectedIconColor = isSticker ? theme.colors.accentInk : theme.colors.accentInk;
   
   const captionPreset = theme.typography.presets.caption;
