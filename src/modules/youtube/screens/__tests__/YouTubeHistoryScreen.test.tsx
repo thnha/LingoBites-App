@@ -184,9 +184,10 @@ describe('YouTubeHistoryScreen', () => {
 
     // SETE-289: Input lives in the Create tab, so the CTA leaves the
     // History route and enters Tabs > Create > YouTubeInput.
+    // SETE-310: the entry carries fromHome so Back/TabBar reset apply.
     expect(mockNavigate).toHaveBeenCalledWith('Tabs', {
       screen: 'Create',
-      params: {screen: 'YouTubeInput'},
+      params: {screen: 'YouTubeInput', params: {fromHome: true}},
     });
     // Existing rows are untouched by opening the composer.
     expect(
@@ -226,7 +227,7 @@ describe('YouTubeHistoryScreen', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('Tabs', {
       screen: 'Create',
-      params: {screen: 'YouTubeInput'},
+      params: {screen: 'YouTubeInput', params: {fromHome: true}},
     });
   });
 

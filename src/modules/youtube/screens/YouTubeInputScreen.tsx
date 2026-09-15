@@ -46,7 +46,14 @@ export function YouTubeInputScreen({navigation, route}: Props) {
       exitToHome();
       return;
     }
-    navigation.goBack();
+    // SETE-310: when this screen is the only route in the Create stack
+    // (e.g. restored state), goBack() is a no-op that strands the user
+    // with no path back to the composer — fall back to CreateMain.
+    if (navigation.canGoBack?.() ?? true) {
+      navigation.goBack();
+      return;
+    }
+    navigation.navigate('CreateMain');
   }, [navigation, route.params, exitToHome]);
 
   // SETE-289: the header Back button is not the only way out. The iOS

@@ -235,6 +235,39 @@ describe('YouTubeInputScreen', () => {
     expect(goBack).toHaveBeenCalledTimes(1);
   });
 
+  it('falls back to CreateMain when Back has nowhere to pop (SETE-310)', () => {
+    const goBack = jest.fn();
+    const navigate = jest.fn();
+    const singleEntryNav = {
+      goBack,
+      navigate,
+      canGoBack: () => false,
+      // No fromHome: plain in-tab entry restored as the only stack route.
+      addListener: () => () => {},
+    } as unknown as React.ComponentProps<
+      typeof YouTubeInputScreen
+    >['navigation'];
+
+    let tree!: ReactTestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = ReactTestRenderer.create(
+        <FeatureFlagProvider>
+          <AppThemeProvider>
+            <YouTubeInputScreen navigation={singleEntryNav} route={route} />
+          </AppThemeProvider>
+        </FeatureFlagProvider>,
+      );
+    });
+
+    act(() => {
+      tree.root.findByType(ScreenHeader).props.onBack();
+    });
+
+    // A dead goBack() would strand the user with no path to the composer.
+    expect(goBack).not.toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith('CreateMain');
+  });
+
   // SETE-289: the header Back button is bypassed by the iOS swipe
   // gesture and the Android system Back (native POP). From Home, those
   // paths must honor fromHome instead of landing on CreateMain.

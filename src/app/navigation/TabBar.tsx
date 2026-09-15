@@ -38,23 +38,53 @@ const TAB_ITEMS: Record<string, {labelKey: string; icon: HandoffIconName}> = {
 const TAB_ITEM_HIT_SLOP = {top: 8, bottom: 8, left: 8, right: 8};
 const TAB_ICON_SIZE = 21;
 
+type CreateTabRouteState = {
+  state?: {
+    index?: number;
+    routes?: Array<{name?: string; params?: unknown}>;
+  };
+  params?: unknown;
+};
+
+function findCreateRoute(
+  tabState: BottomTabBarProps['state'],
+): CreateTabRouteState | undefined {
+  return tabState.routes.find(r => r.name === 'Create') as
+    | CreateTabRouteState
+    | undefined;
+}
+
 /**
  * SETE-287 follow-up: Home opens YouTubeInput directly in the Create stack
  * with `fromHome: true` (SETE-289: YouTubeHistory moved to the RootStack
- * above the tabs, so it no longer contributes entries here). If the user
- * leaves via the bottom bar (Home tab) instead of the header Back button,
- * the Create stack stays rooted at that YouTube screen. The next Create
- * tap must reset to CreateMain instead of resurfacing the stale screen.
- * Returns true when any route in the nested Create stack carries
- * `params.fromHome === true`.
+ * above the tabs; SETE-310: its "create new" CTA carries the same flag).
+ * If the user leaves via the bottom bar (Home tab) instead of the header
+ * Back button, the Create stack stays rooted at that YouTube screen. The
+ * next Create tap must reset to CreateMain instead of resurfacing the
+ * stale screen. Returns true when any route in the nested Create stack
+ * carries `params.fromHome === true`.
+ *
+ * SETE-310 follow-up: a simulator pass showed the nested-stack snapshot
+ * exposed here can lag behind the params the screen itself sees, while
+ * the deep-navigate residue (`navigate('Tabs', {screen: 'Create',
+ * params: {screen, params: {fromHome: true}}})`) survives on the Create
+ * tab route's own params. Check that level too so the reset cannot be
+ * silently skipped at runtime.
  */
 export function createStackHasFromHomeEntry(
   tabState: BottomTabBarProps['state'],
 ): boolean {
-  const createRoute = tabState.routes.find(r => r.name === 'Create');
-  const nested = (createRoute as {state?: {routes?: Array<{params?: unknown}>}} | undefined)
-    ?.state;
-  const nestedRoutes = nested?.routes;
+  const createRoute = findCreateRoute(tabState);
+  const tabParams = createRoute?.params as
+    | {fromHome?: boolean; params?: {fromHome?: boolean} | undefined}
+    | undefined;
+  if (
+    tabParams?.fromHome === true ||
+    tabParams?.params?.fromHome === true
+  ) {
+    return true;
+  }
+  const nestedRoutes = createRoute?.state?.routes;
   if (!nestedRoutes) {
     return false;
   }
@@ -62,6 +92,24 @@ export function createStackHasFromHomeEntry(
     r =>
       (r.params as {fromHome?: boolean} | undefined)?.fromHome === true,
   );
+}
+
+/**
+ * SETE-310 follow-up: true when the Create stack's focused route is
+ * anything but CreateMain (a child screen is showing). Used for the
+ * focused-tab re-tap escape hatch — the standard tab pop-to-top the
+ * custom bar previously swallowed by ignoring focused taps.
+ */
+export function createStackIsBeyondMain(
+  tabState: BottomTabBarProps['state'],
+): boolean {
+  const nested = findCreateRoute(tabState)?.state;
+  const routes = nested?.routes;
+  if (!routes || routes.length === 0) {
+    return false;
+  }
+  const focusedNested = routes[nested?.index ?? routes.length - 1];
+  return focusedNested?.name !== 'CreateMain';
 }
 
 const INDICATOR_DURATION_MS = 200;
@@ -353,12 +401,18 @@ export function TabBar({
                   // in-tab stacks (no fromHome) keep standard preserve
                   // behavior. Handles the focused-tab tap too as an
                   // escape hatch when already stuck on the stale screen.
-                  if (
-                    route.name === 'Create' &&
-                    createStackHasFromHomeEntry(state)
-                  ) {
-                    navigation.navigate('Create', {screen: 'CreateMain'});
-                    return;
+                  // SETE-310 follow-up: focused re-tap on any child
+                  // screen pops back to CreateMain (standard tab
+                  // pop-to-top) so no child screen is ever a dead end.
+                  if (route.name === 'Create') {
+                    if (createStackHasFromHomeEntry(state)) {
+                      navigation.navigate('Create', {screen: 'CreateMain'});
+                      return;
+                    }
+                    if (focused && createStackIsBeyondMain(state)) {
+                      navigation.navigate('Create', {screen: 'CreateMain'});
+                      return;
+                    }
                   }
                   if (!focused) {
                     navigation.navigate(route.name);

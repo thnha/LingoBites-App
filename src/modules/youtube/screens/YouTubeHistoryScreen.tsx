@@ -115,12 +115,16 @@ export function YouTubeHistoryScreen({navigation}: Props) {
   // SETE-283 (HVB-11): entry to a fresh lesson. Input always starts with
   // an empty URL and existing rows are never touched.
   // SETE-289: Input lives in the Create tab, so this leaves the History
-  // route and enters Tabs > Create > YouTubeInput; Back from there lands
-  // on CreateMain.
+  // route and enters Tabs > Create > YouTubeInput.
+  // SETE-310: pass `fromHome: true` (same contract as the Home empty-store
+  // branch) so the entry is not a trap: header Back exits to Home with a
+  // stack reset, Android system Back is intercepted, and the TabBar resets
+  // to CreateMain on re-entry instead of resurfacing this screen with no
+  // way back to the composer.
   const createNew = useCallback(() => {
     navigation.navigate('Tabs', {
       screen: 'Create',
-      params: {screen: 'YouTubeInput'},
+      params: {screen: 'YouTubeInput', params: {fromHome: true}},
     });
   }, [navigation]);
 

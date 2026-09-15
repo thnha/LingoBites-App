@@ -289,6 +289,147 @@ describe('TabBar floating liquid-glass (SETE-214)', () => {
     });
   });
 
+  it('resets on focused Create re-tap when the stack holds a stale fromHome entry (SETE-310)', () => {
+    // Escape hatch: already stuck on the stale screen (Create focused),
+    // tapping Create again must pop back to CreateMain.
+    const props = makeProps(1);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create'
+          ? {
+              ...r,
+              state: {
+                index: 0,
+                routes: [
+                  {key: 'yt-input', name: 'YouTubeInput', params: {fromHome: true}},
+                ],
+              },
+            }
+          : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    expect(nav.navigate).toHaveBeenCalledWith('Create', {
+      screen: 'CreateMain',
+    });
+  });
+
+  it('resets when the fromHome flag survives only on tab-level params (SETE-310)', () => {
+    // Runtime shape: the nested-stack snapshot can lag behind while the
+    // deep-navigate residue stays on the Create tab route params.
+    const props = makeProps(0);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create'
+          ? {...r, params: {screen: 'YouTubeInput', params: {fromHome: true}}}
+          : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    expect(nav.navigate).toHaveBeenCalledWith('Create', {
+      screen: 'CreateMain',
+    });
+  });
+
+  it('resets when the tab route carries a direct fromHome param (SETE-310)', () => {
+    const props = makeProps(0);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create' ? {...r, params: {fromHome: true}} : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    expect(nav.navigate).toHaveBeenCalledWith('Create', {
+      screen: 'CreateMain',
+    });
+  });
+
+  it('pops to CreateMain on focused re-tap of any child screen (SETE-310)', () => {
+    // No fromHome anywhere: standard pop-to-top escape hatch.
+    const props = makeProps(1);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create'
+          ? {
+              ...r,
+              state: {
+                index: 1,
+                routes: [
+                  {key: 'create-main', name: 'CreateMain', params: undefined},
+                  {key: 'paste', name: 'PasteText', params: undefined},
+                ],
+              },
+            }
+          : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    expect(nav.navigate).toHaveBeenCalledWith('Create', {
+      screen: 'CreateMain',
+    });
+  });
+
+  it('ignores focused re-tap when already on CreateMain (SETE-310)', () => {
+    const props = makeProps(1);
+    props.state = {
+      ...props.state,
+      routes: props.state.routes.map(r =>
+        r.name === 'Create'
+          ? {
+              ...r,
+              state: {
+                index: 0,
+                routes: [
+                  {key: 'create-main', name: 'CreateMain', params: undefined},
+                ],
+              },
+            }
+          : r,
+      ),
+    } as unknown as BarProps['state'];
+    const {tree} = renderBar(defaultTheme, props);
+    const nav = props.navigation as unknown as {
+      emit: jest.Mock;
+      navigate: jest.Mock;
+    };
+    act(() => {
+      tree.root.findByProps({testID: 'tab-bar-item-Create'}).props.onPress();
+    });
+    expect(nav.navigate).not.toHaveBeenCalled();
+  });
+
   it('preserves a normal in-tab YouTube stack without fromHome', () => {
     const props = makeProps(0);
     props.state = {
