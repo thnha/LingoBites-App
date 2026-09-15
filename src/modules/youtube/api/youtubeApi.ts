@@ -1,5 +1,6 @@
 import i18n from '@/i18n';
 import {getAppConfig} from '@shared/api/appConfig';
+import {authenticatedFetch} from '@shared/api/authenticatedFetch';
 import {createRequestId} from '@shared/api/requestId';
 import {
   CreateYouTubeTranscriptResponseSchema,
@@ -17,7 +18,11 @@ export type YouTubeJobProgress = {percent: number; stage: string | null};
 export type YouTubeJobResult =
   | {ok: true; lesson: YouTubeTranscript}
   | {ok: false; cancelled: true}
-  | {ok: false; errorCode: YouTubeErrorCode | 'NETWORK_ERROR'; message: string};
+  | {
+      ok: false;
+      errorCode: YouTubeErrorCode | 'NETWORK_ERROR' | 'YOUTUBE_UNAUTHORIZED';
+      message: string;
+    };
 
 const YOUTUBE_WATCH_HOSTS = new Set([
   'youtube.com',
@@ -68,6 +73,15 @@ function isAborted(signal?: AbortSignal): boolean {
 }
 
 const cancelledResult = (): YouTubeJobResult => ({ok: false, cancelled: true});
+
+// Client-only (not part of the backend-mirroring YouTubeErrorCodeSchema): the
+// backend rejected the call with 401 even after authenticatedFetch attached
+// the session token and retried a refresh, so the user must sign in again.
+const unauthorizedResult = (): YouTubeJobResult => ({
+  ok: false,
+  errorCode: 'YOUTUBE_UNAUTHORIZED',
+  message: i18n.t('errors.youtube_auth_required'),
+});
 
 /**
  * Bounds a single fetch call so a hung request can't outlive the overall
@@ -147,7 +161,8 @@ export async function runYouTubeJob(
       signal,
     );
     try {
-      response = await fetch(`${apiBaseUrl}/v1/youtube/transcripts`, {
+      response = await authenticatedFetch(
+        `${apiBaseUrl}/v1/youtube/transcripts`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -169,6 +184,7 @@ export async function runYouTubeJob(
     };
   }
   if (isAborted(signal)) return cancelledResult();
+  if (response.status === 401) return unauthorizedResult();
   let body: unknown;
   try {
     body = await response.json();
@@ -205,7 +221,7 @@ export async function runYouTubeJob(
         signal,
       );
       try {
-        response = await fetch(
+        response = await authenticatedFetch(
           `${apiBaseUrl}/v1/youtube/transcripts/${parsedCreated.data.job_id}`,
           {headers: {Accept: 'application/json'}, signal: fetchSignal},
         );
@@ -224,6 +240,7 @@ export async function runYouTubeJob(
       continue;
     }
     if (isAborted(signal)) return cancelledResult();
+    if (response.status === 401) return unauthorizedResult();
 
     if (!response.ok && isTransientStatus(response.status)) {
       const outcome = await waitBeforeNextAttempt(

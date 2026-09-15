@@ -1,4 +1,7 @@
 import i18n from '@/i18n';
+import {persistNewSession, resetRefreshStateForTests} from '../../../../shared/auth/authSession';
+import type {AuthSession, AuthUser} from '../../../../shared/auth/authTypes';
+import {installKeychainVault} from '../../../../test-support/keychainVault';
 import {parseYouTubeVideoId, runYouTubeJob} from '../youtubeApi';
 
 const mockFetch = jest.fn();
@@ -246,6 +249,22 @@ describe('runYouTubeJob - terminal poll errors', () => {
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 
+  it('maps ENRICHMENT_AI_QUOTA_EXCEEDED to a distinct user message', async () => {
+    mockFetch
+      .mockResolvedValueOnce(response(created()))
+      .mockResolvedValueOnce(
+        response(failedBody('ENRICHMENT_AI_QUOTA_EXCEEDED')),
+      );
+
+    const pending = runYouTubeJob(URL);
+    await advanceUntilCalls(2);
+    await expect(pending).resolves.toEqual({
+      ok: false,
+      errorCode: 'ENRICHMENT_AI_QUOTA_EXCEEDED',
+      message: i18n.t('errors.enrichment_ai_quota_exceeded'),
+    });
+  });
+
   it('maps a terminal RATE_LIMIT_EXCEEDED job failure to its exact code', async () => {
     mockFetch
       .mockResolvedValueOnce(response(created()))
@@ -315,6 +334,101 @@ describe('runYouTubeJob - per-request timeout', () => {
     expect(mockFetch).toHaveBeenCalledTimes(3);
 
     await expect(pending).resolves.toEqual(expect.objectContaining({ok: true}));
+  });
+});
+
+describe('runYouTubeJob - authenticated requests (SETE-309)', () => {
+  const authUser: AuthUser = {
+    id: '11111111-1111-4111-8111-111111111111',
+    public_code: 'LB-AB12CD34',
+    display_name: 'An',
+    phone_e164: null,
+    status: 'active',
+    created_at: '2026-09-14T00:00:00.000Z',
+    updated_at: '2026-09-14T00:00:00.000Z',
+  };
+
+  const authSession = (overrides: Partial<AuthSession> = {}): AuthSession => ({
+    session_id: '22222222-2222-4222-8222-222222222222',
+    access_token: 'lb_at_access',
+    refresh_token: 'lb_rt_refresh',
+    access_expires_at: new Date(Date.now() + 3600_000).toISOString(),
+    refresh_expires_at: new Date(Date.now() + 7 * 86400_000).toISOString(),
+    ...overrides,
+  });
+
+  beforeEach(() => {
+    installKeychainVault();
+    resetRefreshStateForTests();
+  });
+
+  it('sends the session token on create and poll', async () => {
+    await persistNewSession({session: authSession(), user: authUser});
+
+    mockFetch
+      .mockResolvedValueOnce(response(created()))
+      .mockResolvedValueOnce(response(completedBody()));
+
+    const pending = runYouTubeJob(URL);
+    await advanceUntilCalls(2);
+    await expect(pending).resolves.toEqual(
+      expect.objectContaining({ok: true}),
+    );
+
+    expect(mockFetch).toHaveBeenNthCalledWith(
+      1,
+      'http://localhost:3000/v1/youtube/transcripts',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer lb_at_access',
+        }),
+      }),
+    );
+    expect(mockFetch).toHaveBeenNthCalledWith(
+      2,
+      'http://localhost:3000/v1/youtube/transcripts/job-1',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer lb_at_access',
+        }),
+      }),
+    );
+  });
+
+  it('maps a 401 on create to YOUTUBE_UNAUTHORIZED', async () => {
+    mockFetch.mockResolvedValueOnce(
+      response(
+        {error: {code: 'UNAUTHORIZED', message: 'signed out'}},
+        {ok: false, status: 401},
+      ),
+    );
+
+    await expect(runYouTubeJob(URL)).resolves.toEqual({
+      ok: false,
+      errorCode: 'YOUTUBE_UNAUTHORIZED',
+      message: i18n.t('errors.youtube_auth_required'),
+    });
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('maps a 401 on poll to YOUTUBE_UNAUTHORIZED', async () => {
+    mockFetch
+      .mockResolvedValueOnce(response(created()))
+      .mockResolvedValueOnce(
+        response(
+          {error: {code: 'UNAUTHORIZED', message: 'signed out'}},
+          {ok: false, status: 401},
+        ),
+      );
+
+    const pending = runYouTubeJob(URL);
+    await advanceUntilCalls(2);
+    await expect(pending).resolves.toEqual({
+      ok: false,
+      errorCode: 'YOUTUBE_UNAUTHORIZED',
+      message: i18n.t('errors.youtube_auth_required'),
+    });
+    expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 });
 

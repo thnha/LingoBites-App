@@ -21,6 +21,8 @@ export const YouTubeErrorCodeSchema = z.enum([
   // SETE-290: backend fails the job when enrichment cannot fill every
   // segment's vi/ipa — mirrors api-server YouTubeErrorCodeSchema.
   'ENRICHMENT_FAILED',
+  'ENRICHMENT_AI_UNAVAILABLE',
+  'ENRICHMENT_AI_QUOTA_EXCEEDED',
   'RATE_LIMIT_EXCEEDED',
 ]);
 

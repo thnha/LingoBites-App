@@ -183,8 +183,11 @@
     "transcript_unparsable": "We couldn't read that transcript. Try this format:\n0:00 Hello there\n0:04 How are you?",
     "transcript_too_large": "That transcript is too large. Please shorten it and try again.",
     "enrichment_failed": "The translation service couldn't finish this video. Please try again.",
+    "enrichment_ai_unavailable": "The translation service is temporarily unavailable. Please try again in a few minutes.",
+    "enrichment_ai_quota_exceeded": "The translation service is at capacity right now. Please try again later.",
     "rate_limit_exceeded": "Too many requests. Please try again shortly.",
     "youtube_failed": "We couldn't create a YouTube lesson. Please try again.",
+    "youtube_auth_required": "Your session expired. Please sign in again.",
     "youtube_timeout": "The YouTube lesson took too long. Please try again."
   },
   "lesson": {

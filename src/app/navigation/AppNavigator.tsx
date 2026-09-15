@@ -421,6 +421,7 @@ export function AppNavigator() {
   useEffect(() => {
     void boot();
   }, [boot]);
+  
   if (accountGateRouteForPhase(phase) !== 'Tabs') {
     return (
       <NavigationContainer>

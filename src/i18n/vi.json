@@ -183,8 +183,11 @@
     "transcript_unparsable": "Không đọc được transcript này. Hãy thử định dạng:\n0:00 Hello there\n0:04 How are you?",
     "transcript_too_large": "Transcript quá lớn. Vui lòng rút ngắn rồi thử lại.",
     "enrichment_failed": "Dịch thuật chưa hoàn tất cho video này. Vui lòng thử lại.",
+    "enrichment_ai_unavailable": "Dịch vụ dịch tạm thời không khả dụng. Vui lòng thử lại sau vài phút.",
+    "enrichment_ai_quota_exceeded": "Dịch vụ dịch đang quá tải hoặc hết hạn mức. Vui lòng thử lại sau.",
     "rate_limit_exceeded": "Bạn gửi quá nhiều yêu cầu. Vui lòng thử lại sau ít phút.",
     "youtube_failed": "Chưa thể tạo bài học YouTube. Vui lòng thử lại.",
+    "youtube_auth_required": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
     "youtube_timeout": "Tạo bài học YouTube mất quá nhiều thời gian. Vui lòng thử lại."
   },
   "lesson": {
