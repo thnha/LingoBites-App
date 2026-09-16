@@ -59,7 +59,6 @@ import {
   YouTubeInputScreen,
   YouTubeHistoryScreen,
   YouTubeProcessingScreen,
-  YouTubeManualTranscriptScreen,
   YouTubeLessonRouteScreen,
 } from '@modules/youtube';
 
@@ -157,11 +156,6 @@ function CreateStackNavigator() {
             component={YouTubeProcessingScreen}
             name="YouTubeProcessing"
             options={{headerShown: false, gestureEnabled: false}}
-          />
-          <CreateStack.Screen
-            component={YouTubeManualTranscriptScreen}
-            name="YouTubeManualTranscript"
-            options={{headerShown: false}}
           />
           <CreateStack.Screen
             component={YouTubeLessonRouteScreen}
@@ -421,7 +415,7 @@ export function AppNavigator() {
   useEffect(() => {
     void boot();
   }, [boot]);
-  
+
   if (accountGateRouteForPhase(phase) !== 'Tabs') {
     return (
       <NavigationContainer>
