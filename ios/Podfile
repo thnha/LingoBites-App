@@ -52,6 +52,19 @@ target 'ScanLearnEnglish' do
       # :ccache_enabled => true
     )
 
+    # Xcode 27 rejects Pod targets below iOS 15.0, but third-party podspecs
+    # (image-picker 9.0, async-storage resources 13.4, ...) still declare old
+    # floors. Raise them to the React Native supported minimum.
+    min_target = min_ios_version_supported
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+        if current.nil? || Gem::Version.new(current.to_s) < Gem::Version.new(min_target)
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_target
+        end
+      end
+    end
+
     # App bundles a subset MaterialIcons.ttf via assets/fonts — skip pod font payloads.
     installer.pods_project.targets.each do |target|
       next unless target.name == 'RNVectorIcons'
