@@ -5,6 +5,7 @@ import {
   findActiveSegmentIndex,
   interpolateMediaTimeMs,
   TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
+  TRANSCRIPT_SYNC_POLL_TIMEOUT_MS,
   useTranscriptSync,
   type UseTranscriptSyncResult,
 } from '../useTranscriptSync';
@@ -202,6 +203,57 @@ describe('useTranscriptSync', () => {
     });
 
     expect(onSeek).not.toHaveBeenCalled();
+  });
+
+  it('recovers after early getCurrentTime calls never resolve (SETE-318)', async () => {
+    // On a real device the sync hook starts polling before the iframe
+    // player exists in the WebView. The injected time query then throws
+    // inside the page, no reply is ever posted, and that poll's promise
+    // pends forever — while the clip itself plays fine. The hook must
+    // not let one hung call jam every later poll: the transcript has to
+    // start following once the player answers.
+    let hang = true;
+    const mediaMs = 3_200;
+    const getCurrentTimeMs = jest.fn(
+      (): Promise<number> =>
+        hang ? new Promise<number>(() => {}) : Promise.resolve(mediaMs),
+    );
+    const {read} = await renderHarness(getCurrentTimeMs);
+
+    await act(async () => {
+      jest.advanceTimersByTime(
+        TRANSCRIPT_SYNC_POLL_INTERVAL_MS * 4 +
+          TRANSCRIPT_SYNC_POLL_TIMEOUT_MS,
+      );
+      await Promise.resolve();
+    });
+    expect(read().activeIndex).toBe(-1);
+
+    hang = false;
+    await act(async () => {
+      jest.advanceTimersByTime(TRANSCRIPT_SYNC_POLL_INTERVAL_MS);
+      await Promise.resolve();
+    });
+    expect(read().activeIndex).toBe(1);
+  });
+
+  it('keeps polling while getCurrentTime keeps hanging (SETE-318)', async () => {
+    // Every attempt hangs: the hook must keep retrying on later ticks
+    // instead of wedging after the first hung call.
+    const getCurrentTimeMs = jest.fn(
+      (): Promise<number> => new Promise<number>(() => {}),
+    );
+    await renderHarness(getCurrentTimeMs);
+
+    await act(async () => {
+      jest.advanceTimersByTime(
+        TRANSCRIPT_SYNC_POLL_TIMEOUT_MS * 2 +
+          TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
+      );
+      await Promise.resolve();
+    });
+
+    expect(getCurrentTimeMs.mock.calls.length).toBeGreaterThan(1);
   });
 
   it('supports seeking backward and forward across segments', async () => {

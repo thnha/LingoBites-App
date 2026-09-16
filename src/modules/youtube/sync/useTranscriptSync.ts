@@ -2,6 +2,12 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import type {YouTubeSegment} from '../../../shared/schemas/youtube-transcript-v1';
 
 export const TRANSCRIPT_SYNC_POLL_INTERVAL_MS = 250;
+// SETE-318: upper bound for one getCurrentTime round trip. The iframe
+// answers over the WebView bridge, which can hang forever (e.g. a poll
+// injected before the page's player object exists throws in-page, so no
+// reply is ever posted). Without a bound, one hung call wedges the poll
+// latch below and the transcript never follows a playing clip again.
+export const TRANSCRIPT_SYNC_POLL_TIMEOUT_MS = 1_000;
 const INTERPOLATION_TICK_MS = 50;
 
 type TimeSample = {
@@ -138,31 +144,57 @@ export function useTranscriptSync({
     }
 
     let cancelled = false;
+    let watchdogId: ReturnType<typeof setTimeout> | null = null;
 
-    const poll = async () => {
+    const clearWatchdog = () => {
+      if (watchdogId !== null) {
+        clearTimeout(watchdogId);
+        watchdogId = null;
+      }
+    };
+
+    const applySample = (mediaMs: number) => {
+      clearWatchdog();
+      pollInFlightRef.current = false;
+      if (cancelled) {
+        return;
+      }
+      const wallMs = Date.now();
+      const previous = currentSampleRef.current;
+      previousSampleRef.current = previous;
+      currentSampleRef.current = {wallMs, mediaMs};
+      syncActiveIndexFromMediaTime(mediaMs);
+    };
+
+    const dropPoll = () => {
+      clearWatchdog();
+      pollInFlightRef.current = false;
+    };
+
+    const poll = () => {
       if (pollInFlightRef.current) {
         return;
       }
       pollInFlightRef.current = true;
-      try {
-        const mediaMs = await getCurrentTimeMsRef.current();
-        if (cancelled) {
-          return;
-        }
-        const wallMs = Date.now();
-        const previous = currentSampleRef.current;
-        previousSampleRef.current = previous;
-        currentSampleRef.current = {wallMs, mediaMs};
-        syncActiveIndexFromMediaTime(mediaMs);
-      } finally {
+      // SETE-318: a hung bridge call must never wedge the latch. The
+      // watchdog frees the next tick, and a late reply still carries a
+      // fresh measurement, so it is applied rather than discarded.
+      watchdogId = setTimeout(() => {
+        watchdogId = null;
         pollInFlightRef.current = false;
+      }, TRANSCRIPT_SYNC_POLL_TIMEOUT_MS);
+      let pending: Promise<number>;
+      try {
+        pending = getCurrentTimeMsRef.current();
+      } catch {
+        dropPoll();
+        return;
       }
+      pending.then(applySample, dropPoll);
     };
 
-    void poll();
-    const pollId = setInterval(() => {
-      void poll();
-    }, TRANSCRIPT_SYNC_POLL_INTERVAL_MS);
+    poll();
+    const pollId = setInterval(poll, TRANSCRIPT_SYNC_POLL_INTERVAL_MS);
 
     const tickId = setInterval(() => {
       const current = currentSampleRef.current;
@@ -180,6 +212,7 @@ export function useTranscriptSync({
 
     return () => {
       cancelled = true;
+      clearWatchdog();
       clearInterval(pollId);
       clearInterval(tickId);
     };
