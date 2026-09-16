@@ -13,7 +13,6 @@ export const IMMERSIVE_STACK_ROUTES = new Set([
   'SpeakingRoom',
   'SpeakingShadowing',
   'YouTubeLesson',
-  'YouTubeManualTranscript',
   'YouTubeProcessing',
 ]);
 

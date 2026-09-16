@@ -1,12 +1,22 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  AccessibilityInfo,
+  Keyboard,
+  LayoutAnimation,
+  Platform,
+  ScrollView,
+  UIManager,
+  View,
+} from 'react-native';
 import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
+import {Banner} from '@components/Banner';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
+import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {
   CreateStackParamList,
   RootStackParamList,
@@ -17,17 +27,83 @@ import {
   YOUTUBE_MAX_SEGMENTS,
 } from '@shared/schemas/youtube-transcript-v1';
 import {parseYouTubeVideoId} from '../api/youtubeApi';
+import {parseManualTranscript} from '../transcript/parser';
 import {ensureYouTubeDisclosureAcknowledged} from '../utils/youtubeDisclosure';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme} from '@theme';
+
+// SETE-316 (Option A2): typed URLs flicker valid→invalid→valid while the
+// 11-char video ID is being entered, so the Step 2 reveal waits for a
+// typing pause. Clipboard pastes arrive complete and open Step 2 at once.
+const STEP_TWO_TYPING_DEBOUNCE_MS = 400;
+const STEP_TWO_OPEN_ANIMATION_MS = 230;
+
+if (
+  Platform.OS === 'android' &&
+  typeof UIManager.setLayoutAnimationEnabledExperimental === 'function'
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 type Props = NativeStackScreenProps<CreateStackParamList, 'YouTubeInput'>;
 
 export function YouTubeInputScreen({navigation, route}: Props) {
   const {t} = useTranslation();
   const {theme} = useAppTheme();
-  const [url, setUrl] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const tabClearance = useFloatingTabBarClearance();
+
+  // SETE-316: transcript-error recovery arrives via merged params
+  // (Processing navigates back to this existing instance). The URL is
+  // pre-filled and Step 2 starts pre-opened — no open animation, and the
+  // URL-change trigger below stays disabled for this entry.
+  const transcriptRequired = route.params?.transcriptRequired;
+  const isRecovery = transcriptRequired != null && transcriptRequired !== '';
+
+  const [url, setUrl] = useState(route.params?.url ?? '');
+  const [transcript, setTranscript] = useState('');
+  const [urlError, setUrlError] = useState<string | null>(null);
+  const [transcriptError, setTranscriptError] = useState<string | null>(null);
+  const [stepTwoOpen, setStepTwoOpen] = useState(isRecovery);
+  const [submitting, setSubmitting] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Fire-once per distinct videoId: set when Step 2 opens for an ID so
+  // re-renders and repeat validations of the same link never re-trigger.
+  const lastFiredVideoIdRef = useRef<string | null>(
+    isRecovery ? parseYouTubeVideoId(route.params?.url ?? '') : null,
+  );
+  const stepTwoYRef = useRef<number | null>(null);
+  const stepTwoHRef = useRef<number | null>(null);
+  const scrollYRef = useRef<number | null>(null);
+  const viewportHRef = useRef<number | null>(null);
+  const reduceMotionRef = useRef(false);
+  const recoveryHandledRef = useRef(false);
+
+  useEffect(() => {
+    reduceMotionRef.current = reduceMotion;
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    try {
+      const request = AccessibilityInfo.isReduceMotionEnabled?.();
+      if (request && typeof request.then === 'function') {
+        let mounted = true;
+        request.then(enabled => {
+          if (mounted) {
+            setReduceMotion(enabled);
+          }
+        });
+        return () => {
+          mounted = false;
+        };
+      }
+    } catch {
+      // Reduce-motion is an enhancement — a lookup failure keeps animation.
+    }
+    return undefined;
+  }, []);
 
   // SETE-283 (HVB-04): same entry-from-Home contract as YouTubeHistory —
   // Back returns to Home, never to CreateMain.
@@ -75,24 +151,159 @@ export function YouTubeInputScreen({navigation, route}: Props) {
     });
   }, [navigation, route.params, exitToHome]);
 
+  const scrollStepTwoIntoView = useCallback(() => {
+    const targetY = stepTwoYRef.current;
+    if (targetY == null) {
+      return;
+    }
+    const top = Math.max(0, targetY - theme.spacing.lg);
+    // Skip the scroll when Step 2 is already fully visible — account for
+    // the open keyboard, which covers the bottom of the viewport when
+    // the trigger came from typing in the URL field.
+    const scrolled = scrollYRef.current;
+    const viewportH = viewportHRef.current;
+    if (scrolled != null && viewportH != null) {
+      const keyboardH =
+        typeof Keyboard.metrics === 'function'
+          ? Keyboard.metrics()?.height ?? 0
+          : 0;
+      const visibleTop = scrolled;
+      const visibleBottom = scrolled + viewportH - keyboardH;
+      const stepH = stepTwoHRef.current ?? 0;
+      if (top >= visibleTop && top + stepH <= visibleBottom) {
+        return;
+      }
+    }
+    scrollRef.current?.scrollTo({
+      y: top,
+      animated: !reduceMotionRef.current,
+    });
+  }, [theme.spacing.lg]);
+
+  const fireStepTwo = useCallback(
+    (videoId: string) => {
+      lastFiredVideoIdRef.current = videoId;
+      if (reduceMotionRef.current) {
+        setStepTwoOpen(true);
+        if (typeof AccessibilityInfo.announceForAccessibility === 'function') {
+          AccessibilityInfo.announceForAccessibility(
+            t('youtube.input_step2_announce'),
+          );
+        }
+      } else {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setStepTwoOpen(true);
+      }
+      // Scroll only after the expand animation lands — scrolling to a
+      // still-expanding element computes the wrong offset.
+      setTimeout(
+        () => scrollStepTwoIntoView(),
+        reduceMotionRef.current ? 0 : STEP_TWO_OPEN_ANIMATION_MS,
+      );
+    },
+    [scrollStepTwoIntoView, t],
+  );
+
+  // SETE-316: typing trigger — debounced, fire-once per distinct videoId,
+  // never auto-collapses (there is no close path by design). Disabled for
+  // transcript-error recovery entries, which pre-open Step 2 instead.
+  useEffect(() => {
+    if (isRecovery) {
+      return undefined;
+    }
+    const videoId = parseYouTubeVideoId(url);
+    if (!videoId || videoId === lastFiredVideoIdRef.current) {
+      return undefined;
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      // Re-check at fire time: the user may have kept typing past a
+      // transiently valid ID (e.g. the 12th character invalidates it).
+      if (parseYouTubeVideoId(url) === videoId) {
+        fireStepTwo(videoId);
+      }
+    }, STEP_TWO_TYPING_DEBOUNCE_MS);
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
+    };
+  }, [url, isRecovery, fireStepTwo]);
+
+  // SETE-316: recovery entry — pre-opened Step 2, no open animation, a
+  // separate scroll-to-Step-2; the transcript field takes focus (via
+  // autoFocus on its remounted instance) because pasting a transcript is
+  // the only remaining action here.
+  useEffect(() => {
+    if (!isRecovery || recoveryHandledRef.current) {
+      return undefined;
+    }
+    recoveryHandledRef.current = true;
+    if (!url) {
+      const prefill = route.params?.url;
+      if (prefill) {
+        setUrl(prefill);
+      }
+    }
+    const currentId = parseYouTubeVideoId(route.params?.url ?? url);
+    if (currentId) {
+      lastFiredVideoIdRef.current = currentId;
+    }
+    setStepTwoOpen(true);
+    const timer = setTimeout(
+      () => scrollStepTwoIntoView(),
+      reduceMotionRef.current ? 0 : STEP_TWO_OPEN_ANIMATION_MS,
+    );
+    return () => clearTimeout(timer);
+    // One-shot per recovery entry; url/params are read at arrival time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRecovery]);
+
   // SETE-283 (HVB-08a): the first submit requires explicit privacy
   // consent — the transcript leaves the device for translation/IPA.
-  // Later submits skip the disclosure.
+  // Later submits skip the disclosure. Single call site for both the
+  // automatic-transcript and manual-transcript submit paths.
   const submit = async () => {
     if (!parseYouTubeVideoId(url)) {
-      setError(t('errors.youtube_invalid_url'));
+      setUrlError(t('errors.youtube_invalid_url'));
       return;
     }
-    const acknowledged = await ensureYouTubeDisclosureAcknowledged({
-      title: t('youtube.disclosure_title'),
-      body: t('youtube.disclosure_body'),
-      confirmLabel: t('youtube.disclosure_confirm'),
-      cancelLabel: t('youtube.disclosure_cancel'),
-    });
-    if (!acknowledged) {
-      return;
+    const trimmedTranscript = transcript.trim();
+    let manualCues:
+      | import('@shared/schemas/youtube-transcript-v1').RawCue[]
+      | undefined;
+    if (trimmedTranscript) {
+      try {
+        manualCues = parseManualTranscript(transcript);
+      } catch {
+        setTranscriptError(t('errors.transcript_unparsable'));
+        return;
+      }
     }
-    navigation.navigate('YouTubeProcessing', {url: url.trim()});
+    setSubmitting(true);
+    try {
+      const acknowledged = await ensureYouTubeDisclosureAcknowledged({
+        title: t('youtube.disclosure_title'),
+        body: t('youtube.disclosure_body'),
+        confirmLabel: t('youtube.disclosure_confirm'),
+        cancelLabel: t('youtube.disclosure_cancel'),
+      });
+      if (!acknowledged) {
+        return;
+      }
+      // A consumed recovery flag must not linger: without this, going
+      // back to this instance later would show a stale recovery banner.
+      if (isRecovery) {
+        navigation.setParams({transcriptRequired: undefined});
+      }
+      const trimmedUrl = url.trim();
+      navigation.navigate(
+        'YouTubeProcessing',
+        manualCues ? {url: trimmedUrl, manualCues} : {url: trimmedUrl},
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const pasteFromClipboard = useCallback(async () => {
@@ -111,82 +322,172 @@ export function YouTubeInputScreen({navigation, route}: Props) {
       }
       clipboardText = await getString();
     } catch {
-      setError(t('youtube.input_paste_unavailable'));
+      setUrlError(t('youtube.input_paste_unavailable'));
       return;
     }
     const value = (clipboardText ?? '').trim();
     if (!value) {
-      setError(t('youtube.input_paste_empty'));
+      setUrlError(t('youtube.input_paste_empty'));
       return;
     }
     setUrl(value);
-    setError(null);
-  }, [t]);
+    setUrlError(null);
+    // Pastes arrive complete — no partial-typed string to wait out, so
+    // reveal Step 2 immediately instead of riding the typing debounce.
+    // (The URL watcher stays quiet for this ID via lastFiredVideoIdRef,
+    // so this fires exactly once.)
+    if (!isRecovery) {
+      const pastedId = parseYouTubeVideoId(value);
+      if (pastedId && pastedId !== lastFiredVideoIdRef.current) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+          debounceTimerRef.current = null;
+        }
+        fireStepTwo(pastedId);
+      }
+    }
+  }, [t, isRecovery, fireStepTwo]);
+
+  const openHistory = useCallback(() => {
+    // SETE-289: History is a RootStack route above the tabs —
+    // reach it through the tab parent so the stack-id lookup
+    // stays type-safe (screen nav props carry no navigator id).
+    navigation
+      .getParent<NavigationProp<RootTabParamList>>()
+      ?.getParent<NavigationProp<RootStackParamList>>('RootStack')
+      ?.navigate('YouTubeHistory');
+  }, [navigation]);
 
   return (
     <AppScreen>
-      <ScreenHeader onBack={goBack} title={t('youtube.input_title')} />
+      <ScreenHeader
+        onBack={goBack}
+        title={t('youtube.input_title')}
+        rightAction={
+          <AppButton
+            onPress={openHistory}
+            testID="youtube-open-history"
+            title={t('youtube.open_history_short')}
+            variant="ghost"
+          />
+        }
+      />
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={{
-          flexGrow: 1,
+          paddingTop: theme.spacing.lg,
+          paddingHorizontal: theme.gutter,
+          paddingBottom: tabClearance,
           gap: theme.spacing.lg,
-          justifyContent: 'center',
-          padding: theme.gutter,
         }}
         keyboardShouldPersistTaps="handled"
+        onLayout={event => {
+          viewportHRef.current = event.nativeEvent.layout.height;
+        }}
+        onScroll={event => {
+          scrollYRef.current = event.nativeEvent.contentOffset.y;
+        }}
+        scrollEventThrottle={16}
       >
-        <AppText color="secondary">{t('youtube.input_description')}</AppText>
-        <AppText color="muted" variant="caption">
-          {t('youtube.input_expectation')}
-        </AppText>
-        <AppText color="muted" testID="youtube-input-limits" variant="caption">
-          {t('youtube.input_limits', {
-            maxMinutes: Math.floor(YOUTUBE_MAX_DURATION_SECONDS / 60),
-            maxSegments: YOUTUBE_MAX_SEGMENTS,
-          })}
-        </AppText>
+        {isRecovery ? (
+          <Banner
+            variant="info"
+            message={t('youtube.input_transcript_recovery')}
+          />
+        ) : null}
+        <AppText variant="bodyLg">{t('youtube.input_description')}</AppText>
         <TextField
           autoCapitalize="none"
-          hasError={!!error}
-          errorMessage={error ?? undefined}
+          hasError={!!urlError}
+          errorMessage={urlError ?? undefined}
+          editable={!submitting}
           keyboardType="url"
-          label={t('youtube.url_label')}
+          label={t('youtube.input_step1_label')}
           onChangeText={value => {
             setUrl(value);
-            setError(null);
+            setUrlError(null);
           }}
           placeholder="https://www.youtube.com/watch?v=…"
           testID="youtube-url-input"
           value={url}
         />
-        <View style={{gap: theme.spacing.sm}}>
-          <AppButton
-            iconLeft="content_paste"
-            onPress={() => void pasteFromClipboard()}
-            testID="youtube-paste-url"
-            title={t('youtube.input_paste')}
-            variant="outline"
-          />
-          <AppButton
-            onPress={submit}
-            testID="youtube-submit"
-            title={t('youtube.start')}
-          />
-          <AppButton
-            // SETE-289: History is a RootStack route above the tabs —
-            // reach it through the tab parent so the stack-id lookup
-            // stays type-safe (screen nav props carry no navigator id).
-            onPress={() =>
-              navigation
-                .getParent<NavigationProp<RootTabParamList>>()
-                ?.getParent<NavigationProp<RootStackParamList>>('RootStack')
-                ?.navigate('YouTubeHistory')
-            }
-            testID="youtube-open-history"
-            title={t('youtube.open_history')}
-            variant="secondary"
-          />
-        </View>
+        <AppButton
+          iconLeft="content_paste"
+          onPress={() => void pasteFromClipboard()}
+          style={{alignSelf: 'flex-start', minHeight: 44}}
+          testID="youtube-paste-url"
+          title={t('youtube.input_paste')}
+          variant="ghost"
+        />
+        <AppText
+          color="secondary"
+          testID="youtube-input-meta"
+          variant="caption"
+        >
+          {t('youtube.input_meta', {
+            maxMinutes: Math.floor(YOUTUBE_MAX_DURATION_SECONDS / 60),
+            maxSegments: YOUTUBE_MAX_SEGMENTS,
+          })}
+        </AppText>
+        {stepTwoOpen ? (
+          <View
+            accessibilityLiveRegion="polite"
+            onLayout={event => {
+              stepTwoYRef.current = event.nativeEvent.layout.y;
+              stepTwoHRef.current = event.nativeEvent.layout.height;
+            }}
+            style={{gap: theme.spacing.sm}}
+            testID="youtube-step2"
+          >
+            <AppText variant="label">{t('youtube.input_step2_title')}</AppText>
+            <AppText color="secondary" variant="caption">
+              {t('youtube.input_step2_optional')}
+            </AppText>
+            <TextField
+              accessibilityHint={t('youtube.input_transcript_help')}
+              // Recovery remounts this field so autoFocus fires even
+              // though the screen itself never remounts (Processing
+              // merges params into this existing instance). The
+              // auto-open trigger path must never steal focus — focus
+              // stays on the URL field there — so autoFocus is set only
+              // for recovery entries.
+              key={isRecovery ? 'transcript-recovery' : 'transcript'}
+              autoFocus={isRecovery}
+              multiline
+              label={t('youtube.transcript_label')}
+              value={transcript}
+              onChangeText={value => {
+                setTranscript(value);
+                setTranscriptError(null);
+              }}
+              placeholder={'0:00 Hello there\n0:04 How are you?'}
+              hasError={!!transcriptError}
+              errorMessage={transcriptError ?? undefined}
+              editable={!submitting}
+              testID="youtube-transcript-input"
+              style={{
+                minHeight: 96,
+                maxHeight: 280,
+                textAlignVertical: 'top',
+              }}
+            />
+            {transcript ? (
+              <AppText
+                color="secondary"
+                testID="youtube-step2-confirm"
+                variant="caption"
+              >
+                {t('youtube.input_step2_confirm')}
+              </AppText>
+            ) : null}
+          </View>
+        ) : null}
+        <AppButton
+          loading={submitting}
+          onPress={submit}
+          testID="youtube-submit"
+          title={t('youtube.start')}
+        />
       </ScrollView>
     </AppScreen>
   );

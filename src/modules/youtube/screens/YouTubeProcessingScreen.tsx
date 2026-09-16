@@ -54,9 +54,19 @@ export function YouTubeProcessingScreen({navigation, route}: Props) {
           result.errorCode === 'TRANSCRIPT_UNAVAILABLE' ||
           result.errorCode === 'TRANSCRIPT_SOURCE_BLOCKED'
         )
-          navigation.replace('YouTubeManualTranscript', {
-            url: route.params.url,
-            errorCode: result.errorCode,
+          // SETE-316 (Option A2): return to the EXISTING YouTubeInput
+          // instance — never push a second one — and MERGE (not replace)
+          // the params so the fromHome exit contract fixed in
+          // SETE-287/289/310 survives the round-trip. The input screen
+          // pre-opens Step 2 with a recovery banner when it sees
+          // transcriptRequired.
+          navigation.navigate({
+            name: 'YouTubeInput',
+            params: {
+              url: route.params.url,
+              transcriptRequired: result.errorCode,
+            },
+            merge: true,
           });
         else setError({code: result.errorCode, message: result.message});
       }

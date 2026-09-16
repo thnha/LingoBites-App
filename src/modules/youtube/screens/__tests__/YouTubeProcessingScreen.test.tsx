@@ -7,6 +7,7 @@ import {YouTubeProcessingScreen} from '../YouTubeProcessingScreen';
 const mockRunYouTubeJob = jest.fn();
 const mockSaveYouTubeLesson = jest.fn();
 const mockReplace = jest.fn();
+const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 
 jest.mock('../../api/youtubeApi', () => ({
@@ -34,6 +35,7 @@ const sampleLesson = {
 
 const navigation = {
   replace: mockReplace,
+  navigate: mockNavigate,
   goBack: mockGoBack,
 } as unknown as React.ComponentProps<
   typeof YouTubeProcessingScreen
@@ -137,6 +139,36 @@ describe('YouTubeProcessingScreen', () => {
       saveFailed: true,
     });
   });
+
+  it.each(['TRANSCRIPT_UNAVAILABLE', 'TRANSCRIPT_SOURCE_BLOCKED'] as const)(
+    'returns to the existing YouTubeInput with merged params on %s (SETE-316)',
+    async errorCode => {
+      mockRunYouTubeJob.mockResolvedValue({
+        ok: false,
+        errorCode,
+        message: 'No transcript',
+      });
+
+      act(() => {
+        renderScreen();
+      });
+      await act(async () => {
+        await flushPromises();
+      });
+
+      // Same instance (navigate + merge), never a pushed second input and
+      // never a param-replacing push that would drop fromHome (SETE-287).
+      expect(mockReplace).not.toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith({
+        name: 'YouTubeInput',
+        params: {
+          url: route.params.url,
+          transcriptRequired: errorCode,
+        },
+        merge: true,
+      });
+    },
+  );
 
   it('offers retry with the same URL after failure', async () => {
     mockRunYouTubeJob.mockResolvedValue({

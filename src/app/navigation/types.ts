@@ -63,14 +63,22 @@ export type CreateStackParamList = {
    * needed there — a plain goBack pops to the source tab), so only
    * YouTubeInput keeps the flag.
    */
-  YouTubeInput: {fromHome?: boolean} | undefined;
+  YouTubeInput:
+    | {
+        fromHome?: boolean;
+        url?: string;
+        /**
+         * SETE-316 (Option A2): set when returning from Processing after a
+         * transcript error — Step 2 opens pre-expanded with a recovery
+         * banner. Always merged into existing params (never replaced) so
+         * the fromHome exit contract above survives the round-trip.
+         */
+        transcriptRequired?: string;
+      }
+    | undefined;
   YouTubeProcessing: {
     url: string;
     manualCues?: import('@shared/schemas/youtube-transcript-v1').RawCue[];
-  };
-  YouTubeManualTranscript: {
-    url: string;
-    errorCode: import('@shared/schemas/youtube-transcript-v1').YouTubeErrorCode;
   };
   YouTubeLesson:
     | {
