@@ -20,7 +20,10 @@ import {
   listSavedLessons,
   listStartedLessons,
 } from '@shared/db/ContentLessonStateRepository';
-import {listYouTubeLessons} from '@shared/db/YoutubeLessonRepository';
+import {
+  listYouTubeLessons,
+  countYoutubeLessons,
+} from '@shared/db/YoutubeLessonRepository';
 import {useYouTubeServerEnabled} from '@shared/api/youtubeCapabilities';
 import {useFeatureFlags} from '@/release';
 import {useLessonRepository} from '../lesson';
@@ -49,6 +52,7 @@ type ExploreCell = {
   // has no real source leaves the key unset and the row collapses — never a
   // placeholder. Today all four cards ship slot-free.
   badgeKey?: string;
+  badgeParams?: Record<string, string | number>;
   tagKey?: string;
 };
 
@@ -118,6 +122,10 @@ export function HomeScreen({navigation}: Props) {
   const [relearnTarget, setRelearnTarget] = useState<RelearnTarget | null>(
     null,
   );
+  const [youtubeLessonCount, setYoutubeLessonCount] = useState<number | null>(
+    null,
+  );
+
   // SETE-311: header streak pill. Recomputed from the persisted event log on
   // every focus — the same pattern as ProfileScreen — so the pill can never
   // show a stale count.
@@ -125,6 +133,8 @@ export function HomeScreen({navigation}: Props) {
     () => getGamificationSnapshot().currentStreak,
   );
 
+  // SETE-278: track learning states. The lists are fast and small, re-read on
+  // every focus.
   useFocusEffect(
     useCallback(() => {
       setStreak(getGamificationSnapshot().currentStreak);
@@ -217,6 +227,12 @@ export function HomeScreen({navigation}: Props) {
             }
           : null,
       );
+
+      try {
+        setYoutubeLessonCount(countYoutubeLessons());
+      } catch {
+        setYoutubeLessonCount(null);
+      }
     }, [
       getContentLessonById,
       getLessonById,
@@ -277,6 +293,18 @@ export function HomeScreen({navigation}: Props) {
       titleKey: 'home.explore_video',
       metaKey: 'home.explore_video_meta',
       testID: 'home-explore-video',
+      badgeKey:
+        youtubeLessonCount !== null && youtubeLessonCount > 0
+          ? 'home.explore_video_badge'
+          : undefined,
+      badgeParams:
+        youtubeLessonCount !== null && youtubeLessonCount > 0
+          ? {count: youtubeLessonCount}
+          : undefined,
+      tagKey:
+        youtubeLessonCount !== null && youtubeLessonCount > 0
+          ? 'home.explore_video_tag'
+          : undefined,
     },
     {
       icon: 'article',
@@ -484,7 +512,9 @@ export function HomeScreen({navigation}: Props) {
               const isDisabled = isVideoCell && !youtubeEnabled;
               // SETE-311 Option B: badge/tag render only when a real metric
               // exists (today none do) — the rows collapse otherwise.
-              const badgeLabel = cell.badgeKey ? t(cell.badgeKey) : null;
+              const badgeLabel = cell.badgeKey
+                ? t(cell.badgeKey, cell.badgeParams)
+                : null;
               const tagLabel = cell.tagKey ? t(cell.tagKey) : null;
               const a11yLabel = isDisabled
                 ? `${t(cell.titleKey)}. ${t('home.explore_video_unavailable')}`

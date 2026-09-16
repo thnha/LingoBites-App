@@ -68,6 +68,8 @@
     "starter_relearn_meta": "Gần nhất: {{title}} · {{level}}",
     "explore_title": "Bạn muốn học gì?",
     "explore_video": "Học qua video",
+    "explore_video_badge": "● {{count}} clip",
+    "explore_video_tag": "🎬 Shorts mode",
     "explore_video_meta": "Nghe thật, nói tự nhiên",
     "explore_video_unavailable": "Tính năng đang chưa khả dụng",
     "explore_news": "Học qua đoạn văn ngắn",
@@ -150,7 +152,9 @@
     "skip_a11y": "Bỏ qua thẻ này"
   },
   "common": {
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "done": "Xong",
+    "clear_all": "Xóa tất cả"
   },
   "errors": {
     "empty_vocabulary": "Đoạn này khá đơn giản, app chưa tìm thấy từ vựng khó đáng học.",

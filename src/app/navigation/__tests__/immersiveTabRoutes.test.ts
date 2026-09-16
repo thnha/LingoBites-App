@@ -10,6 +10,7 @@ describe('immersiveTabRoutes', () => {
       'ContentLessonRuntime',
       'YouTubeProcessing',
       'YouTubeLesson',
+      'YouTubeInput',
     ]) {
       expect(shouldHideTabBarForRouteName(name)).toBe(true);
     }

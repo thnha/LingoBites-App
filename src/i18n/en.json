@@ -68,6 +68,8 @@
     "starter_relearn_meta": "Most recent: {{title}} · {{level}}",
     "explore_title": "What do you want to learn?",
     "explore_video": "Learn with videos",
+    "explore_video_badge": "● {{count}} clips",
+    "explore_video_tag": "🎬 Shorts mode",
     "explore_video_meta": "Real listening, natural speaking",
     "explore_video_unavailable": "This feature is currently unavailable",
     "explore_news": "Learn with text passages",
@@ -150,7 +152,9 @@
     "skip_a11y": "Skip this card"
   },
   "common": {
-    "retry": "Retry"
+    "retry": "Retry",
+    "done": "Done",
+    "clear_all": "Clear all"
   },
   "errors": {
     "empty_vocabulary": "This passage is fairly simple — the app didn't find any challenging vocabulary worth learning.",

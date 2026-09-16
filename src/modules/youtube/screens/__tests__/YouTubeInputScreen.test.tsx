@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactTestRenderer, {act} from 'react-test-renderer';
-import {LayoutAnimation} from 'react-native';
+import {Keyboard, LayoutAnimation, View} from 'react-native';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
+import {AppButton} from '@components/AppButton';
 import {AppText} from '@components/AppText';
 import {Banner} from '@components/Banner';
+import {BottomActionBar} from '@components/BottomActionBar';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {YouTubeInputScreen} from '../YouTubeInputScreen';
 
@@ -685,10 +687,16 @@ describe('YouTubeInputScreen Step 2', () => {
     expect(nav.navigate).not.toHaveBeenCalled();
   });
 
-  it('shows an inline URL error and does not disable the CTA on invalid submit', async () => {
+  it('disables the CTA until the URL is valid, keeping the submit guard', async () => {
     const nav = createNav();
     const tree = await renderStepTwo(nav);
 
+    // Empty URL: CTA reads disabled so it never looks ready-to-tap.
+    expect(
+      tree.root.findByProps({testID: 'youtube-submit'}).props.disabled,
+    ).toBe(true);
+
+    // The submit guard itself still rejects invalid input when invoked.
     await submit(tree);
 
     expect(
@@ -697,9 +705,16 @@ describe('YouTubeInputScreen Step 2', () => {
       'Vui lòng nhập link YouTube hợp lệ (watch, youtu.be, Shorts hoặc embed).',
     );
     expect(nav.navigate).not.toHaveBeenCalled();
+  });
+
+  it('enables the CTA once the URL becomes valid', async () => {
+    const nav = createNav();
+    const tree = await renderStepTwo(nav);
+    openStepTwoByTyping(tree);
+
     expect(
       tree.root.findByProps({testID: 'youtube-submit'}).props.disabled,
-    ).toBeFalsy();
+    ).toBe(false);
   });
 
   describe('transcript-error recovery entry', () => {
@@ -748,6 +763,317 @@ describe('YouTubeInputScreen Step 2', () => {
         expect(hasStepTwo(tree)).toBe(true);
       } finally {
         configureSpy.mockRestore();
+      }
+    });
+  });
+
+  // SETE-319: the transcript field used to render under the open keyboard
+  // with the CTA unreachable. These tests pin the avoidance wiring: keyboard
+  // subscriptions, the transcript-only Done affordance, and the Hướng B
+  // placement — CTA inline at rest, pinned in a blended bar only while the
+  // keyboard is open.
+  describe('keyboard avoidance (SETE-319)', () => {
+    type KeyboardHandler = (event?: {
+      endCoordinates?: {
+        height?: number;
+        width?: number;
+        screenX?: number;
+        screenY?: number;
+      };
+    }) => void;
+
+    function keyboardHandlers(spy: ReturnType<typeof jest.spyOn>) {
+      const calls = spy.mock.calls as Array<[string, KeyboardHandler]>;
+      const byEvent = (name: string): KeyboardHandler[] =>
+        calls.filter(([event]) => event === name).map(([, handler]) => handler);
+      return {
+        didShow: byEvent('keyboardDidShow'),
+        didChangeFrame: byEvent('keyboardDidChangeFrame'),
+        didHide: byEvent('keyboardDidHide'),
+      };
+    }
+
+    function actionBars(tree: ReactTestRenderer.ReactTestRenderer) {
+      return tree.root.findAllByType(BottomActionBar);
+    }
+
+    function submitButtons(tree: ReactTestRenderer.ReactTestRenderer) {
+      // testID lands on the AppButton composite and its inner host
+      // elements — count the composite only.
+      return tree.root.findAll(
+        node =>
+          node.type === AppButton && node.props.testID === 'youtube-submit',
+      );
+    }
+
+    function barPaddingBottom(tree: ReactTestRenderer.ReactTestRenderer) {
+      const style = tree.root.findByType(BottomActionBar).props.style as {
+        paddingBottom?: number;
+      };
+      return style?.paddingBottom;
+    }
+
+    function doneButtons(tree: ReactTestRenderer.ReactTestRenderer) {
+      // testID lands on the AppButton composite and its inner host
+      // elements — count the composite only.
+      return tree.root.findAll(
+        node =>
+          node.type === AppButton &&
+          node.props.testID === 'youtube-transcript-done',
+      );
+    }
+
+    function showKeyboard(
+      tree: ReactTestRenderer.ReactTestRenderer,
+      spy: ReturnType<typeof jest.spyOn>,
+    ) {
+      const {didShow} = keyboardHandlers(spy);
+      expect(didShow.length).toBeGreaterThanOrEqual(1);
+      act(() => {
+        for (const handler of didShow) {
+          handler({
+            endCoordinates: {
+              height: 336,
+              width: 402,
+              screenX: 0,
+              screenY: 538,
+            },
+          });
+        }
+      });
+    }
+
+    function focusTranscript(tree: ReactTestRenderer.ReactTestRenderer) {
+      act(() => {
+        tree.root
+          .findByProps({testID: 'youtube-transcript-input'})
+          .props.onFocus();
+      });
+    }
+
+    it('subscribes to keyboard show, frame-change, and hide', async () => {
+      const addSpy = jest.spyOn(Keyboard, 'addListener');
+      try {
+        const nav = createNav();
+        const tree = await renderStepTwo(nav);
+        expect(tree).toBeDefined();
+
+        const {didShow, didChangeFrame, didHide} = keyboardHandlers(addSpy);
+        expect(didShow.length).toBeGreaterThanOrEqual(1);
+        expect(didChangeFrame.length).toBeGreaterThanOrEqual(1);
+        expect(didHide.length).toBeGreaterThanOrEqual(1);
+      } finally {
+        addSpy.mockRestore();
+      }
+    });
+
+    it('keeps the CTA inline at rest and pins it only while the keyboard is open (Hướng B)', async () => {
+      const addSpy = jest.spyOn(Keyboard, 'addListener');
+      try {
+        const nav = createNav();
+        const tree = await renderStepTwo(nav);
+        openStepTwoByTyping(tree);
+
+        // At rest: exactly one CTA, inline in the scroll content — no bar,
+        // no dead gap, no white plank.
+        expect(actionBars(tree)).toHaveLength(0);
+        expect(submitButtons(tree)).toHaveLength(1);
+
+        showKeyboard(tree, addSpy);
+
+        // Keyboard open: the same single CTA moves into the pinned bar.
+        expect(actionBars(tree)).toHaveLength(1);
+        expect(submitButtons(tree)).toHaveLength(1);
+
+        const {didHide} = keyboardHandlers(addSpy);
+        act(() => {
+          for (const handler of didHide) {
+            handler();
+          }
+        });
+
+        // Keyboard dismissed: back inline, no bar left behind.
+        expect(actionBars(tree)).toHaveLength(0);
+        expect(submitButtons(tree)).toHaveLength(1);
+      } finally {
+        addSpy.mockRestore();
+      }
+    });
+
+    it('blends the pinned bar with the screen background (no white plank)', async () => {
+      const addSpy = jest.spyOn(Keyboard, 'addListener');
+      try {
+        const nav = createNav();
+        const tree = await renderStepTwo(nav);
+        openStepTwoByTyping(tree);
+        showKeyboard(tree, addSpy);
+
+        const style = tree.root.findByType(BottomActionBar).props.style as {
+          backgroundColor?: string;
+          borderTopColor?: string;
+          paddingBottom?: number;
+        };
+        // Same treatment as PasteTextScreen: cream background, subtle
+        // outline border, gutter breathing room above the keyboard.
+        expect(style.backgroundColor).toBeDefined();
+        expect(style.borderTopColor).toBeDefined();
+        expect(typeof style.paddingBottom).toBe('number');
+      } finally {
+        addSpy.mockRestore();
+      }
+    });
+
+    it('shows Done only while the transcript field is focused, and it dismisses the keyboard', async () => {
+      const dismissSpy = jest
+        .spyOn(Keyboard, 'dismiss')
+        .mockImplementation(() => {});
+      const addSpy = jest.spyOn(Keyboard, 'addListener');
+      try {
+        const nav = createNav();
+        const tree = await renderStepTwo(nav);
+        openStepTwoByTyping(tree);
+        // Focusing the field opens the keyboard, which pins the bar that
+        // hosts Done — reproduce both halves of that sequence here.
+        showKeyboard(tree, addSpy);
+
+        expect(doneButtons(tree)).toHaveLength(0);
+
+        focusTranscript(tree);
+        expect(doneButtons(tree)).toHaveLength(1);
+
+        act(() => {
+          doneButtons(tree)[0].props.onPress();
+        });
+        expect(dismissSpy).toHaveBeenCalledTimes(1);
+
+        act(() => {
+          tree.root
+            .findByProps({testID: 'youtube-transcript-input'})
+            .props.onBlur();
+        });
+        expect(doneButtons(tree)).toHaveLength(0);
+      } finally {
+        dismissSpy.mockRestore();
+        addSpy.mockRestore();
+      }
+    });
+
+    it('shows the transcript action row only while focused or non-empty (Cách A)', async () => {
+      const nav = createNav();
+      const tree = await renderStepTwo(nav);
+      openStepTwoByTyping(tree);
+
+      const actionRows = () =>
+        tree.root.findAll(
+          node =>
+            node.type === View &&
+            node.props.testID === 'youtube-transcript-actions',
+        );
+      const blurTranscript = () => {
+        act(() => {
+          tree.root
+            .findByProps({testID: 'youtube-transcript-input'})
+            .props.onBlur();
+        });
+      };
+
+      expect(actionRows()).toHaveLength(0);
+
+      focusTranscript(tree);
+      expect(actionRows()).toHaveLength(1);
+
+      // Blur with an empty field: the row goes away.
+      blurTranscript();
+      expect(actionRows()).toHaveLength(0);
+
+      // Non-empty field: the row stays even without focus.
+      typeTranscript(tree, VALID_TRANSCRIPT);
+      expect(actionRows()).toHaveLength(1);
+    });
+
+    it('disables Clear all on an empty field and clears the transcript on press', async () => {
+      const dismissSpy = jest
+        .spyOn(Keyboard, 'dismiss')
+        .mockImplementation(() => {});
+      try {
+        const nav = createNav();
+        const tree = await renderStepTwo(nav);
+        openStepTwoByTyping(tree);
+        focusTranscript(tree);
+
+        const clearButtons = () =>
+          tree.root.findAll(
+            node =>
+              node.type === AppButton &&
+              node.props.testID === 'youtube-transcript-clear',
+          );
+        expect(clearButtons()).toHaveLength(1);
+        expect(clearButtons()[0].props.disabled).toBe(true);
+
+        typeTranscript(tree, VALID_TRANSCRIPT);
+        expect(clearButtons()[0].props.disabled).toBe(false);
+
+        act(() => {
+          clearButtons()[0].props.onPress();
+        });
+        expect(
+          tree.root.findByProps({testID: 'youtube-transcript-input'}).props
+            .value,
+        ).toBe('');
+        // Clearing leads straight back into typing/pasting — the keyboard
+        // stays open.
+        expect(dismissSpy).not.toHaveBeenCalled();
+      } finally {
+        dismissSpy.mockRestore();
+      }
+    });
+
+    it('keeps exactly one button in the pinned bar while the keyboard is open', async () => {
+      const addSpy = jest.spyOn(Keyboard, 'addListener');
+      try {
+        const nav = createNav();
+        const tree = await renderStepTwo(nav);
+        openStepTwoByTyping(tree);
+        showKeyboard(tree, addSpy);
+
+        // Done moved under the field (Cách A) — the bar holds only submit,
+        // which is what keeps it to a single ~76pt row above the keyboard.
+        const barButtons = tree.root
+          .findByType(BottomActionBar)
+          .findAll(node => node.type === AppButton);
+        expect(barButtons).toHaveLength(1);
+        expect(barButtons[0].props.testID).toBe('youtube-submit');
+      } finally {
+        addSpy.mockRestore();
+      }
+    });
+
+    it('pins the bar when the keyboard frame changes height', async () => {
+      const addSpy = jest.spyOn(Keyboard, 'addListener');
+      try {
+        const nav = createNav();
+        const tree = await renderStepTwo(nav);
+        openStepTwoByTyping(tree);
+
+        expect(actionBars(tree)).toHaveLength(0);
+        const {didChangeFrame} = keyboardHandlers(addSpy);
+        expect(didChangeFrame.length).toBeGreaterThanOrEqual(1);
+        act(() => {
+          for (const handler of didChangeFrame) {
+            handler({
+              endCoordinates: {
+                height: 400,
+                width: 402,
+                screenX: 0,
+                screenY: 474,
+              },
+            });
+          }
+        });
+        expect(actionBars(tree)).toHaveLength(1);
+        expect(barPaddingBottom(tree)).toBeDefined();
+      } finally {
+        addSpy.mockRestore();
       }
     });
   });

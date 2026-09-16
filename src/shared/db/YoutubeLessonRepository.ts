@@ -205,6 +205,18 @@ export function listYouTubeLessons(): YouTubeTranscript[] {
   });
 }
 
+export function countYouTubeLessons(): number {
+  try {
+    const db = getDatabase();
+    const result = firstRow<{count: number}>(
+      db.execute('SELECT COUNT(*) as count FROM youtube_lessons;', [])
+    );
+    return result?.count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 export function deleteYouTubeLesson(lessonId: string): boolean {
   try {
     const db = getDatabase();
@@ -230,4 +242,5 @@ export function deleteYouTubeLesson(lessonId: string): boolean {
 export const saveYoutubeLesson = saveYouTubeLesson;
 export const getYoutubeLesson = getYouTubeLesson;
 export const listYoutubeLessons = listYouTubeLessons;
+export const countYoutubeLessons = countYouTubeLessons;
 export const deleteYoutubeLesson = deleteYouTubeLesson;

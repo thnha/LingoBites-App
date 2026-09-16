@@ -2,11 +2,13 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   AccessibilityInfo,
   Keyboard,
+  KeyboardAvoidingView,
   LayoutAnimation,
   Platform,
   ScrollView,
   UIManager,
   View,
+  type KeyboardEvent,
 } from 'react-native';
 import type {NavigationProp} from '@react-navigation/native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -14,9 +16,9 @@ import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {Banner} from '@components/Banner';
+import {BottomActionBar} from '@components/BottomActionBar';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {TextField} from '@components/TextField';
-import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {
   CreateStackParamList,
   RootStackParamList,
@@ -50,7 +52,6 @@ type Props = NativeStackScreenProps<CreateStackParamList, 'YouTubeInput'>;
 export function YouTubeInputScreen({navigation, route}: Props) {
   const {t} = useTranslation();
   const {theme} = useAppTheme();
-  const tabClearance = useFloatingTabBarClearance();
 
   // SETE-316: transcript-error recovery arrives via merged params
   // (Processing navigates back to this existing instance). The URL is
@@ -66,6 +67,13 @@ export function YouTubeInputScreen({navigation, route}: Props) {
   const [stepTwoOpen, setStepTwoOpen] = useState(isRecovery);
   const [submitting, setSubmitting] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+  // SETE-319: keyboard-avoidance state. The transcript field used to sit
+  // under the open keyboard with no way to scroll it into view; the CTA
+  // moves into a sticky BottomActionBar and the focused field is scrolled
+  // above the keyboard.
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [transcriptFocused, setTranscriptFocused] = useState(false);
+  const [viewportH, setViewportH] = useState<number | null>(null);
 
   const scrollRef = useRef<ScrollView>(null);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -80,6 +88,7 @@ export function YouTubeInputScreen({navigation, route}: Props) {
   const viewportHRef = useRef<number | null>(null);
   const reduceMotionRef = useRef(false);
   const recoveryHandledRef = useRef(false);
+  const transcriptFocusedRef = useRef(false);
 
   useEffect(() => {
     reduceMotionRef.current = reduceMotion;
@@ -161,14 +170,14 @@ export function YouTubeInputScreen({navigation, route}: Props) {
     // the open keyboard, which covers the bottom of the viewport when
     // the trigger came from typing in the URL field.
     const scrolled = scrollYRef.current;
-    const viewportH = viewportHRef.current;
-    if (scrolled != null && viewportH != null) {
+    const layoutH = viewportHRef.current;
+    if (scrolled != null && layoutH != null) {
       const keyboardH =
         typeof Keyboard.metrics === 'function'
           ? Keyboard.metrics()?.height ?? 0
           : 0;
       const visibleTop = scrolled;
-      const visibleBottom = scrolled + viewportH - keyboardH;
+      const visibleBottom = scrolled + layoutH - keyboardH;
       const stepH = stepTwoHRef.current ?? 0;
       if (top >= visibleTop && top + stepH <= visibleBottom) {
         return;
@@ -179,6 +188,79 @@ export function YouTubeInputScreen({navigation, route}: Props) {
       animated: !reduceMotionRef.current,
     });
   }, [theme.spacing.lg]);
+
+  // SETE-319: re-run the Step 2 visibility correction when the keyboard
+  // appears or changes height (autocorrect bar, language switch, emoji)
+  // while the transcript field is focused. The recovery entry auto-focuses
+  // the transcript field, so this also repairs the initial race between
+  // autoFocus and the keyboard animation.
+  useEffect(() => {
+    const onShow = (event: KeyboardEvent) => {
+      setKeyboardHeight(event.endCoordinates?.height ?? 0);
+      if (transcriptFocusedRef.current) {
+        setTimeout(() => scrollStepTwoIntoView(), 50);
+      }
+    };
+    const onChange = (event: KeyboardEvent) => {
+      setKeyboardHeight(event.endCoordinates?.height ?? 0);
+      if (transcriptFocusedRef.current) {
+        setTimeout(() => scrollStepTwoIntoView(), 50);
+      }
+    };
+    const onHide = () => {
+      setKeyboardHeight(0);
+    };
+    const showSub = Keyboard.addListener('keyboardDidShow', onShow);
+    const changeSub = Keyboard.addListener('keyboardDidChangeFrame', onChange);
+    const hideSub = Keyboard.addListener('keyboardDidHide', onHide);
+    return () => {
+      showSub.remove();
+      changeSub.remove();
+      hideSub.remove();
+    };
+  }, [scrollStepTwoIntoView]);
+
+  const handleTranscriptFocus = useCallback(() => {
+    transcriptFocusedRef.current = true;
+    setTranscriptFocused(true);
+    // Let the keyboard start opening, then bring the field above it.
+    setTimeout(() => scrollStepTwoIntoView(), 50);
+  }, [scrollStepTwoIntoView]);
+
+  const handleTranscriptBlur = useCallback(() => {
+    transcriptFocusedRef.current = false;
+    setTranscriptFocused(false);
+  }, []);
+
+  // Cách A: clear the transcript without a confirm dialog (PasteTextScreen
+  // convention — the user can paste again from the clipboard) and without
+  // touching focus, so clearing leads straight back into typing/pasting.
+  const handleClearTranscript = useCallback(() => {
+    setTranscript('');
+    setTranscriptError(null);
+  }, []);
+
+  // SETE-319: cap the growing transcript field against the visible
+  // viewport so typing never pushes the field back under the keyboard.
+  const visibleViewportH =
+    viewportH != null && keyboardHeight > 0
+      ? Math.max(0, viewportH - keyboardHeight)
+      : viewportH;
+  const transcriptMaxHeight =
+    visibleViewportH != null && keyboardHeight > 0
+      ? // Cách A: reserve the action row (44pt + 8pt gap) below the field
+        // so a full-height field never pushes the row under the keyboard.
+        Math.min(280, Math.max(120, visibleViewportH * 0.4 - 52))
+      : 280;
+
+  // Hướng B: the tab bar is hidden on this screen (IMMERSIVE_STACK_ROUTES),
+  // so there is no tab clearance to reserve. The CTA lives inline in the
+  // scroll content at rest and only pins to a BottomActionBar while the
+  // keyboard is open — no sticky "white plank" and no dead gap otherwise.
+  // AppScreen already applies the bottom safe-area, and the open keyboard
+  // covers the home indicator, so the pinned bar needs only a gutter.
+  const keyboardOpen = keyboardHeight > 0;
+  const isUrlValid = parseYouTubeVideoId(url) != null;
 
   const fireStepTwo = useCallback(
     (videoId: string) => {
@@ -358,6 +440,18 @@ export function YouTubeInputScreen({navigation, route}: Props) {
       ?.navigate('YouTubeHistory');
   }, [navigation]);
 
+  // Shared between the inline (at rest) and pinned (keyboard open)
+  // placements so both keep the same testID and press behavior.
+  const submitButton = (
+    <AppButton
+      disabled={!isUrlValid}
+      loading={submitting}
+      onPress={submit}
+      testID="youtube-submit"
+      title={t('youtube.start')}
+    />
+  );
+
   return (
     <AppScreen>
       <ScreenHeader
@@ -372,123 +466,191 @@ export function YouTubeInputScreen({navigation, route}: Props) {
           />
         }
       />
-      <ScrollView
-        ref={scrollRef}
-        contentContainerStyle={{
-          paddingTop: theme.spacing.lg,
-          paddingHorizontal: theme.gutter,
-          paddingBottom: tabClearance,
-          gap: theme.spacing.lg,
-        }}
-        keyboardShouldPersistTaps="handled"
-        onLayout={event => {
-          viewportHRef.current = event.nativeEvent.layout.height;
-        }}
-        onScroll={event => {
-          scrollYRef.current = event.nativeEvent.contentOffset.y;
-        }}
-        scrollEventThrottle={16}
+      {/* SETE-319: KeyboardAvoidingView shrinks the scroll area on iOS so
+          the focused transcript field can scroll above the keyboard.
+          Android already resizes via adjustResize in the manifest, so the
+          behavior stays undefined there to avoid double compensation.
+          offset is 0: the custom header is in normal flow inside the
+          SafeAreaView, not a native-stack header above the view. */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}
+        style={{flex: 1}}
       >
-        {isRecovery ? (
-          <Banner
-            variant="info"
-            message={t('youtube.input_transcript_recovery')}
-          />
-        ) : null}
-        <AppText variant="bodyLg">{t('youtube.input_description')}</AppText>
-        <TextField
-          autoCapitalize="none"
-          hasError={!!urlError}
-          errorMessage={urlError ?? undefined}
-          editable={!submitting}
-          keyboardType="url"
-          label={t('youtube.input_step1_label')}
-          onChangeText={value => {
-            setUrl(value);
-            setUrlError(null);
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={{
+            paddingTop: theme.spacing.lg,
+            paddingHorizontal: theme.gutter,
+            paddingBottom: theme.spacing.lg,
+            gap: theme.spacing.lg,
           }}
-          placeholder="https://www.youtube.com/watch?v=…"
-          testID="youtube-url-input"
-          value={url}
-        />
-        <AppButton
-          iconLeft="content_paste"
-          onPress={() => void pasteFromClipboard()}
-          style={{alignSelf: 'flex-start', minHeight: 44}}
-          testID="youtube-paste-url"
-          title={t('youtube.input_paste')}
-          variant="ghost"
-        />
-        <AppText
-          color="secondary"
-          testID="youtube-input-meta"
-          variant="caption"
+          keyboardDismissMode={
+            Platform.OS === 'ios' ? 'interactive' : 'on-drag'
+          }
+          keyboardShouldPersistTaps="handled"
+          onLayout={event => {
+            const height = event.nativeEvent.layout.height;
+            viewportHRef.current = height;
+            setViewportH(height);
+          }}
+          onScroll={event => {
+            scrollYRef.current = event.nativeEvent.contentOffset.y;
+          }}
+          scrollEventThrottle={16}
+          style={{flex: 1}}
         >
-          {t('youtube.input_meta', {
-            maxMinutes: Math.floor(YOUTUBE_MAX_DURATION_SECONDS / 60),
-            maxSegments: YOUTUBE_MAX_SEGMENTS,
-          })}
-        </AppText>
-        {stepTwoOpen ? (
-          <View
-            accessibilityLiveRegion="polite"
-            onLayout={event => {
-              stepTwoYRef.current = event.nativeEvent.layout.y;
-              stepTwoHRef.current = event.nativeEvent.layout.height;
-            }}
-            style={{gap: theme.spacing.sm}}
-            testID="youtube-step2"
-          >
-            <AppText variant="label">{t('youtube.input_step2_title')}</AppText>
-            <AppText color="secondary" variant="caption">
-              {t('youtube.input_step2_optional')}
-            </AppText>
-            <TextField
-              accessibilityHint={t('youtube.input_transcript_help')}
-              // Recovery remounts this field so autoFocus fires even
-              // though the screen itself never remounts (Processing
-              // merges params into this existing instance). The
-              // auto-open trigger path must never steal focus — focus
-              // stays on the URL field there — so autoFocus is set only
-              // for recovery entries.
-              key={isRecovery ? 'transcript-recovery' : 'transcript'}
-              autoFocus={isRecovery}
-              multiline
-              label={t('youtube.transcript_label')}
-              value={transcript}
-              onChangeText={value => {
-                setTranscript(value);
-                setTranscriptError(null);
-              }}
-              placeholder={'0:00 Hello there\n0:04 How are you?'}
-              hasError={!!transcriptError}
-              errorMessage={transcriptError ?? undefined}
-              editable={!submitting}
-              testID="youtube-transcript-input"
-              style={{
-                minHeight: 96,
-                maxHeight: 280,
-                textAlignVertical: 'top',
-              }}
+          {isRecovery ? (
+            <Banner
+              variant="info"
+              message={t('youtube.input_transcript_recovery')}
             />
-            {transcript ? (
-              <AppText
-                color="secondary"
-                testID="youtube-step2-confirm"
-                variant="caption"
-              >
-                {t('youtube.input_step2_confirm')}
+          ) : null}
+          <AppText variant="bodyLg">{t('youtube.input_description')}</AppText>
+          <TextField
+            autoCapitalize="none"
+            hasError={!!urlError}
+            errorMessage={urlError ?? undefined}
+            editable={!submitting}
+            keyboardType="url"
+            label={t('youtube.input_step1_label')}
+            onChangeText={value => {
+              setUrl(value);
+              setUrlError(null);
+            }}
+            placeholder="https://www.youtube.com/watch?v=…"
+            testID="youtube-url-input"
+            value={url}
+          />
+          <AppButton
+            iconLeft="content_paste"
+            onPress={() => void pasteFromClipboard()}
+            style={{alignSelf: 'flex-start', minHeight: 44}}
+            testID="youtube-paste-url"
+            title={t('youtube.input_paste')}
+            variant="ghost"
+          />
+          <AppText
+            color="secondary"
+            testID="youtube-input-meta"
+            variant="caption"
+          >
+            {t('youtube.input_meta', {
+              maxMinutes: Math.floor(YOUTUBE_MAX_DURATION_SECONDS / 60),
+              maxSegments: YOUTUBE_MAX_SEGMENTS,
+            })}
+          </AppText>
+          {stepTwoOpen ? (
+            <View
+              accessibilityLiveRegion="polite"
+              onLayout={event => {
+                stepTwoYRef.current = event.nativeEvent.layout.y;
+                stepTwoHRef.current = event.nativeEvent.layout.height;
+              }}
+              style={{gap: theme.spacing.sm}}
+              testID="youtube-step2"
+            >
+              <AppText variant="label">
+                {t('youtube.input_step2_title')}
               </AppText>
-            ) : null}
-          </View>
+              <AppText color="secondary" variant="caption">
+                {t('youtube.input_step2_optional')}
+              </AppText>
+              <TextField
+                accessibilityHint={t('youtube.input_transcript_help')}
+                // Recovery remounts this field so autoFocus fires even
+                // though the screen itself never remounts (Processing
+                // merges params into this existing instance). The
+                // auto-open trigger path must never steal focus — focus
+                // stays on the URL field there — so autoFocus is set only
+                // for recovery entries.
+                key={isRecovery ? 'transcript-recovery' : 'transcript'}
+                autoFocus={isRecovery}
+                multiline
+                label={t('youtube.transcript_label')}
+                value={transcript}
+                onChangeText={value => {
+                  setTranscript(value);
+                  setTranscriptError(null);
+                }}
+                onFocus={handleTranscriptFocus}
+                onBlur={handleTranscriptBlur}
+                placeholder={'0:00 Hello there\n0:04 How are you?'}
+                hasError={!!transcriptError}
+                errorMessage={transcriptError ?? undefined}
+                editable={!submitting}
+                testID="youtube-transcript-input"
+                style={{
+                  minHeight: 96,
+                  maxHeight: transcriptMaxHeight,
+                  textAlignVertical: 'top',
+                }}
+              />
+              {/* Cách A: action row directly under the field — Done (moved
+                  out of the bottom bar) next to Clear all. Visible while
+                  focused or non-empty so the keyboard always has a visible
+                  dismiss path; Clear stays disabled on an empty field,
+                  mirroring PasteTextScreen. */}
+              {transcriptFocused || transcript.length > 0 ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    gap: theme.spacing.sm,
+                  }}
+                  testID="youtube-transcript-actions"
+                >
+                  <AppButton
+                    disabled={transcript.length === 0}
+                    iconLeft="delete"
+                    onPress={handleClearTranscript}
+                    style={{minHeight: 44}}
+                    testID="youtube-transcript-clear"
+                    title={t('common.clear_all')}
+                    variant="ghost"
+                  />
+                  <AppButton
+                    onPress={() => Keyboard.dismiss()}
+                    style={{minHeight: 44}}
+                    testID="youtube-transcript-done"
+                    title={t('common.done')}
+                    variant="ghost"
+                  />
+                </View>
+              ) : null}
+              {transcript ? (
+                <AppText
+                  color="secondary"
+                  testID="youtube-step2-confirm"
+                  variant="caption"
+                >
+                  {t('youtube.input_step2_confirm')}
+                </AppText>
+              ) : null}
+            </View>
+          ) : null}
+          {/* Hướng B: at rest the CTA sits in the content flow, directly
+              under the meta line — no sticky bar, no dead gap. */}
+          {keyboardOpen ? null : submitButton}
+        </ScrollView>
+        {/* Hướng B: pinned CTA exists only while the keyboard is open, so
+            the field and the action stay reachable above it. Same
+            background/outlineVariant treatment as PasteTextScreen so the
+            bar blends with the cream background instead of reading as a
+            white plank. */}
+        {keyboardOpen ? (
+          <BottomActionBar
+            style={{
+              backgroundColor: theme.colors.background,
+              borderTopColor: theme.colors.outlineVariant,
+              paddingBottom: theme.spacing.md,
+            }}
+          >
+            {submitButton}
+          </BottomActionBar>
         ) : null}
-        <AppButton
-          loading={submitting}
-          onPress={submit}
-          testID="youtube-submit"
-          title={t('youtube.start')}
-        />
-      </ScrollView>
+      </KeyboardAvoidingView>
     </AppScreen>
   );
 }
