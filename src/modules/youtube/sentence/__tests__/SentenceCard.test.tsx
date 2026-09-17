@@ -259,6 +259,26 @@ describe('SentenceCard', () => {
       expect(onToggleSave).toHaveBeenCalledTimes(1);
     });
 
+    it('renders the fixed emerald listen bar with audio button and instruction text immediately without scrolling', () => {
+      const onPlaySentenceAudio = jest.fn();
+      const tree = renderCard({onPlaySentenceAudio});
+
+      expect(hasNode(tree, `${CARD_TEST_ID}-listen-bar`)).toBe(true);
+      expect(
+        tree.root.findByProps({testID: `${CARD_TEST_ID}-listen-hint`}).props
+          .children,
+      ).toBe('Chạm từng từ để tra nghĩa & nghe phát âm lẻ');
+
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-listen-audio`})
+          .props.onPress();
+      });
+      expect(onPlaySentenceAudio).toHaveBeenCalledWith(
+        expect.objectContaining({en: 'We are learning through video'}),
+      );
+    });
+
     it('shows pinned sentence bar when scrolled past sentence block', () => {
       const onPlaySentenceAudio = jest.fn();
       const tree = renderCard({onPlaySentenceAudio});
