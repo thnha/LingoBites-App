@@ -468,11 +468,12 @@ export function SentenceCard({
       setScrollY(currentY);
       scrollYRef.current = currentY;
       viewportHeightRef.current =
-        event.nativeEvent.layoutMeasurement.height || viewportHeightRef.current;
+        event.nativeEvent.layoutMeasurement?.height ||
+        viewportHeightRef.current;
       onScrollOffsetChange?.(segment.index, currentY);
 
-      const layoutHeight = event.nativeEvent.layoutMeasurement.height;
-      const contentHeight = event.nativeEvent.contentSize.height;
+      const layoutHeight = event.nativeEvent.layoutMeasurement?.height ?? 0;
+      const contentHeight = event.nativeEvent.contentSize?.height ?? 0;
       const reachedBottom =
         contentHeight > 0 && currentY + layoutHeight >= contentHeight - 20;
       setIsAtBottom(reachedBottom);

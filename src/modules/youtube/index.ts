@@ -12,7 +12,11 @@ export {
   SentenceEnrichmentSchema,
 } from './api/sentenceEnrichmentApi';
 export {SentenceCard} from './sentence/SentenceCard';
-export {SentenceCarousel} from './sentence/SentenceCarousel';
+export {
+  SentenceCarousel,
+  type SentenceCarouselProps,
+  type SentenceCarouselRef,
+} from './sentence/SentenceCarousel';
 export {
   CARD_BORDER_RADIUS_PT,
   CARD_HEADER_HEIGHT_PT,

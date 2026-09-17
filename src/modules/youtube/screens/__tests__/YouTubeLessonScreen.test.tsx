@@ -153,37 +153,30 @@ describe('YouTubeLessonScreen', () => {
     jest.useRealTimers();
   });
 
-  it('renders all three lines (English, Vietnamese, IPA) for every segment', async () => {
+  it('renders sentence cards with English and Vietnamese for segments', async () => {
     const tree = await renderScreen();
 
-    for (const id of ['dQw4w9WgXcQ-0', 'dQw4w9WgXcQ-1', 'dQw4w9WgXcQ-2']) {
+    for (let i = 0; i < 3; i++) {
       expect(
-        tree.root.findByProps({testID: `transcript-line-${id}-en`}).props
+        tree.root.findByProps({testID: `sentence-card-${i}-en`}).props
           .children,
       ).toBeTruthy();
       expect(
-        tree.root.findByProps({testID: `transcript-line-${id}-vi`}).props
-          .children,
-      ).toBeTruthy();
-      expect(
-        tree.root.findByProps({testID: `transcript-line-${id}-ipa`}).props
+        tree.root.findByProps({testID: `sentence-card-${i}-vi`}).props
           .children,
       ).toBeTruthy();
     }
   });
 
-  it('tapping a line seeks the player to that segment start, in seconds', async () => {
+  it('selecting a card seeks the player to that segment start, in seconds', async () => {
     const tree = await renderScreen();
 
-    const enLine = tree.root.findByProps({
-      testID: 'transcript-line-dQw4w9WgXcQ-1-en',
-    });
-    let pressable: renderer.ReactTestInstance | null = enLine;
-    while (pressable && typeof pressable.props?.onPress !== 'function') {
-      pressable = pressable.parent;
-    }
+    const flatList = tree.root.findByProps({testID: 'sentence-carousel-list'});
+    const snapInterval = flatList.props.snapToInterval;
     await act(async () => {
-      pressable!.props.onPress();
+      flatList.props.onMomentumScrollEnd({
+        nativeEvent: {contentOffset: {x: snapInterval, y: 0}},
+      });
       await Promise.resolve();
     });
 
@@ -196,7 +189,7 @@ describe('YouTubeLessonScreen', () => {
 
     await act(async () => {
       tree.root
-        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-1-word-0'})
+        .findByProps({testID: 'sentence-card-1-word-0'})
         .props.onPress();
       await Promise.resolve();
     });
@@ -216,7 +209,7 @@ describe('YouTubeLessonScreen', () => {
 
       await act(async () => {
         tree.root
-          .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-1-word-0'})
+          .findByProps({testID: 'sentence-card-1-word-0'})
           .props.onPress();
         await Promise.resolve();
       });
@@ -233,7 +226,7 @@ describe('YouTubeLessonScreen', () => {
 
     await act(async () => {
       tree.root
-        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-2-practice'})
+        .findByProps({testID: 'sentence-card-2-practice-button'})
         .props.onPress();
       await Promise.resolve();
     });
@@ -281,6 +274,10 @@ describe('YouTubeLessonScreen', () => {
   it('toggles Vietnamese and IPA display independently', async () => {
     const tree = await renderScreen();
 
+    expect(
+      tree.root.findByProps({testID: 'sentence-card-0-vi'}),
+    ).toBeTruthy();
+
     await act(async () => {
       tree.root
         .findByProps({testID: 'youtube-toggle-vietnamese'})
@@ -289,20 +286,17 @@ describe('YouTubeLessonScreen', () => {
     });
 
     expect(() =>
-      tree.root.findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-vi'}),
+      tree.root.findByProps({testID: 'sentence-card-0-vi'}),
     ).toThrow();
-    expect(() =>
-      tree.root.findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-ipa'}),
-    ).not.toThrow();
 
     await act(async () => {
       tree.root.findByProps({testID: 'youtube-toggle-ipa'}).props.onPress();
       await Promise.resolve();
     });
 
-    expect(() =>
-      tree.root.findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-ipa'}),
-    ).toThrow();
+    expect(
+      tree.root.findByProps({testID: 'youtube-toggle-ipa'}).props.tone,
+    ).toBe('surface');
   });
 
   it('follows and re-seeks the active sentence while repeat is on', async () => {
@@ -421,15 +415,12 @@ describe('YouTubeLessonScreen', () => {
       tree.root.findByProps({testID: 'youtube-player-error'}),
     ).toBeTruthy();
 
-    for (const id of ['dQw4w9WgXcQ-0', 'dQw4w9WgXcQ-1', 'dQw4w9WgXcQ-2']) {
+    for (let i = 0; i < 3; i++) {
       expect(
-        tree.root.findByProps({testID: `transcript-line-${id}-en`}),
+        tree.root.findByProps({testID: `sentence-card-${i}-en`}),
       ).toBeTruthy();
       expect(
-        tree.root.findByProps({testID: `transcript-line-${id}-vi`}),
-      ).toBeTruthy();
-      expect(
-        tree.root.findByProps({testID: `transcript-line-${id}-ipa`}),
+        tree.root.findByProps({testID: `sentence-card-${i}-vi`}),
       ).toBeTruthy();
     }
   });
@@ -452,21 +443,6 @@ describe('YouTubeLessonScreen', () => {
     ]) {
       expect(tree.root.findByProps({testID}).props.disabled).toBe(true);
     }
-
-    const enLine = tree.root.findByProps({
-      testID: 'transcript-line-dQw4w9WgXcQ-1-en',
-    });
-    let pressable: renderer.ReactTestInstance | null = enLine;
-    while (pressable && typeof pressable.props?.onPress !== 'function') {
-      pressable = pressable.parent;
-    }
-    expect(pressable!.props.disabled).toBe(true);
-    await act(async () => {
-      pressable!.props.onPress();
-      await Promise.resolve();
-    });
-
-    expect(mockSeekTo).not.toHaveBeenCalled();
   });
 
   it('disables VI/IPA toggles when their content is empty (SETE-290)', async () => {
@@ -573,7 +549,7 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
     ).toBeTruthy();
     // The lesson itself still opens — content is not blocked.
     expect(
-      tree.root.findByProps({testID: 'youtube-transcript-list'}),
+      tree.root.findByProps({testID: 'sentence-carousel-list'}),
     ).toBeTruthy();
   });
 
@@ -584,7 +560,7 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
       tree.root.findByProps({testID: 'youtube-lesson-save-warning'}),
     ).toThrow();
     expect(
-      tree.root.findByProps({testID: 'youtube-transcript-list'}),
+      tree.root.findByProps({testID: 'sentence-carousel-list'}),
     ).toBeTruthy();
   });
 
@@ -636,7 +612,7 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
     const {tree, navigation} = await renderRoute({lessonId: 'dQw4w9WgXcQ'});
 
     expect(
-      tree.root.findByProps({testID: 'youtube-transcript-list'}),
+      tree.root.findByProps({testID: 'sentence-carousel-list'}),
     ).toBeTruthy();
     await pressRouteBack(tree);
 
@@ -649,7 +625,7 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
 
     await act(async () => {
       tree.root
-        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-practice'})
+        .findByProps({testID: 'sentence-card-0-practice-button'})
         .props.onPress();
       await Promise.resolve();
     });
@@ -676,7 +652,7 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
 
     await act(async () => {
       tree.root
-        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-1-practice'})
+        .findByProps({testID: 'sentence-card-1-practice-button'})
         .props.onPress();
       await Promise.resolve();
     });

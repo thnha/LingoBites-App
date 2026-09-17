@@ -1,13 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Alert,
-  FlatList,
   Pressable,
   StyleSheet,
   View,
   useWindowDimensions,
   type LayoutChangeEvent,
-  type ListRenderItemInfo,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
@@ -38,7 +36,17 @@ import {
   formatElapsed,
   shouldShowMiniPlayer,
 } from '../utils/sentenceSeek';
-import {TranscriptLine} from '../components/TranscriptLine';
+import {
+  SentenceCarousel,
+  type SentenceCarouselRef,
+} from '../sentence/SentenceCarousel';
+import type {SentenceCardSegment} from '../sentence/SentenceCard';
+import type {
+  GrammarPoint,
+  SentenceEnrichment,
+  VocabEntry,
+} from '@shared/schemas/sentence-contract';
+import type {RetryBlockFn} from '../sentence/useSentenceEnrichment';
 import {YouTubeLessonOverflowMenu} from './YouTubeLessonOverflowMenu';
 import {YouTubeTranscriptPopup} from './YouTubeTranscriptPopup';
 import {YouTubeToolsPopup} from './YouTubeToolsPopup';
@@ -73,8 +81,6 @@ import {
   type YouTubePlaybackRate,
 } from '../utils/playbackRate';
 
-const AUTOSCROLL_RESUME_DELAY_MS = 5_000;
-
 export type YouTubeLessonScreenProps = {
   lesson: YouTubeTranscript;
   onBack?: () => void;
@@ -90,12 +96,11 @@ export type YouTubeLessonScreenProps = {
    * The route screen owns navigation, so this screen only forwards taps.
    */
   onPracticeSentence?: (segment: YouTubeSegment) => void;
+  level?: string | null;
+  enrichmentMap?: Record<number, SentenceEnrichment | null>;
+  retryBlock?: RetryBlockFn;
+  testID?: string;
 };
-
-function ListSeparator() {
-  const {theme} = useAppTheme();
-  return <View style={{height: theme.spacing.xs}} />;
-}
 
 /** Runs an async side effect without returning its promise to the caller. */
 function fireAndForget(task: Promise<unknown>): void {
@@ -213,6 +218,10 @@ export function YouTubeLessonScreen({
   onStartPractice,
   saveWarning = false,
   onPracticeSentence,
+  level,
+  enrichmentMap,
+  retryBlock,
+  testID,
 }: YouTubeLessonScreenProps) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
@@ -220,8 +229,7 @@ export function YouTubeLessonScreen({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const playerRef = useRef<YouTubePlayerRef>(null);
-  const listRef = useRef<FlatList<YouTubeSegment>>(null);
-  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const listRef = useRef<SentenceCarouselRef>(null);
   const prevActiveIndexRef = useRef(-1);
 
   const [showVietnamese, setShowVietnamese] = useState(true);
@@ -243,7 +251,6 @@ export function YouTubeLessonScreen({
   const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
   // SETE-325 (C-4): transcript popup visibility.
   const [isTranscriptPopupOpen, setIsTranscriptPopupOpen] = useState(false);
-  const [autoScrollPaused, setAutoScrollPaused] = useState(false);
   const [playerError, setPlayerError] = useState<YouTubePlayerErrorCode | null>(
     null,
   );
@@ -540,14 +547,6 @@ export function YouTubeLessonScreen({
     showToast,
   ]);
 
-  useEffect(() => {
-    return () => {
-      if (resumeTimerRef.current) {
-        clearTimeout(resumeTimerRef.current);
-      }
-    };
-  }, []);
-
   // Persist progress as the active sentence advances, and flush the latest
   // known position on unmount (exit mid-video).
   useEffect(() => {
@@ -568,28 +567,6 @@ export function YouTubeLessonScreen({
     };
   }, [persistProgress]);
 
-  useEffect(() => {
-    if (autoScrollPaused || activeIndex < 0) {
-      return;
-    }
-    listRef.current?.scrollToIndex({
-      animated: true,
-      index: activeIndex,
-      viewPosition: 0.5,
-    });
-  }, [activeIndex, autoScrollPaused]);
-
-  const handleLinePress = useCallback(
-    (segment: YouTubeSegment) => {
-      if (isOfflineReading) {
-        return;
-      }
-      seekToIndex(segment.index);
-      setRepeatIndex(current => (current == null ? null : segment.index));
-    },
-    [isOfflineReading, seekToIndex],
-  );
-
   // SETE-325 (C-4): popup taps seek the video but never close the popup,
   // and never touch repeat mode — the popup is for hopping between
   // sentences, not for arming loops.
@@ -602,32 +579,6 @@ export function YouTubeLessonScreen({
     },
     [isOfflineReading, seekToIndex],
   );
-
-  const pauseAutoScroll = useCallback(() => {
-    setAutoScrollPaused(true);
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-    }
-  }, []);
-
-  const scheduleAutoScrollResume = useCallback(() => {
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-    }
-    resumeTimerRef.current = setTimeout(() => {
-      setAutoScrollPaused(false);
-    }, AUTOSCROLL_RESUME_DELAY_MS);
-  }, []);
-
-  const handleScrollToIndexFailed = useCallback((info: {index: number}) => {
-    requestAnimationFrame(() => {
-      listRef.current?.scrollToIndex({
-        animated: true,
-        index: info.index,
-        viewPosition: 0.5,
-      });
-    });
-  }, []);
 
   const toggleVietnamese = useCallback(() => {
     setShowVietnamese(current => !current);
@@ -745,9 +696,120 @@ export function YouTubeLessonScreen({
     [showToast],
   );
 
+  const [savedWordIds, setSavedWordIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [savedGrammarIds, setSavedGrammarIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+
+  const savedSegmentIds = useMemo(() => {
+    const ids = new Set<string | number>();
+    lesson.segments.forEach(segment => {
+      const isSaved = vocabularySaveState.getIsSaved(
+        segment.id,
+        savedVocabularyIds.has(segment.id),
+      );
+      if (isSaved) {
+        ids.add(segment.index);
+        ids.add(segment.id);
+      }
+    });
+    return ids;
+  }, [lesson.segments, savedVocabularyIds, vocabularySaveState]);
+
+  const handleToggleWordSave = useCallback(
+    async (word: string, entry?: VocabEntry) => {
+      const wordKey = word.toLowerCase().trim();
+      const wordId = `word-${lesson.video.id}-${wordKey}`;
+      const isSaved =
+        savedWordIds.has(wordKey) || savedVocabularyIds.has(wordId);
+      if (isSaved) {
+        setSavedWordIds(prev => {
+          const next = new Set(prev);
+          next.delete(wordKey);
+          return next;
+        });
+        await onVocabularyUnsave(wordId);
+      } else {
+        setSavedWordIds(prev => {
+          const next = new Set(prev);
+          next.add(wordKey);
+          return next;
+        });
+        await onVocabularySave(wordId, {
+          lessonId: lesson.video.id,
+          vocabulary: {
+            id: wordId,
+            word: entry?.word ?? word,
+            phrase_from_text: entry?.inSentenceNote ?? word,
+            meaning_vi: entry?.meaning ?? '',
+            ipa: entry?.ipa,
+            source_sentence: lesson.segments[activeIndex]?.en ?? word,
+          },
+        });
+      }
+    },
+    [
+      activeIndex,
+      lesson.segments,
+      lesson.video.id,
+      onVocabularySave,
+      onVocabularyUnsave,
+      savedVocabularyIds,
+      savedWordIds,
+    ],
+  );
+
   const handleSelectPlaybackRate = useCallback((rate: YouTubePlaybackRate) => {
     setPlaybackRate(rate);
   }, []);
+
+  const handleToggleGrammarSave = useCallback((point: GrammarPoint) => {
+    const key = point.name;
+    setSavedGrammarIds(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
+
+  const handlePlaySentenceAudio = useCallback(
+    (segment: SentenceCardSegment) => {
+      if (isOfflineReading) {
+        return;
+      }
+      seekToIndex(segment.index);
+    },
+    [isOfflineReading, seekToIndex],
+  );
+
+  const handlePracticeSentenceSegment = useCallback(
+    (segment: SentenceCardSegment) => {
+      const fullSegment =
+        lesson.segments[segment.index] ?? {
+          id: `${lesson.video.id}-${segment.index}`,
+          index: segment.index,
+          start_ms: 0,
+          end_ms: 0,
+          en: segment.en,
+          vi: segment.vi,
+        };
+      onPracticeSentence?.(fullSegment);
+    },
+    [lesson.segments, lesson.video.id, onPracticeSentence],
+  );
+
+  const handleCardScrollOffsetChange = useCallback(
+    (_segmentIndex: number, offset: number) => {
+      setIsCardScrolledDown(offset >= 40);
+    },
+    [],
+  );
 
   const handleScrollToActiveSentence = useCallback(() => {
     setIsCardScrolledDown(false);
@@ -755,7 +817,6 @@ export function YouTubeLessonScreen({
       listRef.current?.scrollToIndex({
         animated: true,
         index: activeIndex,
-        viewPosition: 0.5,
       });
     }
   }, [activeIndex]);
@@ -782,64 +843,38 @@ export function YouTubeLessonScreen({
   );
 
   const handleToggleSave = useCallback(
-    async (segment: YouTubeSegment) => {
-      const dbValue = savedVocabularyIds.has(segment.id);
-      const isSaved = vocabularySaveState.getIsSaved(segment.id, dbValue);
+    async (segment: YouTubeSegment | SentenceCardSegment) => {
+      const fullSegment =
+        lesson.segments[segment.index] ?? (segment as YouTubeSegment);
+      const targetId =
+        'id' in fullSegment && fullSegment.id
+          ? fullSegment.id
+          : `${lesson.video.id}-${segment.index}`;
+      const dbValue = savedVocabularyIds.has(targetId);
+      const isSaved = vocabularySaveState.getIsSaved(targetId, dbValue);
       if (isSaved) {
-        await onVocabularyUnsave(segment.id);
+        await onVocabularyUnsave(targetId);
       } else {
-        await onVocabularySave(segment.id, {
+        await onVocabularySave(targetId, {
           lessonId: lesson.video.id,
           vocabulary: {
-            id: segment.id,
+            id: targetId,
             word: segment.en,
             phrase_from_text: segment.en,
             meaning_vi: segment.vi || '',
-            ipa: segment.ipa || undefined,
+            ipa: ('ipa' in fullSegment ? fullSegment.ipa : '') || undefined,
             source_sentence: segment.en,
           },
         });
       }
     },
     [
+      lesson.segments,
       lesson.video.id,
       onVocabularySave,
       onVocabularyUnsave,
       savedVocabularyIds,
       vocabularySaveState,
-    ],
-  );
-
-  const renderItem = useCallback(
-    ({item}: ListRenderItemInfo<YouTubeSegment>) => (
-      <TranscriptLine
-        disabled={isOfflineReading}
-        isActive={item.index === activeIndex}
-        onPracticeSentence={onPracticeSentence}
-        onPress={handleLinePress}
-        onPressWord={handlePressWord}
-        segment={item}
-        showIpa={showIpaEffective}
-        showVietnamese={showVietnameseEffective}
-        isSaved={vocabularySaveState.getIsSaved(
-          item.id,
-          savedVocabularyIds.has(item.id),
-        )}
-        onToggleSave={handleToggleSave}
-        testID={`transcript-line-${item.id}`}
-      />
-    ),
-    [
-      activeIndex,
-      handleLinePress,
-      handlePressWord,
-      isOfflineReading,
-      onPracticeSentence,
-      showIpaEffective,
-      showVietnameseEffective,
-      vocabularySaveState,
-      savedVocabularyIds,
-      handleToggleSave,
     ],
   );
 
@@ -958,11 +993,6 @@ export function YouTubeLessonScreen({
         rightAction={headerActions}
         title={lesson.video.title}
       />
-      {toastMessage ? (
-        <View style={styles.toast} testID="youtube-toast-message">
-          <AppText variant="label">{toastMessage}</AppText>
-        </View>
-      ) : null}
       <YouTubeLessonOverflowMenu
         abLoopActive={abLoopActive}
         abLoopEndIndex={abLoopEndIndex}
@@ -1071,44 +1101,35 @@ export function YouTubeLessonScreen({
           </AppText>
         </View>
       ) : null}
-      <FlatList
-        ListHeaderComponent={playerHeader}
-        contentContainerStyle={[styles.list, {paddingBottom: feedClearance}]}
-        data={lesson.segments}
-        ItemSeparatorComponent={ListSeparator}
-        keyExtractor={item => item.id}
-        onScroll={handleListScroll}
-        onScrollBeginDrag={pauseAutoScroll}
-        onScrollEndDrag={scheduleAutoScrollResume}
-        onScrollToIndexFailed={handleScrollToIndexFailed}
+      {playerHeader}
+      <SentenceCarousel
+        activeIndex={activeIndex}
+        enrichmentMap={enrichmentMap}
+        level={level}
+        onCardScrollOffsetChange={handleCardScrollOffsetChange}
+        onPlaySentenceAudio={handlePlaySentenceAudio}
+        onPracticeSentence={
+          onPracticeSentence ? handlePracticeSentenceSegment : undefined
+        }
+        onPressBackChip={handleScrollToActiveSentence}
+        onPressWord={handlePressWord}
+        onSelectIndex={seekToIndex}
+        onToggleGrammarSave={handleToggleGrammarSave}
+        onToggleSaveSegment={handleToggleSave}
+        onToggleTranslation={toggleVietnamese}
+        onToggleWordSave={handleToggleWordSave}
         ref={listRef}
-        renderItem={renderItem}
-        scrollEventThrottle={16}
-        testID="youtube-transcript-list"
+        retryBlock={retryBlock}
+        savedGrammarIds={savedGrammarIds}
+        savedSegmentIds={savedSegmentIds}
+        savedWordIds={savedWordIds}
+        segments={lesson.segments}
+        showBackChip={isCardScrolledDown && activeIndex >= 0}
+        showTranslation={showVietnameseEffective}
+        testID={testID}
+        toastMessage={toastMessage}
+        videoId={lesson.video.id}
       />
-      {shouldShowDots(lesson.segments.length) ? (
-        <View style={styles.dotsContainer} testID="youtube-dots-indicator">
-          {lesson.segments.map((_, i) => (
-            <View
-              key={i}
-              style={[styles.dot, i === activeIndex && styles.dotActive]}
-              testID={`youtube-dot-${i}`}
-            />
-          ))}
-        </View>
-      ) : null}
-      {isCardScrolledDown && activeIndex >= 0 ? (
-        <Pressable
-          accessibilityHint="Chạm để cuộn về câu đang phát"
-          accessibilityLabel={`Câu ${activeIndex + 1} đang phát`}
-          accessibilityRole="button"
-          onPress={handleScrollToActiveSentence}
-          style={styles.backChip}
-          testID="youtube-back-to-active-chip"
-        >
-          <AppText variant="label">{`↩ Câu ${activeIndex + 1} đang phát`}</AppText>
-        </Pressable>
-      ) : null}
       {miniVisible && !isOfflineReading ? (
         <View style={[styles.miniWrap, {bottom: feedClearance}]}>
           <YouTubeMiniPlayer

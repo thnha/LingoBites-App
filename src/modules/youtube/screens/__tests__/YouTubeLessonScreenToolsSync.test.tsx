@@ -236,10 +236,10 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
   it('displays back-chip when scrolled down past 40pt and handles tap', async () => {
     const tree = await renderScreen();
 
-    // Simulate scrolling list down past 40pt
+    // Simulate scrolling card down past 40pt
     await act(async () => {
       tree.root
-        .findByProps({testID: 'youtube-transcript-list'})
+        .findByProps({testID: 'sentence-card-0-scroll'})
         .props.onScroll({
           nativeEvent: {
             contentOffset: {y: 60, x: 0},

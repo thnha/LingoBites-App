@@ -1,4 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   FlatList,
   Pressable,
@@ -25,6 +31,15 @@ import {
   getCardWidth,
 } from './sentenceCardGeometry';
 import {shouldShowDots} from '../utils/toolsLogic';
+
+export type SentenceCarouselRef = {
+  scrollToIndex: (params: {
+    index: number;
+    animated?: boolean;
+    viewPosition?: number;
+  }) => void;
+  scrollToOffset: (params: {offset: number; animated?: boolean}) => void;
+};
 
 export type SentenceCarouselProps = {
   videoId: string;
@@ -138,32 +153,38 @@ function createStyles(theme: AppTheme) {
  * SETE-330 / SETE-332 (TASK-3 & TASK-5): Horizontal carousel for sentence cards
  * with dots indicator (<=10), back-to-active chip, and toast synchronization.
  */
-export function SentenceCarousel({
-  videoId,
-  segments,
-  enrichmentMap = {},
-  activeIndex,
-  onSelectIndex,
-  level,
-  retryBlock,
-  showTranslation,
-  onToggleTranslation,
-  savedSegmentIds,
-  onToggleSaveSegment,
-  onPlaySentenceAudio,
-  onPressWord,
-  onPracticeSentence,
-  savedWordIds,
-  onToggleWordSave,
-  savedGrammarIds,
-  onToggleGrammarSave,
-  showDots,
-  showBackChip = false,
-  onPressBackChip,
-  toastMessage,
-  onCardScrollOffsetChange,
-  testID,
-}: SentenceCarouselProps) {
+export const SentenceCarousel = React.forwardRef<
+  SentenceCarouselRef,
+  SentenceCarouselProps
+>(function SentenceCarousel(
+  {
+    videoId,
+    segments,
+    enrichmentMap = {},
+    activeIndex,
+    onSelectIndex,
+    level,
+    retryBlock,
+    showTranslation,
+    onToggleTranslation,
+    savedSegmentIds,
+    onToggleSaveSegment,
+    onPlaySentenceAudio,
+    onPressWord,
+    onPracticeSentence,
+    savedWordIds,
+    onToggleWordSave,
+    savedGrammarIds,
+    onToggleGrammarSave,
+    showDots,
+    showBackChip = false,
+    onPressBackChip,
+    toastMessage,
+    onCardScrollOffsetChange,
+    testID,
+  },
+  ref,
+) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const windowWidth = useWindowDimensions().width;
@@ -174,6 +195,26 @@ export function SentenceCarousel({
   const flatListRef = useRef<FlatList<SentenceCardSegment>>(null);
   const scrollMemoryRef = useRef<Map<number, number>>(new Map());
   const isUserScrollingRef = useRef(false);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollToIndex: ({index, animated = true}) => {
+        const targetOffset = index * snapInterval;
+        flatListRef.current?.scrollToOffset({
+          animated,
+          offset: targetOffset,
+        });
+      },
+      scrollToOffset: ({offset, animated = true}) => {
+        flatListRef.current?.scrollToOffset({
+          animated,
+          offset,
+        });
+      },
+    }),
+    [snapInterval],
+  );
 
   // Sync horizontal carousel position when activeIndex changes externally
   useEffect(() => {
@@ -370,4 +411,4 @@ export function SentenceCarousel({
       ) : null}
     </View>
   );
-}
+});
