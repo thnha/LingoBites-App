@@ -4,6 +4,7 @@ import type {YouTubeSegment} from '../../../../shared/schemas/youtube-transcript
 import {
   findActiveSegmentIndex,
   interpolateMediaTimeMs,
+  TRANSCRIPT_SEEK_COMPENSATION_MS,
   TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
   TRANSCRIPT_SYNC_POLL_TIMEOUT_MS,
   useTranscriptSync,
@@ -190,7 +191,25 @@ describe('useTranscriptSync', () => {
     });
 
     expect(read().activeIndex).toBe(2);
-    expect(onSeek).toHaveBeenCalledWith(7_000);
+    // SETE-325 (C-1): 300ms early-start compensation.
+    expect(onSeek).toHaveBeenCalledWith(6_700);
+  });
+
+  it('compensates seek by 300ms (SETE-325, C-1)', () => {
+    expect(TRANSCRIPT_SEEK_COMPENSATION_MS).toBe(300);
+  });
+
+  it('seekToIndex clamps the compensation at zero (SETE-325, C-1)', async () => {
+    const onSeek = jest.fn();
+    const segments = [makeSegment(0, 100, 3_000)];
+    const {read} = await renderHarness(async () => 0, segments, onSeek);
+
+    await act(async () => {
+      read().seekToIndex(0);
+    });
+
+    expect(read().activeIndex).toBe(0);
+    expect(onSeek).toHaveBeenCalledWith(0);
   });
 
   it('seekToIndex ignores out-of-range indices', async () => {

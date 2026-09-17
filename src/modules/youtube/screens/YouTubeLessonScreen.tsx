@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Alert,
   FlatList,
   StyleSheet,
   View,
@@ -28,6 +29,8 @@ import {
 } from '../components/YouTubePlayer';
 import {TranscriptLine} from '../components/TranscriptLine';
 import {YouTubeLessonOverflowMenu} from './YouTubeLessonOverflowMenu';
+import {YouTubeTranscriptPopup} from './YouTubeTranscriptPopup';
+import {speak} from '@modules/audio';
 import {useTranscriptSync, TRANSCRIPT_SYNC_POLL_INTERVAL_MS} from '../sync/useTranscriptSync';
 import type {NavigationProp} from '@react-navigation/native';
 import type {
@@ -56,11 +59,22 @@ export type YouTubeLessonScreenProps = {
    * Shows a persistent not-saved warning instead of any saved state.
    */
   saveWarning?: boolean;
+  /**
+   * SETE-325 (C-3): when set, each line shows a mic button that reports
+   * the tapped sentence (the route screen navigates it to SpeakingRoom).
+   * The route screen owns navigation, so this screen only forwards taps.
+   */
+  onPracticeSentence?: (segment: YouTubeSegment) => void;
 };
 
 function ListSeparator() {
   const {theme} = useAppTheme();
   return <View style={{height: theme.spacing.xs}} />;
+}
+
+/** Runs an async side effect without returning its promise to the caller. */
+function fireAndForget(task: Promise<unknown>): void {
+  task.catch(() => undefined);
 }
 
 function createStyles(theme: AppTheme) {
@@ -114,6 +128,7 @@ export function YouTubeLessonScreen({
   onBack,
   onStartPractice,
   saveWarning = false,
+  onPracticeSentence,
 }: YouTubeLessonScreenProps) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
@@ -137,6 +152,8 @@ export function YouTubeLessonScreen({
   // header always holds exactly 4 controls (VI, IPA, Practice, More) and Back
   // can never be squeezed out no matter how many loop points are set.
   const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
+  // SETE-325 (C-4): transcript popup visibility.
+  const [isTranscriptPopupOpen, setIsTranscriptPopupOpen] = useState(false);
   const [autoScrollPaused, setAutoScrollPaused] = useState(false);
   const [playerError, setPlayerError] = useState<YouTubePlayerErrorCode | null>(
     null,
@@ -336,6 +353,19 @@ export function YouTubeLessonScreen({
     [isOfflineReading, seekToIndex],
   );
 
+  // SETE-325 (C-4): popup taps seek the video but never close the popup,
+  // and never touch repeat mode — the popup is for hopping between
+  // sentences, not for arming loops.
+  const handlePopupSeek = useCallback(
+    (segment: YouTubeSegment) => {
+      if (isOfflineReading) {
+        return;
+      }
+      seekToIndex(segment.index);
+    },
+    [isOfflineReading, seekToIndex],
+  );
+
   const pauseAutoScroll = useCallback(() => {
     setAutoScrollPaused(true);
     if (resumeTimerRef.current) {
@@ -417,6 +447,33 @@ export function YouTubeLessonScreen({
     setIsOverflowMenuOpen(false);
   }, []);
 
+  const openTranscriptPopup = useCallback(() => {
+    setIsTranscriptPopupOpen(true);
+  }, []);
+
+  const closeTranscriptPopup = useCallback(() => {
+    setIsTranscriptPopupOpen(false);
+  }, []);
+
+  // SETE-325 (C-2): tapping a word speaks it. The service defaults already
+  // match the spec (locale en-US, rate 0.5). Failures surface the service's
+  // own message (VOICE_UNAVAILABLE included) via an alert.
+  const handlePressWord = useCallback(
+    (word: string) => {
+      async function speakWord(): Promise<void> {
+        const result = await speak(word);
+        if (!result.ok) {
+          Alert.alert(
+            t('youtube.tts_error_title', {defaultValue: 'Không phát được âm thanh'}),
+            result.message,
+          );
+        }
+      }
+      fireAndForget(speakWord());
+    },
+    [t],
+  );
+
   const handleToggleSave = useCallback(
     async (segment: YouTubeSegment) => {
       const dbValue = savedVocabularyIds.has(segment.id);
@@ -451,7 +508,9 @@ export function YouTubeLessonScreen({
       <TranscriptLine
         disabled={isOfflineReading}
         isActive={item.index === activeIndex}
+        onPracticeSentence={onPracticeSentence}
         onPress={handleLinePress}
+        onPressWord={handlePressWord}
         segment={item}
         showIpa={showIpaEffective}
         showVietnamese={showVietnameseEffective}
@@ -466,7 +525,9 @@ export function YouTubeLessonScreen({
     [
       activeIndex,
       handleLinePress,
+      handlePressWord,
       isOfflineReading,
+      onPracticeSentence,
       showIpaEffective,
       showVietnameseEffective,
       vocabularySaveState,
@@ -538,12 +599,25 @@ export function YouTubeLessonScreen({
         onClearAbLoop={clearAbLoop}
         onClose={closeOverflowMenu}
         onCyclePlaybackRate={cyclePlaybackRate}
+        onOpenTranscript={openTranscriptPopup}
         onSetAbLoopPointA={setAbLoopPointA}
         onSetAbLoopPointB={setAbLoopPointB}
         onToggleRepeat={toggleRepeat}
         playbackRate={playbackRate}
         repeatActive={repeatIndex !== null}
         visible={isOverflowMenuOpen}
+      />
+      <YouTubeTranscriptPopup
+        activeIndex={activeIndex}
+        disabled={isOfflineReading}
+        onClose={closeTranscriptPopup}
+        onPracticeSentence={onPracticeSentence}
+        onPressWord={handlePressWord}
+        onSeekSegment={handlePopupSeek}
+        segments={lesson.segments}
+        showIpa={showIpaEffective}
+        showVietnamese={showVietnameseEffective}
+        visible={isTranscriptPopupOpen}
       />
       {saveWarning ? (
         <View
@@ -710,6 +784,38 @@ export function YouTubeLessonRouteScreen({
     }
   }, [lesson, nav, t]);
 
+  // SETE-325 (C-3): "Luyện nói câu này" opens the Speaking Room with the
+  // tapped sentence. Fresh lessons sit on the Create stack under the tabs,
+  // so the room is reached through the tab parent; lessons opened from
+  // History sit on the RootStack above the tabs and go through
+  // Tabs > Lessons instead. The tab navigator is identified by its route
+  // names (only the RootStack carries a navigator id), so a parent without
+  // 'Lessons' among its routes is the RootStack navigator itself.
+  // (A parent without getState only happens in test doubles, which stand
+  // in for the tab parent.)
+  const handlePracticeSentence = useCallback(
+    (segment: YouTubeSegment) => {
+      const sentenceText = segment.en;
+      const tabParent = nav.getParent<NavigationProp<RootTabParamList>>();
+      const tabRoutes = tabParent?.getState?.()?.routeNames;
+      if (tabParent && (tabRoutes == null || tabRoutes.includes('Lessons'))) {
+        tabParent.navigate('Lessons', {
+          screen: 'SpeakingRoom',
+          params: {sentenceText},
+        });
+        return;
+      }
+      const rootNav = tabParent as unknown as
+        | NavigationProp<RootStackParamList>
+        | undefined;
+      rootNav?.navigate('Tabs', {
+        screen: 'Lessons',
+        params: {screen: 'SpeakingRoom', params: {sentenceText}},
+      });
+    },
+    [nav],
+  );
+
   if (!lesson) {
     return (
       <AppScreen>
@@ -733,6 +839,7 @@ export function YouTubeLessonRouteScreen({
     <YouTubeLessonScreen
       lesson={lesson}
       onBack={handleBack}
+      onPracticeSentence={handlePracticeSentence}
       onStartPractice={handleStartPractice}
       saveWarning={saveFailed === true}
     />
