@@ -127,6 +127,27 @@ describe('SentenceCarousel (SETE-330)', () => {
     expect(onSelectIndex).toHaveBeenCalledWith(1);
   });
 
+  it('maintains consistent horizontal padding and selects index 0 when scrolling/flicking back to start (DEFECT-SETE-337-03)', () => {
+    const onSelectIndex = jest.fn();
+    const tree = renderCarousel({activeIndex: 1, onSelectIndex});
+
+    const flatList = tree.root.findByType(FlatList);
+    expect(flatList.props.contentContainerStyle).toMatchObject({
+      paddingHorizontal: 12,
+    });
+
+    // Simulate momentum scrolling back to start (x = 0)
+    act(() => {
+      flatList.props.onMomentumScrollEnd({
+        nativeEvent: {
+          contentOffset: {x: 0, y: 0},
+        },
+      });
+    });
+
+    expect(onSelectIndex).toHaveBeenCalledWith(0);
+  });
+
   it('preserves vertical scroll memory across card selections in the session', () => {
     const tree = renderCarousel();
 
@@ -248,7 +269,9 @@ describe('SentenceCarousel (SETE-330)', () => {
   it('renders dots indicator when <= 10 sentences and highlights active dot', () => {
     const tree = renderCarousel({activeIndex: 1});
 
-    expect(tree.root.findByProps({testID: 'youtube-dots-indicator'})).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-dots-indicator'}),
+    ).toBeTruthy();
     expect(tree.root.findByProps({testID: 'youtube-dot-0'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'youtube-dot-1'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'youtube-dot-2'})).toBeTruthy();
