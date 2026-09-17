@@ -61,7 +61,9 @@ export type YouTubeToolsPopupProps = {
   abLoopStartIndex: number | null;
   abLoopEndIndex: number | null;
   abLoopActive: boolean;
-  onToggleAbLoop: () => void;
+  onSetAbLoopPointA: () => void;
+  onSetAbLoopPointB: () => void;
+  onClearAbLoop: () => void;
   onOpenTranscript: () => void;
 };
 
@@ -238,9 +240,10 @@ function createStyles(theme: AppTheme) {
 }
 
 /**
- * SETE-332 (TASK-5): Tools popup sheet under the video player.
- * Contains scrubbing, prev/replay/play/AB/next, loop (1,3,5,inf), speed (0.5-1.25x),
- * dictation on-the-spot check, and transcript popup trigger.
+ * SETE-332 (TASK-5) / SETE-346 (Option A): Tools popup sheet under the video
+ * player. The single home for practice settings: scrubbing,
+ * prev/replay/play/next, loop (1,3,5,inf), A–B range (set A / set B / clear),
+ * speed (0.5-1.25x), dictation on-the-spot check, and transcript trigger.
  * Never darkens the video above, video remains playing.
  */
 export function YouTubeToolsPopup({
@@ -266,7 +269,9 @@ export function YouTubeToolsPopup({
   abLoopStartIndex,
   abLoopEndIndex,
   abLoopActive,
-  onToggleAbLoop,
+  onSetAbLoopPointA,
+  onSetAbLoopPointB,
+  onClearAbLoop,
   onOpenTranscript,
 }: YouTubeToolsPopupProps) {
   const {theme} = useAppTheme();
@@ -412,17 +417,17 @@ export function YouTubeToolsPopup({
     abLoopEndIndex != null &&
     durationS > 0
       ? {
-          left: `${(segments[abLoopStartIndex].start_ms / 1000 / durationS) * 100}%` as DimensionValue,
-          width: `${
-            Math.max(
-              0,
-              ((segments[abLoopEndIndex].end_ms -
-                segments[abLoopStartIndex].start_ms) /
-                1000 /
-                durationS) *
-                100,
-            )
+          left: `${
+            (segments[abLoopStartIndex].start_ms / 1000 / durationS) * 100
           }%` as DimensionValue,
+          width: `${Math.max(
+            0,
+            ((segments[abLoopEndIndex].end_ms -
+              segments[abLoopStartIndex].start_ms) /
+              1000 /
+              durationS) *
+              100,
+          )}%` as DimensionValue,
         }
       : null;
 
@@ -436,7 +441,11 @@ export function YouTubeToolsPopup({
       <View {...panResponder.panHandlers} style={styles.header}>
         <View style={{flex: 1}}>
           <View style={styles.handleBar} />
-          <AppText style={styles.title} testID="youtube-tools-title" variant="title">
+          <AppText
+            style={styles.title}
+            testID="youtube-tools-title"
+            variant="title"
+          >
             {t('youtube.tools_title', {defaultValue: 'Công cụ'})}
           </AppText>
         </View>
@@ -464,13 +473,19 @@ export function YouTubeToolsPopup({
             accessibilityValue={{
               text:
                 segments.length > 0
-                  ? formatSentenceLabel(Math.max(0, activeIndex), segments.length)
+                  ? formatSentenceLabel(
+                      Math.max(0, activeIndex),
+                      segments.length,
+                    )
                   : 'Câu –/–',
             }}
             onAccessibilityAction={event => {
               if (disabled || segments.length === 0) return;
               if (event.nativeEvent.actionName === 'increment') {
-                const next = Math.min(segments.length - 1, Math.max(0, activeIndex) + 1);
+                const next = Math.min(
+                  segments.length - 1,
+                  Math.max(0, activeIndex) + 1,
+                );
                 onSeekToIndex(next);
               } else if (event.nativeEvent.actionName === 'decrement') {
                 const prev = Math.max(0, activeIndex - 1);
@@ -502,7 +517,9 @@ export function YouTubeToolsPopup({
                     style={[
                       styles.seekTick,
                       {
-                        left: `${(segment.start_ms / 1000 / durationS) * 100}%` as DimensionValue,
+                        left: `${
+                          (segment.start_ms / 1000 / durationS) * 100
+                        }%` as DimensionValue,
                       },
                     ]}
                   />
@@ -517,10 +534,7 @@ export function YouTubeToolsPopup({
           </View>
 
           <View style={styles.seekMetaRow}>
-            <AppText
-              testID="youtube-tools-sentence-label"
-              variant="label"
-            >
+            <AppText testID="youtube-tools-sentence-label" variant="label">
               {segments.length > 0
                 ? formatSentenceLabel(Math.max(0, activeIndex), segments.length)
                 : 'Câu –/–'}
@@ -534,7 +548,7 @@ export function YouTubeToolsPopup({
             </AppText>
           </View>
 
-          {/* Controls Row: Prev, Replay, Play, A-B, Next */}
+          {/* Controls Row: Prev, Replay, Play, Next */}
           <View style={styles.playbackRow}>
             <Pressable
               accessibilityHint="Chuyển về câu trước đó"
@@ -577,34 +591,11 @@ export function YouTubeToolsPopup({
               style={styles.actionButton}
               testID="youtube-tools-play-toggle"
             >
-              <MaterialIcon name={playing ? 'play_circle' : 'play_circle'} size={20} />
+              <MaterialIcon
+                name={playing ? 'play_circle' : 'play_circle'}
+                size={20}
+              />
               <AppText variant="label">{playing ? 'Dừng' : 'Phát'}</AppText>
-            </Pressable>
-
-            <Pressable
-              accessibilityHint="Bật hoặc tắt lặp đoạn A-B"
-              accessibilityLabel={
-                abLoopActive
-                  ? `A-B đang bật câu ${activeIndex + 1}`
-                  : 'Lặp A-B'
-              }
-              accessibilityRole="button"
-              accessibilityState={{selected: abLoopActive, checked: abLoopActive}}
-              aria-pressed={abLoopActive}
-              onPress={onToggleAbLoop}
-              style={[
-                styles.actionButton,
-                abLoopActive && styles.actionButtonActive,
-              ]}
-              testID="youtube-tools-ab"
-            >
-              <MaterialIcon name="repeat" size={18} />
-              <AppText
-                style={abLoopActive ? {color: theme.colors.accent} : undefined}
-                variant="label"
-              >
-                {abLoopActive ? `A–B ✓ ${activeIndex + 1}` : 'A–B'}
-              </AppText>
             </Pressable>
 
             <Pressable
@@ -643,11 +634,16 @@ export function YouTubeToolsPopup({
                 <Pressable
                   accessibilityLabel={`Lặp ${formatLoopLabel(opt)} lần`}
                   accessibilityRole="button"
-                  accessibilityState={{selected: active, checked: active}}
+                  accessibilityState={{selected: active, disabled}}
                   aria-pressed={active}
+                  disabled={disabled}
                   key={String(opt)}
                   onPress={() => onSelectLoopCount(opt)}
-                  style={[styles.pillButton, active && styles.pillButtonActive]}
+                  style={[
+                    styles.pillButton,
+                    active && styles.pillButtonActive,
+                    disabled && {opacity: theme.states.disabledOpacity},
+                  ]}
                   testID={`youtube-tools-loop-${testIdSuffix}`}
                 >
                   <AppText
@@ -662,6 +658,124 @@ export function YouTubeToolsPopup({
           </View>
         </View>
 
+        {/* Lặp đoạn A–B (SETE-346 Option A: full range semantics) */}
+        <View style={styles.section}>
+          <AppText style={styles.sectionTitle} variant="label">
+            {t('youtube.ab_loop_section_title', {
+              defaultValue: 'Lặp đoạn A–B',
+            })}
+          </AppText>
+          <View style={styles.pillsRow}>
+            <Pressable
+              accessibilityHint={t('youtube.ab_loop_a_hint', {
+                defaultValue: 'Đánh dấu điểm A tại câu đang phát',
+              })}
+              accessibilityLabel={t('youtube.ab_loop_a_a11y', {
+                defaultValue: `Đặt điểm A, hiện tại câu ${activeIndex + 1}`,
+                index:
+                  abLoopStartIndex != null
+                    ? abLoopStartIndex + 1
+                    : activeIndex + 1,
+              })}
+              accessibilityRole="button"
+              accessibilityState={{
+                selected: abLoopStartIndex != null,
+                disabled,
+              }}
+              aria-pressed={abLoopStartIndex != null}
+              disabled={disabled}
+              onPress={onSetAbLoopPointA}
+              style={[
+                styles.pillButton,
+                abLoopStartIndex != null && styles.pillButtonActive,
+                disabled && {opacity: theme.states.disabledOpacity},
+              ]}
+              testID="youtube-tools-ab-a"
+            >
+              <MaterialIcon name="flag" size={18} />
+              <AppText
+                style={
+                  abLoopStartIndex != null
+                    ? {color: theme.colors.accent}
+                    : undefined
+                }
+                variant="label"
+              >
+                {abLoopStartIndex != null
+                  ? t('youtube.overflow_ab_loop_a', {
+                      defaultValue: `A · câu ${abLoopStartIndex + 1}`,
+                    })
+                  : t('youtube.overflow_ab_loop_a', {
+                      defaultValue: 'Đặt A',
+                    })}
+              </AppText>
+            </Pressable>
+
+            <Pressable
+              accessibilityHint={t('youtube.ab_loop_b_hint', {
+                defaultValue: 'Đánh dấu điểm B tại câu đang phát',
+              })}
+              accessibilityLabel={t('youtube.ab_loop_b_a11y', {
+                defaultValue: `Đặt điểm B, hiện tại câu ${activeIndex + 1}`,
+                index:
+                  abLoopEndIndex != null ? abLoopEndIndex + 1 : activeIndex + 1,
+              })}
+              accessibilityRole="button"
+              accessibilityState={{selected: abLoopActive, disabled}}
+              aria-pressed={abLoopActive}
+              disabled={disabled}
+              onPress={onSetAbLoopPointB}
+              style={[
+                styles.pillButton,
+                abLoopActive && styles.pillButtonActive,
+                disabled && {opacity: theme.states.disabledOpacity},
+              ]}
+              testID="youtube-tools-ab-b"
+            >
+              <MaterialIcon name="compare" size={18} />
+              <AppText
+                style={abLoopActive ? {color: theme.colors.accent} : undefined}
+                variant="label"
+              >
+                {abLoopEndIndex != null
+                  ? t('youtube.overflow_ab_loop_b', {
+                      defaultValue: `B · câu ${abLoopEndIndex + 1}`,
+                    })
+                  : t('youtube.overflow_ab_loop_b', {
+                      defaultValue: 'Đặt B',
+                    })}
+              </AppText>
+            </Pressable>
+
+            {abLoopStartIndex != null || abLoopEndIndex != null ? (
+              <Pressable
+                accessibilityHint={t('youtube.ab_loop_clear_hint', {
+                  defaultValue: 'Tắt lặp đoạn A–B',
+                })}
+                accessibilityLabel={t('youtube.ab_loop_clear_a11y', {
+                  defaultValue: 'Xóa lặp A–B',
+                })}
+                accessibilityRole="button"
+                accessibilityState={{disabled}}
+                disabled={disabled}
+                onPress={onClearAbLoop}
+                style={[
+                  styles.pillButton,
+                  disabled && {opacity: theme.states.disabledOpacity},
+                ]}
+                testID="youtube-tools-ab-clear"
+              >
+                <MaterialIcon name="close" size={18} />
+                <AppText variant="label">
+                  {t('youtube.overflow_ab_loop_clear', {
+                    defaultValue: 'Xóa',
+                  })}
+                </AppText>
+              </Pressable>
+            ) : null}
+          </View>
+        </View>
+
         {/* Tốc độ (Playback Speed Options: 0.5, 0.75, 1.0, 1.25) */}
         <View style={styles.section}>
           <AppText style={styles.sectionTitle} variant="label">
@@ -672,12 +786,19 @@ export function YouTubeToolsPopup({
               const active = playbackRate === rate;
               return (
                 <Pressable
-                  accessibilityLabel={`Tốc độ ${formatYouTubePlaybackRate(rate)}`}
+                  accessibilityLabel={`Tốc độ ${formatYouTubePlaybackRate(
+                    rate,
+                  )}`}
                   accessibilityRole="button"
-                  accessibilityState={{selected: active}}
+                  accessibilityState={{selected: active, disabled}}
+                  disabled={disabled}
                   key={String(rate)}
                   onPress={() => onSelectPlaybackRate(rate)}
-                  style={[styles.pillButton, active && styles.pillButtonActive]}
+                  style={[
+                    styles.pillButton,
+                    active && styles.pillButtonActive,
+                    disabled && {opacity: theme.states.disabledOpacity},
+                  ]}
                   testID={`youtube-tools-speed-${rate}`}
                 >
                   <AppText
@@ -720,7 +841,10 @@ export function YouTubeToolsPopup({
           </Pressable>
 
           {dictationOpen ? (
-            <View style={styles.dictationBox} testID="youtube-tools-dictation-box">
+            <View
+              style={styles.dictationBox}
+              testID="youtube-tools-dictation-box"
+            >
               <AppText color="secondary" variant="caption">
                 {t('youtube.dictation_hint', {
                   defaultValue: 'Nghe câu hiện tại và gõ lại tiếng Anh:',
@@ -760,7 +884,10 @@ export function YouTubeToolsPopup({
                   ]}
                   testID="youtube-tools-dictation-check"
                 >
-                  <AppText style={{color: theme.colors.accentInk}} variant="label">
+                  <AppText
+                    style={{color: theme.colors.accentInk}}
+                    variant="label"
+                  >
                     Kiểm tra
                   </AppText>
                 </Pressable>
