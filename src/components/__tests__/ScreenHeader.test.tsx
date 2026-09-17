@@ -54,8 +54,25 @@ describe('ScreenHeader', () => {
     )[0];
 
     expect(title.props.numberOfLines).toBe(1);
-    expect(title.props.adjustsFontSizeToFit).toBe(true);
-    expect(title.props.minimumFontScale).toBe(0.85);
+    expect(title.props.adjustsFontSizeToFit).toBe(false);
+    expect(title.props.minimumFontScale).toBeUndefined();
+  });
+
+  it('disables font shrink for single line via numberOfLines', async () => {
+    const tree = await renderHeader('Bài học tiếng Anh với tiêu đề rất dài', {
+      numberOfLines: 1,
+    });
+
+    const title = tree.root.findAll(
+      node =>
+        node.type === Text &&
+        typeof node.props.children === 'string' &&
+        node.props.children.includes('Bài học tiếng Anh'),
+    )[0];
+
+    expect(title.props.numberOfLines).toBe(1);
+    expect(title.props.adjustsFontSizeToFit).toBe(false);
+    expect(title.props.minimumFontScale).toBeUndefined();
   });
 
   it('allows overriding line count via numberOfLines', async () => {
