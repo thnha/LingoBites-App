@@ -19,7 +19,7 @@ export function getDatabase(): QuickSQLiteConnection {
 }
 
 export function resetDatabaseForTests(
-  connection: QuickSQLiteConnection | null,
+  connection: QuickSQLiteConnection | null = null,
 ): void {
   dbInstance = connection;
   migrationsApplied = false;

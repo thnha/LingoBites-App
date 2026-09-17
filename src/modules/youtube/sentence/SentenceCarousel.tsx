@@ -26,6 +26,7 @@ import {SentenceCard, type SentenceCardSegment} from './SentenceCard';
 import type {RetryBlockFn} from './useSentenceEnrichment';
 import {
   CARD_SPACING_PT,
+  CAROUSEL_HORIZONTAL_PADDING_PT,
   calculateNearestCardIndex,
   getCardSnapInterval,
   getCardWidth,
@@ -88,6 +89,7 @@ function createStyles(theme: AppTheme) {
     },
     listContent: {
       paddingBottom: theme.spacing.md,
+      paddingHorizontal: CAROUSEL_HORIZONTAL_PADDING_PT,
       paddingTop: theme.spacing.xs,
     },
     cardWrap: {
@@ -123,7 +125,7 @@ function createStyles(theme: AppTheme) {
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.xs,
       position: 'absolute',
-      shadowColor: '#000',
+      shadowColor: theme.colors.text.primary,
       shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.15,
       shadowRadius: 4,
@@ -139,7 +141,7 @@ function createStyles(theme: AppTheme) {
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.xs,
       position: 'absolute',
-      shadowColor: '#000',
+      shadowColor: theme.colors.text.primary,
       shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.2,
       shadowRadius: 4,
@@ -156,7 +158,7 @@ function createStyles(theme: AppTheme) {
 export const SentenceCarousel = React.forwardRef<
   SentenceCarouselRef,
   SentenceCarouselProps
->(function SentenceCarousel(
+>(function SentenceCarouselInner(
   {
     videoId,
     segments,

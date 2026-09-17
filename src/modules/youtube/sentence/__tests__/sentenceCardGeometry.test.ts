@@ -4,6 +4,7 @@ import {
   CARD_HEADER_HEIGHT_PT,
   CARD_SPACING_PT,
   CARD_WIDTH_OFFSET_PT,
+  CAROUSEL_HORIZONTAL_PADDING_PT,
   PINNED_AUDIO_BUTTON_SIZE_PT,
   SNAP_DISTANCE_RATIO,
   SNAP_VELOCITY_THRESHOLD_PT_PER_MS,
@@ -19,10 +20,11 @@ import {
   shouldShowPinnedSentence,
 } from '../sentenceCardGeometry';
 
-describe('sentenceCardGeometry (SETE-330 logic tests)', () => {
+describe('sentenceCardGeometry (SETE-330 & SETE-336 logic tests)', () => {
   describe('Constants and dimensions', () => {
     it('defines spec-compliant dimensions', () => {
-      expect(CARD_WIDTH_OFFSET_PT).toBe(27);
+      expect(CAROUSEL_HORIZONTAL_PADDING_PT).toBe(12);
+      expect(CARD_WIDTH_OFFSET_PT).toBe(24);
       expect(CARD_SPACING_PT).toBe(10);
       expect(CARD_BORDER_RADIUS_PT).toBe(26);
       expect(CARD_HEADER_HEIGHT_PT).toBe(48);
@@ -32,21 +34,23 @@ describe('sentenceCardGeometry (SETE-330 logic tests)', () => {
       expect(SNAP_VELOCITY_THRESHOLD_PT_PER_MS).toBe(0.5);
     });
 
-    it('computes card width as screen width - 27', () => {
-      expect(getCardWidth(390)).toBe(363);
-      expect(getCardWidth(375)).toBe(348);
-      expect(getCardWidth(428)).toBe(401);
+    it('computes card width as screen width - 24', () => {
+      expect(getCardWidth(390)).toBe(366);
+      expect(getCardWidth(375)).toBe(351);
+      expect(getCardWidth(428)).toBe(404);
       expect(getCardWidth(20)).toBe(0); // clamped at 0
     });
 
-    it('computes snap interval as cardWidth + 10 (screenWidth - 17)', () => {
-      expect(getCardSnapInterval(390)).toBe(373);
-      expect(getCardSnapInterval(375)).toBe(358);
+    it('computes snap interval as cardWidth + 10 (screenWidth - 14)', () => {
+      expect(getCardSnapInterval(390)).toBe(376);
+      expect(getCardSnapInterval(375)).toBe(361);
     });
 
-    it('computes peek width on trailing edge', () => {
+    it('computes peek width on trailing edge in 12–16pt range', () => {
       const peek = getCardPeekWidth(390);
-      expect(peek).toBeGreaterThanOrEqual(10);
+      expect(peek).toBeGreaterThanOrEqual(12);
+      expect(peek).toBeLessThanOrEqual(16);
+      expect(peek).toBe(14);
     });
   });
 
@@ -133,12 +137,12 @@ describe('sentenceCardGeometry (SETE-330 logic tests)', () => {
     });
 
     it('calculates nearest card index from continuous scroll offset', () => {
-      const screenWidth = 390; // interval = 373
+      const screenWidth = 390; // interval = 376
       expect(calculateNearestCardIndex(0, screenWidth, 5)).toBe(0);
       expect(calculateNearestCardIndex(100, screenWidth, 5)).toBe(0);
       expect(calculateNearestCardIndex(200, screenWidth, 5)).toBe(1);
-      expect(calculateNearestCardIndex(373, screenWidth, 5)).toBe(1);
-      expect(calculateNearestCardIndex(750, screenWidth, 5)).toBe(2);
+      expect(calculateNearestCardIndex(376, screenWidth, 5)).toBe(1);
+      expect(calculateNearestCardIndex(752, screenWidth, 5)).toBe(2);
       expect(calculateNearestCardIndex(2000, screenWidth, 5)).toBe(4); // clamped
     });
   });

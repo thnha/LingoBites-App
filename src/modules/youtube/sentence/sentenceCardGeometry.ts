@@ -11,7 +11,8 @@
  * - Pinned audio button: 32pt.
  */
 
-export const CARD_WIDTH_OFFSET_PT = 27;
+export const CAROUSEL_HORIZONTAL_PADDING_PT = 12;
+export const CARD_WIDTH_OFFSET_PT = 24;
 export const CARD_SPACING_PT = 10;
 export const CARD_BORDER_RADIUS_PT = 26;
 export const CARD_HEADER_HEIGHT_PT = 48;
@@ -25,7 +26,7 @@ export type AxisLock = 'horizontal' | 'vertical' | null;
 
 /**
  * Calculates the width of a sentence card based on screen width.
- * Formula: screenWidth - 27pt.
+ * Formula: screenWidth - 24pt.
  */
 export function getCardWidth(screenWidth: number): number {
   return Math.max(0, screenWidth - CARD_WIDTH_OFFSET_PT);
@@ -33,7 +34,7 @@ export function getCardWidth(screenWidth: number): number {
 
 /**
  * Interval between snapping points in the horizontal carousel.
- * Formula: cardWidth + cardSpacing = screenWidth - 17pt.
+ * Formula: cardWidth + cardSpacing = screenWidth - 14pt.
  */
 export function getCardSnapInterval(screenWidth: number): number {
   return getCardWidth(screenWidth) + CARD_SPACING_PT;
@@ -41,14 +42,15 @@ export function getCardSnapInterval(screenWidth: number): number {
 
 /**
  * Approximate peek width visible on the trailing edge of the viewport.
+ * Formula: screenWidth - snapInterval = 12–16pt (14pt for default 10pt spacing).
  */
 export function getCardPeekWidth(screenWidth: number): number {
   const cardWidth = getCardWidth(screenWidth);
-  // When card 0 is at x=0, next card starts at snapInterval.
+  // When card 0 is at x=0, next card starts at snapInterval (cardWidth + CARD_SPACING_PT).
   // Visible slice of next card is screenWidth - snapInterval.
   return Math.max(
     0,
-    screenWidth - (cardWidth + CARD_SPACING_PT) + CARD_SPACING_PT,
+    screenWidth - (cardWidth + CARD_SPACING_PT),
   );
 }
 

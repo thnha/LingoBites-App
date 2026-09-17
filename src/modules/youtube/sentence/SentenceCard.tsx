@@ -129,6 +129,62 @@ function createStyles(theme: AppTheme) {
       flexDirection: 'row',
       gap: theme.spacing.xs,
     },
+    listenBar: {
+      alignItems: 'center',
+      backgroundColor: theme.colors.accentSoft,
+      borderBottomColor: theme.colors.outlineVariant,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      flexDirection: 'row',
+      gap: theme.spacing.xs,
+      minHeight: 40,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: 6,
+    },
+    listenAudioBtn: {
+      alignItems: 'center',
+      borderRadius: PINNED_AUDIO_BUTTON_SIZE_PT / 2,
+      height: PINNED_AUDIO_BUTTON_SIZE_PT,
+      justifyContent: 'center',
+      minHeight: PINNED_AUDIO_BUTTON_SIZE_PT,
+      minWidth: PINNED_AUDIO_BUTTON_SIZE_PT,
+      width: PINNED_AUDIO_BUTTON_SIZE_PT,
+    },
+    waveform: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 2,
+      height: 18,
+      marginRight: 2,
+    },
+    waveformBar: {
+      backgroundColor: theme.colors.accentInk,
+      borderRadius: 1,
+      width: 2.5,
+    },
+    waveformBar1: {
+      height: 6,
+    },
+    waveformBar2: {
+      height: 14,
+    },
+    waveformBar3: {
+      height: 10,
+    },
+    waveformBar4: {
+      height: 18,
+    },
+    waveformBar5: {
+      height: 12,
+    },
+    waveformBar6: {
+      height: 8,
+    },
+    listenHintText: {
+      color: theme.colors.accentInk,
+      flex: 1,
+      fontSize: 12,
+      lineHeight: 16,
+    },
     pinnedBar: {
       alignItems: 'center',
       backgroundColor: theme.colors.surfaceHigh,
@@ -647,6 +703,50 @@ export function SentenceCard({
             tone={isSaved ? 'accent' : 'surface'}
           />
         </View>
+      </View>
+
+      {/* Fixed Emerald Audio Bar (immediate full-sentence listen + instruction + waveform) */}
+      <View
+        style={styles.listenBar}
+        testID={testID ? `${testID}-listen-bar` : 'sentence-listen-bar'}
+      >
+        <IconButton
+          accessibilityHint={t('youtube.sentence_pinned_audio_hint', {
+            defaultValue: 'Nghe phát âm cả câu',
+          })}
+          accessibilityLabel={t('youtube.sentence_listen_all_a11y', {
+            defaultValue: 'Nghe cả câu',
+          })}
+          icon="volume_up"
+          onPress={() => onPlaySentenceAudio?.(segment)}
+          size={PINNED_AUDIO_BUTTON_SIZE_PT}
+          style={styles.listenAudioBtn}
+          testID={testID ? `${testID}-listen-audio` : 'sentence-listen-audio'}
+          tone="accent"
+        />
+        <View
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no-hide-descendants"
+          style={styles.waveform}
+          testID={testID ? `${testID}-waveform` : undefined}
+        >
+          <View style={[styles.waveformBar, styles.waveformBar1]} />
+          <View style={[styles.waveformBar, styles.waveformBar2]} />
+          <View style={[styles.waveformBar, styles.waveformBar3]} />
+          <View style={[styles.waveformBar, styles.waveformBar4]} />
+          <View style={[styles.waveformBar, styles.waveformBar5]} />
+          <View style={[styles.waveformBar, styles.waveformBar6]} />
+        </View>
+        <AppText
+          numberOfLines={1}
+          style={styles.listenHintText}
+          testID={testID ? `${testID}-listen-hint` : 'sentence-listen-hint'}
+          variant="caption"
+        >
+          {t('youtube.sentence_tap_word_hint', {
+            defaultValue: 'Chạm từng từ để tra nghĩa & nghe phát âm lẻ',
+          })}
+        </AppText>
       </View>
 
       {/* Sticky Pinned Sentence (shows when scrolled past sentence block) */}

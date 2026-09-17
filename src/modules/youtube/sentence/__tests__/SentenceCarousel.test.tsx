@@ -76,15 +76,18 @@ describe('SentenceCarousel (SETE-330)', () => {
     });
     jest.useRealTimers();
   });
-  it('renders a horizontal FlatList with spec-compliant snap interval and deceleration', () => {
+  it('renders a horizontal FlatList with spec-compliant snap interval, deceleration, and padding', () => {
     const tree = renderCarousel();
 
     const flatList = tree.root.findByType(FlatList);
     expect(flatList.props.horizontal).toBe(true);
     expect(flatList.props.decelerationRate).toBe('fast');
     expect(flatList.props.snapToAlignment).toBe('start');
+    expect(flatList.props.contentContainerStyle).toMatchObject({
+      paddingHorizontal: 12,
+    });
     // Default mock windowWidth in jest is typically 750 or 390
-    // snapToInterval = windowWidth - 17
+    // snapToInterval = windowWidth - 14
     expect(flatList.props.snapToInterval).toBeGreaterThan(0);
   });
 

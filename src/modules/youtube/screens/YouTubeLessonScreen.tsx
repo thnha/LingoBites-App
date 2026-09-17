@@ -49,8 +49,8 @@ import type {
 import {
   fetchLessonEnrichment,
   fetchSegmentEnrichment,
-  type RetryBlockFn,
 } from '../api/sentenceEnrichmentApi';
+import type {RetryBlockFn} from '../sentence/useSentenceEnrichment';
 import {YouTubeLessonOverflowMenu} from './YouTubeLessonOverflowMenu';
 import {YouTubeTranscriptPopup} from './YouTubeTranscriptPopup';
 import {YouTubeToolsPopup} from './YouTubeToolsPopup';
@@ -250,7 +250,7 @@ export function YouTubeLessonScreen({
   const [isCardScrolledDown, setIsCardScrolledDown] = useState(false);
 
   const [internalEnrichmentMap, setInternalEnrichmentMap] = useState<
-    Record<number, SentenceEnrichment>
+    Record<number, SentenceEnrichment | null>
   >(enrichmentMap ?? {});
 
   useEffect(() => {
