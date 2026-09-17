@@ -14,7 +14,7 @@ const POLL_INTERVAL_MS = 1_000;
 // SETE-325: transcript + analysis for content-heavy videos regularly needs
 // more than 75s backend-side, so give the job a full 120s before surfacing
 // `errors.youtube_timeout`.
-const POLL_DEADLINE_MS = 360_000;
+const POLL_DEADLINE_MS = 120_000;
 const FETCH_TIMEOUT_MS = 10_000;
 
 export type YouTubeJobProgress = {percent: number; stage: string | null};
@@ -233,39 +233,18 @@ export async function runYouTubeJob(
       }
     } catch {
       if (isAborted(signal)) return cancelledResult();
-      const outcome = await waitBeforeNextAttempt(
-        POLL_INTERVAL_MS,
-        deadline,
-        signal,
-      );
-      if (outcome === 'cancelled') return cancelledResult();
-      if (outcome === 'timeout') break;
       continue;
     }
     if (isAborted(signal)) return cancelledResult();
     if (response.status === 401) return unauthorizedResult();
 
     if (!response.ok && isTransientStatus(response.status)) {
-      const outcome = await waitBeforeNextAttempt(
-        POLL_INTERVAL_MS,
-        deadline,
-        signal,
-      );
-      if (outcome === 'cancelled') return cancelledResult();
-      if (outcome === 'timeout') break;
       continue;
     }
     try {
       body = await response.json();
     } catch {
       if (isAborted(signal)) return cancelledResult();
-      const outcome = await waitBeforeNextAttempt(
-        POLL_INTERVAL_MS,
-        deadline,
-        signal,
-      );
-      if (outcome === 'cancelled') return cancelledResult();
-      if (outcome === 'timeout') break;
       continue;
     }
     const status = validateGetYouTubeTranscriptResponse(body);

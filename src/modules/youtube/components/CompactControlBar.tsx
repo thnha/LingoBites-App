@@ -216,9 +216,29 @@ export function CompactControlBar({
   return (
     <View style={styles.container} testID="youtube-compact-bar">
       <View
+        accessibilityActions={[
+          {name: 'increment', label: 'Câu sau'},
+          {name: 'decrement', label: 'Câu trước'},
+        ]}
         accessibilityHint="Chạm hoặc vuốt để tua tới câu"
         accessibilityLabel="Thanh tua theo câu"
         accessibilityRole="adjustable"
+        accessibilityValue={{
+          text:
+            segments.length > 0
+              ? formatSentenceLabel(Math.max(0, activeIndex), segments.length)
+              : 'Câu –/–',
+        }}
+        onAccessibilityAction={event => {
+          if (disabled || segments.length === 0) return;
+          if (event.nativeEvent.actionName === 'increment') {
+            const next = Math.min(segments.length - 1, Math.max(0, activeIndex) + 1);
+            onSeekToIndex(next);
+          } else if (event.nativeEvent.actionName === 'decrement') {
+            const prev = Math.max(0, activeIndex - 1);
+            onSeekToIndex(prev);
+          }
+        }}
         onLayout={handleTrackLayout}
         onResponderGrant={handleResponderGrant}
         onResponderMove={handleResponderMove}

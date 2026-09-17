@@ -308,7 +308,7 @@ describe('runYouTubeJob - poll deadline', () => {
 
     const callsAtDeadline = mockFetch.mock.calls.length;
     await jest.advanceTimersByTimeAsync(10_000);
-    expect(mockFetch).toHaveBeenCalledTimes(callsAtDeadline);
+    expect(mockFetch.mock.calls.length).toBe(callsAtDeadline);
   });
 });
 

@@ -316,7 +316,27 @@
     "sentence_keyword": "từ chính",
     "sentence_vocab": "từ vựng",
     "sentence_grammar": "ngữ pháp",
-    "sentence_loading_hint": "Nội dung sẽ hiện khi tải xong"
+    "sentence_loading_hint": "Nội dung sẽ hiện khi tải xong",
+    "error_video_not_found": "Video không tồn tại hoặc đã bị xóa.",
+    "error_not_embeddable": "Video không cho phép phát nhúng bên ngoài YouTube.",
+    "error_invalid_url": "Đường dẫn video không hợp lệ.",
+    "error_html5": "Trình phát video gặp sự cố HTML5.",
+    "retry_button": "Thử lại",
+    "retry_hint": "Thử kết nối lại video",
+    "back_to_list_button": "Quay lại danh sách",
+    "back_to_list_hint": "Quay lại danh sách bài học",
+    "completed_title": "🎉 Đã học xong video!",
+    "completed_replay_title": "Xem lại",
+    "completed_replay_hint": "Xem lại video từ đầu",
+    "completed_practice_title": "Luyện nói cả bài",
+    "completed_practice_hint": "Luyện nói toàn bộ câu trong bài",
+    "completed_next_title": "Bài kế",
+    "completed_next_hint": "Chuyển sang bài học tiếp theo hoặc quay về danh sách",
+    "ad_playing_notice": "Đang phát quảng cáo · Điều khiển tạm khóa",
+    "sentence_bottom_completed": "Hoàn thành bài",
+    "carousel_label": "Câu {{current}} trên {{total}}",
+    "carousel_prev_a11y": "Câu trước",
+    "carousel_next_a11y": "Câu sau"
   },
   "gamification": {
     "pet_stage": {

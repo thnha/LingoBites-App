@@ -291,4 +291,42 @@ describe('SentenceCarousel (SETE-330)', () => {
     const toast = tree.root.findByProps({testID: 'youtube-toast-message'});
     expect(toast).toBeTruthy();
   });
+
+  describe('SETE-333: Carousel Accessibility', () => {
+    it('sets accessibilityLabel on the carousel with Câu N trên M', () => {
+      const tree = renderCarousel({activeIndex: 1});
+      const flatList = tree.root.findByProps({
+        testID: `${CAROUSEL_TEST_ID}-list`,
+      });
+      expect(flatList.props.accessibilityLabel).toBe('Câu 2 trên 3');
+    });
+
+    it('navigates with accessibility buttons prev and next', () => {
+      const onSelectIndex = jest.fn();
+      const tree = renderCarousel({
+        activeIndex: 1,
+        onSelectIndex,
+      });
+
+      const prevBtn = tree.root.findByProps({
+        testID: 'youtube-carousel-prev',
+      });
+      const nextBtn = tree.root.findByProps({
+        testID: 'youtube-carousel-next',
+      });
+
+      expect(prevBtn).toBeTruthy();
+      expect(nextBtn).toBeTruthy();
+
+      act(() => {
+        prevBtn.props.onPress();
+      });
+      expect(onSelectIndex).toHaveBeenCalledWith(0);
+
+      act(() => {
+        nextBtn.props.onPress();
+      });
+      expect(onSelectIndex).toHaveBeenCalledWith(2);
+    });
+  });
 });
