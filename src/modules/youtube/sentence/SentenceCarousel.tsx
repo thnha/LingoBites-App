@@ -375,6 +375,22 @@ export const SentenceCarousel = React.forwardRef<
   const isDotsVisible =
     showDots !== undefined ? showDots : shouldShowDots(segments.length);
 
+  // DEFECT-SETE-337-07: mount the FlatList at the resumed activeIndex so a
+  // far-into-the-lesson resume renders the correct card immediately. Without
+  // initialScrollIndex the list mounts at 0 and relies on the scrollToOffset
+  // sync effect, which leaves a blank window when virtualization hasn't
+  // loaded the far window yet. getItemLayout (above) satisfies the
+  // initialScrollIndex requirement. Clamped so an out-of-range activeIndex
+  // can never crash FlatList; undefined when empty (FlatList default = 0).
+  // Mount-only: subsequent activeIndex changes are still synced by the
+  // scrollToOffset effect above.
+  const initialScrollIndex = useMemo(() => {
+    if (segments.length === 0) {
+      return undefined;
+    }
+    return Math.min(Math.max(activeIndex, 0), segments.length - 1);
+  }, [activeIndex, segments.length]);
+
   const handlePrev = useCallback(() => {
     if (activeIndex > 0) {
       onSelectIndex(activeIndex - 1);
@@ -463,6 +479,7 @@ export const SentenceCarousel = React.forwardRef<
         disableIntervalMomentum={true}
         getItemLayout={getItemLayout}
         horizontal={true}
+        initialScrollIndex={initialScrollIndex}
         keyExtractor={item => String(item.index)}
         onMomentumScrollEnd={handleMomentumScrollEnd}
         onScrollBeginDrag={handleScrollBeginDrag}
