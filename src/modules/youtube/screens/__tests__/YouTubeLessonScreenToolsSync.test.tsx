@@ -183,19 +183,14 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
     ).toThrow();
   });
 
-  it('navigates prev/next sentence and shows seek toast', async () => {
+  it('navigates prev/next sentence from the compact bar and shows seek toast', async () => {
     const tree = await renderScreen();
 
-    // Open tools
-    await act(async () => {
-      tree.root.findByProps({testID: 'youtube-compact-tools'}).props.onPress();
-      await Promise.resolve();
-    });
-
-    // Advance to sentence 1 (second sentence)
+    // Advance to sentence 1 (second sentence) via the compact bar — Option C
+    // keeps transport out of the Tools sheet.
     mockSeekTo.mockClear();
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-tools-next'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-compact-next'}).props.onPress();
       await Promise.resolve();
     });
 

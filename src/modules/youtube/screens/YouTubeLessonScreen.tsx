@@ -1034,11 +1034,16 @@ export function YouTubeLessonScreen({
           />
         </View>
         <CompactControlBar
+          abLoopActive={abLoopActive}
+          abLoopEndIndex={abLoopEndIndex}
+          abLoopStartIndex={abLoopStartIndex}
           activeIndex={activeIndex}
           disabled={isOfflineReading || isAdPlaying}
           durationS={durationS}
           getCurrentTimeS={getCurrentTimeS}
+          onNextSentence={handleNextSentence}
           onOpenTools={openToolsPopup}
+          onPrevSentence={handlePrevSentence}
           onReplay={replayActiveSentence}
           onSeekToIndex={handleSeekToIndex}
           onSeekToSeconds={seekToSeconds}
@@ -1050,13 +1055,18 @@ export function YouTubeLessonScreen({
       </View>
     ),
     [
+      abLoopActive,
+      abLoopEndIndex,
+      abLoopStartIndex,
       activeIndex,
       durationS,
       getCurrentTimeS,
+      handleNextSentence,
       handlePlayerBlockLayout,
       handlePlayerEnded,
       handlePlayerReady,
       handlePlayingChange,
+      handlePrevSentence,
       handleSeekToIndex,
       isAdPlaying,
       isOfflineReading,
@@ -1131,24 +1141,16 @@ export function YouTubeLessonScreen({
         abLoopStartIndex={abLoopStartIndex}
         activeIndex={activeIndex}
         disabled={isOfflineReading || isAdPlaying}
-        durationS={durationS}
-        getCurrentTimeS={getCurrentTimeS}
         loopCount={loopCount}
         onClearAbLoop={clearAbLoop}
         onClose={closeToolsPopup}
-        onNextSentence={handleNextSentence}
         onOpenTranscript={openTranscriptPopup}
-        onPrevSentence={handlePrevSentence}
         onReplay={replayActiveSentence}
-        onSeekToIndex={handleSeekToIndex}
-        onSeekToSeconds={seekToSeconds}
         onSelectLoopCount={handleSelectLoopCount}
         onSelectPlaybackRate={handleSelectPlaybackRate}
         onSetAbLoopPointA={setAbLoopPointA}
         onSetAbLoopPointB={setAbLoopPointB}
-        onTogglePlay={togglePlayPause}
         playbackRate={playbackRate}
-        playing={playing}
         segments={lesson.segments}
         topOffset={playerBlockHeight > 0 ? playerBlockHeight : 220}
         visible={isToolsPopupOpen}

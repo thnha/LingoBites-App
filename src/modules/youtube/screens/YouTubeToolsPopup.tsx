@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   PanResponder,
   Pressable,
@@ -6,10 +6,6 @@ import {
   StyleSheet,
   TextInput,
   View,
-  type DimensionValue,
-  type LayoutChangeEvent,
-  type NativeSyntheticEvent,
-  type NativeTouchEvent,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {AppText} from '@components/AppText';
@@ -17,11 +13,6 @@ import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {useAppTheme, type AppTheme} from '@theme';
 import type {YouTubeSegment} from '@shared/schemas/youtube-transcript-v1';
-import {
-  formatRemaining,
-  formatSentenceLabel,
-  snapSeekToSentence,
-} from '../utils/sentenceSeek';
 import {
   formatYouTubePlaybackRate,
   YOUTUBE_PLAYBACK_RATES,
@@ -35,7 +26,6 @@ import {
 } from '../utils/toolsLogic';
 
 const MIN_TOUCH_PT = 44;
-const SCRUB_POLL_INTERVAL_MS = 500;
 const SWIPE_DISMISS_THRESHOLD_PT = 50;
 
 export type YouTubeToolsPopupProps = {
@@ -44,16 +34,8 @@ export type YouTubeToolsPopupProps = {
   topOffset?: number;
   segments: readonly YouTubeSegment[];
   activeIndex: number;
-  durationS: number;
-  getCurrentTimeS: () => Promise<number>;
-  playing: boolean;
   disabled?: boolean;
-  onTogglePlay: () => void;
   onReplay: () => void;
-  onPrevSentence: () => void;
-  onNextSentence: () => void;
-  onSeekToIndex: (index: number) => void;
-  onSeekToSeconds: (seconds: number) => void;
   playbackRate: YouTubePlaybackRate;
   onSelectPlaybackRate: (rate: YouTubePlaybackRate) => void;
   loopCount: SentenceLoopCount;
@@ -116,50 +98,6 @@ function createStyles(theme: AppTheme) {
     },
     sectionTitle: {
       marginBottom: theme.spacing.xs,
-    },
-    seekTrack: {
-      backgroundColor: theme.colors.surfaceHigh,
-      borderRadius: theme.radius.pill,
-      height: 28,
-      justifyContent: 'center',
-      width: '100%',
-    },
-    seekFill: {
-      backgroundColor: theme.colors.accent,
-      borderRadius: theme.radius.pill,
-      height: 4,
-    },
-    seekThumb: {
-      backgroundColor: theme.colors.accentInk,
-      borderRadius: theme.radius.pill,
-      height: 12,
-      position: 'absolute',
-      width: 12,
-    },
-    seekTick: {
-      backgroundColor: theme.colors.text.muted,
-      height: 8,
-      position: 'absolute',
-      width: 2,
-    },
-    abRangeHighlight: {
-      backgroundColor: theme.colors.accent,
-      height: 6,
-      opacity: 0.35,
-      position: 'absolute',
-    },
-    seekMetaRow: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: theme.spacing.xs,
-    },
-    playbackRow: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      gap: theme.spacing.xs,
-      justifyContent: 'space-between',
-      marginTop: theme.spacing.xs,
     },
     actionButton: {
       alignItems: 'center',
@@ -240,11 +178,13 @@ function createStyles(theme: AppTheme) {
 }
 
 /**
- * SETE-332 (TASK-5) / SETE-346 (Option A): Tools popup sheet under the video
- * player. The single home for practice settings: scrubbing,
- * prev/replay/play/next, loop (1,3,5,inf), A–B range (set A / set B / clear),
- * speed (0.5-1.25x), dictation on-the-spot check, and transcript trigger.
- * Never darkens the video above, video remains playing.
+ * SETE-332 (TASK-5) / SETE-346 (Option A + Option C): Tools popup sheet under
+ * the video player. The single home for practice settings: loop (1,3,5,inf),
+ * A–B range (set A / set B / clear), speed (0.5-1.25x), dictation
+ * on-the-spot check, and transcript trigger. Transport (seek + prev/replay/
+ * play/next) lives only in the compact bar above — the sheet never duplicates
+ * it, so it stays short and never covers the video. Never darkens the video
+ * above, video remains playing.
  */
 export function YouTubeToolsPopup({
   visible,
@@ -252,16 +192,8 @@ export function YouTubeToolsPopup({
   topOffset = 220,
   segments,
   activeIndex,
-  durationS,
-  getCurrentTimeS,
-  playing,
   disabled = false,
-  onTogglePlay,
   onReplay,
-  onPrevSentence,
-  onNextSentence,
-  onSeekToIndex,
-  onSeekToSeconds,
   playbackRate,
   onSelectPlaybackRate,
   loopCount,
@@ -278,11 +210,6 @@ export function YouTubeToolsPopup({
   const {t} = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [currentS, setCurrentS] = useState(0);
-  const [scrubS, setScrubS] = useState<number | null>(null);
-  const [trackWidth, setTrackWidth] = useState(0);
-  const scrubbingRef = useRef(false);
-
   // Dictation state (D-2)
   const [dictationOpen, setDictationOpen] = useState(false);
   const [dictationText, setDictationText] = useState('');
@@ -290,38 +217,6 @@ export function YouTubeToolsPopup({
     correct: boolean;
     message: string;
   } | null>(null);
-
-  const getCurrentTimeSRef = useRef(getCurrentTimeS);
-  getCurrentTimeSRef.current = getCurrentTimeS;
-
-  // Poll current time when tools popup is open
-  useEffect(() => {
-    if (!visible || disabled) {
-      return undefined;
-    }
-    let cancelled = false;
-    const poll = async () => {
-      if (scrubbingRef.current) {
-        return;
-      }
-      try {
-        const timeS = await getCurrentTimeSRef.current();
-        if (!cancelled) {
-          setCurrentS(Math.max(0, timeS));
-        }
-      } catch {
-        // Keep last known position
-      }
-    };
-    poll().catch(() => undefined);
-    const intervalId = setInterval(() => {
-      poll().catch(() => undefined);
-    }, SCRUB_POLL_INTERVAL_MS);
-    return () => {
-      cancelled = true;
-      clearInterval(intervalId);
-    };
-  }, [disabled, visible]);
 
   // Reset dictation feedback when sentence changes
   useEffect(() => {
@@ -347,54 +242,6 @@ export function YouTubeToolsPopup({
     return null;
   }
 
-  const shownS = scrubS ?? currentS;
-  const fraction =
-    durationS > 0 ? Math.min(1, Math.max(0, shownS / durationS)) : 0;
-
-  const handleTrackLayout = (event: LayoutChangeEvent) => {
-    setTrackWidth(event.nativeEvent.layout.width);
-  };
-
-  const scrubToNativeX = (nativeX: number) => {
-    if (trackWidth <= 0 || durationS <= 0) {
-      return;
-    }
-    const next = Math.min(1, Math.max(0, nativeX / trackWidth)) * durationS;
-    setScrubS(next);
-  };
-
-  const handleResponderGrant = (
-    event: NativeSyntheticEvent<NativeTouchEvent>,
-  ) => {
-    scrubbingRef.current = true;
-    scrubToNativeX(event.nativeEvent.locationX);
-  };
-
-  const handleResponderMove = (
-    event: NativeSyntheticEvent<NativeTouchEvent>,
-  ) => {
-    scrubToNativeX(event.nativeEvent.locationX);
-  };
-
-  const handleResponderRelease = () => {
-    scrubbingRef.current = false;
-    setScrubS(current => {
-      if (current == null) {
-        return current;
-      }
-      const snapped = snapSeekToSentence(current, segments);
-      const snappedIndex = segments.findIndex(
-        segment => segment.start_ms / 1000 === snapped,
-      );
-      if (snappedIndex >= 0) {
-        onSeekToIndex(snappedIndex);
-      } else {
-        onSeekToSeconds(snapped);
-      }
-      return null;
-    });
-  };
-
   const handleCheckDictation = () => {
     const currentSegment = segments[activeIndex];
     if (!currentSegment) {
@@ -407,29 +254,6 @@ export function YouTubeToolsPopup({
   const handleReplayForDictation = () => {
     onReplay();
   };
-
-  const seekable = !disabled && durationS > 0;
-
-  // A-B region calculation on the track
-  const abHighlightStyle: {left: DimensionValue; width: DimensionValue} | null =
-    abLoopActive &&
-    abLoopStartIndex != null &&
-    abLoopEndIndex != null &&
-    durationS > 0
-      ? {
-          left: `${
-            (segments[abLoopStartIndex].start_ms / 1000 / durationS) * 100
-          }%` as DimensionValue,
-          width: `${Math.max(
-            0,
-            ((segments[abLoopEndIndex].end_ms -
-              segments[abLoopStartIndex].start_ms) /
-              1000 /
-              durationS) *
-              100,
-          )}%` as DimensionValue,
-        }
-      : null;
 
   return (
     <View
@@ -460,167 +284,6 @@ export function YouTubeToolsPopup({
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Tua (Seek Section) */}
-        <View style={styles.section}>
-          <View
-            accessibilityActions={[
-              {name: 'increment', label: 'Câu sau'},
-              {name: 'decrement', label: 'Câu trước'},
-            ]}
-            accessibilityHint="Chạm hoặc vuốt để tua tới câu"
-            accessibilityLabel="Thanh tua câu"
-            accessibilityRole="adjustable"
-            accessibilityValue={{
-              text:
-                segments.length > 0
-                  ? formatSentenceLabel(
-                      Math.max(0, activeIndex),
-                      segments.length,
-                    )
-                  : 'Câu –/–',
-            }}
-            onAccessibilityAction={event => {
-              if (disabled || segments.length === 0) return;
-              if (event.nativeEvent.actionName === 'increment') {
-                const next = Math.min(
-                  segments.length - 1,
-                  Math.max(0, activeIndex) + 1,
-                );
-                onSeekToIndex(next);
-              } else if (event.nativeEvent.actionName === 'decrement') {
-                const prev = Math.max(0, activeIndex - 1);
-                onSeekToIndex(prev);
-              }
-            }}
-            onLayout={handleTrackLayout}
-            onResponderGrant={handleResponderGrant}
-            onResponderMove={handleResponderMove}
-            onResponderRelease={handleResponderRelease}
-            onStartShouldSetResponder={() => seekable}
-            style={styles.seekTrack}
-            testID="youtube-tools-seek"
-          >
-            {abHighlightStyle ? (
-              <View style={[styles.abRangeHighlight, abHighlightStyle]} />
-            ) : null}
-            <View
-              style={[
-                styles.seekFill,
-                {width: `${fraction * 100}%` as DimensionValue},
-              ]}
-            />
-            {segments.map(
-              (segment, index) =>
-                durationS > 0 && (
-                  <View
-                    key={`${segment.start_ms}-${index}`}
-                    style={[
-                      styles.seekTick,
-                      {
-                        left: `${
-                          (segment.start_ms / 1000 / durationS) * 100
-                        }%` as DimensionValue,
-                      },
-                    ]}
-                  />
-                ),
-            )}
-            <View
-              style={[
-                styles.seekThumb,
-                {left: `${fraction * 100}%` as DimensionValue},
-              ]}
-            />
-          </View>
-
-          <View style={styles.seekMetaRow}>
-            <AppText testID="youtube-tools-sentence-label" variant="label">
-              {segments.length > 0
-                ? formatSentenceLabel(Math.max(0, activeIndex), segments.length)
-                : 'Câu –/–'}
-            </AppText>
-            <AppText
-              color="secondary"
-              testID="youtube-tools-remaining"
-              variant="body"
-            >
-              {formatRemaining(durationS, shownS)}
-            </AppText>
-          </View>
-
-          {/* Controls Row: Prev, Replay, Play, Next */}
-          <View style={styles.playbackRow}>
-            <Pressable
-              accessibilityHint="Chuyển về câu trước đó"
-              accessibilityLabel="Câu trước"
-              accessibilityRole="button"
-              accessibilityState={{disabled: activeIndex <= 0 || disabled}}
-              disabled={activeIndex <= 0 || disabled}
-              onPress={onPrevSentence}
-              style={[
-                styles.actionButton,
-                (activeIndex <= 0 || disabled) && {opacity: 0.4},
-              ]}
-              testID="youtube-tools-prev"
-            >
-              <MaterialIcon name="chevron_left" size={20} />
-              <AppText variant="caption">Trước</AppText>
-            </Pressable>
-
-            <Pressable
-              accessibilityHint="Nghe lại câu hiện tại"
-              accessibilityLabel="Nghe lại"
-              accessibilityRole="button"
-              accessibilityState={{disabled}}
-              disabled={disabled}
-              onPress={onReplay}
-              style={styles.actionButton}
-              testID="youtube-tools-replay"
-            >
-              <MaterialIcon name="refresh" size={20} />
-              <AppText variant="caption">Nghe lại</AppText>
-            </Pressable>
-
-            <Pressable
-              accessibilityHint="Phát hoặc dừng video"
-              accessibilityLabel={playing ? 'Dừng' : 'Phát'}
-              accessibilityRole="button"
-              accessibilityState={{disabled}}
-              disabled={disabled}
-              onPress={onTogglePlay}
-              style={styles.actionButton}
-              testID="youtube-tools-play-toggle"
-            >
-              <MaterialIcon
-                name={playing ? 'play_circle' : 'play_circle'}
-                size={20}
-              />
-              <AppText variant="label">{playing ? 'Dừng' : 'Phát'}</AppText>
-            </Pressable>
-
-            <Pressable
-              accessibilityHint="Chuyển sang câu kế tiếp"
-              accessibilityLabel="Câu sau"
-              accessibilityRole="button"
-              accessibilityState={{
-                disabled: activeIndex >= segments.length - 1 || disabled,
-              }}
-              disabled={activeIndex >= segments.length - 1 || disabled}
-              onPress={onNextSentence}
-              style={[
-                styles.actionButton,
-                (activeIndex >= segments.length - 1 || disabled) && {
-                  opacity: 0.4,
-                },
-              ]}
-              testID="youtube-tools-next"
-            >
-              <AppText variant="caption">Sau</AppText>
-              <MaterialIcon name="chevron_right" size={20} />
-            </Pressable>
-          </View>
-        </View>
-
         {/* Lặp câu (Sentence Repeat Options: 1, 3, 5, inf) */}
         <View style={styles.section}>
           <AppText style={styles.sectionTitle} variant="label">

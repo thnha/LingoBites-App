@@ -501,9 +501,9 @@ describe('YouTubeLessonScreen', () => {
 
     mockSeekTo.mockClear();
 
-    // User navigates to next sentence via tools
+    // User navigates to next sentence via the compact bar (Option C)
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-tools-next'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-compact-next'}).props.onPress();
       await Promise.resolve();
     });
 

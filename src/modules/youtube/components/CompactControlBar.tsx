@@ -3,6 +3,7 @@ import {
   Pressable,
   StyleSheet,
   View,
+  type DimensionValue,
   type LayoutChangeEvent,
   type NativeSyntheticEvent,
   type NativeTouchEvent,
@@ -43,9 +44,14 @@ export type CompactControlBarProps = {
   disabled?: boolean;
   onTogglePlay: () => void;
   onReplay: () => void;
+  onPrevSentence: () => void;
+  onNextSentence: () => void;
   onOpenTools: () => void;
   onSeekToIndex: (index: number) => void;
   onSeekToSeconds: (seconds: number) => void;
+  abLoopStartIndex?: number | null;
+  abLoopEndIndex?: number | null;
+  abLoopActive?: boolean;
 };
 
 function createStyles(theme: AppTheme) {
@@ -81,9 +87,16 @@ function createStyles(theme: AppTheme) {
       position: 'absolute',
       width: 2,
     },
+    abRangeHighlight: {
+      backgroundColor: theme.colors.accent,
+      height: 6,
+      opacity: 0.35,
+      position: 'absolute',
+    },
     row: {
       alignItems: 'center',
       flexDirection: 'row',
+      flexWrap: 'wrap',
       gap: theme.spacing.xs,
       marginTop: theme.spacing.xs,
     },
@@ -121,9 +134,14 @@ export function CompactControlBar({
   disabled = false,
   onTogglePlay,
   onReplay,
+  onPrevSentence,
+  onNextSentence,
   onOpenTools,
   onSeekToIndex,
   onSeekToSeconds,
+  abLoopStartIndex = null,
+  abLoopEndIndex = null,
+  abLoopActive = false,
 }: CompactControlBarProps) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -213,6 +231,33 @@ export function CompactControlBar({
 
   const seekable = !disabled && durationS > 0;
 
+  // SETE-346 (Option C): the compact seek keeps the A–B range highlight
+  // after the Tools sheet stops duplicating the seek track.
+  const abHighlightStyle: {left: DimensionValue; width: DimensionValue} | null =
+    abLoopActive &&
+    abLoopStartIndex != null &&
+    abLoopEndIndex != null &&
+    durationS > 0 &&
+    segments[abLoopStartIndex] != null &&
+    segments[abLoopEndIndex] != null
+      ? {
+          left: `${
+            (segments[abLoopStartIndex].start_ms / 1000 / durationS) * 100
+          }%` as DimensionValue,
+          width: `${Math.max(
+            0,
+            ((segments[abLoopEndIndex].end_ms -
+              segments[abLoopStartIndex].start_ms) /
+              1000 /
+              durationS) *
+              100,
+          )}%` as DimensionValue,
+        }
+      : null;
+  const prevDisabled = disabled || activeIndex <= 0;
+  const nextDisabled =
+    disabled || activeIndex >= segments.length - 1 || segments.length === 0;
+
   return (
     <View style={styles.container} testID="youtube-compact-bar">
       <View
@@ -247,6 +292,9 @@ export function CompactControlBar({
         testID="youtube-compact-seek"
         style={styles.track}
       >
+        {abHighlightStyle ? (
+          <View style={[styles.abRangeHighlight, abHighlightStyle]} />
+        ) : null}
         <View style={[styles.fill, {width: `${fraction * 100}%`}]} />
         {segments.map(
           (segment, index) =>
@@ -275,6 +323,18 @@ export function CompactControlBar({
             : 'Câu –/–'}
         </AppText>
         <Pressable
+          accessibilityHint="Chuyển về câu trước đó"
+          accessibilityLabel="Câu trước"
+          accessibilityRole="button"
+          accessibilityState={{disabled: prevDisabled}}
+          disabled={prevDisabled}
+          onPress={onPrevSentence}
+          style={[styles.button, prevDisabled && {opacity: 0.4}]}
+          testID="youtube-compact-prev"
+        >
+          <AppText variant="label">Trước</AppText>
+        </Pressable>
+        <Pressable
           accessibilityHint="Phát hoặc dừng video"
           accessibilityLabel={playing ? 'Dừng' : 'Phát'}
           accessibilityRole="button"
@@ -297,6 +357,18 @@ export function CompactControlBar({
           testID="youtube-compact-replay"
         >
           <AppText variant="label">Nghe lại</AppText>
+        </Pressable>
+        <Pressable
+          accessibilityHint="Chuyển sang câu kế tiếp"
+          accessibilityLabel="Câu sau"
+          accessibilityRole="button"
+          accessibilityState={{disabled: nextDisabled}}
+          disabled={nextDisabled}
+          onPress={onNextSentence}
+          style={[styles.button, nextDisabled && {opacity: 0.4}]}
+          testID="youtube-compact-next"
+        >
+          <AppText variant="label">Sau</AppText>
         </Pressable>
         <AppText
           color="secondary"
