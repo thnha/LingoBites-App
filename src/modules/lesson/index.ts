@@ -8,6 +8,7 @@ export {LessonsHistoryScreen} from './LessonsHistoryScreen';
 export {SavedLessonDetailScreen} from './SavedLessonDetailScreen';
 export {SentenceDetailScreen} from './SentenceDetailScreen';
 export {WordDetailScreen} from './WordDetailScreen';
+export {useBookmarkOptimistic} from './useBookmarkOptimistic';
 export {useFlashcardLibrary} from './useFlashcardLibrary';
 export {useLessonRepository} from './useLessonRepository';
 export {useLibrarySegments} from './useLibrarySegments';

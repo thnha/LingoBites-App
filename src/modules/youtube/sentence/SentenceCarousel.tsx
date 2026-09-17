@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {
   FlatList,
+  Pressable,
   StyleSheet,
   View,
   useWindowDimensions,
@@ -8,6 +9,7 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
+import {AppText} from '@components/AppText';
 import {useAppTheme, type AppTheme} from '@theme';
 import type {SentenceEnrichment} from '@shared/schemas/sentence-contract';
 import type {
@@ -22,6 +24,7 @@ import {
   getCardSnapInterval,
   getCardWidth,
 } from './sentenceCardGeometry';
+import {shouldShowDots} from '../utils/toolsLogic';
 
 export type SentenceCarouselProps = {
   videoId: string;
@@ -51,6 +54,15 @@ export type SentenceCarouselProps = {
   /** Saved grammar keys (point name). */
   savedGrammarIds?: Set<string>;
   onToggleGrammarSave?: (point: GrammarPoint) => void;
+  /** Optional override for dots indicator (defaults to <=10 segments). */
+  showDots?: boolean;
+  /** Whether to show the back-to-active floating chip */
+  showBackChip?: boolean;
+  onPressBackChip?: () => void;
+  /** Transient toast message to display */
+  toastMessage?: string | null;
+  /** Optional callback when a card's vertical scroll offset changes */
+  onCardScrollOffsetChange?: (segmentIndex: number, offset: number) => void;
   testID?: string;
 };
 
@@ -66,19 +78,65 @@ function createStyles(theme: AppTheme) {
     cardWrap: {
       marginRight: CARD_SPACING_PT,
     },
+    dotsContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 6,
+      justifyContent: 'center',
+      paddingVertical: theme.spacing.xs,
+    },
+    dot: {
+      backgroundColor: theme.colors.surfaceHigh,
+      borderRadius: 3,
+      height: 6,
+      width: 6,
+    },
+    dotActive: {
+      backgroundColor: theme.colors.accent,
+      borderRadius: 4,
+      height: 8,
+      width: 8,
+    },
+    backChip: {
+      alignSelf: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.accent,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      bottom: theme.spacing.md,
+      elevation: 4,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      position: 'absolute',
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      zIndex: 10,
+    },
+    toast: {
+      alignSelf: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.surfaceHigh,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      elevation: 6,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      position: 'absolute',
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      top: theme.spacing.xs,
+      zIndex: 20,
+    },
   });
 }
 
 /**
- * SETE-330 (TASK-3, Stage 2): Horizontal carousel for sentence cards.
- *
- * Sizing:
- * - Card width: `screenWidth - 27pt`
- * - Gap: `10pt`
- * - Snap interval: `screenWidth - 17pt`
- * - Next card peek: `12–17pt` on trailing edge
- * - Snaps per card (35% threshold / 0.5 pt/ms velocity)
- * - Remembers vertical scroll position per card in session memory
+ * SETE-330 / SETE-332 (TASK-3 & TASK-5): Horizontal carousel for sentence cards
+ * with dots indicator (<=10), back-to-active chip, and toast synchronization.
  */
 export function SentenceCarousel({
   videoId,
@@ -99,6 +157,11 @@ export function SentenceCarousel({
   onToggleWordSave,
   savedGrammarIds,
   onToggleGrammarSave,
+  showDots,
+  showBackChip = false,
+  onPressBackChip,
+  toastMessage,
+  onCardScrollOffsetChange,
   testID,
 }: SentenceCarouselProps) {
   const {theme} = useAppTheme();
@@ -127,8 +190,9 @@ export function SentenceCarousel({
   const handleScrollOffsetChange = useCallback(
     (segmentIndex: number, offset: number) => {
       scrollMemoryRef.current.set(segmentIndex, offset);
+      onCardScrollOffsetChange?.(segmentIndex, offset);
     },
-    [],
+    [onCardScrollOffsetChange],
   );
 
   const handleMomentumScrollEnd = useCallback(
@@ -249,8 +313,17 @@ export function SentenceCarousel({
     [snapInterval],
   );
 
+  const isDotsVisible =
+    showDots !== undefined ? showDots : shouldShowDots(segments.length);
+
   return (
     <View style={styles.container} testID={testID}>
+      {toastMessage ? (
+        <View style={styles.toast} testID="youtube-toast-message">
+          <AppText variant="label">{toastMessage}</AppText>
+        </View>
+      ) : null}
+
       <FlatList
         contentContainerStyle={styles.listContent}
         data={segments as SentenceCardSegment[]}
@@ -270,6 +343,31 @@ export function SentenceCarousel({
         snapToInterval={snapInterval}
         testID={testID ? `${testID}-list` : 'sentence-carousel-list'}
       />
+
+      {isDotsVisible ? (
+        <View style={styles.dotsContainer} testID="youtube-dots-indicator">
+          {segments.map((_, i) => (
+            <View
+              key={i}
+              style={[styles.dot, i === activeIndex && styles.dotActive]}
+              testID={`youtube-dot-${i}`}
+            />
+          ))}
+        </View>
+      ) : null}
+
+      {showBackChip ? (
+        <Pressable
+          accessibilityHint="Chạm để cuộn về câu đang phát"
+          accessibilityLabel={`Câu ${activeIndex + 1} đang phát`}
+          accessibilityRole="button"
+          onPress={onPressBackChip}
+          style={styles.backChip}
+          testID="youtube-back-to-active-chip"
+        >
+          <AppText variant="label">{`↩ Câu ${activeIndex + 1} đang phát`}</AppText>
+        </Pressable>
+      ) : null}
     </View>
   );
 }

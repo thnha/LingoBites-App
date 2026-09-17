@@ -42,3 +42,16 @@ export {
   SENTENCE_BLOCK_IDS,
 } from './sentence/sentencePipeline';
 export {useSentenceEnrichment} from './sentence/useSentenceEnrichment';
+export {YouTubeToolsPopup} from './screens/YouTubeToolsPopup';
+export {
+  abWrap,
+  checkDictation,
+  formatLoopLabel,
+  nextLoopOption,
+  normalizeForDictation,
+  shouldShowDots,
+  toolsBadgeActive,
+  SENTENCE_LOOP_OPTIONS,
+  type SentenceLoopCount,
+} from './utils/toolsLogic';
+
