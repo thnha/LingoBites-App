@@ -309,7 +309,14 @@
     "overflow_ab_loop_clear": "Clear A–B loop",
     "overflow_repeat_sentence": "Repeat sentence",
     "save_sentence_a11y": "Save sentence",
-    "unsave_sentence_a11y": "Unsave sentence"
+    "unsave_sentence_a11y": "Unsave sentence",
+    "sentence_retry": "Retry",
+    "sentence_block_error": "Could not load this block",
+    "sentence_loading_block": "Loading {{block}}…",
+    "sentence_keyword": "keyword",
+    "sentence_vocab": "vocabulary",
+    "sentence_grammar": "grammar",
+    "sentence_loading_hint": "Content appears when loading finishes"
   },
   "gamification": {
     "pet_stage": {
