@@ -249,10 +249,10 @@ export function CompactControlBar({
       >
         <View style={[styles.fill, {width: `${fraction * 100}%`}]} />
         {segments.map(
-          segment =>
+          (segment, index) =>
             durationS > 0 && (
               <View
-                key={segment.start_ms}
+                key={`${segment.start_ms}-${index}`}
                 style={[
                   styles.tick,
                   {
