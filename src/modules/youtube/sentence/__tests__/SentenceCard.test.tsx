@@ -46,6 +46,26 @@ function hasNode(tree: renderer.ReactTestRenderer, testID: string): boolean {
   }
 }
 
+/** Flattens nested AppText/fragment children into plain text. */
+function flattenText(node: unknown): string {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map(flattenText).join('');
+  }
+  if (
+    typeof node === 'object' &&
+    node !== null &&
+    'props' in node &&
+    typeof (node as {props?: unknown}).props === 'object'
+  ) {
+    const props = (node as {props: {children?: unknown}}).props;
+    return flattenText(props.children);
+  }
+  return '';
+}
+
 describe('SentenceCard', () => {
   it('renders the sentence from segment.en only, with its translation', () => {
     const tree = renderCard();
@@ -53,8 +73,11 @@ describe('SentenceCard', () => {
     expect(
       tree.root.findByProps({testID: `${CARD_TEST_ID}-en`}).props.children,
     ).toBe('We are learning through video');
+    // VI text may wrap the dynamic highlight span — compare flattened text.
     expect(
-      tree.root.findByProps({testID: `${CARD_TEST_ID}-vi`}).props.children,
+      flattenText(
+        tree.root.findByProps({testID: `${CARD_TEST_ID}-vi`}).props.children,
+      ),
     ).toBe('Chúng ta đang học qua video');
   });
 

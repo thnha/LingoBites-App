@@ -27,6 +27,7 @@ import {
 } from './useSentenceEnrichment';
 import {resolveKeyword, type SentenceBlockId} from './sentencePipeline';
 import {
+  findViHighlight,
   findVocabEntry,
   formatFunctionWordNote,
   formatGrammarBadge,
@@ -163,10 +164,51 @@ function createStyles(theme: AppTheme) {
     sentenceBlock: {
       gap: theme.spacing.xs,
     },
+    // SETE-335 (TASK-8): per-word touch pills. Visual pill stays ~32pt
+    // (design `px-2 py-1 text-[14px]`); the ≥44pt touch target comes from
+    // `hitSlop` on each Pressable, not from enlarging the pill.
+    wordTokens: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 6,
+    },
+    wordPill: {
+      backgroundColor: theme.colors.surfaceHigh,
+      borderColor: theme.colors.outlineVariant,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      minHeight: 32,
+      justifyContent: 'center',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+    },
+    wordPillSelected: {
+      backgroundColor: theme.colors.tertiaryFixed,
+      borderColor: theme.colors.tertiaryBorder,
+    },
+    wordPillText: {
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    wordPillTextSelected: {
+      color: theme.colors.onTertiaryContainer,
+    },
+    translationBox: {
+      backgroundColor: theme.colors.surfaceLow,
+      borderColor: theme.colors.outlineVariant,
+      borderRadius: theme.radius.md,
+      borderWidth: 1,
+      gap: theme.spacing.xs,
+      padding: theme.spacing.sm,
+    },
     translationRow: {
       alignItems: 'flex-start',
       flexDirection: 'row',
       gap: theme.spacing.xs,
+    },
+    translationText: {
+      flex: 1,
     },
     viBadge: {
       backgroundColor: theme.colors.surfaceHigh,
@@ -185,20 +227,56 @@ function createStyles(theme: AppTheme) {
     vocabRow: {
       gap: 2,
     },
-    selectedWordWrap: {
+    ipaText: {
+      fontFamily: 'monospace',
+    },
+    selectedPod: {
+      backgroundColor: theme.colors.tertiarySoft,
+      borderColor: theme.colors.tertiaryBorder,
+      borderRadius: theme.radius.lg,
+      borderWidth: 2,
       gap: theme.spacing.xs,
+      padding: theme.spacing.md,
+    },
+    selectedWordTitle: {
+      flexShrink: 1,
+    },
+    selectedPodInner: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.md,
+      gap: 2,
+      padding: theme.spacing.sm,
+    },
+    viHighlight: {
+      color: theme.colors.onTertiaryContainer,
+      fontWeight: theme.typography.weight.bold,
+      textDecorationLine: 'underline',
+      textDecorationColor: theme.colors.tertiaryFixed,
+    },
+    grammarList: {
+      gap: theme.spacing.sm,
+    },
+    grammarPod: {
+      backgroundColor: theme.colors.secondarySoft,
+      borderColor: theme.colors.secondaryContainer,
+      borderRadius: theme.radius.md,
+      borderWidth: 1,
+      gap: 2,
+      padding: theme.spacing.sm,
+    },
+    formulaBox: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.radius.sm,
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: 2,
+    },
+    formulaText: {
+      fontFamily: 'monospace',
     },
     selectedWordHeader: {
       alignItems: 'center',
       flexDirection: 'row',
       gap: theme.spacing.xs,
-    },
-    wordTokens: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-    },
-    grammarPoint: {
-      gap: 2,
     },
     grammarHeader: {
       alignItems: 'center',
@@ -207,9 +285,6 @@ function createStyles(theme: AppTheme) {
     },
     practiceWrap: {
       marginTop: theme.spacing.xs,
-    },
-    selectedWordToken: {
-      textDecorationLine: 'underline',
     },
     bottomBar: {
       alignItems: 'center',
@@ -275,7 +350,7 @@ function BlockError({
   );
 }
 
-function VocabRow({entry}: {entry: VocabEntry}) {
+function VocabRow({entry, testID}: {entry: VocabEntry; testID?: string}) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const note = entry.tip ?? entry.inSentenceNote;
@@ -285,10 +360,19 @@ function VocabRow({entry}: {entry: VocabEntry}) {
         {entry.word}
         <AppText color="muted"> · {entry.pos}</AppText>
       </AppText>
-      <AppText color="secondary">
-        {entry.meaning}
-        {entry.ipa ? ` /${entry.ipa}/` : ''}
-      </AppText>
+      {/* SETE-335 (TASK-8): IPA stands on its own line (mono), never glued
+          to the meaning line. */}
+      {entry.ipa ? (
+        <AppText
+          color="muted"
+          style={styles.ipaText}
+          testID={testID ? `${testID}-ipa` : undefined}
+          variant="caption"
+        >
+          /{entry.ipa}/
+        </AppText>
+      ) : null}
+      <AppText color="secondary">{entry.meaning}</AppText>
       {note ? (
         <AppText color="muted" variant="caption">
           {note}
@@ -419,6 +503,12 @@ export function SentenceCard({
   const selectedEntry = useMemo(
     () => findVocabEntry(enrichment?.vocab ?? [], selectedWord),
     [enrichment, selectedWord],
+  );
+  // SETE-335 (TASK-8): the VI span matching the selected word. Recomputes
+  // on every selection change so the amber underline follows the tap.
+  const viHighlight = useMemo(
+    () => findViHighlight(segment.vi, selectedEntry),
+    [segment.vi, selectedEntry],
   );
   const isSelectedWordSaved =
     savedWordIds?.has(selectedWord.toLowerCase()) ?? false;
@@ -611,71 +701,116 @@ export function SentenceCard({
         showsVerticalScrollIndicator={false}
         testID={testID ? `${testID}-scroll` : undefined}
       >
-        {/* 1. Sentence Block (tappable words; punctuation untappable) */}
+        {/* 1. Sentence Block (per-word touch pills; punctuation untappable) */}
         <View
           onLayout={handleSentenceBlockLayout}
           style={styles.sentenceBlock}
           testID={testID ? `${testID}-sentence-block` : undefined}
         >
-          <AppText
-            testID={testID ? `${testID}-en` : undefined}
-            variant="bodyLg"
-          >
-            {onPressWord
-              ? wordTokens.map((token, tokenIndex) =>
-                  token.tappable ? (
+          {onPressWord ? (
+            // Note: no accessibilityLabel on the row itself — each pill is
+            // individually labeled so screen readers land on every word.
+            <View
+              style={styles.wordTokens}
+              testID={testID ? `${testID}-en` : undefined}
+            >
+              {wordTokens.map((token, tokenIndex) => {
+                if (!token.tappable) {
+                  // Whitespace is covered by the row `gap`; punctuation
+                  // renders as plain text — never tappable, no word testID.
+                  if (token.text.trim() === '') {
+                    return null;
+                  }
+                  return (
+                    <AppText key={`${tokenIndex}-${token.text}`} variant="body">
+                      {token.text}
+                    </AppText>
+                  );
+                }
+                const isSelected =
+                  token.text.toLowerCase() === selectedWord.toLowerCase();
+                return (
+                  <Pressable
+                    accessibilityHint={t('youtube.speak_word_hint', {
+                      defaultValue: 'Chạm để nghe phát âm từ này',
+                    })}
+                    accessibilityLabel={token.text}
+                    accessibilityRole="button"
+                    accessibilityState={{selected: isSelected}}
+                    // Pill stays ~32pt visually; hitSlop lifts the effective
+                    // touch area to 32 + 2×8 = 48pt (spec §12: ≥44pt).
+                    hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}
+                    key={`${tokenIndex}-${token.text}`}
+                    onPress={() => handlePressWordToken(token.text)}
+                    style={[
+                      styles.wordPill,
+                      isSelected && styles.wordPillSelected,
+                    ]}
+                    testID={
+                      testID
+                        ? `${testID}-word-${tokenIndex}`
+                        : `sentence-word-${tokenIndex}`
+                    }
+                  >
                     <AppText
-                      accessibilityHint={t('youtube.speak_word_hint', {
-                        defaultValue: 'Chạm để nghe phát âm từ này',
-                      })}
-                      accessibilityLabel={token.text}
-                      accessibilityRole="button"
-                      accessibilityState={{
-                        selected:
-                          token.text.toLowerCase() ===
-                          selectedWord.toLowerCase(),
-                      }}
-                      key={`${tokenIndex}-${token.text}`}
-                      onPress={() => handlePressWordToken(token.text)}
-                      testID={
-                        testID
-                          ? `${testID}-word-${tokenIndex}`
-                          : `sentence-word-${tokenIndex}`
-                      }
-                      style={
-                        token.text.toLowerCase() ===
-                        selectedWord.toLowerCase()
-                          ? styles.selectedWordToken
-                          : null
-                      }
+                      style={[
+                        styles.wordPillText,
+                        isSelected && styles.wordPillTextSelected,
+                      ]}
+                      variant="body"
                     >
                       {token.text}
                     </AppText>
-                  ) : (
-                    token.text
-                  ),
-                )
-              : segment.en}
-          </AppText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : (
+            <AppText
+              testID={testID ? `${testID}-en` : undefined}
+              variant="bodyLg"
+            >
+              {segment.en}
+            </AppText>
+          )}
         </View>
 
-        {/* 2. Translation Block (VI) */}
+        {/* 2. Translation Block (VI): slate box + dynamic amber underline
+            following the selected word */}
         {translationVisible && segment.vi !== '' ? (
           <View
-            style={styles.translationRow}
+            style={styles.translationBox}
             testID={testID ? `${testID}-vi-wrap` : undefined}
           >
-            <View style={styles.viBadge}>
-              <AppText color="muted" variant="caption">
-                VI
+            <View style={styles.translationRow}>
+              <View style={styles.viBadge}>
+                <AppText color="muted" variant="caption">
+                  VI
+                </AppText>
+              </View>
+              <AppText
+                color="secondary"
+                style={styles.translationText}
+                testID={testID ? `${testID}-vi` : undefined}
+              >
+                {viHighlight ? (
+                  <>
+                    {viHighlight.before}
+                    <AppText
+                      style={styles.viHighlight}
+                      testID={
+                        testID ? `${testID}-vi-highlight` : 'vi-highlight'
+                      }
+                    >
+                      {viHighlight.match}
+                    </AppText>
+                    {viHighlight.after}
+                  </>
+                ) : (
+                  segment.vi
+                )}
               </AppText>
             </View>
-            <AppText
-              color="secondary"
-              testID={testID ? `${testID}-vi` : undefined}
-            >
-              {segment.vi}
-            </AppText>
           </View>
         ) : null}
 
@@ -697,46 +832,78 @@ export function SentenceCard({
         ) : (
           <Animated.View
             onLayout={handleSelectedBlockLayout}
-            style={[styles.selectedWordWrap, {opacity: selectedFade}]}
+            style={[styles.selectedPod, {opacity: selectedFade}]}
             testID={blockTestID('keyword', 'value')}
           >
             <View style={styles.selectedWordHeader}>
-              <Chip
-                label={isSelectedWordSaved ? `★ ${selectedWord}` : selectedWord}
-                tone="accent"
-              />
+              <AppText
+                style={styles.selectedWordTitle}
+                testID={testID ? `${testID}-selected-word` : 'selected-word'}
+                variant="bodyLg"
+              >
+                {selectedWord}
+              </AppText>
+              {selectedEntry ? (
+                <Chip
+                  label={selectedEntry.pos}
+                  testID={testID ? `${testID}-selected-pos` : 'selected-pos'}
+                  tone="gold"
+                />
+              ) : null}
               {onToggleWordSave ? (
-                <IconButton
+                <AppButton
                   accessibilityHint={t('youtube.save_word_hint', {
                     defaultValue: 'Lưu hoặc bỏ lưu từ này',
                   })}
-                  accessibilityLabel={
-                    isSelectedWordSaved
-                      ? t('youtube.unsave_word_a11y', {
-                          defaultValue: 'Bỏ lưu từ này',
-                        })
-                      : t('youtube.save_word_a11y', {
-                          defaultValue: 'Lưu từ này',
-                        })
-                  }
-                  icon={isSelectedWordSaved ? 'bookmark' : 'bookmark_add'}
-                  onPress={() =>
-                    onToggleWordSave(selectedWord, selectedEntry)
-                  }
+                  iconLeft={isSelectedWordSaved ? 'bookmark' : 'bookmark_add'}
+                  onPress={() => onToggleWordSave(selectedWord, selectedEntry)}
                   testID={
                     testID ? `${testID}-word-toggle-save` : 'word-toggle-save'
                   }
-                  tone={isSelectedWordSaved ? 'accent' : 'surface'}
+                  title={
+                    isSelectedWordSaved
+                      ? t('youtube.unsave_word_title', {
+                          defaultValue: 'Bỏ lưu từ',
+                        })
+                      : t('youtube.save_word_title', {defaultValue: 'Lưu từ'})
+                  }
+                  variant="secondary"
                 />
               ) : null}
             </View>
+            {/* IPA on its own line (mono), never glued to the meaning. */}
+            {selectedEntry?.ipa ? (
+              <AppText
+                color="muted"
+                style={styles.ipaText}
+                testID={testID ? `${testID}-selected-ipa` : 'selected-ipa'}
+                variant="caption"
+              >
+                /{selectedEntry.ipa}/
+              </AppText>
+            ) : null}
             {selectedEntry ? (
               isFunctionWordEntry(selectedEntry) ? (
                 <AppText color="muted" variant="caption">
                   {formatFunctionWordNote(selectedEntry)}
                 </AppText>
               ) : (
-                <VocabRow entry={selectedEntry} />
+                <View style={styles.selectedPodInner}>
+                  <AppText color="secondary">
+                    {t('youtube.word_meaning_label', {
+                      defaultValue: 'Nghĩa',
+                    })}
+                    {`: ${selectedEntry.meaning}`}
+                  </AppText>
+                  {selectedEntry.tip ?? selectedEntry.inSentenceNote ? (
+                    <AppText color="muted" variant="caption">
+                      {t('youtube.word_tip_label', {
+                        defaultValue: 'Mẹo nhớ',
+                      })}
+                      {`: ${selectedEntry.tip ?? selectedEntry.inSentenceNote}`}
+                    </AppText>
+                  ) : null}
+                </View>
               )
             ) : null}
           </Animated.View>
@@ -781,12 +948,22 @@ export function SentenceCard({
             testID={blockTestID('grammar', 'error') ?? 'grammar-error'}
           />
         ) : states.grammar === 'ready' ? (
-          <View testID={blockTestID('grammar', 'value')}>
+          <View
+            style={styles.grammarList}
+            testID={blockTestID('grammar', 'value')}
+          >
             {grammarPoints.map((point, pointIndex) => {
-              const grammarSaved =
-                savedGrammarIds?.has(point.name) ?? false;
+              const grammarSaved = savedGrammarIds?.has(point.name) ?? false;
               return (
-                <View key={point.name} style={styles.grammarPoint}>
+                <View
+                  key={point.name}
+                  style={styles.grammarPod}
+                  testID={
+                    testID
+                      ? `${testID}-grammar-point-${pointIndex}`
+                      : `grammar-point-${pointIndex}`
+                  }
+                >
                   <View style={styles.grammarHeader}>
                     <Chip
                       label={formatGrammarBadge(pointIndex, grammarCount)}
@@ -823,6 +1000,38 @@ export function SentenceCard({
                     ) : null}
                   </View>
                   <AppText variant="bodyLg">{point.name}</AppText>
+                  {point.description !== '' ? (
+                    <AppText
+                      color="secondary"
+                      testID={
+                        testID
+                          ? `${testID}-grammar-description-${pointIndex}`
+                          : `grammar-description-${pointIndex}`
+                      }
+                    >
+                      {point.description}
+                    </AppText>
+                  ) : null}
+                  {point.formula !== '' ? (
+                    <View style={styles.formulaBox}>
+                      <AppText
+                        testID={
+                          testID
+                            ? `${testID}-grammar-formula-${pointIndex}`
+                            : `grammar-formula-${pointIndex}`
+                        }
+                        variant="caption"
+                      >
+                        {t('youtube.grammar_formula_label', {
+                          defaultValue: 'Công thức',
+                        })}
+                        {': '}
+                        <AppText style={styles.formulaText} variant="caption">
+                          {point.formula}
+                        </AppText>
+                      </AppText>
+                    </View>
+                  ) : null}
                   <AppText color="secondary">{point.analysis}</AppText>
                 </View>
               );

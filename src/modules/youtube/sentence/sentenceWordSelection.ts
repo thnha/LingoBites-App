@@ -1,7 +1,4 @@
-import type {
-  GrammarPoint,
-  VocabEntry,
-} from '@shared/schemas/sentence-contract';
+import type {GrammarPoint, VocabEntry} from '@shared/schemas/sentence-contract';
 
 /**
  * SETE-331 (TASK-4, Stage 2): pure helpers for the interactive word +
@@ -68,6 +65,70 @@ export function formatFunctionWordNote(entry: VocabEntry): string {
 /** Badge label for the i-th grammar point (0-based) of n total. */
 export function formatGrammarBadge(index: number, total: number): string {
   return `NGỮ PHÁP ${index + 1}/${total}`;
+}
+
+/** One highlighted span inside the Vietnamese translation. */
+export type ViHighlight = {
+  before: string;
+  match: string;
+  after: string;
+};
+
+/**
+ * SETE-335 (TASK-8): v1 client-side inference for the dynamic VI underline.
+ * The contract has no word↔translation-phrase mapping field, so the client
+ * guesses which VI span corresponds to the selected entry from its
+ * `meaning` (plus `inSentenceNote`/`tip`, both Vietnamese). Longest
+ * candidate wins; returns null when nothing matches. Case-insensitive,
+ * original casing preserved in the returned slices.
+ */
+export function findViHighlight(
+  vi: string,
+  entry: VocabEntry | undefined,
+): ViHighlight | null {
+  if (entry === undefined || vi === '') {
+    return null;
+  }
+  const sources = [entry.meaning, entry.inSentenceNote, entry.tip].filter(
+    (s): s is string => typeof s === 'string' && s !== '',
+  );
+  const candidates: string[] = [];
+  for (const source of sources) {
+    candidates.push(source);
+    for (const part of source.split(/[,;/.()|·•\-–—:]+/)) {
+      const trimmed = part.trim();
+      if (trimmed !== '') {
+        candidates.push(trimmed);
+      }
+    }
+    for (const word of source.split(/\s+/)) {
+      const trimmed = word
+        .trim()
+        .replace(/^[,.();:!?'"“”‘’]+|[,.();:!?'"“”‘’]+$/g, '');
+      if (trimmed.length >= 2) {
+        candidates.push(trimmed);
+      }
+    }
+  }
+  candidates.sort((a, b) => b.length - a.length);
+  const lowerVi = vi.toLowerCase();
+  const seen = new Set<string>();
+  for (const candidate of candidates) {
+    const key = candidate.toLowerCase();
+    if (key.length < 2 || seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    const index = lowerVi.indexOf(key);
+    if (index >= 0) {
+      return {
+        before: vi.slice(0, index),
+        match: vi.slice(index, index + candidate.length),
+        after: vi.slice(index + candidate.length),
+      };
+    }
+  }
+  return null;
 }
 
 /** Stable save key for a word within one sentence card. */

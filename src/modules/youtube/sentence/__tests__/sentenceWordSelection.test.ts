@@ -1,4 +1,5 @@
 import {
+  findViHighlight,
   findVocabEntry,
   formatFunctionWordNote,
   formatGrammarBadge,
@@ -76,5 +77,34 @@ describe('grammar + save keys', () => {
     expect(grammarSaveKey({name: 'Present continuous'} as never)).toBe(
       'Present continuous',
     );
+  });
+});
+
+describe('findViHighlight (SETE-335 TASK-8 v1 inference)', () => {
+  const VI = 'Chúng ta đang học qua video';
+
+  it('matches a meaning word inside the translation, preserving slices', () => {
+    expect(findViHighlight(VI, VOCAB[0])).toEqual({
+      before: 'Chúng ta đang ',
+      match: 'học',
+      after: ' qua video',
+    });
+  });
+
+  it('prefers the longest candidate (in-sentence note phrase wins)', () => {
+    expect(findViHighlight(VI, VOCAB[1])?.match).toBe('học qua video');
+  });
+
+  it('returns null when nothing matches or entry is missing', () => {
+    expect(
+      findViHighlight(VI, {
+        word: 'video',
+        pos: 'noun',
+        ipa: '',
+        meaning: 'zzz-no-match-zzz',
+      }),
+    ).toBeNull();
+    expect(findViHighlight(VI, undefined)).toBeNull();
+    expect(findViHighlight('', VOCAB[0])).toBeNull();
   });
 });
