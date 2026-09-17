@@ -5,13 +5,16 @@ import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
 import {ScreenHeader} from '../ScreenHeader';
 
-async function renderHeader(title: string) {
+async function renderHeader(
+  title: string,
+  props?: Partial<React.ComponentProps<typeof ScreenHeader>>,
+) {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(
       <FeatureFlagProvider>
         <AppThemeProvider>
-          <ScreenHeader onBack={() => {}} title={title} />
+          <ScreenHeader onBack={() => {}} title={title} {...props} />
         </AppThemeProvider>
       </FeatureFlagProvider>,
     );
@@ -36,6 +39,38 @@ describe('ScreenHeader', () => {
     expect(title.props.adjustsFontSizeToFit).toBe(true);
     expect(title.props.minimumFontScale).toBe(0.85);
     expect(title.props.maxFontSizeMultiplier).toBe(1.5);
+  });
+
+  it('allows overriding titleNumberOfLines to a single line', async () => {
+    const tree = await renderHeader('Bài học tiếng Anh với tiêu đề rất dài', {
+      titleNumberOfLines: 1,
+    });
+
+    const title = tree.root.findAll(
+      node =>
+        node.type === Text &&
+        typeof node.props.children === 'string' &&
+        node.props.children.includes('Bài học tiếng Anh'),
+    )[0];
+
+    expect(title.props.numberOfLines).toBe(1);
+    expect(title.props.adjustsFontSizeToFit).toBe(true);
+    expect(title.props.minimumFontScale).toBe(0.85);
+  });
+
+  it('allows overriding line count via numberOfLines', async () => {
+    const tree = await renderHeader('Bài học tiếng Anh với tiêu đề rất dài', {
+      numberOfLines: 3,
+    });
+
+    const title = tree.root.findAll(
+      node =>
+        node.type === Text &&
+        typeof node.props.children === 'string' &&
+        node.props.children.includes('Bài học tiếng Anh'),
+    )[0];
+
+    expect(title.props.numberOfLines).toBe(3);
   });
 
   it('uses a flexible header height instead of a fixed 56px cap', async () => {

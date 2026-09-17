@@ -153,6 +153,13 @@ describe('YouTubeLessonScreen', () => {
     jest.useRealTimers();
   });
 
+  it('renders header with single-line title truncation (SETE-339)', async () => {
+    const tree = await renderScreen();
+    const header = tree.root.findByType(ScreenHeader);
+    expect(header.props.titleNumberOfLines).toBe(1);
+    expect(header.props.title).toBe('Sample video');
+  });
+
   it('renders sentence cards with English and Vietnamese for segments', async () => {
     const tree = await renderScreen();
 

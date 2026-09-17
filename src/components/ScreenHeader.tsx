@@ -9,6 +9,8 @@ type Props = {
   onBack?: () => void;
   backLabel?: string;
   rightAction?: React.ReactNode;
+  titleNumberOfLines?: number;
+  numberOfLines?: number;
 };
 
 export function ScreenHeader({
@@ -16,9 +18,12 @@ export function ScreenHeader({
   onBack,
   backLabel = 'Quay lại',
   rightAction,
+  titleNumberOfLines,
+  numberOfLines,
 }: Props) {
   const {theme} = useAppTheme();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
+  const resolvedNumberOfLines = titleNumberOfLines ?? numberOfLines ?? 2;
 
   return (
     <View style={themedStyles.header} testID="screen-header">
@@ -38,7 +43,7 @@ export function ScreenHeader({
           adjustsFontSizeToFit
           color="primary"
           minimumFontScale={0.85}
-          numberOfLines={2}
+          numberOfLines={resolvedNumberOfLines}
           style={themedStyles.title}
           variant="h3"
         >

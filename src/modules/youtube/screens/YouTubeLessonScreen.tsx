@@ -1150,6 +1150,7 @@ export function YouTubeLessonScreen({
         onBack={onBack}
         rightAction={headerActions}
         title={lesson.video.title}
+        titleNumberOfLines={1}
       />
       <YouTubeLessonOverflowMenu
         abLoopActive={abLoopActive}
