@@ -10,6 +10,10 @@ import {
 } from 'react-native';
 import {useAppTheme, type AppTheme} from '@theme';
 import type {SentenceEnrichment} from '@shared/schemas/sentence-contract';
+import type {
+  GrammarPoint,
+  VocabEntry,
+} from '@shared/schemas/sentence-contract';
 import {SentenceCard, type SentenceCardSegment} from './SentenceCard';
 import type {RetryBlockFn} from './useSentenceEnrichment';
 import {
@@ -41,6 +45,12 @@ export type SentenceCarouselProps = {
   onPlaySentenceAudio?: (segment: SentenceCardSegment) => void;
   onPressWord?: (word: string) => void;
   onPracticeSentence?: (segment: SentenceCardSegment) => void;
+  /** Saved word keys (lowercased) shared across cards for ★ sync. */
+  savedWordIds?: Set<string>;
+  onToggleWordSave?: (word: string, entry?: VocabEntry) => void;
+  /** Saved grammar keys (point name). */
+  savedGrammarIds?: Set<string>;
+  onToggleGrammarSave?: (point: GrammarPoint) => void;
   testID?: string;
 };
 
@@ -85,6 +95,10 @@ export function SentenceCarousel({
   onPlaySentenceAudio,
   onPressWord,
   onPracticeSentence,
+  savedWordIds,
+  onToggleWordSave,
+  savedGrammarIds,
+  onToggleGrammarSave,
   testID,
 }: SentenceCarouselProps) {
   const {theme} = useAppTheme();
@@ -181,8 +195,12 @@ export function SentenceCarousel({
             onPressWord={onPressWord}
             onScrollOffsetChange={handleScrollOffsetChange}
             onToggleSave={() => onToggleSaveSegment?.(item)}
+            onToggleWordSave={onToggleWordSave}
+            onToggleGrammarSave={onToggleGrammarSave}
             onToggleTranslation={onToggleTranslation}
             retryBlock={retryBlock}
+            savedGrammarIds={savedGrammarIds}
+            savedWordIds={savedWordIds}
             segment={item}
             showTranslation={showTranslation}
             testID={
@@ -208,8 +226,12 @@ export function SentenceCarousel({
       onPressWord,
       onToggleSaveSegment,
       onToggleTranslation,
+      onToggleWordSave,
+      onToggleGrammarSave,
       retryBlock,
+      savedGrammarIds,
       savedSegmentIds,
+      savedWordIds,
       segments.length,
       showTranslation,
       styles.cardWrap,

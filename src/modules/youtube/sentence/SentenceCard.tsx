@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Animated,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,6 +17,7 @@ import {Chip} from '@components/Chip';
 import {IconButton} from '@components/IconButton';
 import {useAppTheme, type AppTheme} from '@theme';
 import type {
+  GrammarPoint,
   SentenceEnrichment,
   VocabEntry,
 } from '@shared/schemas/sentence-contract';
@@ -24,6 +26,13 @@ import {
   type RetryBlockFn,
 } from './useSentenceEnrichment';
 import {resolveKeyword, type SentenceBlockId} from './sentencePipeline';
+import {
+  findVocabEntry,
+  formatFunctionWordNote,
+  formatGrammarBadge,
+  isFunctionWordEntry,
+  tokenizeSentenceWords,
+} from './sentenceWordSelection';
 import {
   CARD_BORDER_RADIUS_PT,
   CARD_HEADER_HEIGHT_PT,
@@ -67,6 +76,14 @@ export type SentenceCardProps = {
   onPlaySentenceAudio?: (segment: SentenceCardSegment) => void;
   /** Tapping a word token. */
   onPressWord?: (word: string) => void;
+  /** Saved word keys (lowercased) for ★ sync between chip + save button. */
+  savedWordIds?: Set<string>;
+  /** Toggle save for the selected word; parent owns SQLite writes. */
+  onToggleWordSave?: (word: string, entry?: VocabEntry) => void;
+  /** Saved grammar keys (point name). */
+  savedGrammarIds?: Set<string>;
+  /** Toggle save for one grammar point; parent owns SQLite writes. */
+  onToggleGrammarSave?: (point: GrammarPoint) => void;
   /** Practice action handler. */
   onPracticeSentence?: (segment: SentenceCardSegment) => void;
   /** Next sentence prompt tap handler. */
@@ -168,11 +185,31 @@ function createStyles(theme: AppTheme) {
     vocabRow: {
       gap: 2,
     },
+    selectedWordWrap: {
+      gap: theme.spacing.xs,
+    },
+    selectedWordHeader: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: theme.spacing.xs,
+    },
+    wordTokens: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
     grammarPoint: {
       gap: 2,
     },
+    grammarHeader: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: theme.spacing.xs,
+    },
     practiceWrap: {
       marginTop: theme.spacing.xs,
+    },
+    selectedWordToken: {
+      textDecorationLine: 'underline',
     },
     bottomBar: {
       alignItems: 'center',
@@ -279,7 +316,11 @@ export function SentenceCard({
   isSaved = false,
   onToggleSave,
   onPlaySentenceAudio,
-  onPressWord: _onPressWord,
+  onPressWord,
+  savedWordIds,
+  onToggleWordSave,
+  savedGrammarIds,
+  onToggleGrammarSave,
   onPracticeSentence,
   onNextSentence,
   initialScrollOffset = 0,
@@ -346,6 +387,69 @@ export function SentenceCard({
 
   const keyword = resolveKeyword(segment.en, enrichment);
 
+  // SETE-331 (TASK-4): interactive word selection. Defaults to the AI
+  // keyword (or longest-word fallback); tapping another word swaps the
+  // detail block in place. Resets when the sentence changes.
+  const [selectedWord, setSelectedWord] = useState(keyword);
+  const selectedFade = useRef(new Animated.Value(1)).current;
+  const selectedBlockYRef = useRef(0);
+  const scrollYRef = useRef(0);
+  const viewportHeightRef = useRef(0);
+
+  useEffect(() => {
+    setSelectedWord(keyword);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segment.en, enrichment?.keyWord]);
+
+  useEffect(() => {
+    selectedFade.setValue(0);
+    const fade = Animated.timing(selectedFade, {
+      duration: 150,
+      toValue: 1,
+      useNativeDriver: true,
+    });
+    fade.start();
+    return () => fade.stop();
+  }, [selectedWord, selectedFade]);
+
+  const wordTokens = useMemo(
+    () => tokenizeSentenceWords(segment.en),
+    [segment.en],
+  );
+  const selectedEntry = useMemo(
+    () => findVocabEntry(enrichment?.vocab ?? [], selectedWord),
+    [enrichment, selectedWord],
+  );
+  const isSelectedWordSaved =
+    savedWordIds?.has(selectedWord.toLowerCase()) ?? false;
+
+  const handlePressWordToken = useCallback(
+    (word: string) => {
+      setSelectedWord(word);
+      onPressWord?.(word);
+      // Self-scroll the selected block into view when it sits below the
+      // viewport (native animated scroll ≈300ms).
+      const blockY = selectedBlockYRef.current;
+      const viewportBottom =
+        scrollYRef.current + viewportHeightRef.current - 120;
+      if (viewportHeightRef.current > 0 && blockY > viewportBottom) {
+        scrollViewRef.current?.scrollTo({
+          animated: true,
+          y: Math.max(0, blockY - 80),
+        });
+      }
+    },
+    [onPressWord],
+  );
+
+  const handleSelectedBlockLayout = useCallback((e: LayoutChangeEvent) => {
+    selectedBlockYRef.current = e.nativeEvent.layout.y;
+  }, []);
+
+  const handleScrollViewLayout = useCallback((e: LayoutChangeEvent) => {
+    viewportHeightRef.current = e.nativeEvent.layout.height;
+  }, []);
+
   const handleToggleTranslation = useCallback(() => {
     if (onToggleTranslation) {
       onToggleTranslation();
@@ -362,6 +466,9 @@ export function SentenceCard({
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const currentY = event.nativeEvent.contentOffset.y;
       setScrollY(currentY);
+      scrollYRef.current = currentY;
+      viewportHeightRef.current =
+        event.nativeEvent.layoutMeasurement.height || viewportHeightRef.current;
       onScrollOffsetChange?.(segment.index, currentY);
 
       const layoutHeight = event.nativeEvent.layoutMeasurement.height;
@@ -496,13 +603,14 @@ export function SentenceCard({
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         nestedScrollEnabled={false}
+        onLayout={handleScrollViewLayout}
         onScroll={handleScroll}
         ref={scrollViewRef}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         testID={testID ? `${testID}-scroll` : undefined}
       >
-        {/* 1. Sentence Block */}
+        {/* 1. Sentence Block (tappable words; punctuation untappable) */}
         <View
           onLayout={handleSentenceBlockLayout}
           style={styles.sentenceBlock}
@@ -512,7 +620,41 @@ export function SentenceCard({
             testID={testID ? `${testID}-en` : undefined}
             variant="bodyLg"
           >
-            {segment.en}
+            {onPressWord
+              ? wordTokens.map((token, tokenIndex) =>
+                  token.tappable ? (
+                    <AppText
+                      accessibilityHint={t('youtube.speak_word_hint', {
+                        defaultValue: 'Chạm để nghe phát âm từ này',
+                      })}
+                      accessibilityLabel={token.text}
+                      accessibilityRole="button"
+                      accessibilityState={{
+                        selected:
+                          token.text.toLowerCase() ===
+                          selectedWord.toLowerCase(),
+                      }}
+                      key={`${tokenIndex}-${token.text}`}
+                      onPress={() => handlePressWordToken(token.text)}
+                      testID={
+                        testID
+                          ? `${testID}-word-${tokenIndex}`
+                          : `sentence-word-${tokenIndex}`
+                      }
+                      style={
+                        token.text.toLowerCase() ===
+                        selectedWord.toLowerCase()
+                          ? styles.selectedWordToken
+                          : null
+                      }
+                    >
+                      {token.text}
+                    </AppText>
+                  ) : (
+                    token.text
+                  ),
+                )
+              : segment.en}
           </AppText>
         </View>
 
@@ -552,9 +694,51 @@ export function SentenceCard({
             testID={blockTestID('keyword', 'error') ?? 'keyword-error'}
           />
         ) : (
-          <View testID={blockTestID('keyword', 'value')}>
-            <Chip label={keyword} tone="accent" />
-          </View>
+          <Animated.View
+            onLayout={handleSelectedBlockLayout}
+            style={[styles.selectedWordWrap, {opacity: selectedFade}]}
+            testID={blockTestID('keyword', 'value')}
+          >
+            <View style={styles.selectedWordHeader}>
+              <Chip
+                label={isSelectedWordSaved ? `★ ${selectedWord}` : selectedWord}
+                tone="accent"
+              />
+              {onToggleWordSave ? (
+                <IconButton
+                  accessibilityHint={t('youtube.save_word_hint', {
+                    defaultValue: 'Lưu hoặc bỏ lưu từ này',
+                  })}
+                  accessibilityLabel={
+                    isSelectedWordSaved
+                      ? t('youtube.unsave_word_a11y', {
+                          defaultValue: 'Bỏ lưu từ này',
+                        })
+                      : t('youtube.save_word_a11y', {
+                          defaultValue: 'Lưu từ này',
+                        })
+                  }
+                  icon={isSelectedWordSaved ? 'bookmark' : 'bookmark_add'}
+                  onPress={() =>
+                    onToggleWordSave(selectedWord, selectedEntry)
+                  }
+                  testID={
+                    testID ? `${testID}-word-toggle-save` : 'word-toggle-save'
+                  }
+                  tone={isSelectedWordSaved ? 'accent' : 'surface'}
+                />
+              ) : null}
+            </View>
+            {selectedEntry ? (
+              isFunctionWordEntry(selectedEntry) ? (
+                <AppText color="muted" variant="caption">
+                  {formatFunctionWordNote(selectedEntry)}
+                </AppText>
+              ) : (
+                <VocabRow entry={selectedEntry} />
+              )
+            ) : null}
+          </Animated.View>
         )}
 
         {/* 4. Vocab Block */}
@@ -597,12 +781,51 @@ export function SentenceCard({
           />
         ) : states.grammar === 'ready' ? (
           <View testID={blockTestID('grammar', 'value')}>
-            {grammarPoints.map(point => (
-              <View key={point.name} style={styles.grammarPoint}>
-                <AppText variant="bodyLg">{point.name}</AppText>
-                <AppText color="secondary">{point.analysis}</AppText>
-              </View>
-            ))}
+            {grammarPoints.map((point, pointIndex) => {
+              const grammarSaved =
+                savedGrammarIds?.has(point.name) ?? false;
+              return (
+                <View key={point.name} style={styles.grammarPoint}>
+                  <View style={styles.grammarHeader}>
+                    <Chip
+                      label={formatGrammarBadge(pointIndex, grammarCount)}
+                      testID={
+                        testID
+                          ? `${testID}-grammar-badge-${pointIndex}`
+                          : `grammar-badge-${pointIndex}`
+                      }
+                      tone="neutral"
+                    />
+                    {onToggleGrammarSave ? (
+                      <IconButton
+                        accessibilityHint={t('youtube.save_grammar_hint', {
+                          defaultValue: 'Lưu hoặc bỏ lưu điểm ngữ pháp này',
+                        })}
+                        accessibilityLabel={
+                          grammarSaved
+                            ? t('youtube.unsave_grammar_a11y', {
+                                defaultValue: 'Bỏ lưu điểm ngữ pháp này',
+                              })
+                            : t('youtube.save_grammar_a11y', {
+                                defaultValue: 'Lưu điểm ngữ pháp này',
+                              })
+                        }
+                        icon={grammarSaved ? 'bookmark' : 'bookmark_add'}
+                        onPress={() => onToggleGrammarSave(point)}
+                        testID={
+                          testID
+                            ? `${testID}-grammar-save-${pointIndex}`
+                            : `grammar-save-${pointIndex}`
+                        }
+                        tone={grammarSaved ? 'accent' : 'surface'}
+                      />
+                    ) : null}
+                  </View>
+                  <AppText variant="bodyLg">{point.name}</AppText>
+                  <AppText color="secondary">{point.analysis}</AppText>
+                </View>
+              );
+            })}
           </View>
         ) : null}
 
@@ -616,7 +839,7 @@ export function SentenceCard({
               onPress={() => onPracticeSentence(segment)}
               testID={testID ? `${testID}-practice-button` : undefined}
               title={t('youtube.practice_title', {
-                defaultValue: 'Luyện tập',
+                defaultValue: 'Luyện nói câu này',
               })}
               variant="secondary"
             />
