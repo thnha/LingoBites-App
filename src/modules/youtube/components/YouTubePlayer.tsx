@@ -46,6 +46,7 @@ export interface YouTubePlayerRef {
   pause: () => void;
   seekTo: (seconds: number) => void;
   getCurrentTime: () => Promise<number>;
+  getDuration: () => Promise<number>;
 }
 
 export interface YouTubePlayerProps {
@@ -53,15 +54,32 @@ export interface YouTubePlayerProps {
   playbackRate?: number;
   onReady?: () => void;
   onTimeUpdate?: (time: number) => void;
+  onPlayingChange?: (playing: boolean) => void;
   onEnded?: () => void;
   onError?: (error: YouTubePlayerErrorCode) => void;
 }
 
 export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
-  ({videoId, playbackRate = 1, onReady, onTimeUpdate, onEnded, onError}, ref) => {
+  (
+    {
+      videoId,
+      playbackRate = 1,
+      onReady,
+      onTimeUpdate,
+      onPlayingChange,
+      onEnded,
+      onError,
+    },
+    ref,
+  ) => {
     const playerRef = useRef<YoutubeIframeRef>(null);
     const [playing, setPlaying] = useState(false);
     const [ready, setReady] = useState(false);
+    // SETE-328: the frame is exactly 16:9 — measured from the layout width
+    // so it holds on every screen size. No overlay is ever placed above the
+    // iframe: tapping the frame toggles play/pause through the native
+    // player, and onPlayingChange keeps every shell button in sync.
+    const [frameWidth, setFrameWidth] = useState(0);
 
     useImperativeHandle(ref, () => ({
       play: () => setPlaying(true),
@@ -72,6 +90,10 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
       getCurrentTime: async () => {
         const time = await playerRef.current?.getCurrentTime();
         return time ?? 0;
+      },
+      getDuration: async () => {
+        const duration = await playerRef.current?.getDuration();
+        return duration ?? 0;
       },
     }));
 
@@ -86,17 +108,19 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
       (state: string) => {
         if (state === 'playing') {
           setPlaying(true);
+          onPlayingChange?.(true);
           return;
         }
 
         if (state === 'paused' || state === 'ended') {
           setPlaying(false);
+          onPlayingChange?.(false);
         }
         if (state === 'ended') {
           onEnded?.();
         }
       },
-      [onEnded],
+      [onEnded, onPlayingChange],
     );
 
     const handleError = useCallback(
@@ -131,11 +155,20 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
       };
     }, [ready, onTimeUpdate, videoId]);
 
+    // Pre-layout fallback keeps a visible frame on the very first commit;
+    // the measured width takes over immediately after.
+    const frameHeight =
+      frameWidth > 0 ? (frameWidth * 9) / 16 : PLAYER_MIN_HEIGHT;
+
     return (
-      <View style={styles.container}>
+      <View
+        onLayout={event => setFrameWidth(event.nativeEvent.layout.width)}
+        style={styles.container}
+      >
         <YoutubeIframe
           ref={playerRef}
-          height={PLAYER_MIN_HEIGHT}
+          height={frameHeight}
+          width={frameWidth > 0 ? frameWidth : undefined}
           play={playing}
           playbackRate={playbackRate}
           videoId={videoId}
@@ -156,7 +189,7 @@ YouTubePlayer.displayName = 'YouTubePlayer';
 
 const styles = StyleSheet.create({
   container: {
+    aspectRatio: 16 / 9,
     width: '100%',
-    minHeight: PLAYER_MIN_HEIGHT,
   },
 });
