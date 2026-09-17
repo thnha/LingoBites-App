@@ -1,4 +1,11 @@
-import {buildRetryUrl, retrySentenceBlock} from '../sentenceEnrichmentApi';
+import {
+  buildLessonEnrichmentUrl,
+  buildRetryUrl,
+  buildSegmentEnrichmentUrl,
+  fetchLessonEnrichment,
+  fetchSegmentEnrichment,
+  retrySentenceBlock,
+} from '../sentenceEnrichmentApi';
 import {
   makeEnrichment,
   VIDEO_ID,
@@ -24,6 +31,64 @@ describe('buildRetryUrl', () => {
   it('addresses one segment inside the video-scoped lesson cache', () => {
     expect(buildRetryUrl(VIDEO_ID, 3, 'http://localhost:3000')).toBe(
       'http://localhost:3000/v1/youtube/transcripts/dQw4w9WgXcQ/segments/3/enrichment:retry',
+    );
+  });
+});
+
+describe('buildSegmentEnrichmentUrl', () => {
+  it('builds URL for fetching a single segment enrichment', () => {
+    expect(buildSegmentEnrichmentUrl(VIDEO_ID, 2, 'http://localhost:3000')).toBe(
+      'http://localhost:3000/v1/youtube/transcripts/dQw4w9WgXcQ/segments/2/enrichment',
+    );
+  });
+});
+
+describe('buildLessonEnrichmentUrl', () => {
+  it('builds URL for fetching lesson-wide enrichments', () => {
+    expect(buildLessonEnrichmentUrl(VIDEO_ID, 'http://localhost:3000')).toBe(
+      'http://localhost:3000/v1/youtube/transcripts/dQw4w9WgXcQ/enrichment',
+    );
+  });
+});
+
+describe('fetchSegmentEnrichment', () => {
+  it('fetches single segment enrichment and parses successfully', async () => {
+    const enrichment = makeEnrichment();
+    mockFetch.mockResolvedValueOnce(response(enrichment));
+
+    const result = await fetchSegmentEnrichment(
+      {videoId: VIDEO_ID, segmentIndex: 1},
+      mockFetch as unknown as typeof fetch,
+    );
+
+    expect(result).toEqual({ok: true, enrichment});
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/segments/1/enrichment'),
+      expect.objectContaining({method: 'GET'}),
+    );
+  });
+});
+
+describe('fetchLessonEnrichment', () => {
+  it('fetches whole-lesson enrichments map and parses successfully', async () => {
+    const enrichment0 = makeEnrichment({keyWord: 'first'});
+    const enrichment1 = makeEnrichment({keyWord: 'second'});
+    mockFetch.mockResolvedValueOnce(
+      response({0: enrichment0, 1: enrichment1}),
+    );
+
+    const result = await fetchLessonEnrichment(
+      {videoId: VIDEO_ID},
+      mockFetch as unknown as typeof fetch,
+    );
+
+    expect(result).toEqual({
+      ok: true,
+      enrichments: {0: enrichment0, 1: enrichment1},
+    });
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/dQw4w9WgXcQ/enrichment'),
+      expect.objectContaining({method: 'GET'}),
     );
   });
 });

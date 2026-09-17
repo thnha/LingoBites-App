@@ -7,7 +7,12 @@ export {
 } from './screens/YouTubeLessonScreen';
 export {parseYouTubeVideoId, runYouTubeJob} from './api/youtubeApi';
 export {
+  buildLessonEnrichmentUrl,
   buildRetryUrl,
+  buildSegmentEnrichmentUrl,
+  fetchLessonEnrichment,
+  fetchSegmentEnrichment,
+  LessonEnrichmentSchema,
   retrySentenceBlock,
   SentenceEnrichmentSchema,
 } from './api/sentenceEnrichmentApi';
