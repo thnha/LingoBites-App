@@ -309,7 +309,14 @@
     "overflow_ab_loop_clear": "Xóa lặp A–B",
     "overflow_repeat_sentence": "Lặp lại câu",
     "save_sentence_a11y": "Lưu câu này",
-    "unsave_sentence_a11y": "Bỏ lưu câu này"
+    "unsave_sentence_a11y": "Bỏ lưu câu này",
+    "sentence_retry": "Thử lại",
+    "sentence_block_error": "Không tải được khối này",
+    "sentence_loading_block": "Đang tải {{block}}…",
+    "sentence_keyword": "từ chính",
+    "sentence_vocab": "từ vựng",
+    "sentence_grammar": "ngữ pháp",
+    "sentence_loading_hint": "Nội dung sẽ hiện khi tải xong"
   },
   "gamification": {
     "pet_stage": {
