@@ -930,6 +930,8 @@ export function YouTubeLessonRouteScreen({
   }, [navigation]);
 
   useEffect(() => {
+    // SETE-330 (mục 6): disable iOS back-swipe gesture on this screen
+    navigation.setOptions?.({gestureEnabled: false});
     if (!isFreshLesson) {
       return undefined;
     }
