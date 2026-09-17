@@ -184,4 +184,168 @@ describe('SentenceCard', () => {
     expect(hasNode(tree, `${CARD_TEST_ID}-block-grammar-error`)).toBe(true);
     expect(hasNode(tree, `${CARD_TEST_ID}-block-grammar-value`)).toBe(false);
   });
+
+  describe('SETE-330 (TASK-3 additions)', () => {
+    it('renders the fixed 48pt header with Câu N/M format', () => {
+      const tree = renderCard({totalSegments: 10});
+      expect(
+        tree.root.findByProps({testID: `${CARD_TEST_ID}-header-title`}).props
+          .children,
+      ).toBe('Câu 1/10');
+    });
+
+    it('renders level badge when level is provided and non-empty (D-1)', () => {
+      const tree = renderCard({level: 'B1'});
+      expect(hasNode(tree, `${CARD_TEST_ID}-level`)).toBe(true);
+      expect(
+        tree.root.findByProps({testID: `${CARD_TEST_ID}-level`}).props.label,
+      ).toBe('B1');
+    });
+
+    it('omits level badge completely when level is null, undefined, or empty (D-1)', () => {
+      const treeNull = renderCard({level: null});
+      expect(hasNode(treeNull, `${CARD_TEST_ID}-level`)).toBe(false);
+
+      const treeEmpty = renderCard({level: ''});
+      expect(hasNode(treeEmpty, `${CARD_TEST_ID}-level`)).toBe(false);
+    });
+
+    it('toggles Vietnamese translation visibility via header button', () => {
+      const tree = renderCard();
+      expect(hasNode(tree, `${CARD_TEST_ID}-vi`)).toBe(true);
+
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-toggle-translation`})
+          .props.onPress();
+      });
+
+      expect(hasNode(tree, `${CARD_TEST_ID}-vi`)).toBe(false);
+    });
+
+    it('calls onToggleSave when bookmark button is pressed', () => {
+      const onToggleSave = jest.fn();
+      const tree = renderCard({onToggleSave, isSaved: false});
+
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-toggle-save`})
+          .props.onPress();
+      });
+
+      expect(onToggleSave).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows pinned sentence bar when scrolled past sentence block', () => {
+      const onPlaySentenceAudio = jest.fn();
+      const tree = renderCard({onPlaySentenceAudio});
+
+      // Initially not pinned
+      expect(hasNode(tree, `${CARD_TEST_ID}-pinned-sentence`)).toBe(false);
+
+      // Measure sentence block height
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-sentence-block`})
+          .props.onLayout({
+            nativeEvent: {layout: {height: 60, y: 0, width: 300, x: 0}},
+          });
+      });
+
+      // Scroll past height
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-scroll`})
+          .props.onScroll({
+            nativeEvent: {
+              contentOffset: {y: 80, x: 0},
+              layoutMeasurement: {height: 400, width: 300},
+              contentSize: {height: 800, width: 300},
+            },
+          });
+      });
+
+      expect(hasNode(tree, `${CARD_TEST_ID}-pinned-sentence`)).toBe(true);
+      expect(
+        tree.root.findByProps({testID: `${CARD_TEST_ID}-pinned-sentence-text`})
+          .props.children,
+      ).toBe('We are learning through video');
+
+      // Tapping audio button triggers audio playback
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-pinned-audio`})
+          .props.onPress();
+      });
+      expect(onPlaySentenceAudio).toHaveBeenCalled();
+    });
+
+    it('reports scroll offset to onScrollOffsetChange for session memory', () => {
+      const onScrollOffsetChange = jest.fn();
+      const tree = renderCard({onScrollOffsetChange});
+
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-scroll`})
+          .props.onScroll({
+            nativeEvent: {
+              contentOffset: {y: 120, x: 0},
+              layoutMeasurement: {height: 400, width: 300},
+              contentSize: {height: 800, width: 300},
+            },
+          });
+      });
+
+      expect(onScrollOffsetChange).toHaveBeenCalledWith(0, 120);
+    });
+
+    it('shows bottom grammar hint when content is scrollable and next sentence prompt at bottom', () => {
+      const onNextSentence = jest.fn();
+      const tree = renderCard({
+        totalSegments: 5,
+        onNextSentence,
+      });
+
+      // Grammar points exist, not at bottom yet
+      expect(hasNode(tree, `${CARD_TEST_ID}-bottom-grammar-hint`)).toBe(true);
+
+      // Scroll to bottom
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-scroll`})
+          .props.onScroll({
+            nativeEvent: {
+              contentOffset: {y: 450, x: 0},
+              layoutMeasurement: {height: 400, width: 300},
+              contentSize: {height: 800, width: 300},
+            },
+          });
+      });
+
+      expect(hasNode(tree, `${CARD_TEST_ID}-bottom-next-prompt`)).toBe(true);
+      expect(
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-bottom-next-prompt`})
+          .findAllByType(AppText)[0].props.children,
+      ).toBe('Vuốt ngang để sang câu 2 →');
+
+      act(() => {
+        tree.root
+          .findByProps({testID: `${CARD_TEST_ID}-bottom-next-prompt`})
+          .props.onPress();
+      });
+      expect(onNextSentence).toHaveBeenCalled();
+    });
+
+    it('shows lesson completed prompt for the last sentence', () => {
+      const segment = makeSegment();
+      segment.index = 4; // index 4 of 5
+      const tree = renderCard({
+        segment,
+        totalSegments: 5,
+      });
+
+      expect(hasNode(tree, `${CARD_TEST_ID}-bottom-completed`)).toBe(true);
+    });
+  });
 });
