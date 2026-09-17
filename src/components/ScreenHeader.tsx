@@ -24,6 +24,7 @@ export function ScreenHeader({
   const {theme} = useAppTheme();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const resolvedNumberOfLines = titleNumberOfLines ?? numberOfLines ?? 2;
+  const isSingleLineTitle = resolvedNumberOfLines === 1;
 
   return (
     <View style={themedStyles.header} testID="screen-header">
@@ -40,9 +41,9 @@ export function ScreenHeader({
           <View style={styles.backPlaceholder} />
         )}
         <AppText
-          adjustsFontSizeToFit
+          adjustsFontSizeToFit={!isSingleLineTitle}
           color="primary"
-          minimumFontScale={0.85}
+          minimumFontScale={isSingleLineTitle ? undefined : 0.85}
           numberOfLines={resolvedNumberOfLines}
           style={themedStyles.title}
           variant="h3"
