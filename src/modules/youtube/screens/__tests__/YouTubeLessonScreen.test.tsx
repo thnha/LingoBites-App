@@ -728,4 +728,106 @@ describe('YouTubeLessonScreen resume (SETE-290 DEV-3)', () => {
 
     expect(getYouTubeProgress('dQw4w9WgXcQ')).toBeNull();
   });
+
+  describe('SETE-333: Ad, Error, Offline, and Completion states', () => {
+    it('handles ad playback by disabling player actions and displaying ad banner', async () => {
+      const tree = await renderScreen();
+
+      await act(async () => {
+        tree.root
+          .findByProps({testID: 'youtube-iframe'})
+          .props.onChangeState('ad');
+        await Promise.resolve();
+      });
+
+      expect(
+        tree.root.findByProps({testID: 'youtube-ad-banner'}),
+      ).toBeTruthy();
+      expect(
+        tree.root.findByProps({testID: 'youtube-compact-play-toggle'}).props
+          .disabled,
+      ).toBe(true);
+
+      // Transitioning back to playing clears ad banner
+      await act(async () => {
+        tree.root
+          .findByProps({testID: 'youtube-iframe'})
+          .props.onChangeState('playing');
+        await Promise.resolve();
+      });
+
+      expect(() =>
+        tree.root.findByProps({testID: 'youtube-ad-banner'}),
+      ).toThrow();
+    });
+
+    it('displays error banner with retry and back buttons on player error', async () => {
+      const onBack = jest.fn();
+      const tree = await renderScreen(makeLesson(), {onBack});
+
+      await act(async () => {
+        tree.root
+          .findByProps({testID: 'youtube-iframe'})
+          .props.onError('video_not_found');
+        await Promise.resolve();
+      });
+
+      expect(
+        tree.root.findByProps({testID: 'youtube-player-error-banner'}),
+      ).toBeTruthy();
+
+      const backBtn = tree.root.findByProps({
+        testID: 'youtube-error-back-to-list',
+      });
+      expect(backBtn).toBeTruthy();
+      act(() => {
+        backBtn.props.onPress();
+      });
+      expect(onBack).toHaveBeenCalled();
+    });
+
+    it('shows completed banner when playback ends with replay, practice all, and next lesson actions', async () => {
+      const onStartPractice = jest.fn();
+      const onBack = jest.fn();
+      const tree = await renderScreen(makeLesson(), {
+        onStartPractice,
+        onBack,
+      });
+
+      await act(async () => {
+        tree.root
+          .findByProps({testID: 'youtube-iframe'})
+          .props.onChangeState('ended');
+        await Promise.resolve();
+      });
+
+      expect(
+        tree.root.findByProps({testID: 'youtube-lesson-completed-actions'}),
+      ).toBeTruthy();
+
+      const replayBtn = tree.root.findByProps({
+        testID: 'youtube-completed-replay',
+      });
+      const practiceBtn = tree.root.findByProps({
+        testID: 'youtube-completed-practice',
+      });
+      const nextBtn = tree.root.findByProps({
+        testID: 'youtube-completed-next-lesson',
+      });
+
+      expect(replayBtn).toBeTruthy();
+      expect(practiceBtn).toBeTruthy();
+      expect(nextBtn).toBeTruthy();
+
+      act(() => {
+        practiceBtn.props.onPress();
+      });
+      expect(onStartPractice).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        nextBtn.props.onPress();
+      });
+      expect(onBack).toHaveBeenCalled();
+    });
+  });
 });

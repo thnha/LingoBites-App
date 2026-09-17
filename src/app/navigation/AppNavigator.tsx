@@ -160,7 +160,7 @@ function CreateStackNavigator() {
           <CreateStack.Screen
             component={YouTubeLessonRouteScreen}
             name="YouTubeLesson"
-            options={{headerShown: false}}
+            options={{headerShown: false, orientation: 'portrait'}}
           />
         </>
       )}
@@ -449,6 +449,7 @@ export function AppNavigator() {
           <RootStack.Screen
             component={YouTubeLessonRouteScreen}
             name="YouTubeLesson"
+            options={{headerShown: false, orientation: 'portrait'}}
           />
         )}
         {rootRouteNames.includes('SentenceDetail') && (

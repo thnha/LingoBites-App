@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  AccessibilityInfo,
   Animated,
   Pressable,
   ScrollView,
@@ -527,14 +528,20 @@ export function SentenceCard({
 
   const keyword = resolveKeyword(segment.en, enrichment);
 
-  // SETE-331 (TASK-4): interactive word selection. Defaults to the AI
-  // keyword (or longest-word fallback); tapping another word swaps the
-  // detail block in place. Resets when the sentence changes.
+  // SETE-331 (TASK-4) & SETE-333 (a11y prefers-reduced-motion): interactive word selection.
+  // Defaults to AI keyword; swapping words fades 120ms if prefers-reduced-motion or 150ms default.
   const [selectedWord, setSelectedWord] = useState(keyword);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const selectedFade = useRef(new Animated.Value(1)).current;
   const selectedBlockYRef = useRef(0);
   const scrollYRef = useRef(0);
   const viewportHeightRef = useRef(0);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     setSelectedWord(keyword);
@@ -544,13 +551,13 @@ export function SentenceCard({
   useEffect(() => {
     selectedFade.setValue(0);
     const fade = Animated.timing(selectedFade, {
-      duration: 150,
+      duration: reduceMotion ? 120 : 150,
       toValue: 1,
       useNativeDriver: true,
     });
     fade.start();
     return () => fade.stop();
-  }, [selectedWord, selectedFade]);
+  }, [selectedWord, selectedFade, reduceMotion]);
 
   const wordTokens = useMemo(
     () => tokenizeSentenceWords(segment.en),
@@ -580,12 +587,12 @@ export function SentenceCard({
         scrollYRef.current + viewportHeightRef.current - 120;
       if (viewportHeightRef.current > 0 && blockY > viewportBottom) {
         scrollViewRef.current?.scrollTo({
-          animated: true,
+          animated: !reduceMotion,
           y: Math.max(0, blockY - 80),
         });
       }
     },
-    [onPressWord],
+    [onPressWord, reduceMotion],
   );
 
   const handleSelectedBlockLayout = useCallback((e: LayoutChangeEvent) => {
@@ -647,6 +654,8 @@ export function SentenceCard({
     <View style={[styles.card, {width: cardWidth}]} testID={testID}>
       {/* 48pt Fixed Header */}
       <View
+        accessibilityLabel={`Câu ${segment.index + 1} trên ${totalSegments ?? 1}`}
+        accessibilityRole="header"
         style={styles.header}
         testID={testID ? `${testID}-header` : undefined}
       >
@@ -867,6 +876,7 @@ export function SentenceCard({
             </View>
           ) : (
             <AppText
+              selectable={true}
               testID={testID ? `${testID}-en` : undefined}
               variant="bodyLg"
             >
@@ -890,6 +900,7 @@ export function SentenceCard({
               </View>
               <AppText
                 color="secondary"
+                selectable={true}
                 style={styles.translationText}
                 testID={testID ? `${testID}-vi` : undefined}
               >
@@ -897,6 +908,7 @@ export function SentenceCard({
                   <>
                     {viHighlight.before}
                     <AppText
+                      selectable={true}
                       style={styles.viHighlight}
                       testID={
                         testID ? `${testID}-vi-highlight` : 'vi-highlight'
@@ -937,6 +949,7 @@ export function SentenceCard({
           >
             <View style={styles.selectedWordHeader}>
               <AppText
+                selectable={true}
                 style={styles.selectedWordTitle}
                 testID={testID ? `${testID}-selected-word` : 'selected-word'}
                 variant="bodyLg"
@@ -975,6 +988,7 @@ export function SentenceCard({
             {selectedEntry?.ipa ? (
               <AppText
                 color="muted"
+                selectable={true}
                 style={styles.ipaText}
                 testID={testID ? `${testID}-selected-ipa` : 'selected-ipa'}
                 variant="caption"
@@ -984,19 +998,19 @@ export function SentenceCard({
             ) : null}
             {selectedEntry ? (
               isFunctionWordEntry(selectedEntry) ? (
-                <AppText color="muted" variant="caption">
+                <AppText color="muted" selectable={true} variant="caption">
                   {formatFunctionWordNote(selectedEntry)}
                 </AppText>
               ) : (
                 <View style={styles.selectedPodInner}>
-                  <AppText color="secondary">
+                  <AppText color="secondary" selectable={true}>
                     {t('youtube.word_meaning_label', {
                       defaultValue: 'Nghĩa',
                     })}
                     {`: ${selectedEntry.meaning}`}
                   </AppText>
                   {selectedEntry.tip ?? selectedEntry.inSentenceNote ? (
-                    <AppText color="muted" variant="caption">
+                    <AppText color="muted" selectable={true} variant="caption">
                       {t('youtube.word_tip_label', {
                         defaultValue: 'Mẹo nhớ',
                       })}
@@ -1099,10 +1113,11 @@ export function SentenceCard({
                       />
                     ) : null}
                   </View>
-                  <AppText variant="bodyLg">{point.name}</AppText>
+                  <AppText selectable={true} variant="bodyLg">{point.name}</AppText>
                   {point.description !== '' ? (
                     <AppText
                       color="secondary"
+                      selectable={true}
                       testID={
                         testID
                           ? `${testID}-grammar-description-${pointIndex}`
@@ -1126,13 +1141,13 @@ export function SentenceCard({
                           defaultValue: 'Công thức',
                         })}
                         {': '}
-                        <AppText style={styles.formulaText} variant="caption">
+                        <AppText selectable={true} style={styles.formulaText} variant="caption">
                           {point.formula}
                         </AppText>
                       </AppText>
                     </View>
                   ) : null}
-                  <AppText color="secondary">{point.analysis}</AppText>
+                  <AppText color="secondary" selectable={true}>{point.analysis}</AppText>
                 </View>
               );
             })}

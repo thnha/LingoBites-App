@@ -6,7 +6,6 @@ import {
   normalizeForDictation,
   shouldShowDots,
   toolsBadgeActive,
-  SENTENCE_LOOP_OPTIONS,
 } from '../toolsLogic';
 
 describe('toolsLogic (SETE-332, TASK-5)', () => {

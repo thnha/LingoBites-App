@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   PanResponder,
   Pressable,
@@ -78,7 +78,7 @@ function createStyles(theme: AppTheme) {
       left: 0,
       position: 'absolute',
       right: 0,
-      shadowColor: '#000',
+      shadowColor: theme.colors.text.primary,
       shadowOffset: {width: 0, height: -3},
       shadowOpacity: 0.15,
       shadowRadius: 8,
@@ -182,7 +182,7 @@ function createStyles(theme: AppTheme) {
     pillButton: {
       alignItems: 'center',
       backgroundColor: theme.colors.surfaceHigh,
-      borderColor: 'transparent',
+      borderColor: theme.colors.surfaceHigh,
       borderRadius: theme.radius.pill,
       borderWidth: 1,
       flex: 1,
@@ -454,9 +454,29 @@ export function YouTubeToolsPopup({
         {/* Tua (Seek Section) */}
         <View style={styles.section}>
           <View
+            accessibilityActions={[
+              {name: 'increment', label: 'Câu sau'},
+              {name: 'decrement', label: 'Câu trước'},
+            ]}
             accessibilityHint="Chạm hoặc vuốt để tua tới câu"
             accessibilityLabel="Thanh tua câu"
             accessibilityRole="adjustable"
+            accessibilityValue={{
+              text:
+                segments.length > 0
+                  ? formatSentenceLabel(Math.max(0, activeIndex), segments.length)
+                  : 'Câu –/–',
+            }}
+            onAccessibilityAction={event => {
+              if (disabled || segments.length === 0) return;
+              if (event.nativeEvent.actionName === 'increment') {
+                const next = Math.min(segments.length - 1, Math.max(0, activeIndex) + 1);
+                onSeekToIndex(next);
+              } else if (event.nativeEvent.actionName === 'decrement') {
+                const prev = Math.max(0, activeIndex - 1);
+                onSeekToIndex(prev);
+              }
+            }}
             onLayout={handleTrackLayout}
             onResponderGrant={handleResponderGrant}
             onResponderMove={handleResponderMove}
@@ -569,7 +589,8 @@ export function YouTubeToolsPopup({
                   : 'Lặp A-B'
               }
               accessibilityRole="button"
-              accessibilityState={{selected: abLoopActive}}
+              accessibilityState={{selected: abLoopActive, checked: abLoopActive}}
+              aria-pressed={abLoopActive}
               onPress={onToggleAbLoop}
               style={[
                 styles.actionButton,
@@ -622,7 +643,8 @@ export function YouTubeToolsPopup({
                 <Pressable
                   accessibilityLabel={`Lặp ${formatLoopLabel(opt)} lần`}
                   accessibilityRole="button"
-                  accessibilityState={{selected: active}}
+                  accessibilityState={{selected: active, checked: active}}
+                  aria-pressed={active}
                   key={String(opt)}
                   onPress={() => onSelectLoopCount(opt)}
                   style={[styles.pillButton, active && styles.pillButtonActive]}

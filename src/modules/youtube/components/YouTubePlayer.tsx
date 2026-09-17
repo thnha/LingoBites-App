@@ -55,9 +55,26 @@ export interface YouTubePlayerProps {
   onReady?: () => void;
   onTimeUpdate?: (time: number) => void;
   onPlayingChange?: (playing: boolean) => void;
+  onAdPlayingChange?: (isAd: boolean) => void;
+  onStateChange?: (state: string) => void;
   onEnded?: () => void;
   onError?: (error: YouTubePlayerErrorCode) => void;
 }
+
+const INJECTED_A11Y_JS = `
+  (function() {
+    try {
+      var meta = document.querySelector('meta[name="viewport"]');
+      if (meta && meta.content) {
+        meta.content = meta.content.replace(/user-scalable=no/g, 'user-scalable=yes');
+      }
+      var style = document.createElement('style');
+      style.innerHTML = '* { -webkit-user-select: text !important; user-select: text !important; }';
+      document.head.appendChild(style);
+    } catch(e) {}
+  })();
+  true;
+`;
 
 export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
   (
@@ -67,6 +84,8 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
       onReady,
       onTimeUpdate,
       onPlayingChange,
+      onAdPlayingChange,
+      onStateChange,
       onEnded,
       onError,
     },
@@ -106,21 +125,30 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
     // open starts from the beginning instead of resuming the tail.
     const handleChangeState = useCallback(
       (state: string) => {
+        onStateChange?.(state);
+
+        if (state === 'ad' || state === 'ad_playing') {
+          onAdPlayingChange?.(true);
+          return;
+        }
+
         if (state === 'playing') {
           setPlaying(true);
           onPlayingChange?.(true);
+          onAdPlayingChange?.(false);
           return;
         }
 
         if (state === 'paused' || state === 'ended') {
           setPlaying(false);
           onPlayingChange?.(false);
+          onAdPlayingChange?.(false);
         }
         if (state === 'ended') {
           onEnded?.();
         }
       },
-      [onEnded, onPlayingChange],
+      [onAdPlayingChange, onEnded, onPlayingChange, onStateChange],
     );
 
     const handleError = useCallback(
@@ -178,6 +206,7 @@ export const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(
           webViewProps={{
             allowsInlineMediaPlayback: true,
             mediaPlaybackRequiresUserAction: false,
+            injectedJavaScript: INJECTED_A11Y_JS,
           }}
         />
       </View>

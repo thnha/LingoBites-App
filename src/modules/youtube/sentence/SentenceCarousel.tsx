@@ -131,6 +131,22 @@ function createStyles(theme: AppTheme) {
       shadowRadius: 4,
       zIndex: 10,
     },
+    a11yControls: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.gutter,
+      paddingVertical: 2,
+    },
+    a11yBtn: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 44,
+      minWidth: 44,
+      paddingHorizontal: theme.spacing.sm,
+    },
+    a11yBtnDisabled: {
+      opacity: 0.3,
+    },
     toast: {
       alignSelf: 'center',
       backgroundColor: theme.colors.surface,
@@ -359,15 +375,88 @@ export const SentenceCarousel = React.forwardRef<
   const isDotsVisible =
     showDots !== undefined ? showDots : shouldShowDots(segments.length);
 
+  const handlePrev = useCallback(() => {
+    if (activeIndex > 0) {
+      onSelectIndex(activeIndex - 1);
+    }
+  }, [activeIndex, onSelectIndex]);
+
+  const handleNext = useCallback(() => {
+    if (activeIndex < segments.length - 1) {
+      onSelectIndex(activeIndex + 1);
+    }
+  }, [activeIndex, onSelectIndex, segments.length]);
+
   return (
-    <View style={styles.container} testID={testID}>
+    <View
+      accessibilityActions={[
+        {name: 'increment', label: 'Câu sau'},
+        {name: 'decrement', label: 'Câu trước'},
+      ]}
+      accessibilityHint="Cuộn sang câu khác bằng cử chỉ hoặc nút điều khiển"
+      accessibilityLabel={`Câu ${activeIndex + 1} trên ${segments.length}`}
+      accessibilityRole="adjustable"
+      accessibilityValue={{
+        text: `Câu ${activeIndex + 1} trên ${segments.length}`,
+      }}
+      onAccessibilityAction={e => {
+        if (e.nativeEvent.actionName === 'increment') {
+          handleNext();
+        } else if (e.nativeEvent.actionName === 'decrement') {
+          handlePrev();
+        }
+      }}
+      style={styles.container}
+      testID={testID}
+    >
       {toastMessage ? (
         <View style={styles.toast} testID="youtube-toast-message">
           <AppText variant="label">{toastMessage}</AppText>
         </View>
       ) : null}
 
+      <View style={styles.a11yControls} testID="youtube-carousel-a11y-controls">
+        <Pressable
+          accessibilityHint="Chuyển sang câu trước đó"
+          accessibilityLabel="Câu trước"
+          accessibilityRole="button"
+          accessibilityState={{disabled: activeIndex <= 0}}
+          disabled={activeIndex <= 0}
+          hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}
+          onPress={handlePrev}
+          style={[styles.a11yBtn, activeIndex <= 0 && styles.a11yBtnDisabled]}
+          testID="youtube-carousel-prev"
+        >
+          <AppText color={activeIndex <= 0 ? 'muted' : 'primary'} variant="caption">
+            ‹ Câu trước
+          </AppText>
+        </Pressable>
+        <Pressable
+          accessibilityHint="Chuyển sang câu tiếp theo"
+          accessibilityLabel="Câu sau"
+          accessibilityRole="button"
+          accessibilityState={{disabled: activeIndex >= segments.length - 1}}
+          disabled={activeIndex >= segments.length - 1}
+          hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}
+          onPress={handleNext}
+          style={[
+            styles.a11yBtn,
+            activeIndex >= segments.length - 1 && styles.a11yBtnDisabled,
+          ]}
+          testID="youtube-carousel-next"
+        >
+          <AppText
+            color={activeIndex >= segments.length - 1 ? 'muted' : 'primary'}
+            variant="caption"
+          >
+            Câu sau ›
+          </AppText>
+        </Pressable>
+      </View>
+
       <FlatList
+        accessibilityHint="Danh sách các câu trong bài"
+        accessibilityLabel={`Câu ${activeIndex + 1} trên ${segments.length}`}
         contentContainerStyle={styles.listContent}
         data={segments as SentenceCardSegment[]}
         decelerationRate="fast"
@@ -404,6 +493,7 @@ export const SentenceCarousel = React.forwardRef<
           accessibilityHint="Chạm để cuộn về câu đang phát"
           accessibilityLabel={`Câu ${activeIndex + 1} đang phát`}
           accessibilityRole="button"
+          hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}
           onPress={onPressBackChip}
           style={styles.backChip}
           testID="youtube-back-to-active-chip"

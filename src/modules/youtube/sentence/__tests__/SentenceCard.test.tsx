@@ -391,4 +391,21 @@ describe('SentenceCard', () => {
       expect(hasNode(tree, `${CARD_TEST_ID}-bottom-completed`)).toBe(true);
     });
   });
+
+  describe('SETE-333: Accessibility & Selectability', () => {
+    it('marks primary text elements as selectable for user copying', () => {
+      const tree = renderCard({onPressWord: undefined});
+      const enText = tree.root.findByProps({testID: `${CARD_TEST_ID}-en`});
+      const viText = tree.root.findByProps({testID: `${CARD_TEST_ID}-vi`});
+
+      expect(enText.props.selectable).toBe(true);
+      expect(viText.props.selectable).toBe(true);
+    });
+
+    it('sets accessibilityRole header on the card header container', () => {
+      const tree = renderCard();
+      const header = tree.root.findByProps({testID: `${CARD_TEST_ID}-header`});
+      expect(header.props.accessibilityRole).toBe('header');
+    });
+  });
 });
