@@ -46,7 +46,11 @@ import type {
   SentenceEnrichment,
   VocabEntry,
 } from '@shared/schemas/sentence-contract';
-import type {RetryBlockFn} from '../sentence/useSentenceEnrichment';
+import {
+  fetchLessonEnrichment,
+  fetchSegmentEnrichment,
+  type RetryBlockFn,
+} from '../api/sentenceEnrichmentApi';
 import {YouTubeLessonOverflowMenu} from './YouTubeLessonOverflowMenu';
 import {YouTubeTranscriptPopup} from './YouTubeTranscriptPopup';
 import {YouTubeToolsPopup} from './YouTubeToolsPopup';
@@ -244,6 +248,70 @@ export function YouTubeLessonScreen({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isCardScrolledDown, setIsCardScrolledDown] = useState(false);
+
+  const [internalEnrichmentMap, setInternalEnrichmentMap] = useState<
+    Record<number, SentenceEnrichment>
+  >(enrichmentMap ?? {});
+
+  useEffect(() => {
+    if (enrichmentMap) {
+      setInternalEnrichmentMap(enrichmentMap);
+    }
+  }, [enrichmentMap]);
+
+  useEffect(() => {
+    if (enrichmentMap && Object.keys(enrichmentMap).length > 0) {
+      return undefined;
+    }
+    let cancelled = false;
+    const controller = new AbortController();
+
+    async function loadEnrichments() {
+      // 1. Try batch lesson enrichment endpoint first
+      const batchResult = await fetchLessonEnrichment({
+        videoId: lesson.video.id,
+        signal: controller.signal,
+      });
+      if (cancelled) {
+        return;
+      }
+      if (batchResult.ok && batchResult.enrichments) {
+        setInternalEnrichmentMap(prev => ({
+          ...prev,
+          ...batchResult.enrichments,
+        }));
+        return;
+      }
+
+      // 2. Fallback to per-segment enrichment fetch
+      for (const segment of lesson.segments) {
+        if (cancelled) {
+          return;
+        }
+        const segResult = await fetchSegmentEnrichment({
+          videoId: lesson.video.id,
+          segmentIndex: segment.index,
+          signal: controller.signal,
+        });
+        if (cancelled) {
+          return;
+        }
+        if (segResult.ok && segResult.enrichment) {
+          setInternalEnrichmentMap(prev => ({
+            ...prev,
+            [segment.index]: segResult.enrichment,
+          }));
+        }
+      }
+    }
+
+    fireAndForget(loadEnrichments());
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [enrichmentMap, lesson.segments, lesson.video.id]);
 
   // SETE-305 (Option B): playback controls live in the overflow menu, so the
   // header always holds exactly 4 controls (VI, IPA, Practice, More) and Back
@@ -481,23 +549,9 @@ export function YouTubeLessonScreen({
     setPlayerBlockHeight(event.nativeEvent.layout.height);
   }, []);
 
-  const handleListScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const scrolledPastPx = event.nativeEvent.contentOffset.y;
-      setIsCardScrolledDown(scrolledPastPx >= 40);
-      setMiniVisible(previous => {
-        const next = shouldShowMiniPlayer({
-          scrolledPastPx,
-          playerHeightPx: playerBlockHeight,
-          windowHeightPt,
-        });
-        return previous === next ? previous : next;
-      });
-    },
-    [playerBlockHeight, windowHeightPt],
-  );
-
   const scrollBackToPlayer = useCallback(() => {
+    setIsCardScrolledDown(false);
+    setMiniVisible(false);
     listRef.current?.scrollToOffset({animated: true, offset: 0});
   }, []);
 
@@ -807,12 +861,21 @@ export function YouTubeLessonScreen({
   const handleCardScrollOffsetChange = useCallback(
     (_segmentIndex: number, offset: number) => {
       setIsCardScrolledDown(offset >= 40);
+      setMiniVisible(previous => {
+        const next = shouldShowMiniPlayer({
+          scrolledPastPx: offset,
+          playerHeightPx: playerBlockHeight,
+          windowHeightPt,
+        });
+        return previous === next ? previous : next;
+      });
     },
-    [],
+    [playerBlockHeight, windowHeightPt],
   );
 
   const handleScrollToActiveSentence = useCallback(() => {
     setIsCardScrolledDown(false);
+    setMiniVisible(false);
     if (activeIndex >= 0) {
       listRef.current?.scrollToIndex({
         animated: true,
@@ -1104,7 +1167,7 @@ export function YouTubeLessonScreen({
       {playerHeader}
       <SentenceCarousel
         activeIndex={activeIndex}
-        enrichmentMap={enrichmentMap}
+        enrichmentMap={internalEnrichmentMap}
         level={level}
         onCardScrollOffsetChange={handleCardScrollOffsetChange}
         onPlaySentenceAudio={handlePlaySentenceAudio}

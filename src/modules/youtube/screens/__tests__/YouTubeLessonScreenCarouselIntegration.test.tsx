@@ -9,11 +9,20 @@ import {getDatabase, resetDatabaseForTests} from '@shared/db/database';
 import {runMigrations} from '@shared/db/migrations';
 import type {YouTubeTranscript} from '@shared/schemas/youtube-transcript-v1';
 import {__resetMockDatabases} from '../../../../../test-utils/sqliteMock';
-import {YouTubeLessonScreen} from '../YouTubeLessonScreen';
+import {YouTubeLessonScreen, YouTubeLessonRouteScreen} from '../YouTubeLessonScreen';
 import {SentenceCarousel} from '../../sentence/SentenceCarousel';
 import {SentenceCard} from '../../sentence/SentenceCard';
 import {makeEnrichment} from '../../sentence/__tests__/fixtures/sentenceFixtures';
 import {speak} from '@modules/audio';
+
+const mockFetch = jest.fn();
+global.fetch = mockFetch as unknown as typeof fetch;
+
+const jsonResponse = (body: unknown, ok = true, status = 200) => ({
+  ok,
+  status,
+  json: jest.fn().mockResolvedValue(body),
+});
 
 jest.mock('@modules/audio', () => ({
   isEnUsVoiceAvailable: jest.fn(),
@@ -133,6 +142,37 @@ async function renderScreen(
   return tree;
 }
 
+async function renderRoute(
+  params:
+    | {lesson: YouTubeTranscript; saveFailed?: boolean}
+    | {lessonId: string},
+) {
+  const navigation = {
+    goBack: jest.fn(),
+    navigate: jest.fn(),
+    reset: jest.fn(),
+    getParent: jest.fn(() => ({navigate: jest.fn()})),
+    addListener: jest.fn(() => jest.fn()),
+    setOptions: jest.fn(),
+  };
+  const route = {key: 'YouTubeLesson', name: 'YouTubeLesson', params};
+  let tree!: renderer.ReactTestRenderer;
+  await act(async () => {
+    tree = renderer.create(
+      <FeatureFlagProvider>
+        <AppThemeProvider>
+          <YouTubeLessonRouteScreen
+            navigation={navigation as never}
+            route={route as never}
+          />
+        </AppThemeProvider>
+      </FeatureFlagProvider>,
+    );
+    await Promise.resolve();
+  });
+  return {tree, navigation};
+}
+
 describe('YouTubeLessonScreen + SentenceCarousel Integration (SETE-334, TASK-7)', () => {
   beforeEach(() => {
     __resetMockDatabases();
@@ -143,6 +183,7 @@ describe('YouTubeLessonScreen + SentenceCarousel Integration (SETE-334, TASK-7)'
     mockCurrentTimeSeconds = 0;
     mockSeekTo.mockClear();
     mockSpeak.mockClear();
+    mockFetch.mockReset();
   });
 
   afterEach(() => {
@@ -302,5 +343,97 @@ describe('YouTubeLessonScreen + SentenceCarousel Integration (SETE-334, TASK-7)'
     expect(tree.root.findByProps({testID: 'youtube-dot-0'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'youtube-dot-1'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'youtube-dot-2'})).toBeTruthy();
+  });
+
+  it('populates real enrichment data end-to-end at the route/container level', async () => {
+    const lesson = makeTestLesson();
+    const enrichment0 = makeEnrichment({keyWord: 'learning'});
+    const enrichment1 = makeEnrichment({keyWord: 'practice'});
+    const enrichment2 = makeEnrichment({keyWord: 'finished'});
+
+    // Mock whole-lesson enrichment API call
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({0: enrichment0, 1: enrichment1, 2: enrichment2}),
+    );
+
+    const {tree} = await renderRoute({lesson});
+
+    // Advance async queue so useEffect fetch finishes
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Verify API was called for the lesson's video ID
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining(`/v1/youtube/transcripts/${lesson.video.id}/enrichment`),
+      expect.objectContaining({method: 'GET'}),
+    );
+
+    // Verify SentenceCard receives and renders the real enrichment keyword and vocab
+    expect(tree.root.findByType(SentenceCarousel)).toBeTruthy();
+    const cards = tree.root.findAllByType(SentenceCard);
+    expect(cards).toHaveLength(3);
+
+    // Card 0 has the real keyWord block value
+    expect(
+      tree.root.findByProps({testID: 'sentence-card-0-block-keyword-value'}),
+    ).toBeTruthy();
+  });
+
+  it('updates mini player visibility and back-to-active chip on card vertical scroll', async () => {
+    const tree = await renderScreen();
+
+    // Select card 0 so activeIndex is 0
+    const carouselList = tree.root.findByProps({
+      testID: 'sentence-carousel-list',
+    });
+    await act(async () => {
+      carouselList.props.onMomentumScrollEnd({
+        nativeEvent: {contentOffset: {x: 0, y: 0}},
+      });
+      await Promise.resolve();
+    });
+
+    // Trigger player block layout so playerBlockHeight is known (e.g. 200)
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-player-block'}).props.onLayout({
+        nativeEvent: {layout: {height: 200, width: 375, x: 0, y: 0}},
+      });
+      await Promise.resolve();
+    });
+
+    // Initially mini-player and back-chip are not visible
+    expect(() => tree.root.findByProps({testID: 'youtube-mini-player'})).toThrow();
+    expect(() => tree.root.findByProps({testID: 'youtube-back-to-active-chip'})).toThrow();
+
+    // Scroll card 0 down past 120pt (> playerHeight * 0.5 = 100)
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'sentence-card-0-scroll'})
+        .props.onScroll({
+          nativeEvent: {
+            contentOffset: {y: 120, x: 0},
+            layoutMeasurement: {height: 400, width: 300},
+            contentSize: {height: 800, width: 300},
+          },
+        });
+      await Promise.resolve();
+    });
+
+    // Both mini-player and back-chip should be visible
+    expect(tree.root.findByProps({testID: 'youtube-mini-player'})).toBeTruthy();
+    const backChip = tree.root.findByProps({
+      testID: 'youtube-back-to-active-chip',
+    });
+    expect(backChip).toBeTruthy();
+
+    // Tap back chip to return to top/active card
+    await act(async () => {
+      backChip.props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(() => tree.root.findByProps({testID: 'youtube-back-to-active-chip'})).toThrow();
   });
 });
