@@ -165,12 +165,10 @@ describe('YouTubeLessonScreen', () => {
 
     for (let i = 0; i < 3; i++) {
       expect(
-        tree.root.findByProps({testID: `sentence-card-${i}-en`}).props
-          .children,
+        tree.root.findByProps({testID: `sentence-card-${i}-en`}).props.children,
       ).toBeTruthy();
       expect(
-        tree.root.findByProps({testID: `sentence-card-${i}-vi`}).props
-          .children,
+        tree.root.findByProps({testID: `sentence-card-${i}-vi`}).props.children,
       ).toBeTruthy();
     }
   });
@@ -195,9 +193,7 @@ describe('YouTubeLessonScreen', () => {
     const tree = await renderScreen();
 
     await act(async () => {
-      tree.root
-        .findByProps({testID: 'sentence-card-1-word-0'})
-        .props.onPress();
+      tree.root.findByProps({testID: 'sentence-card-1-word-0'}).props.onPress();
       await Promise.resolve();
     });
 
@@ -246,17 +242,25 @@ describe('YouTubeLessonScreen', () => {
   it('opens the transcript popup from the menu and seeks without closing (SETE-325, C-4)', async () => {
     const tree = await renderScreen();
 
-    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(false);
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(
+      false,
+    );
     await openOverflowMenu(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-open-transcript'}).props.onPress();
+      tree.root
+        .findByProps({testID: 'youtube-open-transcript'})
+        .props.onPress();
       await Promise.resolve();
     });
 
-    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(true);
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(
+      true,
+    );
     const popupLines = tree.root
       .findAllByType(TranscriptLine)
-      .filter(node => String(node.props.testID).startsWith('youtube-popup-line-'));
+      .filter(node =>
+        String(node.props.testID).startsWith('youtube-popup-line-'),
+      );
     expect(popupLines).toHaveLength(3);
 
     mockSeekTo.mockClear();
@@ -267,7 +271,9 @@ describe('YouTubeLessonScreen', () => {
 
     // (6_000 − 300) / 1000 with C-1 compensation, popup stays open.
     expect(mockSeekTo).toHaveBeenCalledWith(5.7);
-    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(true);
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(
+      true,
+    );
 
     await act(async () => {
       tree.root
@@ -275,15 +281,15 @@ describe('YouTubeLessonScreen', () => {
         .props.onPress();
       await Promise.resolve();
     });
-    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(false);
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(
+      false,
+    );
   });
 
   it('toggles Vietnamese and IPA display independently', async () => {
     const tree = await renderScreen();
 
-    expect(
-      tree.root.findByProps({testID: 'sentence-card-0-vi'}),
-    ).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'sentence-card-0-vi'})).toBeTruthy();
 
     await act(async () => {
       tree.root
@@ -330,6 +336,179 @@ describe('YouTubeLessonScreen', () => {
     });
 
     expect(mockSeekTo).toHaveBeenCalledWith(0);
+  });
+
+  it('loops the active sentence the specified count and then advances without infinite re-renders (SETE-341)', async () => {
+    const tree = await renderScreen();
+
+    // Initial position at sentence 0
+    mockCurrentTimeSeconds = 0.1;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    // Open tools popup and select 3 loops
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-compact-tools'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-loop-3'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-close'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    mockSeekTo.mockClear();
+
+    // Transition 1: play to sentence 1 (3.5s) -> loop 1 triggers seek back to 0
+    mockCurrentTimeSeconds = 3.5;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).toHaveBeenCalledTimes(1);
+    expect(mockSeekTo).toHaveBeenCalledWith(0);
+    expect(
+      tree.root
+        .findByProps({testID: 'youtube-toast-message'})
+        .findByProps({variant: 'label'}).props.children,
+    ).toBe('Lặp câu 1 · còn 2 lần');
+
+    // Simulate replay of sentence 0
+    mockSeekTo.mockClear();
+    mockCurrentTimeSeconds = 0.1;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+    expect(mockSeekTo).not.toHaveBeenCalled();
+
+    // Transition 2: play to sentence 1 again -> loop 2 triggers seek back to 0
+    mockCurrentTimeSeconds = 3.5;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).toHaveBeenCalledTimes(1);
+    expect(mockSeekTo).toHaveBeenCalledWith(0);
+    expect(
+      tree.root
+        .findByProps({testID: 'youtube-toast-message'})
+        .findByProps({variant: 'label'}).props.children,
+    ).toBe('Lặp câu 1 · còn 1 lần');
+
+    // Simulate replay of sentence 0 for 3rd time
+    mockSeekTo.mockClear();
+    mockCurrentTimeSeconds = 0.1;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+    expect(mockSeekTo).not.toHaveBeenCalled();
+
+    // Transition 3: play to sentence 1 again -> loop count exhausted, advances to sentence 1
+    mockCurrentTimeSeconds = 3.5;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).not.toHaveBeenCalled();
+  });
+
+  it('loops infinitely when loopCount is Infinity without runaway re-renders (SETE-341)', async () => {
+    const tree = await renderScreen();
+
+    // Initial position at sentence 0
+    mockCurrentTimeSeconds = 0.1;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    // Open tools popup and select infinite loop
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-compact-tools'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-loop-inf'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-close'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    mockSeekTo.mockClear();
+
+    // Advance to sentence 1 -> triggers infinite loop seek back to sentence 0
+    mockCurrentTimeSeconds = 3.5;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    expect(mockSeekTo).toHaveBeenCalledTimes(1);
+    expect(mockSeekTo).toHaveBeenCalledWith(0);
+    expect(
+      tree.root
+        .findByProps({testID: 'youtube-toast-message'})
+        .findByProps({variant: 'label'}).props.children,
+    ).toBe('Lặp vô hạn câu hiện tại');
+  });
+
+  it('allows manual seek during loop mode without triggering loop ping-pong (SETE-341)', async () => {
+    const tree = await renderScreen();
+
+    // Initial position at sentence 0
+    mockCurrentTimeSeconds = 0.1;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    // Open tools popup and select 3 loops
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-compact-tools'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-loop-3'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    mockSeekTo.mockClear();
+
+    // User navigates to next sentence via tools
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-next'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    // Should seek to sentence 1 start (2.7s with compensation) exactly once
+    expect(mockSeekTo).toHaveBeenCalledTimes(1);
+    expect(mockSeekTo).toHaveBeenCalledWith(2.7);
+
+    // Close tools popup
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-close'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    // No infinite loop re-renders triggered
+    mockSeekTo.mockClear();
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+    expect(mockSeekTo).not.toHaveBeenCalled();
   });
 
   it('passes playback rate to the iframe', async () => {
@@ -596,7 +775,10 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
       expect.any(Function),
     );
     const listener = navigation.addListener.mock.calls[0]?.[1] as
-      | ((event: {data: {action: {type: string}}; preventDefault: () => void}) => void)
+      | ((event: {
+          data: {action: {type: string}};
+          preventDefault: () => void;
+        }) => void)
       | undefined;
     if (!listener) throw new Error('beforeRemove listener not registered');
     const preventDefault = jest.fn();
@@ -666,7 +848,10 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
 
     expect(rootNavigate).toHaveBeenCalledWith('Tabs', {
       screen: 'Lessons',
-      params: {screen: 'SpeakingRoom', params: {sentenceText: 'Second sentence'}},
+      params: {
+        screen: 'SpeakingRoom',
+        params: {sentenceText: 'Second sentence'},
+      },
     });
   });
 });
@@ -702,9 +887,9 @@ describe('YouTubeLessonScreen resume (SETE-290 DEV-3)', () => {
 
     expect(mockSeekTo).toHaveBeenCalledWith(4.5);
     // The contract is seek-but-paused: the user presses Play to continue.
-    expect(
-      tree.root.findByProps({testID: 'youtube-iframe'}).props.play,
-    ).toBe(false);
+    expect(tree.root.findByProps({testID: 'youtube-iframe'}).props.play).toBe(
+      false,
+    );
   });
 
   it('does not seek when there is no saved progress', async () => {
@@ -747,9 +932,7 @@ describe('YouTubeLessonScreen resume (SETE-290 DEV-3)', () => {
         await Promise.resolve();
       });
 
-      expect(
-        tree.root.findByProps({testID: 'youtube-ad-banner'}),
-      ).toBeTruthy();
+      expect(tree.root.findByProps({testID: 'youtube-ad-banner'})).toBeTruthy();
       expect(
         tree.root.findByProps({testID: 'youtube-compact-play-toggle'}).props
           .disabled,
