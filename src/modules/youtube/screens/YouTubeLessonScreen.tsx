@@ -4,7 +4,11 @@ import {
   FlatList,
   StyleSheet,
   View,
+  useWindowDimensions,
+  type LayoutChangeEvent,
   type ListRenderItemInfo,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {AppScreen} from '@components/AppScreen';
@@ -27,11 +31,17 @@ import {
   type YouTubePlayerErrorCode,
   type YouTubePlayerRef,
 } from '../components/YouTubePlayer';
+import {CompactControlBar} from '../components/CompactControlBar';
+import {YouTubeMiniPlayer} from '../components/YouTubeMiniPlayer';
+import {shouldShowMiniPlayer} from '../utils/sentenceSeek';
 import {TranscriptLine} from '../components/TranscriptLine';
 import {YouTubeLessonOverflowMenu} from './YouTubeLessonOverflowMenu';
 import {YouTubeTranscriptPopup} from './YouTubeTranscriptPopup';
 import {speak} from '@modules/audio';
-import {useTranscriptSync, TRANSCRIPT_SYNC_POLL_INTERVAL_MS} from '../sync/useTranscriptSync';
+import {
+  useTranscriptSync,
+  TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
+} from '../sync/useTranscriptSync';
 import type {NavigationProp} from '@react-navigation/native';
 import type {
   CreateStackParamList,
@@ -115,6 +125,12 @@ function createStyles(theme: AppTheme) {
       paddingHorizontal: theme.gutter,
       paddingTop: theme.spacing.sm,
     },
+    miniWrap: {
+      bottom: 0,
+      left: 0,
+      position: 'absolute',
+      right: 0,
+    },
     notFoundWrap: {
       flex: 1,
       justifyContent: 'center',
@@ -143,9 +159,7 @@ export function YouTubeLessonScreen({
   const [showVietnamese, setShowVietnamese] = useState(true);
   const [showIpa, setShowIpa] = useState(true);
   const [repeatIndex, setRepeatIndex] = useState<number | null>(null);
-  const [abLoopStartIndex, setAbLoopStartIndex] = useState<number | null>(
-    null,
-  );
+  const [abLoopStartIndex, setAbLoopStartIndex] = useState<number | null>(null);
   const [abLoopEndIndex, setAbLoopEndIndex] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState<YouTubePlaybackRate>(1);
   // SETE-305 (Option B): playback controls live in the overflow menu, so the
@@ -158,6 +172,15 @@ export function YouTubeLessonScreen({
   const [playerError, setPlayerError] = useState<YouTubePlayerErrorCode | null>(
     null,
   );
+
+  // SETE-328 (TASK-1): player shell state. `playing` mirrors the native
+  // player (frame taps included) via onPlayingChange; `durationS` starts
+  // from lesson metadata and upgrades to the real media duration on ready.
+  const windowHeightPt = useWindowDimensions().height;
+  const [playing, setPlaying] = useState(false);
+  const [durationS, setDurationS] = useState(lesson.video.duration_seconds);
+  const [playerBlockHeight, setPlayerBlockHeight] = useState(0);
+  const [miniVisible, setMiniVisible] = useState(false);
 
   // A player error (e.g. no network / airplane mode) switches the screen to
   // offline reading mode: the cached EN + VI + IPA transcript stays fully
@@ -232,7 +255,23 @@ export function YouTubeLessonScreen({
     if (resume && resume.positionMs > 0) {
       playerRef.current?.seekTo(resume.positionMs / 1000);
     }
+    // SETE-328: upgrade the seek bar to the real media duration.
+    const refreshDuration = async () => {
+      try {
+        const duration = await playerRef.current?.getDuration();
+        if (duration != null && duration > 0) {
+          setDurationS(duration);
+        }
+      } catch {
+        // Keep the lesson metadata fallback.
+      }
+    };
+    fireAndForget(refreshDuration());
   }, [resume]);
+
+  const handlePlayingChange = useCallback((nextPlaying: boolean) => {
+    setPlaying(nextPlaying);
+  }, []);
 
   const handlePlayerEnded = useCallback(() => {
     // Completed: the next open starts from 0:00, first sentence, paused.
@@ -262,10 +301,73 @@ export function YouTubeLessonScreen({
     }
   }, [activeIndex, repeatIndex, seekToIndex]);
 
+  // SETE-328 (TASK-1): shell controls. Frame taps toggle play/pause
+  // natively inside the iframe (no overlay is ever placed above it); these
+  // buttons cover every other context — after seek, after ended, mini.
+  const togglePlayPause = useCallback(() => {
+    if (isOfflineReading) {
+      return;
+    }
+    if (playing) {
+      playerRef.current?.pause();
+    } else {
+      playerRef.current?.play();
+    }
+  }, [isOfflineReading, playing]);
+
+  const replayActiveSentence = useCallback(() => {
+    if (isOfflineReading) {
+      return;
+    }
+    seekToIndex(activeIndex >= 0 ? activeIndex : 0);
+  }, [activeIndex, isOfflineReading, seekToIndex]);
+
+  const seekToSeconds = useCallback(
+    (seconds: number) => {
+      if (isOfflineReading) {
+        return;
+      }
+      playerRef.current?.seekTo(seconds);
+    },
+    [isOfflineReading],
+  );
+
+  const getCurrentTimeS = useCallback(async () => {
+    const seconds = await playerRef.current?.getCurrentTime();
+    return seconds ?? 0;
+  }, []);
+
+  const handlePlayerBlockLayout = useCallback((event: LayoutChangeEvent) => {
+    setPlayerBlockHeight(event.nativeEvent.layout.height);
+  }, []);
+
+  const handleListScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const scrolledPastPx = event.nativeEvent.contentOffset.y;
+      setMiniVisible(previous => {
+        const next = shouldShowMiniPlayer({
+          scrolledPastPx,
+          playerHeightPx: playerBlockHeight,
+          windowHeightPt,
+        });
+        return previous === next ? previous : next;
+      });
+    },
+    [playerBlockHeight, windowHeightPt],
+  );
+
+  const scrollBackToPlayer = useCallback(() => {
+    listRef.current?.scrollToOffset({animated: true, offset: 0});
+  }, []);
+
   const abLoopActive =
     abLoopStartIndex != null &&
     abLoopEndIndex != null &&
     abLoopStartIndex <= abLoopEndIndex;
+
+  // SETE-328: the Tools button highlights while a loop is armed or the rate
+  // differs from 1× (the full tools popup itself belongs to TASK-5).
+  const toolsArmed = abLoopActive || playbackRate !== 1;
 
   useEffect(() => {
     if (!abLoopActive || isOfflineReading) {
@@ -464,7 +566,9 @@ export function YouTubeLessonScreen({
         const result = await speak(word);
         if (!result.ok) {
           Alert.alert(
-            t('youtube.tts_error_title', {defaultValue: 'Không phát được âm thanh'}),
+            t('youtube.tts_error_title', {
+              defaultValue: 'Không phát được âm thanh',
+            }),
             result.message,
           );
         }
@@ -536,6 +640,62 @@ export function YouTubeLessonScreen({
     ],
   );
 
+  // SETE-328 (TASK-1): the player block lives in the list header so it
+  // scrolls with the transcript — the mini player takes over once it
+  // scrolls strictly past 50% (immediately on compact screens).
+  const playerHeader = useMemo(
+    () => (
+      <View onLayout={handlePlayerBlockLayout} testID="youtube-player-block">
+        <View style={styles.playerWrap}>
+          <YouTubePlayer
+            onEnded={handlePlayerEnded}
+            onError={setPlayerError}
+            onPlayingChange={handlePlayingChange}
+            onReady={handlePlayerReady}
+            playbackRate={playbackRate}
+            ref={playerRef}
+            videoId={lesson.video.id}
+          />
+        </View>
+        <CompactControlBar
+          activeIndex={activeIndex}
+          disabled={isOfflineReading}
+          durationS={durationS}
+          getCurrentTimeS={getCurrentTimeS}
+          onOpenTools={openOverflowMenu}
+          onReplay={replayActiveSentence}
+          onSeekToIndex={seekToIndex}
+          onSeekToSeconds={seekToSeconds}
+          onTogglePlay={togglePlayPause}
+          playing={playing}
+          segments={lesson.segments}
+          toolsArmed={toolsArmed}
+        />
+      </View>
+    ),
+    [
+      activeIndex,
+      durationS,
+      getCurrentTimeS,
+      handlePlayerBlockLayout,
+      handlePlayerEnded,
+      handlePlayerReady,
+      handlePlayingChange,
+      isOfflineReading,
+      lesson.segments,
+      lesson.video.id,
+      openOverflowMenu,
+      playbackRate,
+      playing,
+      replayActiveSentence,
+      seekToIndex,
+      seekToSeconds,
+      styles,
+      togglePlayPause,
+      toolsArmed,
+    ],
+  );
+
   const headerActions = (
     <View style={styles.headerActions}>
       <IconButton
@@ -565,8 +725,12 @@ export function YouTubeLessonScreen({
         tone={showIpaEffective ? 'accent' : 'surface'}
       />
       <IconButton
-        accessibilityHint={t('youtube.practice_hint', {defaultValue: 'Luyện tập câu'})}
-        accessibilityLabel={t('youtube.practice_title', {defaultValue: 'Luyện tập'})}
+        accessibilityHint={t('youtube.practice_hint', {
+          defaultValue: 'Luyện tập câu',
+        })}
+        accessibilityLabel={t('youtube.practice_title', {
+          defaultValue: 'Luyện tập',
+        })}
         disabled={!onStartPractice}
         icon="school"
         onPress={() => onStartPractice?.()}
@@ -622,7 +786,8 @@ export function YouTubeLessonScreen({
       {saveWarning ? (
         <View
           style={styles.saveWarningBanner}
-          testID="youtube-lesson-save-warning">
+          testID="youtube-lesson-save-warning"
+        >
           <AppText accessibilityRole="alert" variant="label">
             {t('youtube.save_failed_title')}
           </AppText>
@@ -641,16 +806,6 @@ export function YouTubeLessonScreen({
           ))}
         </View>
       ) : null}
-      <View style={styles.playerWrap}>
-        <YouTubePlayer
-          onEnded={handlePlayerEnded}
-          onError={setPlayerError}
-          onReady={handlePlayerReady}
-          playbackRate={playbackRate}
-          ref={playerRef}
-          videoId={lesson.video.id}
-        />
-      </View>
       {isOfflineReading ? (
         <View style={styles.offlineBanner} testID="youtube-offline-banner">
           <AppText accessibilityRole="alert" variant="label">
@@ -663,7 +818,11 @@ export function YouTubeLessonScreen({
       ) : null}
       {abLoopActive ? (
         <View style={styles.playerControls}>
-          <AppText color="secondary" testID="youtube-ab-loop-status" variant="caption">
+          <AppText
+            color="secondary"
+            testID="youtube-ab-loop-status"
+            variant="caption"
+          >
             {t('youtube.ab_loop_active', {
               from: abLoopStartIndex! + 1,
               to: abLoopEndIndex! + 1,
@@ -679,17 +838,37 @@ export function YouTubeLessonScreen({
         </View>
       ) : null}
       <FlatList
+        ListHeaderComponent={playerHeader}
         contentContainerStyle={[styles.list, {paddingBottom: feedClearance}]}
         data={lesson.segments}
         ItemSeparatorComponent={ListSeparator}
         keyExtractor={item => item.id}
+        onScroll={handleListScroll}
         onScrollBeginDrag={pauseAutoScroll}
         onScrollEndDrag={scheduleAutoScrollResume}
         onScrollToIndexFailed={handleScrollToIndexFailed}
         ref={listRef}
         renderItem={renderItem}
+        scrollEventThrottle={16}
         testID="youtube-transcript-list"
       />
+      {miniVisible && !isOfflineReading ? (
+        <View style={[styles.miniWrap, {bottom: feedClearance}]}>
+          <YouTubeMiniPlayer
+            activeIndex={activeIndex}
+            disabled={isOfflineReading}
+            durationS={durationS}
+            getCurrentTimeS={getCurrentTimeS}
+            onOpenTools={openOverflowMenu}
+            onPress={scrollBackToPlayer}
+            onReplay={replayActiveSentence}
+            onTogglePlay={togglePlayPause}
+            playing={playing}
+            totalSegments={lesson.segments.length}
+            videoId={lesson.video.id}
+          />
+        </View>
+      ) : null}
     </AppScreen>
   );
 }
@@ -747,9 +926,7 @@ export function YouTubeLessonRouteScreen({
       index: 0,
       routes: [{name: 'CreateMain'}],
     });
-    createNav
-      .getParent<NavigationProp<RootTabParamList>>()
-      ?.navigate('Home');
+    createNav.getParent<NavigationProp<RootTabParamList>>()?.navigate('Home');
   }, [navigation]);
 
   useEffect(() => {
@@ -827,7 +1004,8 @@ export function YouTubeLessonRouteScreen({
           <AppText
             color="danger"
             testID="youtube-lesson-not-found"
-            variant="h2">
+            variant="h2"
+          >
             {t('youtube.lesson_not_found_body')}
           </AppText>
         </View>

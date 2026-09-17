@@ -7,7 +7,7 @@ import {
 } from '../YouTubePlayer';
 
 jest.mock('react-native-youtube-iframe', () => {
-  const React = require('react');
+  const ReactActual = require('react');
   const {View} = require('react-native');
 
   const PLAYER_ERRORS = {
@@ -17,8 +17,8 @@ jest.mock('react-native-youtube-iframe', () => {
     INVALID_PARAMETER: 'invalid_parameter',
   };
 
-  const YoutubeIframe = React.forwardRef((_props: unknown, ref: unknown) => {
-    React.useImperativeHandle(ref, () => ({
+  const YoutubeIframe = ReactActual.forwardRef((_props: unknown, ref: unknown) => {
+    ReactActual.useImperativeHandle(ref, () => ({
       seekTo: jest.fn(),
       getCurrentTime: jest.fn().mockResolvedValue(12.5),
     }));
