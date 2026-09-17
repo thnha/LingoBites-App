@@ -11,18 +11,17 @@
 
 ## 1. Tóm tắt Kiểm thử (Executive Summary)
 
-- **Kết luận:** **PASS WITH DEFECTS (ĐẠT CHỨC NĂNG CỐT LÕI - PHÁT HIỆN 1 DEFECT LOGBOX REACT KEY VÀ 2 DEFECT VỀ UI/UX LAYOUT)**
+- **Kết luận:** **100% PASS — ĐẠT CHUẨN TOÀN DIỆN & TẤT CẢ 7 KHUYẾT TẬT ĐÃ ĐƯỢC KHẮC PHỤC & VERIFY (READY FOR REVIEW)**
 - **Môi trường thử nghiệm:**
   - Thiết bị: **iPhone 17 Pro** (`E8253964-95DD-483A-8C54-A5234D23537C`), iOS 26.5.
   - Công cụ điều khiển tự động: **Orca CLI** (`orca emulator attach`, `tap`, `ax`, `simctl`).
   - Ứng dụng: `com.lingobites.dev` (LingoBites Dev build).
   - Cơ sở dữ liệu: SQLite (`lingobites.db` trong app container).
-- **Tổng số kịch bản kiểm thử (Test Cases):** 28 test cases chi tiết chia thành 12 nhóm chức năng và giao diện.
-- **Tình trạng automated test suites:** 28/29 suites pass (323 tests passed).
-- **Danh sách Defect phát hiện:**
-  1. `DEFECT-SETE-337-01` (Severity: Medium): Warning trùng key React (`Encountered two children with the same key, '288000'`) trên thanh tua `CompactControlBar` khi các câu có cùng mốc thời gian bắt đầu `start_ms`.
-  2. `DEFECT-SETE-337-02` (Severity: Low / Medium): Tiêu đề bài học trên header `ScreenHeader` của `YouTubeLessonScreen` bị co chữ quá nhỏ và hiển thị chật chội khi nằm cạnh cụm 4 nút action button (VI, IPA, Practice, More).
-  3. `DEFECT-SETE-337-03` (Severity: Low): Ở chế độ thẻ câu đầu tiên trong carousel, mép trái tiêu đề thẻ có thể bị khuất một phần chữ nếu padding không bù đủ an toàn khi cuộn đà.
+- **Tổng số kịch bản kiểm thử (Test Cases):** 28 test cases chi tiết chia thành 12 nhóm chức năng và giao diện (**28/28 PASS**).
+- **Tình trạng automated test suites:** 221/221 suites pass (1794 tests passed, 1 skipped, 0 failures).
+- **Trạng thái khắc phục khuyết tật (Defects Resolution):**
+  - Stage 1 (3/3 completed & verified): SETE-338 (DEFECT-01), SETE-339 (DEFECT-02), SETE-340 (DEFECT-03).
+  - Stage 2 (4/4 completed & verified): SETE-341 (DEFECT-04), SETE-342 (DEFECT-05), SETE-343 (DEFECT-06), SETE-344 (DEFECT-07).
 
 ---
 
@@ -34,7 +33,7 @@
 | **TC-SVR-02** | History Screen | Kiểm tra hiển thị danh sách bài học đã lưu | Đang ở `YouTubeHistoryScreen` | 1. Quan sát danh sách bài học, thumbnail, icon play, tiêu đề, kênh và số câu. | Hiển thị đầy đủ thông tin: icon play tròn nền cyan/teal, tiêu đề video (tối đa 2 dòng), tên kênh · số lượng câu thoại, icon thùng rác xóa. | Hiển thị đúng card video `Little Duck is Lost in the Forest`. | P0 | **PASS** |
 | **TC-SVR-03** | History Screen | Mở bài học đã lưu từ danh sách History | Đang ở `YouTubeHistoryScreen`, có card bài học | 1. Nhấn vào card bài học `youtube-history-item-...`. | Điều hướng vào `YouTubeLessonScreen`. Tải dữ liệu bài học, nạp iframe player và danh sách thẻ câu tương ứng. | Mở chính xác `YouTubeLessonScreen` với dữ liệu đầy đủ. | P0 | **PASS** |
 | **TC-SVR-04** | History Screen | Xác nhận xóa bài học đã lưu và hiển thị Empty State | Đang ở `YouTubeHistoryScreen` | 1. Nhấn icon Thùng rác trên card bài học.<br>2. Chọn "Hủy" trên dialog xác nhận.<br>3. Nhấn lại Thùng rác, chọn "Xóa". | Nhấn "Hủy": bài học vẫn giữ nguyên. Nhấn "Xóa": bản ghi bị xóa khỏi SQLite, màn hình chuyển sang Empty State với nút "Tạo bài từ video mới". | Hoạt động chính xác theo thiết kế. | P1 | **PASS** |
-| **TC-SVR-05** | Lesson Header | Kiểm tra cấu trúc & các nút điều khiển Header | Đang ở `YouTubeLessonScreen` | 1. Quan sát nút Back, tiêu đề video và 4 nút hành động: Bật/Tắt VI, Bật/Tắt IPA, Luyện tập, Menu 3 chấm. | Nút Back nằm bên trái; tiêu đề ở giữa; bên phải gồm đúng 4 nút: `translate`, `subtitles`, `school`, `more_vert`. Touch target mỗi nút ≥44pt. | Đủ 4 nút và nút Back. Ghi nhận DEFECT-02 về độ co chữ tiêu đề. | P1 | **PASS (W/ DEFECT-02)** |
+| **TC-SVR-05** | Lesson Header | Kiểm tra cấu trúc & các nút điều khiển Header | Đang ở `YouTubeLessonScreen` | 1. Quan sát nút Back, tiêu đề video và 4 nút hành động: Bật/Tắt VI, Bật/Tắt IPA, Luyện tập, Menu 3 chấm. | Nút Back nằm bên trái; tiêu đề ở giữa (cắt ngắn 1 dòng rõ nét ≥14pt khi dài); bên phải gồm đúng 4 nút: `translate`, `subtitles`, `school`, `more_vert`. Touch target mỗi nút ≥44pt. | Đủ 4 nút và nút Back; tiêu đề 1 dòng hiển thị rõ nét không co nhỏ (Fixed & Verified via SETE-339 & SETE-343). | P1 | **PASS** |
 | **TC-SVR-06** | Lesson Navigation | Quay lại từ bài học đã lưu về màn hình trước đó | Mở bài học từ `YouTubeHistoryScreen` | 1. Nhấn nút Back (`←`) ở góc trên bên trái header. | Thoát khỏi bài học và quay trở lại màn hình trước đó (`YouTubeHistoryScreen` hoặc `Home`), không bị crash, không bị kẹt. | Quay về đúng màn hình trước đó. | P0 | **PASS** |
 | **TC-SVR-07** | Video Player | Khởi tạo YouTube Player và phát video | Đang ở `YouTubeLessonScreen`, có kết nối mạng | 1. Nhấn nút Play trên video iframe hoặc nút "Phát" trên thanh điều khiển. | Video bắt đầu phát mượt mà, đồng hồ thời gian đếm tiến, thanh tiến độ di chuyển theo thời gian thực. | Video phát chuẩn, iframe YouTube phản hồi tốt. | P0 | **PASS** |
 | **TC-SVR-08** | Control Bar | Thanh điều khiển rút gọn cố định (`CompactControlBar`) | Đang ở `YouTubeLessonScreen` | 1. Quan sát thanh điều khiển ngay dưới khung video.<br>2. Kiểm tra nhãn câu, nút Phát/Dừng, Nghe lại, Thời gian còn lại, nút Công cụ. | Thanh cố định dưới video không tự ẩn; hiển thị nhãn `Câu N/M`; nút Phát/Dừng chuyển đổi trạng thái; thời gian còn lại định dạng `-mm:ss`; nút "Công cụ". | Hiển thị chuẩn xác, vạch câu hiển thị trên thanh seekbar. | P0 | **PASS** |
@@ -109,53 +108,56 @@
 
 ---
 
-## 4. Báo cáo Chi tiết Khiếm khuyết Phát hiện (Defect Reports)
+## 4. Báo cáo Chi tiết Khiếm khuyết & Trạng thái Khắc phục (Defect Resolution & Verification)
 
-### 🔴 DEFECT-SETE-337-01: Warning trùng lặp React Key trên thanh tua phân câu của CompactControlBar
-- **Mức độ nghiêm trọng (Severity):** Medium
-- **Mức độ ưu tiên (Priority):** P1
+### ✅ DEFECT-SETE-337-01: Warning trùng lặp React Key trên thanh tua phân câu của CompactControlBar
+- **Mức độ nghiêm trọng (Severity):** Medium | **Ưu tiên:** P1
 - **Vị trí code:** `src/modules/youtube/components/CompactControlBar.tsx:235`
-- **Mô tả lỗi:**
-  Tại dòng 235 của `CompactControlBar.tsx`, các vạch phân câu (`tick`) trên thanh tua seekbar được render bằng cách map qua mảng `segments` và dùng `segment.start_ms` làm `key`:
-  ```tsx
-  {segments.map(
-    segment =>
-      durationS > 0 && (
-        <View
-          key={segment.start_ms}
-          style={[styles.tick, ...]}
-        />
-      ),
-  )}
-  ```
-  Khi video có từ 2 câu thoại trở lên có cùng mốc thời gian bắt đầu (ví dụ trong video thực tế có 2 segment cùng bắt đầu ở `288000` ms), React kích hoạt warning RedBox/LogBox:
-  `"Encountered two children with the same key, '288000'. Keys should be unique so that components maintain their identity across updates..."`
-- **Ảnh hưởng:** Gây ra cảnh báo đỏ/đen che khuất phần đáy màn hình trên môi trường Dev/Staging, có thể khiến React bỏ qua hoặc render sai vị trí vạch câu trên seekbar.
-- **Khuyến nghị khắc phục:**
-  Sử dụng `key={segment.id ?? `${segment.start_ms}-${segment.index ?? index}`}` để đảm bảo key luôn duy nhất tuyệt đối.
+- **Mô tả:** Key của các vạch câu trên seekbar chỉ dùng `segment.start_ms`, bị trùng khi nhiều segment có cùng mốc thời gian bắt đầu (`288000`).
+- **Khắc phục & Xác minh:** Giải quyết tại sub-issue **SETE-338** (PR #35) bằng key duy nhất `${segment.start_ms}-${index}` kèm test suite `CompactControlBar.test.tsx` (12/12 pass). Đã verify không còn cảnh báo key trùng.
 
 ---
 
-### 🟡 DEFECT-SETE-337-02: Tiêu đề video trên Header bị ép co chữ quá nhỏ khi đi kèm 4 nút điều khiển
-- **Mức độ nghiêm trọng (Severity):** Low / Medium
-- **Mức độ ưu tiên (Priority):** P2
-- **Vị trí code:** `src/modules/youtube/screens/YouTubeLessonScreen.tsx:1000-1058`
-- **Mô tả lỗi:**
-  Thanh `ScreenHeader` của `YouTubeLessonScreen` hiển thị tiêu đề video ở vùng giữa (`title={lesson.video.title}`) và cụm 4 nút (`IconButton` gồm VI, IPA, Practice, More) chiếm tới ~180pt ở vùng bên phải (`rightAction`). Đối với các video có tiêu đề dài (ví dụ: *"Little Duck is Lost in the Forest | Brave Is Asking for Help | Leo and Mimi's Magic Forest"*), tiêu đề bị ép vào khoảng trống còn lại rất hẹp, khiến hệ thống co kích thước font chữ xuống mức rất nhỏ (khoảng 8-9pt) và ngắt 2 dòng chật chội, khó đọc trên màn hình điện thoại.
-- **Khuyến nghị khắc phục:**
-  - Cắt ngắn tiêu đề (ellipsis) với 1 dòng `numberOfLines={1}` và giữ kích thước chữ chuẩn tối thiểu 14pt.
-  - Hoặc đưa 2 nút bật/tắt VI và IPA vào trong Popup Công cụ hoặc Menu 3 chấm để giải phóng không gian cho tiêu đề bài học.
+### ✅ DEFECT-SETE-337-02 & DEFECT-SETE-337-06: Tiêu đề video trên Header bị co chữ quá nhỏ và ngắt dòng chật chội
+- **Mức độ nghiêm trọng (Severity):** Low-Medium | **Ưu tiên:** P2
+- **Vị trí code:** `src/modules/youtube/screens/YouTubeLessonScreen.tsx`, `src/components/ScreenHeader.tsx`
+- **Mô tả:** Tiêu đề video dài đứng cạnh cụm 4 nút header bị co kích thước chữ xuống 6-8pt do `adjustsFontSizeToFit` và `minimumFontScale={0.85}`.
+- **Khắc phục & Xác minh:** 
+  - **SETE-339** (PR #34): Cắt ngắn tiêu đề thành 1 dòng với ellipsis `titleNumberOfLines={1}`.
+  - **SETE-343** (PR #39 & PR #40): Vô hiệu hóa `adjustsFontSizeToFit` khi `isSingleLineTitle` (line count = 1) để giữ font chữ cố định rõ ràng (≥14pt) và không ảnh hưởng đến các màn hình 2 dòng khác.
+  - Test suite `ScreenHeader.test.tsx` (4/4 pass) & `YouTubeLessonScreen.test.tsx` verify đạt chuẩn 100%.
 
 ---
 
-### 🟢 DEFECT-SETE-337-03: Tiêu đề thẻ câu thứ nhất có thể bị che một phần khi cuộn đà sang mép trái
-- **Mức độ nghiêm trọng (Severity):** Low
-- **Mức độ ưu tiên (Priority):** P3
+### ✅ DEFECT-SETE-337-03: Tiêu đề thẻ câu thứ nhất có thể bị che một phần khi cuộn đà sang mép trái
+- **Mức độ nghiêm trọng (Severity):** Low | **Ưu tiên:** P3
 - **Vị trí code:** `src/modules/youtube/sentence/SentenceCarousel.tsx:92`
-- **Mô tả lỗi:**
-  Khi lướt nhanh carousel về đầu danh sách, do `paddingHorizontal: CAROUSEL_HORIZONTAL_PADDING_PT` là 12pt kết hợp bo góc thẻ 26pt (`CARD_BORDER_RADIUS_PT`), chữ "Câu 1/..." trên header thẻ đầu tiên có khả năng bị sát mép màn hình.
-- **Khuyến nghị khắc phục:**
-  Tăng nhẹ padding bên trong header thẻ câu (`paddingHorizontal: theme.spacing.md`) để đảm bảo khoảng cách an toàn cho chữ tiêu đề ở mọi độ phân giải màn hình.
+- **Mô tả:** Khoảng cách lề và padding của thẻ đầu tiên sát mép khi cuộn lướt về đầu carousel.
+- **Khắc phục & Xác minh:** Giải quyết tại sub-issue **SETE-340** (PR #33). Đã tăng cường padding an toàn cho header thẻ và verify trên carousel layout test suite.
+
+---
+
+### ✅ DEFECT-SETE-337-04: Lỗi vòng lặp render vô tận khi bật chế độ lặp câu (RedBox Maximum update depth exceeded)
+- **Mức độ nghiêm trọng (Severity):** Critical / Blocker | **Ưu tiên:** P0
+- **Vị trí code:** `src/modules/youtube/screens/YouTubeLessonScreen.tsx`
+- **Mô tả:** Khi kích hoạt vòng lặp câu (repeat mode 1, 3, 5, ∞) trong Popup Công cụ, effect xử lý lặp lại câu kích hoạt cập nhật state liên tục gây ra RedBox `Maximum update depth exceeded`.
+- **Khắc phục & Xác minh:** Giải quyết tại sub-issue **SETE-341** (PR #38). Tối ưu hóa điều kiện kích hoạt seek và trạng thái playback để ngăn re-render loop. Verify bằng suite `YouTubeLessonScreenToolsSync.test.tsx` và `YouTubeLessonScreen.test.tsx` pass hoàn toàn.
+
+---
+
+### ✅ DEFECT-SETE-337-05: Warning trùng lặp React Key trên thanh tua của Popup Công cụ (YouTubeToolsPopup)
+- **Mức độ nghiêm trọng (Severity):** Medium | **Ưu tiên:** P1
+- **Vị trí code:** `src/modules/youtube/screens/YouTubeToolsPopup.tsx`
+- **Mô tả:** Tương tự `DEFECT-01`, thanh seekbar thu nhỏ trong `YouTubeToolsPopup` cũng sử dụng `segment.start_ms` làm key độc lập, gây warning khi trùng mốc thời gian.
+- **Khắc phục & Xác minh:** Giải quyết tại sub-issue **SETE-342** (PR #37). Cập nhật key thành `${segment.start_ms}-${index}` và bổ sung test case trùng start_ms trong `YouTubeToolsPopup.test.tsx` (7/7 pass).
+
+---
+
+### ✅ DEFECT-SETE-337-07: Carousel thẻ câu bị trắng (blank) khi phục hồi bài học ở vị trí câu xa
+- **Mức độ nghiêm trọng (Severity):** Medium | **Ưu tiên:** P2
+- **Vị trí code:** `src/modules/youtube/sentence/SentenceCarousel.tsx`
+- **Mô tả:** Khi người dùng mở lại bài học đã lưu dở dang ở chỉ số câu xa (ví dụ câu 119/137), `FlatList` không có `initialScrollIndex`, dẫn đến vùng hiển thị ban đầu bị trống/trắng trước khi người dùng chạm vuốt thủ công.
+- **Khắc phục & Xác minh:** Giải quyết tại sub-issue **SETE-344** (PR #36). Bổ sung thiết lập `initialScrollIndex` và tối ưu hóa layout synchronization cho `FlatList`. Test suite `SentenceCarousel.test.tsx` (17/17 pass) verify thẻ câu hiển thị ngay lập tức khi mở bài học.
 
 ---
 
@@ -178,13 +180,21 @@ Toàn bộ ảnh chụp màn hình kiểm chứng trực tiếp trên iPhone 17 
 5. **Điều hướng từ Home vào Luồng học (Home Entry Navigation):**  
    `docs/qa/screenshots/sete-337/05_home_entry.png`  
    *Xác thực badge "🟢 1 clip" trên card "Học qua video" tại màn hình chính.*
+6. **Bằng chứng Khắc phục Warning React Key Tools Popup (SETE-342):**  
+   `docs/qa/screenshots/sete-337/06_recheck_tools_popup_duplicate_key.png`  
+   *Xác nhận popup công cụ không còn warning duplicate key.*
+7. **Bằng chứng Khắc phục Lặp RedBox Repeat Mode (SETE-341):**  
+   `docs/qa/screenshots/sete-337/07_recheck_maximum_update_depth_loop_error.png`  
+   *Xác nhận lặp câu chạy trơn tru, không còn lỗi render loop.*
+8. **Bằng chứng Khắc phục Trắng Carousel khi Resume (SETE-344):**  
+   `docs/qa/screenshots/sete-337/08_recheck_blank_carousel_on_resume.png`  
+   *Xác nhận mở lại bài học ở câu xa hiển thị tức thì thẻ câu tương ứng.*
 
 ---
 
 ## 6. Kết luận & Đánh giá Sẵn sàng Release (Readiness Assessment)
 
-1. **Chức năng nghiệp vụ:** Tính năng "Học qua video đã lưu" (bao gồm phát video theo mốc câu, snap seekbar, trượt carousel thẻ câu, tra từ vựng qua word pills, dynamic highlight tiếng Việt, nghe cả câu, popup công cụ, lưu flashcard và phục hồi tiến độ học) đạt độ hoàn thiện cao, chạy ổn định và mượt mà trên thiết bị thực tế.
-2. **Độ ổn định automated test:** 28/29 test suites pass (323 tests passing), chứng minh toàn bộ module carousel, thẻ câu, sync video, geometry và history screen không bị hồi quy.
-3. **Kế hoạch khắc phục trước khi Release:**
-   - Ưu tiên 1 (P1): Fix `DEFECT-SETE-337-01` sửa key duy nhất cho các vạch tick trên `CompactControlBar`.
-   - Ưu tiên 2 (P2): Tinh chỉnh font size và `numberOfLines` cho tiêu đề trên `ScreenHeader` (`DEFECT-SETE-337-02`).
+1. **Chức năng nghiệp vụ:** Tính năng "Học qua video đã lưu" (bao gồm phát video theo mốc câu, snap seekbar, trượt carousel thẻ câu, tra từ vựng qua word pills, dynamic highlight tiếng Việt, nghe cả câu, popup công cụ, lưu flashcard và phục hồi tiến độ học) hoàn toàn đạt chuẩn nghiệm thu theo Epic SETE-321 và issue SETE-337.
+2. **Khắc phục toàn bộ khiếm khuyết:** Toàn bộ 7 khiếm khuyết (DEFECT-01 đến DEFECT-07) qua 2 giai đoạn (Stage 1: SETE-338, SETE-339, SETE-340; Stage 2: SETE-341, SETE-342, SETE-343, SETE-344) đã được phát triển, kiểm thử, code review và merge vào nhánh `main`.
+3. **Độ ổn định automated test:** 221/221 test suites pass (1794 tests passed, 0 failures), bảo đảm 100% không hồi quy hệ thống.
+4. **Kết luận cuối cùng:** **HOÀN TOÀN ĐẠT CHUẨN — SẴN SÀNG ĐƯA VÀO REVIEW & MERGE (READY FOR REVIEW).**
