@@ -11,7 +11,10 @@ import {
 } from '@shared/schemas/youtube-transcript-v1';
 
 const POLL_INTERVAL_MS = 1_000;
-const POLL_DEADLINE_MS = 75_000;
+// SETE-325: transcript + analysis for content-heavy videos regularly needs
+// more than 75s backend-side, so give the job a full 120s before surfacing
+// `errors.youtube_timeout`.
+const POLL_DEADLINE_MS = 120_000;
 const FETCH_TIMEOUT_MS = 10_000;
 
 export type YouTubeJobProgress = {percent: number; stage: string | null};

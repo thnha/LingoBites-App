@@ -283,12 +283,23 @@ describe('runYouTubeJob - terminal poll errors', () => {
 });
 
 describe('runYouTubeJob - poll deadline', () => {
-  it('gives up after the 75s poll deadline without issuing a fetch after it', async () => {
+  it('gives up after the 120s poll deadline without issuing a fetch after it', async () => {
     mockFetch.mockResolvedValueOnce(response(created()));
     mockFetch.mockResolvedValue(response({}, {ok: false, status: 500}));
 
     const pending = runYouTubeJob(URL);
+    const settledFlag = pending.then(
+      () => true,
+      () => true,
+    );
+
+    // SETE-325: the old 75s mark must keep polling, not give up.
     await jest.advanceTimersByTimeAsync(75_000);
+    await expect(
+      Promise.race([settledFlag, Promise.resolve(false)]),
+    ).resolves.toBe(false);
+
+    await jest.advanceTimersByTimeAsync(45_000);
     await expect(pending).resolves.toEqual({
       ok: false,
       errorCode: 'NETWORK_ERROR',
