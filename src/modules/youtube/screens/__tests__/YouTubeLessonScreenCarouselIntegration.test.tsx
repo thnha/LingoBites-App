@@ -1,6 +1,5 @@
 import React from 'react';
 import renderer, {act} from 'react-test-renderer';
-import {FlatList} from 'react-native';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';

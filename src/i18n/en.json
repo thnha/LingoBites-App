@@ -316,7 +316,27 @@
     "sentence_keyword": "keyword",
     "sentence_vocab": "vocabulary",
     "sentence_grammar": "grammar",
-    "sentence_loading_hint": "Content appears when loading finishes"
+    "sentence_loading_hint": "Content appears when loading finishes",
+    "error_video_not_found": "Video not found or has been removed.",
+    "error_not_embeddable": "Video is not allowed to be played embedded outside YouTube.",
+    "error_invalid_url": "Invalid video link.",
+    "error_html5": "HTML5 player error.",
+    "retry_button": "Retry",
+    "retry_hint": "Try reconnecting video playback",
+    "back_to_list_button": "Back to list",
+    "back_to_list_hint": "Go back to lesson list",
+    "completed_title": "🎉 Lesson completed!",
+    "completed_replay_title": "Replay",
+    "completed_replay_hint": "Replay video from start",
+    "completed_practice_title": "Practice all",
+    "completed_practice_hint": "Practice speaking all sentences in the lesson",
+    "completed_next_title": "Next lesson",
+    "completed_next_hint": "Proceed to next lesson or return to list",
+    "ad_playing_notice": "Playing ad · Controls temporarily locked",
+    "sentence_bottom_completed": "Lesson completed",
+    "carousel_label": "Sentence {{current}} of {{total}}",
+    "carousel_prev_a11y": "Previous sentence",
+    "carousel_next_a11y": "Next sentence"
   },
   "gamification": {
     "pet_stage": {

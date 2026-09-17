@@ -54,7 +54,8 @@ function OverflowRow({row}: {row: MenuRow}) {
       accessibilityHint={row.accessibilityHint}
       accessibilityLabel={row.accessibilityLabel}
       accessibilityRole="button"
-      accessibilityState={{disabled: row.disabled, selected: row.active}}
+      accessibilityState={{disabled: row.disabled, selected: row.active, checked: row.active}}
+      aria-pressed={row.active}
       disabled={row.disabled}
       onPress={() => {
         row.onSelect();
