@@ -495,10 +495,10 @@ export function YouTubeToolsPopup({
               ]}
             />
             {segments.map(
-              segment =>
+              (segment, index) =>
                 durationS > 0 && (
                   <View
-                    key={segment.start_ms}
+                    key={`${segment.start_ms}-${index}`}
                     style={[
                       styles.seekTick,
                       {

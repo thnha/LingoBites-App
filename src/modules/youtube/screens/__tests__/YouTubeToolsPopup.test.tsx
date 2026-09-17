@@ -267,4 +267,30 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
 
     expect(onOpenTranscript).toHaveBeenCalledTimes(1);
   });
+
+  it('renders seek ticks correctly even with duplicate start_ms (SETE-337)', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const segmentsWithDupes = [
+      ...makeSegments(),
+      {
+        id: 'seg-dupe',
+        index: 3,
+        start_ms: 6000,
+        end_ms: 10000,
+        en: 'Duplicate',
+        vi: 'Trùng',
+        ipa: '',
+      },
+    ];
+
+    const {tree} = await renderPopup({segments: segmentsWithDupes});
+    expect(tree.root.findByProps({testID: 'youtube-tools-seek'})).toBeTruthy();
+
+    const duplicateKeyErrors = errorSpy.mock.calls.filter(args =>
+      typeof args[0] === 'string' && args[0].includes('Encountered two children with the same key')
+    );
+    expect(duplicateKeyErrors.length).toBe(0);
+
+    errorSpy.mockRestore();
+  });
 });
