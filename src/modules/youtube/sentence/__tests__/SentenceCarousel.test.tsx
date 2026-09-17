@@ -352,4 +352,39 @@ describe('SentenceCarousel (SETE-330)', () => {
       expect(onSelectIndex).toHaveBeenCalledWith(2);
     });
   });
+
+  describe('DEFECT-SETE-337-07: resume far into a lesson', () => {
+    function makeManySegments(count: number) {
+      return Array.from({length: count}, (_, i) => ({
+        index: i,
+        en: `Sentence ${i}`,
+        vi: `Câu ${i}`,
+      }));
+    }
+
+    it('mounts the FlatList at a non-zero initial activeIndex so the resumed card renders without scrolling', () => {
+      const segments = makeManySegments(137);
+      const tree = renderCarousel({segments, activeIndex: 119});
+
+      const flatList = tree.root.findByType(FlatList);
+      // Mount position targets the resumed sentence (getItemLayout above
+      // satisfies the initialScrollIndex requirement).
+      expect(flatList.props.initialScrollIndex).toBe(119);
+      // The resumed card is rendered immediately — no scroll interaction needed.
+      expect(hasNode(tree, `${CAROUSEL_TEST_ID}-card-119`)).toBe(true);
+      expect(
+        tree.root.findByProps({
+          testID: `${CAROUSEL_TEST_ID}-card-119-header-title`,
+        }).props.children,
+      ).toBe('Câu 120/137');
+    });
+
+    it('clamps an out-of-range activeIndex instead of crashing FlatList', () => {
+      const segments = makeManySegments(3);
+      const tree = renderCarousel({segments, activeIndex: 99});
+
+      const flatList = tree.root.findByType(FlatList);
+      expect(flatList.props.initialScrollIndex).toBe(2);
+    });
+  });
 });

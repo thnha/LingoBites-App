@@ -58,10 +58,7 @@ function getPlayerErrorMessage(
 }
 import {CompactControlBar} from '../components/CompactControlBar';
 import {YouTubeMiniPlayer} from '../components/YouTubeMiniPlayer';
-import {
-  formatElapsed,
-  shouldShowMiniPlayer,
-} from '../utils/sentenceSeek';
+import {formatElapsed, shouldShowMiniPlayer} from '../utils/sentenceSeek';
 import {
   SentenceCarousel,
   type SentenceCarouselRef,
@@ -100,10 +97,7 @@ import type {
 } from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {
-  useBookmarkOptimistic,
-  useFlashcardLibrary,
-} from '@modules/lesson';
+import {useBookmarkOptimistic, useFlashcardLibrary} from '@modules/lesson';
 import {mapTranscriptToPractice} from '../utils/practiceMapper';
 import {
   nextYouTubePlaybackRate,
@@ -506,12 +500,21 @@ export function YouTubeLessonScreen({
     enabled: !isOfflineReading && !isAdPlaying,
   });
 
+  const handleSeekToIndex = useCallback(
+    (index: number) => {
+      prevActiveIndexRef.current = index;
+      loopLeftRef.current = loopCount;
+      seekToIndex(index);
+    },
+    [loopCount, seekToIndex],
+  );
+
   const handleReplayAll = useCallback(() => {
     setIsCompleted(false);
-    seekToIndex(0);
+    handleSeekToIndex(0);
     playerRef.current?.seekTo(0);
     playerRef.current?.play();
-  }, [seekToIndex]);
+  }, [handleSeekToIndex]);
 
   const handlePracticeAll = useCallback(() => {
     onStartPractice?.();
@@ -569,6 +572,7 @@ export function YouTubeLessonScreen({
 
     if (repeatIndex != null && previous === repeatIndex) {
       if (activeIndex !== repeatIndex) {
+        prevActiveIndexRef.current = repeatIndex;
         seekToIndex(repeatIndex);
       }
       return;
@@ -577,11 +581,12 @@ export function YouTubeLessonScreen({
     if (
       loopCount > 1 &&
       previous >= 0 &&
-      previous !== activeIndex &&
+      activeIndex > previous &&
       !abLoopActive
     ) {
       if (loopLeftRef.current > 1) {
         loopLeftRef.current -= 1;
+        prevActiveIndexRef.current = previous;
         seekToIndex(previous);
         showToast(
           loopCount === Infinity
@@ -620,8 +625,8 @@ export function YouTubeLessonScreen({
     if (isOfflineReading) {
       return;
     }
-    seekToIndex(activeIndex >= 0 ? activeIndex : 0);
-  }, [activeIndex, isOfflineReading, seekToIndex]);
+    handleSeekToIndex(activeIndex >= 0 ? activeIndex : 0);
+  }, [activeIndex, handleSeekToIndex, isOfflineReading]);
 
   const seekToSeconds = useCallback(
     (seconds: number) => {
@@ -722,9 +727,9 @@ export function YouTubeLessonScreen({
       if (isOfflineReading) {
         return;
       }
-      seekToIndex(segment.index);
+      handleSeekToIndex(segment.index);
     },
-    [isOfflineReading, seekToIndex],
+    [handleSeekToIndex, isOfflineReading],
   );
 
   const toggleVietnamese = useCallback(() => {
@@ -795,20 +800,32 @@ export function YouTubeLessonScreen({
       return;
     }
     const prev = activeIndex - 1;
-    seekToIndex(prev);
+    handleSeekToIndex(prev);
     const startS = (lesson.segments[prev]?.start_ms ?? 0) / 1000;
     showToast(`→ Đang tới câu ${prev + 1} · ${formatElapsed(startS)}`);
-  }, [activeIndex, isOfflineReading, lesson.segments, seekToIndex, showToast]);
+  }, [
+    activeIndex,
+    handleSeekToIndex,
+    isOfflineReading,
+    lesson.segments,
+    showToast,
+  ]);
 
   const handleNextSentence = useCallback(() => {
     if (isOfflineReading || activeIndex >= lesson.segments.length - 1) {
       return;
     }
     const next = activeIndex + 1;
-    seekToIndex(next);
+    handleSeekToIndex(next);
     const startS = (lesson.segments[next]?.start_ms ?? 0) / 1000;
     showToast(`→ Đang tới câu ${next + 1} · ${formatElapsed(startS)}`);
-  }, [activeIndex, isOfflineReading, lesson.segments, seekToIndex, showToast]);
+  }, [
+    activeIndex,
+    handleSeekToIndex,
+    isOfflineReading,
+    lesson.segments,
+    showToast,
+  ]);
 
   const handleToggleAbLoop = useCallback(() => {
     if (abLoopActive) {
@@ -821,12 +838,12 @@ export function YouTubeLessonScreen({
       setAbLoopStartIndex(index);
       setAbLoopEndIndex(index);
       showToast(`Lặp lại câu ${index + 1} (A–B)`);
-      seekToIndex(index);
+      handleSeekToIndex(index);
       if (!playing) {
         playerRef.current?.play();
       }
     }
-  }, [abLoopActive, activeIndex, playing, seekToIndex, showToast]);
+  }, [abLoopActive, activeIndex, handleSeekToIndex, playing, showToast]);
 
   const handleSelectLoopCount = useCallback(
     (count: SentenceLoopCount) => {
@@ -930,22 +947,21 @@ export function YouTubeLessonScreen({
       if (isOfflineReading) {
         return;
       }
-      seekToIndex(segment.index);
+      handleSeekToIndex(segment.index);
     },
-    [isOfflineReading, seekToIndex],
+    [handleSeekToIndex, isOfflineReading],
   );
 
   const handlePracticeSentenceSegment = useCallback(
     (segment: SentenceCardSegment) => {
-      const fullSegment =
-        lesson.segments[segment.index] ?? {
-          id: `${lesson.video.id}-${segment.index}`,
-          index: segment.index,
-          start_ms: 0,
-          end_ms: 0,
-          en: segment.en,
-          vi: segment.vi,
-        };
+      const fullSegment = lesson.segments[segment.index] ?? {
+        id: `${lesson.video.id}-${segment.index}`,
+        index: segment.index,
+        start_ms: 0,
+        end_ms: 0,
+        en: segment.en,
+        vi: segment.vi,
+      };
       onPracticeSentence?.(fullSegment);
     },
     [lesson.segments, lesson.video.id, onPracticeSentence],
@@ -1059,7 +1075,7 @@ export function YouTubeLessonScreen({
           getCurrentTimeS={getCurrentTimeS}
           onOpenTools={openToolsPopup}
           onReplay={replayActiveSentence}
-          onSeekToIndex={seekToIndex}
+          onSeekToIndex={handleSeekToIndex}
           onSeekToSeconds={seekToSeconds}
           onTogglePlay={togglePlayPause}
           playing={playing}
@@ -1076,6 +1092,7 @@ export function YouTubeLessonScreen({
       handlePlayerEnded,
       handlePlayerReady,
       handlePlayingChange,
+      handleSeekToIndex,
       isAdPlaying,
       isOfflineReading,
       lesson.segments,
@@ -1084,7 +1101,6 @@ export function YouTubeLessonScreen({
       playbackRate,
       playing,
       replayActiveSentence,
-      seekToIndex,
       seekToSeconds,
       styles,
       togglePlayPause,
@@ -1182,7 +1198,7 @@ export function YouTubeLessonScreen({
         onOpenTranscript={openTranscriptPopup}
         onPrevSentence={handlePrevSentence}
         onReplay={replayActiveSentence}
-        onSeekToIndex={seekToIndex}
+        onSeekToIndex={handleSeekToIndex}
         onSeekToSeconds={seekToSeconds}
         onSelectLoopCount={handleSelectLoopCount}
         onSelectPlaybackRate={handleSelectPlaybackRate}
@@ -1276,10 +1292,7 @@ export function YouTubeLessonScreen({
         </View>
       ) : null}
       {playerError ? (
-        <View
-          style={styles.errorBanner}
-          testID="youtube-player-error-banner"
-        >
+        <View style={styles.errorBanner} testID="youtube-player-error-banner">
           <AppText color="danger" testID="youtube-player-error">
             {getPlayerErrorMessage(playerError, t)}
           </AppText>
@@ -1374,7 +1387,7 @@ export function YouTubeLessonScreen({
         }
         onPressBackChip={handleScrollToActiveSentence}
         onPressWord={handlePressWord}
-        onSelectIndex={seekToIndex}
+        onSelectIndex={handleSeekToIndex}
         onToggleGrammarSave={handleToggleGrammarSave}
         onToggleSaveSegment={handleToggleSave}
         onToggleTranslation={toggleVietnamese}
