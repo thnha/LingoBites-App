@@ -8,6 +8,11 @@ export const TRANSCRIPT_SYNC_POLL_INTERVAL_MS = 250;
 // reply is ever posted). Without a bound, one hung call wedges the poll
 // latch below and the transcript never follows a playing clip again.
 export const TRANSCRIPT_SYNC_POLL_TIMEOUT_MS = 1_000;
+/**
+ * SETE-325 (C-1): seeking to a sentence starts playback slightly before its
+ * first word so the opening sound is not clipped.
+ */
+export const TRANSCRIPT_SEEK_COMPENSATION_MS = 300;
 const INTERPOLATION_TICK_MS = 50;
 
 type TimeSample = {
@@ -130,7 +135,10 @@ export function useTranscriptSync({
       return;
     }
 
-    const targetMs = list[index].start_ms;
+    const targetMs = Math.max(
+      0,
+      list[index].start_ms - TRANSCRIPT_SEEK_COMPENSATION_MS,
+    );
     const wallMs = Date.now();
     previousSampleRef.current = null;
     currentSampleRef.current = {wallMs, mediaMs: targetMs};

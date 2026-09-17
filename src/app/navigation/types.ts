@@ -129,8 +129,13 @@ export type LessonsStackParamList = {
   ContentLessonList: undefined;
   ContentLessonDetail: {lessonId: string};
   ContentLessonRuntime: {lessonId: string};
-  /** Speaking Room + shadowing activity (SETE-110 / M5). */
-  SpeakingRoom: undefined;
+  /**
+   * Speaking Room + shadowing activity (SETE-110 / M5).
+   * SETE-325 (C-3): the YouTube lesson passes the tapped sentence in so
+   * the room opens with context. Optional so existing bare navigations
+   * keep working.
+   */
+  SpeakingRoom: {sentenceText?: string} | undefined;
   SpeakingShadowing: undefined;
   Today: undefined;
 } & LearningDetailParamList;

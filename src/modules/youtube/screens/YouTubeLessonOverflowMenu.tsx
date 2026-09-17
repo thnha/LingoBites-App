@@ -24,6 +24,11 @@ export type YouTubeLessonOverflowMenuProps = {
   repeatActive: boolean;
   onToggleRepeat: () => void;
   /**
+   * SETE-325 (C-4): opens the transcript popup. Reading works offline, so
+   * this row is never disabled by `disabledOffline`.
+   */
+  onOpenTranscript: () => void;
+  /**
    * Offline reading mode: every playback-dependent row stays visible but
    * disabled, so users learn the feature exists instead of seeing controls
    * silently vanish.
@@ -152,6 +157,7 @@ export function YouTubeLessonOverflowMenu({
   onClearAbLoop,
   repeatActive,
   onToggleRepeat,
+  onOpenTranscript,
   disabledOffline,
 }: YouTubeLessonOverflowMenuProps) {
   const {theme} = useAppTheme();
@@ -224,6 +230,20 @@ export function YouTubeLessonOverflowMenu({
     disabled: disabledOffline,
     active: repeatActive,
     onSelect: onToggleRepeat,
+  });
+  rows.push({
+    testID: 'youtube-open-transcript',
+    icon: 'subtitles',
+    label: t('youtube.overflow_transcript', {defaultValue: 'Xem transcript'}),
+    accessibilityLabel: t('youtube.transcript_open_a11y', {
+      defaultValue: 'Xem transcript',
+    }),
+    accessibilityHint: t('youtube.transcript_open_hint', {
+      defaultValue: 'Mở cửa sổ transcript của video',
+    }),
+    disabled: false,
+    active: false,
+    onSelect: onOpenTranscript,
   });
 
   return (

@@ -146,6 +146,69 @@ describe('TranscriptLine', () => {
     ).toBe('/həˈloʊ ðɛr/');
   });
 
+  it('reports the tapped word when onPressWord is set (SETE-325, C-2)', () => {
+    const onPressWord = jest.fn();
+    const {tree} = renderLine({onPressWord});
+
+    act(() => {
+      tree.root
+        .findByProps({testID: 'transcript-line-seg-0-word-0'})
+        .props.onPress();
+    });
+    expect(onPressWord).toHaveBeenCalledWith('Hello');
+
+    act(() => {
+      tree.root
+        .findByProps({testID: 'transcript-line-seg-0-word-2'})
+        .props.onPress();
+    });
+    expect(onPressWord).toHaveBeenCalledWith('there');
+  });
+
+  it('renders plain English text with no tappable words by default', () => {
+    const {tree} = renderLine();
+
+    expect(
+      tree.root.findByProps({testID: 'transcript-line-seg-0-en'}).props
+        .children,
+    ).toBe('Hello there');
+    expect(
+      tree.root.findAll(
+        node =>
+          typeof node.props?.testID === 'string' &&
+          node.props.testID.includes('-word-'),
+      ),
+    ).toHaveLength(0);
+    expect(() =>
+      tree.root.findByProps({testID: 'transcript-line-seg-0-practice'}),
+    ).toThrow();
+  });
+
+  it('keeps words untappable while disabled even with onPressWord set', () => {
+    const {tree} = renderLine({disabled: true, onPressWord: jest.fn()});
+
+    expect(
+      tree.root.findAll(
+        node =>
+          typeof node.props?.testID === 'string' &&
+          node.props.testID.includes('-word-'),
+      ),
+    ).toHaveLength(0);
+  });
+
+  it('offers per-sentence practice only when onPracticeSentence is set (SETE-325, C-3)', () => {
+    const onPracticeSentence = jest.fn();
+    const {tree} = renderLine({onPracticeSentence});
+
+    act(() => {
+      tree.root
+        .findByProps({testID: 'transcript-line-seg-0-practice'})
+        .props.onPress();
+    });
+
+    expect(onPracticeSentence).toHaveBeenCalledWith(makeSegment());
+  });
+
   it('uses onPrimaryContainer for active IPA text contrast', () => {
     const {tree} = renderLine({isActive: true});
     const ipaNode = tree.root.findByProps({

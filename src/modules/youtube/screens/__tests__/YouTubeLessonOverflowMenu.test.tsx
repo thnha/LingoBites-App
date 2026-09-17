@@ -123,7 +123,17 @@ function headerActionChildren(tree: renderer.ReactTestRenderer) {
 }
 
 function isMenuOpen(tree: renderer.ReactTestRenderer) {
-  return tree.root.findByType(Modal).props.visible === true;
+  // SETE-325 (C-4): the screen now hosts two Modals (overflow menu +
+  // transcript popup), so locate the menu by its content, not by type.
+  const menuModal = tree.root.findAllByType(Modal).find(modal => {
+    try {
+      modal.findByProps({testID: 'youtube-overflow-menu'});
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  return menuModal?.props.visible === true;
 }
 
 async function openMenu(tree: renderer.ReactTestRenderer) {
@@ -198,6 +208,8 @@ describe('YouTubeLessonScreen overflow menu (SETE-305, Option B)', () => {
       'youtube-ab-loop-a',
       'youtube-ab-loop-b',
       'youtube-toggle-repeat',
+      // SETE-325 (C-4): the transcript popup entry lives here too.
+      'youtube-open-transcript',
     ]) {
       expect(tree.root.findByProps({testID})).toBeTruthy();
     }
@@ -260,6 +272,11 @@ describe('YouTubeLessonScreen overflow menu (SETE-305, Option B)', () => {
     expect(
       tree.root.findByProps({testID: 'youtube-iframe'}).props.playbackRate,
     ).toBe(1);
+    // SETE-325 (C-4): reading the transcript needs no player, so its row
+    // stays enabled in offline reading mode.
+    expect(
+      tree.root.findByProps({testID: 'youtube-open-transcript'}).props.disabled,
+    ).toBe(false);
   });
 
   it('exposes labelled, non-color-only controls for assistive tech', async () => {

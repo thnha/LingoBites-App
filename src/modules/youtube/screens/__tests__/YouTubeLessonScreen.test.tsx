@@ -1,5 +1,6 @@
 import React from 'react';
 import renderer, {act} from 'react-test-renderer';
+import {Alert} from 'react-native';
 import {open} from 'react-native-quick-sqlite';
 import {FeatureFlagProvider} from '@/release';
 import {AppThemeProvider} from '@theme';
@@ -18,6 +19,17 @@ import {
   YouTubeLessonRouteScreen,
   YouTubeLessonScreen,
 } from '../YouTubeLessonScreen';
+import {YouTubeTranscriptPopup} from '../YouTubeTranscriptPopup';
+import {TranscriptLine} from '../../components/TranscriptLine';
+import {speak} from '@modules/audio';
+
+jest.mock('@modules/audio', () => ({
+  isEnUsVoiceAvailable: jest.fn(),
+  speak: jest.fn(),
+  stop: jest.fn(),
+}));
+
+const mockSpeak = speak as jest.Mock;
 
 let mockCurrentTimeSeconds = 0;
 const mockSeekTo = jest.fn((seconds: number) => {
@@ -109,13 +121,16 @@ async function openOverflowMenu(tree: renderer.ReactTestRenderer) {
   });
 }
 
-async function renderScreen(lesson: YouTubeTranscript = makeLesson()) {
+async function renderScreen(
+  lesson: YouTubeTranscript = makeLesson(),
+  extraProps: Partial<React.ComponentProps<typeof YouTubeLessonScreen>> = {},
+) {
   let tree!: renderer.ReactTestRenderer;
   await act(async () => {
     tree = renderer.create(
       <FeatureFlagProvider>
         <AppThemeProvider>
-          <YouTubeLessonScreen lesson={lesson} />
+          <YouTubeLessonScreen lesson={lesson} {...extraProps} />
         </AppThemeProvider>
       </FeatureFlagProvider>,
     );
@@ -130,6 +145,8 @@ describe('YouTubeLessonScreen', () => {
     jest.setSystemTime(new Date('2026-09-10T10:00:00.000Z'));
     mockCurrentTimeSeconds = 0;
     mockSeekTo.mockClear();
+    mockSpeak.mockClear();
+    mockSpeak.mockResolvedValue({ok: true});
   });
 
   afterEach(() => {
@@ -170,7 +187,95 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
-    expect(mockSeekTo).toHaveBeenCalledWith(3); // 3_000ms / 1000
+    // SETE-325 (C-1): 300ms early-start compensation → (3_000 − 300) / 1000
+    expect(mockSeekTo).toHaveBeenCalledWith(2.7);
+  });
+
+  it('speaks the tapped word via TTS (SETE-325, C-2)', async () => {
+    const tree = await renderScreen();
+
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-1-word-0'})
+        .props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(mockSpeak).toHaveBeenCalledWith('Second');
+  });
+
+  it('alerts the service message when TTS fails (SETE-325, C-2)', async () => {
+    mockSpeak.mockResolvedValue({
+      ok: false,
+      errorCode: 'VOICE_UNAVAILABLE',
+      message: 'missing voice',
+    });
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    try {
+      const tree = await renderScreen();
+
+      await act(async () => {
+        tree.root
+          .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-1-word-0'})
+          .props.onPress();
+        await Promise.resolve();
+      });
+
+      expect(alertSpy).toHaveBeenCalledWith(expect.anything(), 'missing voice');
+    } finally {
+      alertSpy.mockRestore();
+    }
+  });
+
+  it('forwards per-sentence practice taps (SETE-325, C-3)', async () => {
+    const onPracticeSentence = jest.fn();
+    const tree = await renderScreen(makeLesson(), {onPracticeSentence});
+
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-2-practice'})
+        .props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(onPracticeSentence).toHaveBeenCalledWith(
+      expect.objectContaining({id: 'dQw4w9WgXcQ-2'}),
+    );
+  });
+
+  it('opens the transcript popup from the menu and seeks without closing (SETE-325, C-4)', async () => {
+    const tree = await renderScreen();
+
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(false);
+    await openOverflowMenu(tree);
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-open-transcript'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(true);
+    const popupLines = tree.root
+      .findAllByType(TranscriptLine)
+      .filter(node => String(node.props.testID).startsWith('youtube-popup-line-'));
+    expect(popupLines).toHaveLength(3);
+
+    mockSeekTo.mockClear();
+    await act(async () => {
+      popupLines[2].props.onPress(makeLesson().segments[2]);
+      await Promise.resolve();
+    });
+
+    // (6_000 − 300) / 1000 with C-1 compensation, popup stays open.
+    expect(mockSeekTo).toHaveBeenCalledWith(5.7);
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(true);
+
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'youtube-transcript-popup-close'})
+        .props.onPress();
+      await Promise.resolve();
+    });
+    expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(false);
   });
 
   it('toggles Vietnamese and IPA display independently', async () => {
@@ -537,6 +642,49 @@ describe('YouTubeLessonRouteScreen save warning (SETE-283, HVB-07)', () => {
 
     expect(navigation.goBack).toHaveBeenCalledTimes(1);
     expect(navigation.reset).not.toHaveBeenCalled();
+  });
+
+  it('opens SpeakingRoom with the tapped sentence via the tab parent (SETE-325, C-3)', async () => {
+    const {tree, tabNavigate} = await renderRoute({lesson: makeLesson()});
+
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-0-practice'})
+        .props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(tabNavigate).toHaveBeenCalledWith('Lessons', {
+      screen: 'SpeakingRoom',
+      params: {sentenceText: 'First sentence'},
+    });
+  });
+
+  it('falls back to Tabs > Lessons > SpeakingRoom from History (SETE-325, C-3)', async () => {
+    const rootNavigate = jest.fn();
+    const {tree} = await renderRoute(
+      {lesson: makeLesson()},
+      {
+        getParent: jest.fn(() => ({
+          getState: () => ({
+            routeNames: ['Tabs', 'YouTubeHistory', 'YouTubeLesson'],
+          }),
+          navigate: rootNavigate,
+        })),
+      },
+    );
+
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'transcript-line-dQw4w9WgXcQ-1-practice'})
+        .props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(rootNavigate).toHaveBeenCalledWith('Tabs', {
+      screen: 'Lessons',
+      params: {screen: 'SpeakingRoom', params: {sentenceText: 'Second sentence'}},
+    });
   });
 });
 
