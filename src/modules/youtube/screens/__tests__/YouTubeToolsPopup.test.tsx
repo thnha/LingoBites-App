@@ -65,7 +65,9 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
       abLoopStartIndex: null,
       abLoopEndIndex: null,
       abLoopActive: false,
-      onToggleAbLoop: jest.fn(),
+      onSetAbLoopPointA: jest.fn(),
+      onSetAbLoopPointB: jest.fn(),
+      onClearAbLoop: jest.fn(),
       onOpenTranscript: jest.fn(),
       ...props,
     };
@@ -116,15 +118,28 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
         .children,
     ).toBe('Câu 2/3');
     expect(tree.root.findByProps({testID: 'youtube-tools-prev'})).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'youtube-tools-replay'})).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-replay'}),
+    ).toBeTruthy();
     expect(
       tree.root.findByProps({testID: 'youtube-tools-play-toggle'}),
     ).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'youtube-tools-ab'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-tools-ab-a'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-tools-ab-b'})).toBeTruthy();
+    // Clear only renders once a point is set.
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-tools-ab-clear'}),
+    ).toThrow();
     expect(tree.root.findByProps({testID: 'youtube-tools-next'})).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'youtube-tools-loop-1'})).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'youtube-tools-loop-3'})).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'youtube-tools-loop-5'})).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-loop-1'}),
+    ).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-loop-3'}),
+    ).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-loop-5'}),
+    ).toBeTruthy();
     expect(
       tree.root.findByProps({testID: 'youtube-tools-loop-inf'}),
     ).toBeTruthy();
@@ -134,7 +149,9 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     expect(
       tree.root.findByProps({testID: 'youtube-tools-speed-0.75'}),
     ).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'youtube-tools-speed-1'})).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-speed-1'}),
+    ).toBeTruthy();
     expect(
       tree.root.findByProps({testID: 'youtube-tools-speed-1.25'}),
     ).toBeTruthy();
@@ -151,14 +168,16 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     const onNext = jest.fn();
     const onReplay = jest.fn();
     const onTogglePlay = jest.fn();
-    const onToggleAb = jest.fn();
+    const onSetA = jest.fn();
+    const onSetB = jest.fn();
 
     const {tree} = await renderPopup({
       onPrevSentence: onPrev,
       onNextSentence: onNext,
       onReplay: onReplay,
       onTogglePlay: onTogglePlay,
-      onToggleAbLoop: onToggleAb,
+      onSetAbLoopPointA: onSetA,
+      onSetAbLoopPointB: onSetB,
     });
 
     await act(async () => {
@@ -168,7 +187,8 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
       tree.root
         .findByProps({testID: 'youtube-tools-play-toggle'})
         .props.onPress();
-      tree.root.findByProps({testID: 'youtube-tools-ab'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-tools-ab-a'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-tools-ab-b'}).props.onPress();
       await Promise.resolve();
     });
 
@@ -176,7 +196,8 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     expect(onNext).toHaveBeenCalledTimes(1);
     expect(onReplay).toHaveBeenCalledTimes(1);
     expect(onTogglePlay).toHaveBeenCalledTimes(1);
-    expect(onToggleAb).toHaveBeenCalledTimes(1);
+    expect(onSetA).toHaveBeenCalledTimes(1);
+    expect(onSetB).toHaveBeenCalledTimes(1);
   });
 
   it('handles loop selection and speed selection', async () => {
@@ -198,6 +219,43 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
 
     expect(onSelectLoop).toHaveBeenCalledWith(3);
     expect(onSelectSpeed).toHaveBeenCalledWith(1.25);
+  });
+
+  it('renders A-B clear only when a loop point is set (SETE-346)', async () => {
+    const {tree} = await renderPopup({
+      abLoopStartIndex: 0,
+      abLoopEndIndex: 1,
+      abLoopActive: true,
+    });
+
+    const onClear = jest.fn();
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-ab-clear'}),
+    ).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-tools-ab-a'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-tools-ab-b'})).toBeTruthy();
+    expect(onClear).not.toHaveBeenCalled();
+  });
+
+  it('disables loop, A-B and speed controls offline while transcript stays enabled (SETE-346)', async () => {
+    const {tree} = await renderPopup({disabled: true});
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-loop-3'}).props.disabled,
+    ).toBe(true);
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-ab-a'}).props.disabled,
+    ).toBe(true);
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-ab-b'}).props.disabled,
+    ).toBe(true);
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-speed-1'}).props.disabled,
+    ).toBe(true);
+    // Transcript never requires the player.
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-open-transcript'}),
+    ).toBeTruthy();
   });
 
   it('opens dictation box, types text, and checks correctness', async () => {
@@ -286,8 +344,10 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     const {tree} = await renderPopup({segments: segmentsWithDupes});
     expect(tree.root.findByProps({testID: 'youtube-tools-seek'})).toBeTruthy();
 
-    const duplicateKeyErrors = errorSpy.mock.calls.filter(args =>
-      typeof args[0] === 'string' && args[0].includes('Encountered two children with the same key')
+    const duplicateKeyErrors = errorSpy.mock.calls.filter(
+      args =>
+        typeof args[0] === 'string' &&
+        args[0].includes('Encountered two children with the same key'),
     );
     expect(duplicateKeyErrors.length).toBe(0);
 

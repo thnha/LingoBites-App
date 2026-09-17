@@ -169,7 +169,9 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
   it('renders dots pagination when <= 10 segments and hides when > 10', async () => {
     // 3 segments: dots rendered
     const tree3 = await renderScreen(makeLesson(3));
-    expect(tree3.root.findByProps({testID: 'youtube-dots-indicator'})).toBeTruthy();
+    expect(
+      tree3.root.findByProps({testID: 'youtube-dots-indicator'}),
+    ).toBeTruthy();
     expect(tree3.root.findByProps({testID: 'youtube-dot-0'})).toBeTruthy();
     expect(tree3.root.findByProps({testID: 'youtube-dot-1'})).toBeTruthy();
     expect(tree3.root.findByProps({testID: 'youtube-dot-2'})).toBeTruthy();
@@ -204,7 +206,7 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
     ).toBeTruthy();
   });
 
-  it('toggles A-B loop and displays toast in Tools popup', async () => {
+  it('sets A-B loop points and displays toast in Tools popup (SETE-346)', async () => {
     const tree = await renderScreen();
 
     await act(async () => {
@@ -212,9 +214,9 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
       await Promise.resolve();
     });
 
-    // Toggle A-B on
+    // Set point A at the current sentence
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-tools-ab'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-tools-ab-a'}).props.onPress();
       await Promise.resolve();
     });
 
@@ -222,9 +224,23 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
       tree.root.findByProps({testID: 'youtube-toast-message'}),
     ).toBeTruthy();
 
-    // Toggle A-B off
+    // Clear appears once a point is set
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-ab-clear'}),
+    ).toBeTruthy();
+
+    // Set point B then clear the range
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-tools-ab'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-tools-ab-b'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-toast-message'}),
+    ).toBeTruthy();
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-ab-clear'}).props.onPress();
       await Promise.resolve();
     });
 
@@ -233,18 +249,58 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
     ).toBeTruthy();
   });
 
+  it('clears the A-B range when a sentence loop is armed and vice versa (SETE-346)', async () => {
+    const tree = await renderScreen();
+
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-compact-tools'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    // Arm an A-B range first
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-ab-a'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-ab-b'}).props.onPress();
+      await Promise.resolve();
+    });
+    expect(
+      tree.root.findByProps({testID: 'youtube-ab-loop-status'}),
+    ).toBeTruthy();
+
+    // Arming a sentence loop clears the A-B range
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-loop-3'}).props.onPress();
+      await Promise.resolve();
+    });
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-ab-loop-status'}),
+    ).toThrow();
+
+    // Setting A again resets the loop back to 1
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-ab-a'}).props.onPress();
+      await Promise.resolve();
+    });
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-loop-1'}).props[
+        'aria-pressed'
+      ],
+    ).toBe(true);
+  });
+
   it('displays back-chip when scrolled down past 40pt and handles tap', async () => {
     const tree = await renderScreen();
 
     // Simulate scrolling card down past 40pt
     await act(async () => {
-      tree.root
-        .findByProps({testID: 'sentence-card-0-scroll'})
-        .props.onScroll({
-          nativeEvent: {
-            contentOffset: {y: 60, x: 0},
-          },
-        });
+      tree.root.findByProps({testID: 'sentence-card-0-scroll'}).props.onScroll({
+        nativeEvent: {
+          contentOffset: {y: 60, x: 0},
+        },
+      });
       await Promise.resolve();
     });
 

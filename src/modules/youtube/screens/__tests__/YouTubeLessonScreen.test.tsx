@@ -114,9 +114,9 @@ function makeLesson(): YouTubeTranscript {
   };
 }
 
-async function openOverflowMenu(tree: renderer.ReactTestRenderer) {
+async function openToolsPopup(tree: renderer.ReactTestRenderer) {
   await act(async () => {
-    tree.root.findByProps({testID: 'youtube-more-options'}).props.onPress();
+    tree.root.findByProps({testID: 'youtube-compact-tools'}).props.onPress();
     await Promise.resolve();
   });
 }
@@ -239,16 +239,31 @@ describe('YouTubeLessonScreen', () => {
     );
   });
 
-  it('opens the transcript popup from the menu and seeks without closing (SETE-325, C-4)', async () => {
+  it('keeps exactly 3 header controls and no overflow menu (SETE-346)', async () => {
+    const tree = await renderScreen();
+
+    expect(
+      tree.root.findByProps({testID: 'youtube-toggle-vietnamese'}),
+    ).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-toggle-ipa'})).toBeTruthy();
+    expect(
+      tree.root.findByProps({testID: 'youtube-start-practice'}),
+    ).toBeTruthy();
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-more-options'}),
+    ).toThrow();
+  });
+
+  it('opens the transcript popup from the Tools sheet and seeks without closing (SETE-325, C-4; SETE-346)', async () => {
     const tree = await renderScreen();
 
     expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(
       false,
     );
-    await openOverflowMenu(tree);
+    await openToolsPopup(tree);
     await act(async () => {
       tree.root
-        .findByProps({testID: 'youtube-open-transcript'})
+        .findByProps({testID: 'youtube-tools-open-transcript'})
         .props.onPress();
       await Promise.resolve();
     });
@@ -312,7 +327,7 @@ describe('YouTubeLessonScreen', () => {
     ).toBe('surface');
   });
 
-  it('follows and re-seeks the active sentence while repeat is on', async () => {
+  it('follows and re-seeks the active sentence while infinite loop is on (SETE-346)', async () => {
     const tree = await renderScreen();
 
     mockCurrentTimeSeconds = 0.1;
@@ -321,9 +336,9 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
-    await openOverflowMenu(tree);
+    await openToolsPopup(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-toggle-repeat'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-tools-loop-inf'}).props.onPress();
       await Promise.resolve();
     });
 
@@ -511,16 +526,18 @@ describe('YouTubeLessonScreen', () => {
     expect(mockSeekTo).not.toHaveBeenCalled();
   });
 
-  it('passes playback rate to the iframe', async () => {
+  it('passes playback rate to the iframe via the Tools sheet (SETE-346)', async () => {
     const tree = await renderScreen();
 
     expect(
       tree.root.findByProps({testID: 'youtube-iframe'}).props.playbackRate,
     ).toBe(1);
 
-    await openOverflowMenu(tree);
+    await openToolsPopup(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-playback-rate'}).props.onPress();
+      tree.root
+        .findByProps({testID: 'youtube-tools-speed-1.25'})
+        .props.onPress();
       await Promise.resolve();
     });
 
@@ -529,7 +546,7 @@ describe('YouTubeLessonScreen', () => {
     ).toBe(1.25);
   });
 
-  it('loops between A and B segment markers', async () => {
+  it('loops between A and B segment markers set from the Tools sheet (SETE-346)', async () => {
     const tree = await renderScreen();
 
     mockCurrentTimeSeconds = 0.1;
@@ -538,9 +555,9 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
-    await openOverflowMenu(tree);
+    await openToolsPopup(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-ab-loop-a'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-tools-ab-a'}).props.onPress();
       await Promise.resolve();
     });
 
@@ -550,10 +567,8 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
-    // Selecting A closes the menu, so reopen it before setting B.
-    await openOverflowMenu(tree);
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-ab-loop-b'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-tools-ab-b'}).props.onPress();
       await Promise.resolve();
     });
 
@@ -611,7 +626,7 @@ describe('YouTubeLessonScreen', () => {
     }
   });
 
-  it('disables playback controls in offline reading mode', async () => {
+  it('disables Tools sheet playback controls in offline reading mode (SETE-346)', async () => {
     const tree = await renderScreen();
 
     const iframe = tree.root.findByProps({testID: 'youtube-iframe'});
@@ -620,15 +635,19 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
-    await openOverflowMenu(tree);
+    await openToolsPopup(tree);
     for (const testID of [
-      'youtube-playback-rate',
-      'youtube-toggle-repeat',
-      'youtube-ab-loop-a',
-      'youtube-ab-loop-b',
+      'youtube-tools-speed-1',
+      'youtube-tools-loop-1',
+      'youtube-tools-ab-a',
+      'youtube-tools-ab-b',
     ]) {
       expect(tree.root.findByProps({testID}).props.disabled).toBe(true);
     }
+    // Reading the transcript needs no player, so it stays enabled.
+    expect(
+      tree.root.findByProps({testID: 'youtube-tools-open-transcript'}),
+    ).toBeTruthy();
   });
 
   it('disables VI/IPA toggles when their content is empty (SETE-290)', async () => {
