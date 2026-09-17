@@ -241,4 +241,51 @@ describe('SentenceCarousel (SETE-330)', () => {
       vi: 'Câu đầu tiên',
     });
   });
+
+  it('renders dots indicator when <= 10 sentences and highlights active dot', () => {
+    const tree = renderCarousel({activeIndex: 1});
+
+    expect(tree.root.findByProps({testID: 'youtube-dots-indicator'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-dot-0'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-dot-1'})).toBeTruthy();
+    expect(tree.root.findByProps({testID: 'youtube-dot-2'})).toBeTruthy();
+  });
+
+  it('hides dots indicator when > 10 sentences', () => {
+    const longSegments = Array.from({length: 12}, (_, i) => ({
+      index: i,
+      en: `Sentence ${i}`,
+      vi: `Câu ${i}`,
+    }));
+    const tree = renderCarousel({segments: longSegments});
+
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-dots-indicator'}),
+    ).toThrow();
+  });
+
+  it('renders floating back-chip when showBackChip is true and handles press', () => {
+    const onPressBackChip = jest.fn();
+    const tree = renderCarousel({
+      activeIndex: 2,
+      showBackChip: true,
+      onPressBackChip,
+    });
+
+    const chip = tree.root.findByProps({testID: 'youtube-back-to-active-chip'});
+    expect(chip).toBeTruthy();
+    act(() => {
+      chip.props.onPress();
+    });
+    expect(onPressBackChip).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders toast message when toastMessage is provided', () => {
+    const tree = renderCarousel({
+      toastMessage: '→ Đang tới câu 2 · 00:03',
+    });
+
+    const toast = tree.root.findByProps({testID: 'youtube-toast-message'});
+    expect(toast).toBeTruthy();
+  });
 });

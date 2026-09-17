@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Alert,
   FlatList,
+  Pressable,
   StyleSheet,
   View,
   useWindowDimensions,
@@ -33,15 +34,27 @@ import {
 } from '../components/YouTubePlayer';
 import {CompactControlBar} from '../components/CompactControlBar';
 import {YouTubeMiniPlayer} from '../components/YouTubeMiniPlayer';
-import {shouldShowMiniPlayer} from '../utils/sentenceSeek';
+import {
+  formatElapsed,
+  shouldShowMiniPlayer,
+} from '../utils/sentenceSeek';
 import {TranscriptLine} from '../components/TranscriptLine';
 import {YouTubeLessonOverflowMenu} from './YouTubeLessonOverflowMenu';
 import {YouTubeTranscriptPopup} from './YouTubeTranscriptPopup';
+import {YouTubeToolsPopup} from './YouTubeToolsPopup';
 import {speak} from '@modules/audio';
 import {
   useTranscriptSync,
   TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
 } from '../sync/useTranscriptSync';
+import {
+  abWrap,
+  formatLoopLabel,
+  shouldShowDots,
+  toolsBadgeActive,
+  TOAST_DURATION_MS,
+  type SentenceLoopCount,
+} from '../utils/toolsLogic';
 import type {NavigationProp} from '@react-navigation/native';
 import type {
   CreateStackParamList,
@@ -50,8 +63,10 @@ import type {
 } from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useBookmarkOptimistic} from '../../lesson/useBookmarkOptimistic';
-import {useFlashcardLibrary} from '../../lesson/useFlashcardLibrary';
+import {
+  useBookmarkOptimistic,
+  useFlashcardLibrary,
+} from '@modules/lesson';
 import {mapTranscriptToPractice} from '../utils/practiceMapper';
 import {
   nextYouTubePlaybackRate,
@@ -136,6 +151,59 @@ function createStyles(theme: AppTheme) {
       justifyContent: 'center',
       padding: theme.gutter,
     },
+    dotsContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 6,
+      justifyContent: 'center',
+      paddingVertical: theme.spacing.xs,
+    },
+    dot: {
+      backgroundColor: theme.colors.surfaceHigh,
+      borderRadius: 3,
+      height: 6,
+      width: 6,
+    },
+    dotActive: {
+      backgroundColor: theme.colors.accent,
+      borderRadius: 4,
+      height: 8,
+      width: 8,
+    },
+    backChip: {
+      alignSelf: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.accent,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      bottom: theme.spacing.md,
+      elevation: 4,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      position: 'absolute',
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      zIndex: 10,
+    },
+    toast: {
+      alignSelf: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.surfaceHigh,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      elevation: 6,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      position: 'absolute',
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      top: theme.spacing.xs,
+      zIndex: 20,
+    },
   });
 }
 
@@ -159,9 +227,16 @@ export function YouTubeLessonScreen({
   const [showVietnamese, setShowVietnamese] = useState(true);
   const [showIpa, setShowIpa] = useState(true);
   const [repeatIndex, setRepeatIndex] = useState<number | null>(null);
+  const [loopCount, setLoopCount] = useState<SentenceLoopCount>(1);
+  const loopLeftRef = useRef<SentenceLoopCount>(1);
   const [abLoopStartIndex, setAbLoopStartIndex] = useState<number | null>(null);
   const [abLoopEndIndex, setAbLoopEndIndex] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState<YouTubePlaybackRate>(1);
+  const [isToolsPopupOpen, setIsToolsPopupOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isCardScrolledDown, setIsCardScrolledDown] = useState(false);
+
   // SETE-305 (Option B): playback controls live in the overflow menu, so the
   // header always holds exactly 4 controls (VI, IPA, Practice, More) and Back
   // can never be squeezed out no matter how many loop points are set.
@@ -288,18 +363,76 @@ export function YouTubeLessonScreen({
     enabled: !isOfflineReading,
   });
 
-  // Repeat mode: once the active segment moves past the one being repeated,
-  // jump straight back to its start rather than waiting for the next sentence.
+  const showToast = useCallback(
+    (msg: string, durationMs: number = TOAST_DURATION_MS) => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+      setToastMessage(msg);
+      toastTimerRef.current = setTimeout(() => {
+        setToastMessage(null);
+      }, durationMs);
+    },
+    [],
+  );
+
+  const openToolsPopup = useCallback(() => {
+    setIsToolsPopupOpen(true);
+  }, []);
+
+  const closeToolsPopup = useCallback(() => {
+    setIsToolsPopupOpen(false);
+  }, []);
+
+  const abLoopActive =
+    abLoopStartIndex != null &&
+    abLoopEndIndex != null &&
+    abLoopStartIndex <= abLoopEndIndex;
+
+  // Repeat mode & sentence loop count: once the active segment moves past the
+  // one being repeated, jump straight back to its start.
   useEffect(() => {
     const previous = prevActiveIndexRef.current;
     prevActiveIndexRef.current = activeIndex;
-    if (repeatIndex == null || previous !== repeatIndex) {
+
+    if (isOfflineReading) {
       return;
     }
-    if (activeIndex !== repeatIndex) {
-      seekToIndex(repeatIndex);
+
+    if (repeatIndex != null && previous === repeatIndex) {
+      if (activeIndex !== repeatIndex) {
+        seekToIndex(repeatIndex);
+      }
+      return;
     }
-  }, [activeIndex, repeatIndex, seekToIndex]);
+
+    if (
+      loopCount > 1 &&
+      previous >= 0 &&
+      previous !== activeIndex &&
+      !abLoopActive
+    ) {
+      if (loopLeftRef.current > 1) {
+        loopLeftRef.current -= 1;
+        seekToIndex(previous);
+        showToast(
+          loopCount === Infinity
+            ? 'Lặp vô hạn câu hiện tại'
+            : `Lặp câu ${previous + 1} · còn ${loopLeftRef.current} lần`,
+        );
+        return;
+      }
+      loopLeftRef.current = loopCount;
+    }
+  }, [
+    abLoopActive,
+    activeIndex,
+    isOfflineReading,
+    loopCount,
+    repeatIndex,
+    seekToIndex,
+    showToast,
+  ]);
 
   // SETE-328 (TASK-1): shell controls. Frame taps toggle play/pause
   // natively inside the iframe (no overlay is ever placed above it); these
@@ -344,6 +477,7 @@ export function YouTubeLessonScreen({
   const handleListScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const scrolledPastPx = event.nativeEvent.contentOffset.y;
+      setIsCardScrolledDown(scrolledPastPx >= 40);
       setMiniVisible(previous => {
         const next = shouldShowMiniPlayer({
           scrolledPastPx,
@@ -360,14 +494,11 @@ export function YouTubeLessonScreen({
     listRef.current?.scrollToOffset({animated: true, offset: 0});
   }, []);
 
-  const abLoopActive =
-    abLoopStartIndex != null &&
-    abLoopEndIndex != null &&
-    abLoopStartIndex <= abLoopEndIndex;
-
-  // SETE-328: the Tools button highlights while a loop is armed or the rate
-  // differs from 1× (the full tools popup itself belongs to TASK-5).
-  const toolsArmed = abLoopActive || playbackRate !== 1;
+  // SETE-328 / SETE-332: the Tools button highlights while a loop is armed or the rate
+  // differs from 1×.
+  const toolsArmed =
+    toolsBadgeActive(loopCount, playbackRate, abLoopActive) ||
+    repeatIndex !== null;
 
   useEffect(() => {
     if (!abLoopActive || isOfflineReading) {
@@ -375,8 +506,9 @@ export function YouTubeLessonScreen({
     }
     const startIndex = abLoopStartIndex;
     const endIndex = abLoopEndIndex;
+    const startMs = lesson.segments[startIndex]?.start_ms;
     const endMs = lesson.segments[endIndex]?.end_ms;
-    if (endMs == null) {
+    if (startMs == null || endMs == null) {
       return undefined;
     }
 
@@ -384,10 +516,12 @@ export function YouTubeLessonScreen({
     const intervalId = setInterval(() => {
       void (async () => {
         const timeMs = await getCurrentTimeMs();
-        if (cancelled || timeMs < endMs) {
+        const wrapTo = abWrap(timeMs, startMs, endMs, 80);
+        if (cancelled || wrapTo == null) {
           return;
         }
         seekToIndex(startIndex);
+        showToast('↻ Lặp lại đoạn A–B');
       })();
     }, TRANSCRIPT_SYNC_POLL_INTERVAL_MS);
 
@@ -403,6 +537,7 @@ export function YouTubeLessonScreen({
     isOfflineReading,
     lesson.segments,
     seekToIndex,
+    showToast,
   ]);
 
   useEffect(() => {
@@ -557,6 +692,74 @@ export function YouTubeLessonScreen({
     setIsTranscriptPopupOpen(false);
   }, []);
 
+  const handlePrevSentence = useCallback(() => {
+    if (isOfflineReading || activeIndex <= 0) {
+      return;
+    }
+    const prev = activeIndex - 1;
+    seekToIndex(prev);
+    const startS = (lesson.segments[prev]?.start_ms ?? 0) / 1000;
+    showToast(`→ Đang tới câu ${prev + 1} · ${formatElapsed(startS)}`);
+  }, [activeIndex, isOfflineReading, lesson.segments, seekToIndex, showToast]);
+
+  const handleNextSentence = useCallback(() => {
+    if (isOfflineReading || activeIndex >= lesson.segments.length - 1) {
+      return;
+    }
+    const next = activeIndex + 1;
+    seekToIndex(next);
+    const startS = (lesson.segments[next]?.start_ms ?? 0) / 1000;
+    showToast(`→ Đang tới câu ${next + 1} · ${formatElapsed(startS)}`);
+  }, [activeIndex, isOfflineReading, lesson.segments, seekToIndex, showToast]);
+
+  const handleToggleAbLoop = useCallback(() => {
+    if (abLoopActive) {
+      setAbLoopStartIndex(null);
+      setAbLoopEndIndex(null);
+      showToast('Tắt lặp A–B');
+    } else {
+      setRepeatIndex(null);
+      const index = activeIndex >= 0 ? activeIndex : 0;
+      setAbLoopStartIndex(index);
+      setAbLoopEndIndex(index);
+      showToast(`Lặp lại câu ${index + 1} (A–B)`);
+      seekToIndex(index);
+      if (!playing) {
+        playerRef.current?.play();
+      }
+    }
+  }, [abLoopActive, activeIndex, playing, seekToIndex, showToast]);
+
+  const handleSelectLoopCount = useCallback(
+    (count: SentenceLoopCount) => {
+      setLoopCount(count);
+      loopLeftRef.current = count;
+      if (count === 1) {
+        showToast('Tắt lặp câu');
+      } else if (count === Infinity) {
+        showToast('Lặp vô hạn câu hiện tại');
+      } else {
+        showToast(`Lặp ${formatLoopLabel(count)} lần/câu`);
+      }
+    },
+    [showToast],
+  );
+
+  const handleSelectPlaybackRate = useCallback((rate: YouTubePlaybackRate) => {
+    setPlaybackRate(rate);
+  }, []);
+
+  const handleScrollToActiveSentence = useCallback(() => {
+    setIsCardScrolledDown(false);
+    if (activeIndex >= 0) {
+      listRef.current?.scrollToIndex({
+        animated: true,
+        index: activeIndex,
+        viewPosition: 0.5,
+      });
+    }
+  }, [activeIndex]);
+
   // SETE-325 (C-2): tapping a word speaks it. The service defaults already
   // match the spec (locale en-US, rate 0.5). Failures surface the service's
   // own message (VOICE_UNAVAILABLE included) via an alert.
@@ -662,7 +865,7 @@ export function YouTubeLessonScreen({
           disabled={isOfflineReading}
           durationS={durationS}
           getCurrentTimeS={getCurrentTimeS}
-          onOpenTools={openOverflowMenu}
+          onOpenTools={openToolsPopup}
           onReplay={replayActiveSentence}
           onSeekToIndex={seekToIndex}
           onSeekToSeconds={seekToSeconds}
@@ -684,7 +887,7 @@ export function YouTubeLessonScreen({
       isOfflineReading,
       lesson.segments,
       lesson.video.id,
-      openOverflowMenu,
+      openToolsPopup,
       playbackRate,
       playing,
       replayActiveSentence,
@@ -755,6 +958,11 @@ export function YouTubeLessonScreen({
         rightAction={headerActions}
         title={lesson.video.title}
       />
+      {toastMessage ? (
+        <View style={styles.toast} testID="youtube-toast-message">
+          <AppText variant="label">{toastMessage}</AppText>
+        </View>
+      ) : null}
       <YouTubeLessonOverflowMenu
         abLoopActive={abLoopActive}
         abLoopEndIndex={abLoopEndIndex}
@@ -770,6 +978,32 @@ export function YouTubeLessonScreen({
         playbackRate={playbackRate}
         repeatActive={repeatIndex !== null}
         visible={isOverflowMenuOpen}
+      />
+      <YouTubeToolsPopup
+        abLoopActive={abLoopActive}
+        abLoopEndIndex={abLoopEndIndex}
+        abLoopStartIndex={abLoopStartIndex}
+        activeIndex={activeIndex}
+        disabled={isOfflineReading}
+        durationS={durationS}
+        getCurrentTimeS={getCurrentTimeS}
+        loopCount={loopCount}
+        onClose={closeToolsPopup}
+        onNextSentence={handleNextSentence}
+        onOpenTranscript={openTranscriptPopup}
+        onPrevSentence={handlePrevSentence}
+        onReplay={replayActiveSentence}
+        onSeekToIndex={seekToIndex}
+        onSeekToSeconds={seekToSeconds}
+        onSelectLoopCount={handleSelectLoopCount}
+        onSelectPlaybackRate={handleSelectPlaybackRate}
+        onToggleAbLoop={handleToggleAbLoop}
+        onTogglePlay={togglePlayPause}
+        playbackRate={playbackRate}
+        playing={playing}
+        segments={lesson.segments}
+        topOffset={playerBlockHeight > 0 ? playerBlockHeight : 220}
+        visible={isToolsPopupOpen}
       />
       <YouTubeTranscriptPopup
         activeIndex={activeIndex}
@@ -852,6 +1086,29 @@ export function YouTubeLessonScreen({
         scrollEventThrottle={16}
         testID="youtube-transcript-list"
       />
+      {shouldShowDots(lesson.segments.length) ? (
+        <View style={styles.dotsContainer} testID="youtube-dots-indicator">
+          {lesson.segments.map((_, i) => (
+            <View
+              key={i}
+              style={[styles.dot, i === activeIndex && styles.dotActive]}
+              testID={`youtube-dot-${i}`}
+            />
+          ))}
+        </View>
+      ) : null}
+      {isCardScrolledDown && activeIndex >= 0 ? (
+        <Pressable
+          accessibilityHint="Chạm để cuộn về câu đang phát"
+          accessibilityLabel={`Câu ${activeIndex + 1} đang phát`}
+          accessibilityRole="button"
+          onPress={handleScrollToActiveSentence}
+          style={styles.backChip}
+          testID="youtube-back-to-active-chip"
+        >
+          <AppText variant="label">{`↩ Câu ${activeIndex + 1} đang phát`}</AppText>
+        </Pressable>
+      ) : null}
       {miniVisible && !isOfflineReading ? (
         <View style={[styles.miniWrap, {bottom: feedClearance}]}>
           <YouTubeMiniPlayer
@@ -859,7 +1116,7 @@ export function YouTubeLessonScreen({
             disabled={isOfflineReading}
             durationS={durationS}
             getCurrentTimeS={getCurrentTimeS}
-            onOpenTools={openOverflowMenu}
+            onOpenTools={openToolsPopup}
             onPress={scrollBackToPlayer}
             onReplay={replayActiveSentence}
             onTogglePlay={togglePlayPause}

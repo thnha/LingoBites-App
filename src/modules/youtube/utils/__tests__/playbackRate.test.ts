@@ -1,4 +1,5 @@
 import {
+  formatYouTubePlaybackRate,
   nextYouTubePlaybackRate,
   YOUTUBE_PLAYBACK_RATES,
   type YouTubePlaybackRate,
@@ -6,9 +7,10 @@ import {
 
 describe('nextYouTubePlaybackRate', () => {
   it('cycles through supported rates', () => {
+    expect(nextYouTubePlaybackRate(0.5)).toBe(0.75);
     expect(nextYouTubePlaybackRate(0.75)).toBe(1);
     expect(nextYouTubePlaybackRate(1)).toBe(1.25);
-    expect(nextYouTubePlaybackRate(1.5)).toBe(0.75);
+    expect(nextYouTubePlaybackRate(1.25)).toBe(0.5);
   });
 
   it('covers every configured rate', () => {
@@ -19,5 +21,11 @@ describe('nextYouTubePlaybackRate', () => {
       rate = nextYouTubePlaybackRate(rate);
     }
     expect(seen.size).toBe(YOUTUBE_PLAYBACK_RATES.length);
+  });
+
+  it('formats playback rate label', () => {
+    expect(formatYouTubePlaybackRate(1)).toBe('1×');
+    expect(formatYouTubePlaybackRate(0.5)).toBe('0.5×');
+    expect(formatYouTubePlaybackRate(1.25)).toBe('1.25×');
   });
 });
