@@ -49,15 +49,7 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
       onClose: jest.fn(),
       segments: makeSegments(),
       activeIndex: 1,
-      durationS: 10,
-      getCurrentTimeS: jest.fn(async () => 4),
-      playing: false,
-      onTogglePlay: jest.fn(),
       onReplay: jest.fn(),
-      onPrevSentence: jest.fn(),
-      onNextSentence: jest.fn(),
-      onSeekToIndex: jest.fn(),
-      onSeekToSeconds: jest.fn(),
       playbackRate: 1,
       onSelectPlaybackRate: jest.fn(),
       loopCount: 1,
@@ -107,30 +99,33 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     expect(tree.toJSON()).toBeNull();
   });
 
-  it('renders seek track, controls, loop, speed, dictation, and transcript options', async () => {
+  it('renders loop, speed, A-B, dictation, and transcript options without duplicating transport (SETE-346 Option C)', async () => {
     const {tree} = await renderPopup();
 
     expect(tree.root.findByProps({testID: 'youtube-tools-popup'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'youtube-tools-close'})).toBeTruthy();
-    expect(tree.root.findByProps({testID: 'youtube-tools-seek'})).toBeTruthy();
-    expect(
-      tree.root.findByProps({testID: 'youtube-tools-sentence-label'}).props
-        .children,
-    ).toBe('Câu 2/3');
-    expect(tree.root.findByProps({testID: 'youtube-tools-prev'})).toBeTruthy();
-    expect(
-      tree.root.findByProps({testID: 'youtube-tools-replay'}),
-    ).toBeTruthy();
-    expect(
+    // Option C: seek + transport live only in the compact bar above.
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-tools-seek'}),
+    ).toThrow();
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-tools-prev'}),
+    ).toThrow();
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-tools-next'}),
+    ).toThrow();
+    expect(() =>
       tree.root.findByProps({testID: 'youtube-tools-play-toggle'}),
-    ).toBeTruthy();
+    ).toThrow();
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-tools-replay'}),
+    ).toThrow();
     expect(tree.root.findByProps({testID: 'youtube-tools-ab-a'})).toBeTruthy();
     expect(tree.root.findByProps({testID: 'youtube-tools-ab-b'})).toBeTruthy();
     // Clear only renders once a point is set.
     expect(() =>
       tree.root.findByProps({testID: 'youtube-tools-ab-clear'}),
     ).toThrow();
-    expect(tree.root.findByProps({testID: 'youtube-tools-next'})).toBeTruthy();
     expect(
       tree.root.findByProps({testID: 'youtube-tools-loop-1'}),
     ).toBeTruthy();
@@ -163,39 +158,21 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     ).toBeTruthy();
   });
 
-  it('calls playback control callbacks when pressed', async () => {
-    const onPrev = jest.fn();
-    const onNext = jest.fn();
-    const onReplay = jest.fn();
-    const onTogglePlay = jest.fn();
+  it('calls A-B callbacks when pressed (SETE-346 Option C)', async () => {
     const onSetA = jest.fn();
     const onSetB = jest.fn();
 
     const {tree} = await renderPopup({
-      onPrevSentence: onPrev,
-      onNextSentence: onNext,
-      onReplay: onReplay,
-      onTogglePlay: onTogglePlay,
       onSetAbLoopPointA: onSetA,
       onSetAbLoopPointB: onSetB,
     });
 
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-tools-prev'}).props.onPress();
-      tree.root.findByProps({testID: 'youtube-tools-next'}).props.onPress();
-      tree.root.findByProps({testID: 'youtube-tools-replay'}).props.onPress();
-      tree.root
-        .findByProps({testID: 'youtube-tools-play-toggle'})
-        .props.onPress();
       tree.root.findByProps({testID: 'youtube-tools-ab-a'}).props.onPress();
       tree.root.findByProps({testID: 'youtube-tools-ab-b'}).props.onPress();
       await Promise.resolve();
     });
 
-    expect(onPrev).toHaveBeenCalledTimes(1);
-    expect(onNext).toHaveBeenCalledTimes(1);
-    expect(onReplay).toHaveBeenCalledTimes(1);
-    expect(onTogglePlay).toHaveBeenCalledTimes(1);
     expect(onSetA).toHaveBeenCalledTimes(1);
     expect(onSetB).toHaveBeenCalledTimes(1);
   });
@@ -326,8 +303,7 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     expect(onOpenTranscript).toHaveBeenCalledTimes(1);
   });
 
-  it('renders seek ticks correctly even with duplicate start_ms (SETE-337)', async () => {
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  it('does not duplicate the compact seek track even with duplicate start_ms (SETE-346 Option C)', async () => {
     const segmentsWithDupes = [
       ...makeSegments(),
       {
@@ -342,15 +318,10 @@ describe('YouTubeToolsPopup (SETE-332, TASK-5)', () => {
     ];
 
     const {tree} = await renderPopup({segments: segmentsWithDupes});
-    expect(tree.root.findByProps({testID: 'youtube-tools-seek'})).toBeTruthy();
-
-    const duplicateKeyErrors = errorSpy.mock.calls.filter(
-      args =>
-        typeof args[0] === 'string' &&
-        args[0].includes('Encountered two children with the same key'),
-    );
-    expect(duplicateKeyErrors.length).toBe(0);
-
-    errorSpy.mockRestore();
+    // The single seek track lives in CompactControlBar (covered by its own
+    // duplicate-key test); the sheet must not render a second one.
+    expect(() =>
+      tree.root.findByProps({testID: 'youtube-tools-seek'}),
+    ).toThrow();
   });
 });
