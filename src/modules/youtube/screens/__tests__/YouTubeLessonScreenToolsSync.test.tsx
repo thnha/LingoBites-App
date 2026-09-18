@@ -183,24 +183,6 @@ describe('YouTubeLessonScreen Tools & Video-Card Sync (SETE-332, TASK-5)', () =>
     ).toThrow();
   });
 
-  it('navigates prev/next sentence from the compact bar and shows seek toast', async () => {
-    const tree = await renderScreen();
-
-    // Advance to sentence 1 (second sentence) via the compact bar — Option C
-    // keeps transport out of the Tools sheet.
-    mockSeekTo.mockClear();
-    await act(async () => {
-      tree.root.findByProps({testID: 'youtube-compact-next'}).props.onPress();
-      await Promise.resolve();
-    });
-
-    // Early start compensation: (3_000 - 300) / 1000 = 2.7s
-    expect(mockSeekTo).toHaveBeenCalledWith(2.7);
-    expect(
-      tree.root.findByProps({testID: 'youtube-toast-message'}),
-    ).toBeTruthy();
-  });
-
   it('sets A-B loop points and displays toast in Tools popup (SETE-346)', async () => {
     const tree = await renderScreen();
 

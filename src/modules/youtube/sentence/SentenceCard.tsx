@@ -685,6 +685,24 @@ export function SentenceCard({
         </View>
         <View style={styles.headerRight}>
           <IconButton
+            accessibilityHint={t('youtube.display_vietnamese_hint')}
+            accessibilityLabel={
+              translationVisible
+                ? t('youtube.translation_hide_a11y', {
+                    defaultValue: 'Ẩn dịch',
+                  })
+                : t('youtube.translation_show_a11y', {
+                    defaultValue: 'Hiện dịch',
+                  })
+            }
+            icon="translate"
+            onPress={handleToggleTranslation}
+            testID={
+              testID ? `${testID}-toggle-translation` : 'toggle-translation'
+            }
+            tone={translationVisible ? 'accent' : 'surface'}
+          />
+          <IconButton
             accessibilityHint={t('youtube.save_sentence_hint', {
               defaultValue: 'Lưu hoặc bỏ lưu câu này',
             })}
@@ -913,18 +931,6 @@ export function SentenceCard({
                   segment.vi
                 )}
               </AppText>
-              <Pressable
-                accessibilityRole="button"
-                onPress={handleToggleTranslation}
-                style={styles.hideTranslationBtn}
-                testID={testID ? `${testID}-hide-translation` : 'hide-translation'}
-              >
-                <AppText style={styles.hideTranslationBtnText} variant="caption">
-                  {t('youtube.translation_hide_text', {
-                    defaultValue: 'Ẩn dịch',
-                  })}
-                </AppText>
-              </Pressable>
             </View>
           </View>
         ) : null}

@@ -16,6 +16,7 @@ import {
   type NativeSyntheticEvent,
 } from 'react-native';
 import {AppText} from '@components/AppText';
+import {MaterialIcon} from '@components/MaterialIcon';
 import {useAppTheme, type AppTheme} from '@theme';
 import type {SentenceEnrichment} from '@shared/schemas/sentence-contract';
 import type {
@@ -466,9 +467,11 @@ export const SentenceCarousel = React.forwardRef<
           style={[styles.a11yBtn, activeIndex <= 0 && styles.a11yBtnDisabled]}
           testID="youtube-carousel-prev"
         >
-          <AppText color={activeIndex <= 0 ? 'muted' : 'primary'} variant="label">
-            ‹ Câu trước
-          </AppText>
+          <MaterialIcon
+            color={activeIndex <= 0 ? theme.colors.text.muted : theme.colors.text.primary}
+            name="chevron_left"
+            size={24}
+          />
         </Pressable>
         <View style={styles.a11yBtnDivider} />
         <Pressable
@@ -485,12 +488,11 @@ export const SentenceCarousel = React.forwardRef<
           ]}
           testID="youtube-carousel-next"
         >
-          <AppText
-            color={activeIndex >= segments.length - 1 ? 'muted' : 'primary'}
-            variant="label"
-          >
-            Câu sau ›
-          </AppText>
+          <MaterialIcon
+            color={activeIndex >= segments.length - 1 ? theme.colors.text.muted : theme.colors.text.primary}
+            name="chevron_right"
+            size={24}
+          />
         </Pressable>
       </View>
 

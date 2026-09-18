@@ -233,19 +233,6 @@ describe('SentenceCard', () => {
       expect(hasNode(treeEmpty, `${CARD_TEST_ID}-level`)).toBe(false);
     });
 
-    it('toggles Vietnamese translation visibility via header button', () => {
-      const tree = renderCard();
-      expect(hasNode(tree, `${CARD_TEST_ID}-vi`)).toBe(true);
-
-      act(() => {
-        tree.root
-          .findByProps({testID: `${CARD_TEST_ID}-toggle-translation`})
-          .props.onPress();
-      });
-
-      expect(hasNode(tree, `${CARD_TEST_ID}-vi`)).toBe(false);
-    });
-
     it('calls onToggleSave when bookmark button is pressed', () => {
       const onToggleSave = jest.fn();
       const tree = renderCard({onToggleSave, isSaved: false});

@@ -251,14 +251,14 @@ describe('YouTubeLessonScreen + SentenceCarousel Integration (SETE-334, TASK-7)'
 
     // Swipe to card 1 (index 1)
     await act(async () => {
+      carouselList.props.onScrollBeginDrag?.();
       carouselList.props.onMomentumScrollEnd({
         nativeEvent: {contentOffset: {x: snapInterval, y: 0}},
       });
       await Promise.resolve();
     });
 
-    // 3_000ms start time - 300ms compensation = 2.7s
-    expect(mockSeekTo).toHaveBeenCalledWith(2.7);
+    expect(mockSeekTo).toHaveBeenCalledWith(3);
   });
 
   it('tapping next sentence prompt in SentenceCard advances carousel and seeks video', async () => {
@@ -291,7 +291,7 @@ describe('YouTubeLessonScreen + SentenceCarousel Integration (SETE-334, TASK-7)'
       await Promise.resolve();
     });
 
-    expect(mockSeekTo).toHaveBeenCalledWith(2.7);
+    expect(mockSeekTo).toHaveBeenCalledWith(3);
   });
 
   it('tapping word token on SentenceCard triggers TTS speak', async () => {

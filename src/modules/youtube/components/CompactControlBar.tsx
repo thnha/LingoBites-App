@@ -1,6 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
-  Pressable,
   StyleSheet,
   View,
   type DimensionValue,
@@ -9,6 +8,7 @@ import {
   type NativeTouchEvent,
 } from 'react-native';
 import {AppText} from '@components/AppText';
+import {IconButton} from '@components/IconButton';
 import {useAppTheme, type AppTheme} from '@theme';
 import {
   formatRemaining,
@@ -315,30 +315,26 @@ export function CompactControlBar({
             ? formatSentenceLabel(Math.max(0, activeIndex), segments.length)
             : 'Câu –/–'}
         </AppText>
-        <Pressable
+        <IconButton
           accessibilityHint="Phát hoặc dừng video"
           accessibilityLabel={playing ? 'Dừng' : 'Phát'}
-          accessibilityRole="button"
-          accessibilityState={{disabled}}
           disabled={disabled}
+          icon={playing ? 'pause' : 'play_arrow'}
           onPress={onTogglePlay}
           style={styles.button}
           testID="youtube-compact-play-toggle"
-        >
-          <AppText variant="label">{playing ? 'Dừng' : 'Phát'}</AppText>
-        </Pressable>
-        <Pressable
+          tone="surface"
+        />
+        <IconButton
           accessibilityHint="Nghe lại câu đang phát"
           accessibilityLabel="Nghe lại"
-          accessibilityRole="button"
-          accessibilityState={{disabled}}
           disabled={disabled}
+          icon="replay"
           onPress={onReplay}
           style={styles.button}
           testID="youtube-compact-replay"
-        >
-          <AppText variant="label">Nghe lại</AppText>
-        </Pressable>
+          tone="surface"
+        />
         <AppText
           color="secondary"
           style={styles.remain}
@@ -347,16 +343,15 @@ export function CompactControlBar({
         >
           {formatRemaining(durationS, shownS)}
         </AppText>
-        <Pressable
+        <IconButton
           accessibilityHint="Mở công cụ"
           accessibilityLabel="Công cụ"
-          accessibilityRole="button"
+          icon="settings"
           onPress={onOpenTools}
           style={[styles.button, toolsArmed && styles.buttonArmed]}
           testID="youtube-compact-tools"
-        >
-          <AppText variant="label">Công cụ</AppText>
-        </Pressable>
+          tone={toolsArmed ? 'accent' : 'surface'}
+        />
       </View>
     </View>
   );

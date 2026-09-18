@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Alert,
-  Pressable,
   StyleSheet,
   View,
   useWindowDimensions,
@@ -1111,40 +1110,32 @@ export function YouTubeLessonScreen({
 
   const headerActions = (
     <View style={styles.headerActions}>
-      <Pressable
+      <IconButton
         accessibilityHint={t('youtube.display_vietnamese_hint')}
         accessibilityLabel={
           showVietnameseEffective
             ? t('youtube.translation_hide_a11y', {defaultValue: 'Ẩn dịch'})
             : t('youtube.translation_show_a11y', {defaultValue: 'Hiện dịch'})
         }
-        accessibilityRole="button"
         disabled={!hasVietnamese}
+        icon="translate"
         onPress={toggleVietnamese}
-        style={[styles.headerBtn, showVietnameseEffective && styles.headerBtnActive]}
         testID="youtube-toggle-vietnamese"
-      >
-        <AppText color={showVietnameseEffective ? 'inverse' : 'primary'} variant="label">
-          VI
-        </AppText>
-      </Pressable>
-      <Pressable
+        tone={showVietnameseEffective ? 'accent' : 'surface'}
+      />
+      <IconButton
         accessibilityHint={t('youtube.display_ipa_hint')}
         accessibilityLabel={
           showIpaEffective
             ? t('youtube.ipa_hide_a11y', {defaultValue: 'Ẩn IPA'})
             : t('youtube.ipa_show_a11y', {defaultValue: 'Hiện IPA'})
         }
-        accessibilityRole="button"
         disabled={!hasIpa}
+        icon="record_voice_over"
         onPress={toggleIpa}
-        style={[styles.headerBtn, showIpaEffective && styles.headerBtnActive]}
         testID="youtube-toggle-ipa"
-      >
-        <AppText color={showIpaEffective ? 'inverse' : 'primary'} variant="label">
-          IPA
-        </AppText>
-      </Pressable>
+        tone={showIpaEffective ? 'accent' : 'surface'}
+      />
       <IconButton
         accessibilityHint={t('youtube.practice_hint', {
           defaultValue: 'Luyện tập câu',

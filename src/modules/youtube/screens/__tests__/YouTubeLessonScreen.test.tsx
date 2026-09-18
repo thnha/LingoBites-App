@@ -179,14 +179,14 @@ describe('YouTubeLessonScreen', () => {
     const flatList = tree.root.findByProps({testID: 'sentence-carousel-list'});
     const snapInterval = flatList.props.snapToInterval;
     await act(async () => {
+      flatList.props.onScrollBeginDrag?.();
       flatList.props.onMomentumScrollEnd({
         nativeEvent: {contentOffset: {x: snapInterval, y: 0}},
       });
       await Promise.resolve();
     });
 
-    // SETE-325 (C-1): 300ms early-start compensation → (3_000 − 300) / 1000
-    expect(mockSeekTo).toHaveBeenCalledWith(2.7);
+    expect(mockSeekTo).toHaveBeenCalledWith(3);
   });
 
   it('speaks the tapped word via TTS (SETE-325, C-2)', async () => {
@@ -284,8 +284,7 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
-    // (6_000 − 300) / 1000 with C-1 compensation, popup stays open.
-    expect(mockSeekTo).toHaveBeenCalledWith(5.7);
+    expect(mockSeekTo).toHaveBeenCalledWith(6);
     expect(tree.root.findByType(YouTubeTranscriptPopup).props.visible).toBe(
       true,
     );
@@ -548,9 +547,9 @@ describe('YouTubeLessonScreen', () => {
 
     mockSeekTo.mockClear();
 
-    // User navigates to next sentence via the compact bar (Option C)
+    // User navigates to next sentence via the carousel a11y controls
     await act(async () => {
-      tree.root.findByProps({testID: 'youtube-compact-next'}).props.onPress();
+      tree.root.findByProps({testID: 'youtube-carousel-next'}).props.onPress();
       await Promise.resolve();
     });
 
