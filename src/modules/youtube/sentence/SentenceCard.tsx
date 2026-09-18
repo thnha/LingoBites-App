@@ -70,7 +70,6 @@ export type SentenceCardProps = {
   level?: string | null;
   /** Initial or controlled translation visibility. Defaults to true. */
   showTranslation?: boolean;
-  onToggleTranslation?: () => void;
   /** Bookmark/save status of this card. */
   isSaved?: boolean;
   onToggleSave?: () => void;
@@ -459,7 +458,6 @@ export function SentenceCard({
   totalSegments,
   level,
   showTranslation: controlledShowTranslation,
-  onToggleTranslation,
   isSaved = false,
   onToggleSave,
   onPlaySentenceAudio,
@@ -482,11 +480,7 @@ export function SentenceCard({
   const cardWidth = customWidth ?? getCardWidth(windowWidth);
 
   const scrollViewRef = useRef<ScrollView>(null);
-  const [internalShowTranslation, setInternalShowTranslation] = useState(true);
-  const translationVisible =
-    controlledShowTranslation !== undefined
-      ? controlledShowTranslation
-      : internalShowTranslation;
+  const translationVisible = controlledShowTranslation ?? true;
 
   const [scrollY, setScrollY] = useState(0);
   const [sentenceBlockHeight, setSentenceBlockHeight] = useState(0);
@@ -609,14 +603,6 @@ export function SentenceCard({
     viewportHeightRef.current = e.nativeEvent.layout.height;
   }, []);
 
-  const handleToggleTranslation = useCallback(() => {
-    if (onToggleTranslation) {
-      onToggleTranslation();
-    } else {
-      setInternalShowTranslation(prev => !prev);
-    }
-  }, [onToggleTranslation]);
-
   const handleSentenceBlockLayout = useCallback((e: LayoutChangeEvent) => {
     setSentenceBlockHeight(e.nativeEvent.layout.height);
   }, []);
@@ -684,24 +670,6 @@ export function SentenceCard({
           ) : null}
         </View>
         <View style={styles.headerRight}>
-          <IconButton
-            accessibilityHint={t('youtube.display_vietnamese_hint')}
-            accessibilityLabel={
-              translationVisible
-                ? t('youtube.translation_hide_a11y', {
-                    defaultValue: 'Ẩn dịch',
-                  })
-                : t('youtube.translation_show_a11y', {
-                    defaultValue: 'Hiện dịch',
-                  })
-            }
-            icon="translate"
-            onPress={handleToggleTranslation}
-            testID={
-              testID ? `${testID}-toggle-translation` : 'toggle-translation'
-            }
-            tone={translationVisible ? 'accent' : 'surface'}
-          />
           <IconButton
             accessibilityHint={t('youtube.save_sentence_hint', {
               defaultValue: 'Lưu hoặc bỏ lưu câu này',

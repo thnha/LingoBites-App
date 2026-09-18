@@ -1360,7 +1360,6 @@ export function YouTubeLessonScreen({
         onSelectIndex={handleSeekToIndex}
         onToggleGrammarSave={handleToggleGrammarSave}
         onToggleSaveSegment={handleToggleSave}
-        onToggleTranslation={toggleVietnamese}
         onToggleWordSave={handleToggleWordSave}
         ref={listRef}
         retryBlock={retryBlock}

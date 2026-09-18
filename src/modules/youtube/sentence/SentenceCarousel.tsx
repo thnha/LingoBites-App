@@ -58,7 +58,6 @@ export type SentenceCarouselProps = {
   retryBlock?: RetryBlockFn;
   /** Controlled translation visibility (true = show VI, false = hide VI). */
   showTranslation?: boolean;
-  onToggleTranslation?: () => void;
   /** Set of saved segment IDs / indices. */
   savedSegmentIds?: Set<string | number>;
   onToggleSaveSegment?: (segment: SentenceCardSegment) => void;
@@ -198,7 +197,6 @@ export const SentenceCarousel = React.forwardRef<
     level,
     retryBlock,
     showTranslation,
-    onToggleTranslation,
     savedSegmentIds,
     onToggleSaveSegment,
     onPlaySentenceAudio,
@@ -343,7 +341,6 @@ export const SentenceCarousel = React.forwardRef<
             onToggleSave={() => onToggleSaveSegment?.(item)}
             onToggleWordSave={onToggleWordSave}
             onToggleGrammarSave={onToggleGrammarSave}
-            onToggleTranslation={onToggleTranslation}
             retryBlock={retryBlock}
             savedGrammarIds={savedGrammarIds}
             savedWordIds={savedWordIds}
@@ -371,7 +368,6 @@ export const SentenceCarousel = React.forwardRef<
       onPracticeSentence,
       onPressWord,
       onToggleSaveSegment,
-      onToggleTranslation,
       onToggleWordSave,
       onToggleGrammarSave,
       retryBlock,
