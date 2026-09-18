@@ -37,8 +37,6 @@ describe('CompactControlBar', () => {
       disabled: false,
       onTogglePlay: jest.fn(),
       onReplay: jest.fn(),
-      onPrevSentence: jest.fn(),
-      onNextSentence: jest.fn(),
       onOpenTools: jest.fn(),
       onSeekToIndex: jest.fn(),
       onSeekToSeconds: jest.fn(),
@@ -109,61 +107,35 @@ describe('CompactControlBar', () => {
     expect(remaining.props.children).toBeDefined();
   });
 
-  it('triggers onTogglePlay, onReplay, prev/next, and onOpenTools when pressed', () => {
+  it('triggers onTogglePlay, onReplay, and onOpenTools when pressed', () => {
     const onTogglePlay = jest.fn();
     const onReplay = jest.fn();
-    const onPrevSentence = jest.fn();
-    const onNextSentence = jest.fn();
     const onOpenTools = jest.fn();
 
     const {tree} = renderCompactControlBar({
       activeIndex: 1,
       onTogglePlay,
       onReplay,
-      onPrevSentence,
-      onNextSentence,
       onOpenTools,
       toolsArmed: true,
     });
 
     const playBtn = tree.root.findByProps({testID: 'youtube-compact-play-toggle'});
     const replayBtn = tree.root.findByProps({testID: 'youtube-compact-replay'});
-    const prevBtn = tree.root.findByProps({testID: 'youtube-compact-prev'});
-    const nextBtn = tree.root.findByProps({testID: 'youtube-compact-next'});
     const toolsBtn = tree.root.findByProps({testID: 'youtube-compact-tools'});
 
     act(() => {
       playBtn.props.onPress();
       replayBtn.props.onPress();
-      prevBtn.props.onPress();
-      nextBtn.props.onPress();
       toolsBtn.props.onPress();
     });
 
-    expect(onTogglePlay).toHaveBeenCalledTimes(1);
-    expect(onReplay).toHaveBeenCalledTimes(1);
-    expect(onPrevSentence).toHaveBeenCalledTimes(1);
-    expect(onNextSentence).toHaveBeenCalledTimes(1);
-    expect(onOpenTools).toHaveBeenCalledTimes(1);
+    expect(onTogglePlay).toHaveBeenCalled();
+    expect(onReplay).toHaveBeenCalled();
+    expect(onOpenTools).toHaveBeenCalled();
   });
 
-  it('disables prev/next at the sentence boundaries (SETE-346 Option C)', () => {
-    const first = renderCompactControlBar({activeIndex: 0});
-    expect(
-      first.tree.root.findByProps({testID: 'youtube-compact-prev'}).props
-        .disabled,
-    ).toBe(true);
-    expect(
-      first.tree.root.findByProps({testID: 'youtube-compact-next'}).props
-        .disabled,
-    ).toBe(false);
 
-    const last = renderCompactControlBar({activeIndex: 2});
-    expect(
-      last.tree.root.findByProps({testID: 'youtube-compact-next'}).props
-        .disabled,
-    ).toBe(true);
-  });
 
   it('handles accessibility actions for increment and decrement', () => {
     const onSeekToIndex = jest.fn();

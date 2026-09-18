@@ -132,17 +132,30 @@ function createStyles(theme: AppTheme) {
       zIndex: 10,
     },
     a11yControls: {
+      alignSelf: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.surfaceHigh,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      bottom: theme.spacing.md,
+      elevation: 6,
       flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingHorizontal: theme.gutter,
-      paddingVertical: 2,
+      position: 'absolute',
+      shadowColor: theme.colors.text.primary,
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      zIndex: 20,
     },
     a11yBtn: {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: 44,
-      minWidth: 44,
-      paddingHorizontal: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
+    },
+    a11yBtnDivider: {
+      backgroundColor: theme.colors.surfaceHigh,
+      width: 1,
     },
     a11yBtnDisabled: {
       opacity: 0.3,
@@ -440,6 +453,7 @@ export const SentenceCarousel = React.forwardRef<
         </View>
       ) : null}
 
+      {/* a11yControls is now a sticky footer at the bottom of the carousel */}
       <View style={styles.a11yControls} testID="youtube-carousel-a11y-controls">
         <Pressable
           accessibilityHint="Chuyển sang câu trước đó"
@@ -452,10 +466,11 @@ export const SentenceCarousel = React.forwardRef<
           style={[styles.a11yBtn, activeIndex <= 0 && styles.a11yBtnDisabled]}
           testID="youtube-carousel-prev"
         >
-          <AppText color={activeIndex <= 0 ? 'muted' : 'primary'} variant="caption">
+          <AppText color={activeIndex <= 0 ? 'muted' : 'primary'} variant="label">
             ‹ Câu trước
           </AppText>
         </Pressable>
+        <View style={styles.a11yBtnDivider} />
         <Pressable
           accessibilityHint="Chuyển sang câu tiếp theo"
           accessibilityLabel="Câu sau"
@@ -472,7 +487,7 @@ export const SentenceCarousel = React.forwardRef<
         >
           <AppText
             color={activeIndex >= segments.length - 1 ? 'muted' : 'primary'}
-            variant="caption"
+            variant="label"
           >
             Câu sau ›
           </AppText>

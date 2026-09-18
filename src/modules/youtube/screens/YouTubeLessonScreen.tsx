@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Alert,
+  Pressable,
   StyleSheet,
   View,
   useWindowDimensions,
@@ -58,7 +59,7 @@ function getPlayerErrorMessage(
 }
 import {CompactControlBar} from '../components/CompactControlBar';
 import {YouTubeMiniPlayer} from '../components/YouTubeMiniPlayer';
-import {formatElapsed, shouldShowMiniPlayer} from '../utils/sentenceSeek';
+import {shouldShowMiniPlayer} from '../utils/sentenceSeek';
 import {
   SentenceCarousel,
   type SentenceCarouselRef,
@@ -132,6 +133,17 @@ function createStyles(theme: AppTheme) {
       alignItems: 'center',
       flexDirection: 'row',
       gap: theme.spacing.xs,
+    },
+    headerBtn: {
+      borderColor: theme.colors.outlineVariant,
+      borderRadius: theme.radius.pill,
+      borderWidth: 1,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: 4,
+    },
+    headerBtnActive: {
+      backgroundColor: theme.colors.accent,
+      borderColor: theme.colors.accent,
     },
     playerWrap: {
       backgroundColor: theme.colors.surface,
@@ -822,37 +834,7 @@ export function YouTubeLessonScreen({
     setIsTranscriptPopupOpen(false);
   }, []);
 
-  const handlePrevSentence = useCallback(() => {
-    if (isOfflineReading || activeIndex <= 0) {
-      return;
-    }
-    const prev = activeIndex - 1;
-    handleSeekToIndex(prev);
-    const startS = (lesson.segments[prev]?.start_ms ?? 0) / 1000;
-    showToast(`→ Đang tới câu ${prev + 1} · ${formatElapsed(startS)}`);
-  }, [
-    activeIndex,
-    handleSeekToIndex,
-    isOfflineReading,
-    lesson.segments,
-    showToast,
-  ]);
 
-  const handleNextSentence = useCallback(() => {
-    if (isOfflineReading || activeIndex >= lesson.segments.length - 1) {
-      return;
-    }
-    const next = activeIndex + 1;
-    handleSeekToIndex(next);
-    const startS = (lesson.segments[next]?.start_ms ?? 0) / 1000;
-    showToast(`→ Đang tới câu ${next + 1} · ${formatElapsed(startS)}`);
-  }, [
-    activeIndex,
-    handleSeekToIndex,
-    isOfflineReading,
-    lesson.segments,
-    showToast,
-  ]);
 
   const handleSelectLoopCount = useCallback(
     (count: SentenceLoopCount) => {
@@ -1089,9 +1071,7 @@ export function YouTubeLessonScreen({
           disabled={isOfflineReading || isAdPlaying}
           durationS={durationS}
           getCurrentTimeS={getCurrentTimeS}
-          onNextSentence={handleNextSentence}
           onOpenTools={openToolsPopup}
-          onPrevSentence={handlePrevSentence}
           onReplay={replayActiveSentence}
           onSeekToIndex={handleSeekToIndex}
           onSeekToSeconds={seekToSeconds}
@@ -1109,12 +1089,10 @@ export function YouTubeLessonScreen({
       activeIndex,
       durationS,
       getCurrentTimeS,
-      handleNextSentence,
       handlePlayerBlockLayout,
       handlePlayerEnded,
       handlePlayerReady,
       handlePlayingChange,
-      handlePrevSentence,
       handleSeekToIndex,
       isAdPlaying,
       isOfflineReading,
@@ -1133,32 +1111,40 @@ export function YouTubeLessonScreen({
 
   const headerActions = (
     <View style={styles.headerActions}>
-      <IconButton
+      <Pressable
         accessibilityHint={t('youtube.display_vietnamese_hint')}
         accessibilityLabel={
           showVietnameseEffective
-            ? t('youtube.translation_hide_a11y')
-            : t('youtube.translation_show_a11y')
+            ? t('youtube.translation_hide_a11y', {defaultValue: 'Ẩn dịch'})
+            : t('youtube.translation_show_a11y', {defaultValue: 'Hiện dịch'})
         }
+        accessibilityRole="button"
         disabled={!hasVietnamese}
-        icon="translate"
         onPress={toggleVietnamese}
+        style={[styles.headerBtn, showVietnameseEffective && styles.headerBtnActive]}
         testID="youtube-toggle-vietnamese"
-        tone={showVietnameseEffective ? 'accent' : 'surface'}
-      />
-      <IconButton
+      >
+        <AppText color={showVietnameseEffective ? 'inverse' : 'primary'} variant="label">
+          VI
+        </AppText>
+      </Pressable>
+      <Pressable
         accessibilityHint={t('youtube.display_ipa_hint')}
         accessibilityLabel={
           showIpaEffective
-            ? t('youtube.ipa_hide_a11y')
-            : t('youtube.ipa_show_a11y')
+            ? t('youtube.ipa_hide_a11y', {defaultValue: 'Ẩn IPA'})
+            : t('youtube.ipa_show_a11y', {defaultValue: 'Hiện IPA'})
         }
+        accessibilityRole="button"
         disabled={!hasIpa}
-        icon="record_voice_over"
         onPress={toggleIpa}
+        style={[styles.headerBtn, showIpaEffective && styles.headerBtnActive]}
         testID="youtube-toggle-ipa"
-        tone={showIpaEffective ? 'accent' : 'surface'}
-      />
+      >
+        <AppText color={showIpaEffective ? 'inverse' : 'primary'} variant="label">
+          IPA
+        </AppText>
+      </Pressable>
       <IconButton
         accessibilityHint={t('youtube.practice_hint', {
           defaultValue: 'Luyện tập câu',

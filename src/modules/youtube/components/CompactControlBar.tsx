@@ -44,8 +44,6 @@ export type CompactControlBarProps = {
   disabled?: boolean;
   onTogglePlay: () => void;
   onReplay: () => void;
-  onPrevSentence: () => void;
-  onNextSentence: () => void;
   onOpenTools: () => void;
   onSeekToIndex: (index: number) => void;
   onSeekToSeconds: (seconds: number) => void;
@@ -134,8 +132,6 @@ export function CompactControlBar({
   disabled = false,
   onTogglePlay,
   onReplay,
-  onPrevSentence,
-  onNextSentence,
   onOpenTools,
   onSeekToIndex,
   onSeekToSeconds,
@@ -254,9 +250,6 @@ export function CompactControlBar({
           )}%` as DimensionValue,
         }
       : null;
-  const prevDisabled = disabled || activeIndex <= 0;
-  const nextDisabled =
-    disabled || activeIndex >= segments.length - 1 || segments.length === 0;
 
   return (
     <View style={styles.container} testID="youtube-compact-bar">
@@ -323,18 +316,6 @@ export function CompactControlBar({
             : 'Câu –/–'}
         </AppText>
         <Pressable
-          accessibilityHint="Chuyển về câu trước đó"
-          accessibilityLabel="Câu trước"
-          accessibilityRole="button"
-          accessibilityState={{disabled: prevDisabled}}
-          disabled={prevDisabled}
-          onPress={onPrevSentence}
-          style={[styles.button, prevDisabled && {opacity: 0.4}]}
-          testID="youtube-compact-prev"
-        >
-          <AppText variant="label">Trước</AppText>
-        </Pressable>
-        <Pressable
           accessibilityHint="Phát hoặc dừng video"
           accessibilityLabel={playing ? 'Dừng' : 'Phát'}
           accessibilityRole="button"
@@ -357,18 +338,6 @@ export function CompactControlBar({
           testID="youtube-compact-replay"
         >
           <AppText variant="label">Nghe lại</AppText>
-        </Pressable>
-        <Pressable
-          accessibilityHint="Chuyển sang câu kế tiếp"
-          accessibilityLabel="Câu sau"
-          accessibilityRole="button"
-          accessibilityState={{disabled: nextDisabled}}
-          disabled={nextDisabled}
-          onPress={onNextSentence}
-          style={[styles.button, nextDisabled && {opacity: 0.4}]}
-          testID="youtube-compact-next"
-        >
-          <AppText variant="label">Sau</AppText>
         </Pressable>
         <AppText
           color="secondary"

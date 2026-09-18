@@ -117,6 +117,7 @@ describe('SentenceCarousel (SETE-330)', () => {
 
     // Simulate scrolling horizontally to card 1
     act(() => {
+      flatList.props.onScrollBeginDrag();
       flatList.props.onMomentumScrollEnd({
         nativeEvent: {
           contentOffset: {x: snapInterval, y: 0},
@@ -138,6 +139,7 @@ describe('SentenceCarousel (SETE-330)', () => {
 
     // Simulate momentum scrolling back to start (x = 0)
     act(() => {
+      flatList.props.onScrollBeginDrag();
       flatList.props.onMomentumScrollEnd({
         nativeEvent: {
           contentOffset: {x: 0, y: 0},
