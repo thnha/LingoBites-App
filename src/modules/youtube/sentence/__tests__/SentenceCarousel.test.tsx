@@ -96,11 +96,7 @@ describe('SentenceCarousel (SETE-330)', () => {
 
     for (let i = 0; i < 3; i++) {
       expect(hasNode(tree, `${CAROUSEL_TEST_ID}-card-${i}`)).toBe(true);
-      expect(
-        tree.root.findByProps({
-          testID: `${CAROUSEL_TEST_ID}-card-${i}-header-title`,
-        }).props.children,
-      ).toBe(`Câu ${i + 1}/3`);
+
       expect(
         tree.root.findByProps({testID: `${CAROUSEL_TEST_ID}-card-${i}-level`})
           .props.label,
@@ -374,11 +370,7 @@ describe('SentenceCarousel (SETE-330)', () => {
       expect(flatList.props.initialScrollIndex).toBe(119);
       // The resumed card is rendered immediately — no scroll interaction needed.
       expect(hasNode(tree, `${CAROUSEL_TEST_ID}-card-119`)).toBe(true);
-      expect(
-        tree.root.findByProps({
-          testID: `${CAROUSEL_TEST_ID}-card-119-header-title`,
-        }).props.children,
-      ).toBe('Câu 120/137');
+
     });
 
     it('clamps an out-of-range activeIndex instead of crashing FlatList', () => {

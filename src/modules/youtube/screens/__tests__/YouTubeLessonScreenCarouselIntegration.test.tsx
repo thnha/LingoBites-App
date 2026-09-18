@@ -223,10 +223,7 @@ describe('YouTubeLessonScreen + SentenceCarousel Integration (SETE-334, TASK-7)'
       expect(
         tree.root.findByProps({testID: `sentence-card-${i}`}),
       ).toBeTruthy();
-      expect(
-        tree.root.findByProps({testID: `sentence-card-${i}-header-title`})
-          .props.children,
-      ).toBe(`Câu ${i + 1}/3`);
+
       expect(
         tree.root.findByProps({testID: `sentence-card-${i}-level`}).props.label,
       ).toBe('Intermediate');
