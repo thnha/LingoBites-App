@@ -13,6 +13,14 @@ export const TRANSCRIPT_SYNC_POLL_TIMEOUT_MS = 1_000;
  * first word so the opening sound is not clipped.
  */
 export const TRANSCRIPT_SEEK_COMPENSATION_MS = 300;
+/**
+ * SETE-345: after a programmatic seek the player briefly reports a time
+ * inside the previous sentence (300ms compensation lands before the
+ * target start). Polls/ticks inside this window must not drag the
+ * highlight backwards off the seek target — that flicker is what fed the
+ * loop effect a phantom N-1 → N step and cascaded all the way to 0.
+ */
+export const TRANSCRIPT_SEEK_SETTLE_MS = 500;
 const INTERPOLATION_TICK_MS = 50;
 
 type TimeSample = {
@@ -101,9 +109,30 @@ export interface UseTranscriptSyncOptions {
   enabled?: boolean;
 }
 
+export interface SeekToIndexOptions {
+  /**
+   * SETE-345: internal loop / A–B replays seek exactly to `start_ms`
+   * (no 300ms compensation) so the replay never lands inside the
+   * previous sentence. Manual taps keep the default compensation to
+   * avoid clipping the opening sound.
+   */
+  exact?: boolean;
+}
+
 export interface UseTranscriptSyncResult {
+  /**
+   * Highlight index for the UI. Updated optimistically by seekToIndex so
+   * taps feel instant.
+   */
   activeIndex: number;
-  seekToIndex: (index: number) => void;
+  /**
+   * SETE-345: index confirmed by player observations (polls/ticks) only —
+   * never moved optimistically by seekToIndex. Loop/duplicate logic must
+   * key off this: a stale pre-seek poll re-applying an already-observed
+   * index is a state no-op, so it can never retrigger a replay.
+   */
+  observedIndex: number;
+  seekToIndex: (index: number, options?: SeekToIndexOptions) => void;
 }
 
 export function useTranscriptSync({
@@ -113,12 +142,22 @@ export function useTranscriptSync({
   enabled = true,
 }: UseTranscriptSyncOptions): UseTranscriptSyncResult {
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [observedIndex, setObservedIndex] = useState(-1);
   const segmentsRef = useRef(segments);
   const getCurrentTimeMsRef = useRef(getCurrentTimeMs);
   const onSeekRef = useRef(onSeek);
   const previousSampleRef = useRef<TimeSample | null>(null);
   const currentSampleRef = useRef<TimeSample | null>(null);
   const pollInFlightRef = useRef(false);
+  const seekTargetRef = useRef(-1);
+  const seekSettleUntilRef = useRef(0);
+  /**
+   * SETE-345: wall time of the last seekToIndex. A poll issued before a
+   * seek measures pre-seek playback — when it resolves after the seek it
+   * must not overwrite the optimistic seek samples nor retrigger a loop
+   * replay for a boundary the replay already handled.
+   */
+  const lastSeekWallRef = useRef(0);
 
   segmentsRef.current = segments;
   getCurrentTimeMsRef.current = getCurrentTimeMs;
@@ -126,25 +165,42 @@ export function useTranscriptSync({
 
   const syncActiveIndexFromMediaTime = useCallback((mediaMs: number) => {
     const nextIndex = findActiveSegmentIndex(segmentsRef.current, mediaMs);
-    setActiveIndex(current => (current === nextIndex ? current : nextIndex));
-  }, []);
-
-  const seekToIndex = useCallback((index: number) => {
-    const list = segmentsRef.current;
-    if (index < 0 || index >= list.length) {
+    // SETE-345: ignore backward flicker off a fresh seek target while the
+    // player settles. Forward progress at/after the target is still
+    // applied so short sentences keep advancing.
+    if (
+      nextIndex >= 0 &&
+      seekTargetRef.current >= 0 &&
+      Date.now() < seekSettleUntilRef.current &&
+      nextIndex < seekTargetRef.current
+    ) {
       return;
     }
-
-    const targetMs = Math.max(
-      0,
-      list[index].start_ms - TRANSCRIPT_SEEK_COMPENSATION_MS,
-    );
-    const wallMs = Date.now();
-    previousSampleRef.current = null;
-    currentSampleRef.current = {wallMs, mediaMs: targetMs};
-    setActiveIndex(index);
-    onSeekRef.current?.(targetMs);
+    setActiveIndex(current => (current === nextIndex ? current : nextIndex));
+    setObservedIndex(current => (current === nextIndex ? current : nextIndex));
   }, []);
+
+  const seekToIndex = useCallback(
+    (index: number, options?: SeekToIndexOptions) => {
+      const list = segmentsRef.current;
+      if (index < 0 || index >= list.length) {
+        return;
+      }
+
+      const targetMs = options?.exact
+        ? Math.max(0, list[index].start_ms)
+        : Math.max(0, list[index].start_ms - TRANSCRIPT_SEEK_COMPENSATION_MS);
+      const wallMs = Date.now();
+      previousSampleRef.current = null;
+      currentSampleRef.current = {wallMs, mediaMs: targetMs};
+      seekTargetRef.current = index;
+      seekSettleUntilRef.current = wallMs + TRANSCRIPT_SEEK_SETTLE_MS;
+      lastSeekWallRef.current = wallMs;
+      setActiveIndex(index);
+      onSeekRef.current?.(targetMs);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!enabled) {
@@ -161,10 +217,16 @@ export function useTranscriptSync({
       }
     };
 
-    const applySample = (mediaMs: number) => {
+    const applySample = (mediaMs: number, issuedAt: number) => {
       clearWatchdog();
       pollInFlightRef.current = false;
       if (cancelled) {
+        return;
+      }
+      // SETE-345: drop measurements issued before the last seek — they
+      // describe pre-seek playback and must not move the highlight or
+      // feed a duplicate loop replay after the seek landed.
+      if (issuedAt < lastSeekWallRef.current) {
         return;
       }
       const wallMs = Date.now();
@@ -192,13 +254,16 @@ export function useTranscriptSync({
         pollInFlightRef.current = false;
       }, TRANSCRIPT_SYNC_POLL_TIMEOUT_MS);
       let pending: Promise<number>;
+      // SETE-345: issue time lets late replies prove they measured
+      // post-seek playback (see applySample).
+      const issuedAt = Date.now();
       try {
         pending = getCurrentTimeMsRef.current();
       } catch {
         dropPoll();
         return;
       }
-      pending.then(applySample, dropPoll);
+      pending.then(mediaMs => applySample(mediaMs, issuedAt), dropPoll);
     };
 
     poll();
@@ -226,5 +291,5 @@ export function useTranscriptSync({
     };
   }, [enabled, segments, syncActiveIndexFromMediaTime]);
 
-  return {activeIndex, seekToIndex};
+  return {activeIndex, observedIndex, seekToIndex};
 }

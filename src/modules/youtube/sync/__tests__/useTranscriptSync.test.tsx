@@ -5,6 +5,7 @@ import {
   findActiveSegmentIndex,
   interpolateMediaTimeMs,
   TRANSCRIPT_SEEK_COMPENSATION_MS,
+  TRANSCRIPT_SEEK_SETTLE_MS,
   TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
   TRANSCRIPT_SYNC_POLL_TIMEOUT_MS,
   useTranscriptSync,
@@ -212,6 +213,65 @@ describe('useTranscriptSync', () => {
     expect(onSeek).toHaveBeenCalledWith(0);
   });
 
+  it('seekToIndex with exact skips the 300ms compensation (SETE-345)', async () => {
+    const onSeek = jest.fn();
+    const {read} = await renderHarness(async () => 0, SAMPLE_SEGMENTS, onSeek);
+
+    await act(async () => {
+      read().seekToIndex(2, {exact: true});
+    });
+
+    expect(read().activeIndex).toBe(2);
+    expect(onSeek).toHaveBeenCalledWith(7_000);
+  });
+
+  it('holds the seek target while the player settles inside the previous sentence (SETE-345)', async () => {
+    let mediaMs = 0;
+    const {read} = await renderHarness(async () => mediaMs);
+
+    await act(async () => {
+      read().seekToIndex(2);
+    });
+    expect(read().activeIndex).toBe(2);
+
+    // The compensated seek lands at 6_700ms; the player briefly reports
+    // 6_600ms (sentence 1). The highlight must not flicker backwards.
+    mediaMs = 6_600;
+    await act(async () => {
+      jest.advanceTimersByTime(TRANSCRIPT_SYNC_POLL_INTERVAL_MS);
+      await Promise.resolve();
+    });
+    expect(read().activeIndex).toBe(2);
+
+    // Once the settle window passes, polling follows the player again.
+    await act(async () => {
+      jest.advanceTimersByTime(TRANSCRIPT_SEEK_SETTLE_MS);
+      await Promise.resolve();
+    });
+    expect(read().activeIndex).toBe(1);
+  });
+
+  it('observedIndex only follows player observations, never optimistic seeks (SETE-345)', async () => {
+    let mediaMs = 0;
+    const {read} = await renderHarness(async () => mediaMs);
+
+    await act(async () => {
+      read().seekToIndex(2);
+    });
+    expect(read().activeIndex).toBe(2);
+    // The mount poll already confirmed sentence 0; the optimistic seek
+    // must not move the observed index.
+    expect(read().observedIndex).toBe(0);
+
+    mediaMs = 7_100;
+    await act(async () => {
+      jest.advanceTimersByTime(TRANSCRIPT_SYNC_POLL_INTERVAL_MS);
+      await Promise.resolve();
+    });
+    expect(read().activeIndex).toBe(2);
+    expect(read().observedIndex).toBe(2);
+  });
+
   it('seekToIndex ignores out-of-range indices', async () => {
     const onSeek = jest.fn();
     const {read} = await renderHarness(async () => 0, SAMPLE_SEGMENTS, onSeek);
@@ -241,8 +301,7 @@ describe('useTranscriptSync', () => {
 
     await act(async () => {
       jest.advanceTimersByTime(
-        TRANSCRIPT_SYNC_POLL_INTERVAL_MS * 4 +
-          TRANSCRIPT_SYNC_POLL_TIMEOUT_MS,
+        TRANSCRIPT_SYNC_POLL_INTERVAL_MS * 4 + TRANSCRIPT_SYNC_POLL_TIMEOUT_MS,
       );
       await Promise.resolve();
     });
@@ -266,8 +325,7 @@ describe('useTranscriptSync', () => {
 
     await act(async () => {
       jest.advanceTimersByTime(
-        TRANSCRIPT_SYNC_POLL_TIMEOUT_MS * 2 +
-          TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
+        TRANSCRIPT_SYNC_POLL_TIMEOUT_MS * 2 + TRANSCRIPT_SYNC_POLL_INTERVAL_MS,
       );
       await Promise.resolve();
     });

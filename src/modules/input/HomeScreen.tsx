@@ -257,9 +257,15 @@ export function HomeScreen({navigation}: Props) {
   // SETE-290 (DEV-1): the video entry is enabled only when both the app
   // flag and the server capability agree. While the probe is in flight or
   // fails, the cell stays disabled and no transcript request is sent.
+  // SETE-345: saved lessons stay reachable offline — when the user already
+  // has lessons stored locally (youtubeLessonCount > 0), the entry stays
+  // enabled even if the server probe fails so History remains openable.
   const youtubeServerEnabled = useYouTubeServerEnabled();
+  const hasSavedYouTubeLessons =
+    youtubeLessonCount != null && youtubeLessonCount > 0;
   const youtubeEnabled =
-    config.features.youtubeLearning && youtubeServerEnabled;
+    config.features.youtubeLearning &&
+    (youtubeServerEnabled || hasSavedYouTubeLessons);
 
   // SETE-283 (HVB-01, HVB-01E, HVB-02): the video cell has a real,
   // data-driven destination. Saved lessons → History, empty store → Input,

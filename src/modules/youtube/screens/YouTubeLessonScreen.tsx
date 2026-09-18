@@ -286,6 +286,17 @@ export function YouTubeLessonScreen({
   const playerRef = useRef<YouTubePlayerRef>(null);
   const listRef = useRef<SentenceCarouselRef>(null);
   const prevActiveIndexRef = useRef(-1);
+  /**
+   * SETE-345: sentence a loop replay was last issued for. A boundary
+   * crossing can reach the loop effect twice (50ms tick estimate, then
+   * the confirming 250ms poll). While a replay for `previous` is still
+   * unconfirmed, a repeated `previous → previous+1` step is the same
+   * completion, not a new one — replaying again would burn two loop
+   * counts per iteration. Cleared once the replay arrival is observed
+   * (observedIndex back on the replayed sentence) or a manual hop
+   * supersedes it.
+   */
+  const replayPendingRef = useRef<number | null>(null);
 
   const [showVietnamese, setShowVietnamese] = useState(true);
   const [showIpa, setShowIpa] = useState(true);
@@ -486,7 +497,7 @@ export function YouTubeLessonScreen({
     }
   }, [lesson.video.id, progressEnabled]);
 
-  const {activeIndex, seekToIndex} = useTranscriptSync({
+  const {activeIndex, observedIndex, seekToIndex} = useTranscriptSync({
     segments: lesson.segments,
     getCurrentTimeMs,
     onSeek: handleSeek,
@@ -496,8 +507,14 @@ export function YouTubeLessonScreen({
   const handleSeekToIndex = useCallback(
     (index: number) => {
       prevActiveIndexRef.current = index;
+      // SETE-345: a manual hop supersedes any unconfirmed loop replay.
+      replayPendingRef.current = null;
       loopLeftRef.current = loopCount;
-      seekToIndex(index);
+      // SETE-345: while a sentence loop is armed, manual hops seek
+      // exactly to start_ms. A compensated seek would land inside the
+      // previous sentence and the loop effect would mistake the
+      // recovery step for a finished sentence and yank the user back.
+      seekToIndex(index, loopCount > 1 ? {exact: true} : undefined);
     },
     [loopCount, seekToIndex],
   );
@@ -556,24 +573,53 @@ export function YouTubeLessonScreen({
   // SETE-346 (Option A): a single sentence-loop concept (`loopCount`,
   // where Infinity = the old overflow "Repeat sentence" behavior). Once the
   // active segment moves past the one being repeated, jump back to its start.
+  // SETE-345: transitions are read from `observedIndex` (player-confirmed),
+  // never the optimistic `activeIndex` — a stale pre-seek poll re-applying
+  // an already-observed index is a state no-op and can never retrigger a
+  // replay, and manual hops preset prevActiveIndexRef so their own
+  // confirmation step reads as equality, not a completion.
   useEffect(() => {
     const previous = prevActiveIndexRef.current;
-    prevActiveIndexRef.current = activeIndex;
+    prevActiveIndexRef.current = observedIndex;
+    // SETE-345: the replay arrival confirms the pending replay — later
+    // forward steps are genuine completions again.
+    if (
+      replayPendingRef.current != null &&
+      observedIndex === replayPendingRef.current
+    ) {
+      replayPendingRef.current = null;
+    }
 
     if (isOfflineReading) {
+      replayPendingRef.current = null;
       return;
+    }
+
+    // SETE-345: disarming the sentence loop (or arming A–B, which is
+    // mutually exclusive) drops any unconfirmed replay with it.
+    if (loopCount <= 1 || abLoopActive) {
+      replayPendingRef.current = null;
     }
 
     if (
       loopCount > 1 &&
       previous >= 0 &&
-      activeIndex > previous &&
+      observedIndex > previous &&
       !abLoopActive
     ) {
+      // SETE-345: tick-then-poll can deliver the same completion twice;
+      // the second delivery arrives while the replay is unconfirmed.
+      if (replayPendingRef.current === previous) {
+        return;
+      }
       if (loopLeftRef.current > 1) {
         loopLeftRef.current -= 1;
         prevActiveIndexRef.current = previous;
-        seekToIndex(previous);
+        replayPendingRef.current = previous;
+        // SETE-345: loop replays seek exactly to start_ms (no 300ms
+        // compensation) so the replay never lands inside sentence
+        // previous-1 and cascades backwards to sentence 0.
+        seekToIndex(previous, {exact: true});
         showToast(
           loopCount === Infinity
             ? 'Lặp vô hạn câu hiện tại'
@@ -585,7 +631,7 @@ export function YouTubeLessonScreen({
     }
   }, [
     abLoopActive,
-    activeIndex,
+    observedIndex,
     isOfflineReading,
     loopCount,
     seekToIndex,
@@ -662,7 +708,9 @@ export function YouTubeLessonScreen({
         if (cancelled || wrapTo == null) {
           return;
         }
-        seekToIndex(startIndex);
+        // SETE-345: A–B wraps seek exactly to the A start so the card
+        // never flickers onto sentence A-1 for a tick.
+        seekToIndex(startIndex, {exact: true});
         showToast('↻ Lặp lại đoạn A–B');
       })();
     }, TRANSCRIPT_SYNC_POLL_INTERVAL_MS);

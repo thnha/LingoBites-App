@@ -479,6 +479,53 @@ describe('YouTubeLessonScreen', () => {
     ).toBe('Lặp vô hạn câu hiện tại');
   });
 
+  it('repeats sentence N>=1 exactly without cascading back to sentence 0 (SETE-345)', async () => {
+    const tree = await renderScreen();
+
+    // Settle on sentence 1.
+    mockCurrentTimeSeconds = 3.1;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    // Arm loop 3.
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-compact-tools'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-loop-3'}).props.onPress();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      tree.root.findByProps({testID: 'youtube-tools-close'}).props.onPress();
+      await Promise.resolve();
+    });
+
+    mockSeekTo.mockClear();
+
+    // Sentence 1 ends -> advance to sentence 2 -> loop replays sentence 1.
+    mockCurrentTimeSeconds = 6.5;
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+
+    // Exact replay to sentence 1 start (3.0s, never 2.7s into sentence 0).
+    expect(mockSeekTo).toHaveBeenCalledTimes(1);
+    expect(mockSeekTo).toHaveBeenCalledWith(3);
+
+    // The mocked player now reports the exact replay position (seekTo
+    // writes it back): no cascade seek towards sentence 0 follows.
+    mockSeekTo.mockClear();
+    await act(async () => {
+      jest.advanceTimersByTime(250);
+      await Promise.resolve();
+    });
+    expect(mockSeekTo).not.toHaveBeenCalled();
+  });
+
   it('allows manual seek during loop mode without triggering loop ping-pong (SETE-341)', async () => {
     const tree = await renderScreen();
 
@@ -507,9 +554,10 @@ describe('YouTubeLessonScreen', () => {
       await Promise.resolve();
     });
 
-    // Should seek to sentence 1 start (2.7s with compensation) exactly once
+    // Should seek to sentence 1 start exactly (3.0s, no compensation while
+    // loop is armed — SETE-345) exactly once
     expect(mockSeekTo).toHaveBeenCalledTimes(1);
-    expect(mockSeekTo).toHaveBeenCalledWith(2.7);
+    expect(mockSeekTo).toHaveBeenCalledWith(3);
 
     // Close tools popup
     await act(async () => {
