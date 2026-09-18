@@ -213,18 +213,21 @@ export const SentenceCarousel = React.forwardRef<
   const flatListRef = useRef<FlatList<SentenceCardSegment>>(null);
   const scrollMemoryRef = useRef<Map<number, number>>(new Map());
   const isUserScrollingRef = useRef(false);
+  const isProgrammaticScrollRef = useRef(false);
 
   useImperativeHandle(
     ref,
     () => ({
       scrollToIndex: ({index, animated = true}) => {
         const targetOffset = index * snapInterval;
+        isProgrammaticScrollRef.current = true;
         flatListRef.current?.scrollToOffset({
           animated,
           offset: targetOffset,
         });
       },
       scrollToOffset: ({offset, animated = true}) => {
+        isProgrammaticScrollRef.current = true;
         flatListRef.current?.scrollToOffset({
           animated,
           offset,
@@ -240,6 +243,7 @@ export const SentenceCarousel = React.forwardRef<
       return;
     }
     const targetOffset = activeIndex * snapInterval;
+    isProgrammaticScrollRef.current = true;
     flatListRef.current?.scrollToOffset({
       animated: true,
       offset: targetOffset,
@@ -257,6 +261,10 @@ export const SentenceCarousel = React.forwardRef<
   const handleMomentumScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       isUserScrollingRef.current = false;
+      if (isProgrammaticScrollRef.current) {
+        isProgrammaticScrollRef.current = false;
+        return;
+      }
       const scrollX = event.nativeEvent.contentOffset.x;
       const nextIndex = calculateNearestCardIndex(
         scrollX,
@@ -272,6 +280,7 @@ export const SentenceCarousel = React.forwardRef<
 
   const handleScrollBeginDrag = useCallback(() => {
     isUserScrollingRef.current = true;
+    isProgrammaticScrollRef.current = false;
   }, []);
 
   const handleScrollEndDrag = useCallback(
