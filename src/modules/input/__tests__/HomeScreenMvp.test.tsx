@@ -12,10 +12,12 @@ import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {HomeScreen} from '../HomeScreen';
 
 const mockListYouTubeLessons = jest.fn();
+const mockCountYoutubeLessons = jest.fn();
 const mockUseYouTubeServerEnabled = jest.fn();
 
 jest.mock('@shared/db/YoutubeLessonRepository', () => ({
   listYouTubeLessons: (...args: unknown[]) => mockListYouTubeLessons(...args),
+  countYoutubeLessons: (...args: unknown[]) => mockCountYoutubeLessons(...args),
 }));
 
 // SETE-290: the video cell needs the server capability too — control it
@@ -161,6 +163,7 @@ describe('HomeScreen video card (SETE-283)', () => {
     resetDatabaseForTests(open({name: DB_NAME}));
     jest.clearAllMocks();
     mockUseYouTubeServerEnabled.mockReturnValue(true);
+    mockCountYoutubeLessons.mockReturnValue(0);
   });
 
   function videoPressable(tree: ReactTestRenderer.ReactTestRenderer) {
@@ -198,6 +201,17 @@ describe('HomeScreen video card (SETE-283)', () => {
         children: 'Tính năng đang chưa khả dụng',
       }).length,
     ).toBeGreaterThan(0);
+  });
+
+  it('keeps the card enabled when saved lessons exist even if the server probe fails (SETE-345)', async () => {
+    seedLesson();
+    mockUseYouTubeServerEnabled.mockReturnValue(false);
+    mockCountYoutubeLessons.mockReturnValue(2);
+    mockListYouTubeLessons.mockReturnValue([{video: {id: 'abc123'}}]);
+    const tree = await renderHomeWithYouTube();
+    const cell = videoPressable(tree);
+
+    expect(cell.props.disabled).toBe(false);
   });
 
   it('opens History at the root stack when saved lessons exist (HVB-01, SETE-289)', async () => {
