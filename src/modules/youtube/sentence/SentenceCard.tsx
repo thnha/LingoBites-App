@@ -638,8 +638,6 @@ export function SentenceCard({
   const grammarPoints = enrichment?.grammar ?? [];
   const grammarCount = grammarPoints.length;
 
-  const headerTitle = formatCardHeaderTitle(segment.index + 1, totalSegments);
-
   const hasLevelBadge = level != null && level.trim() !== '';
 
   return (
@@ -655,12 +653,6 @@ export function SentenceCard({
         testID={testID ? `${testID}-header` : undefined}
       >
         <View style={styles.headerLeft}>
-          <AppText
-            testID={testID ? `${testID}-header-title` : undefined}
-            variant="label"
-          >
-            {headerTitle}
-          </AppText>
           {hasLevelBadge ? (
             <Chip
               label={level}

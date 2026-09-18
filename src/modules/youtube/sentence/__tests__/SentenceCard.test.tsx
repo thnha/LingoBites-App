@@ -209,14 +209,6 @@ describe('SentenceCard', () => {
   });
 
   describe('SETE-330 (TASK-3 additions)', () => {
-    it('renders the fixed 48pt header with Câu N/M format', () => {
-      const tree = renderCard({totalSegments: 10});
-      expect(
-        tree.root.findByProps({testID: `${CARD_TEST_ID}-header-title`}).props
-          .children,
-      ).toBe('Câu 1/10');
-    });
-
     it('renders level badge when level is provided and non-empty (D-1)', () => {
       const tree = renderCard({level: 'B1'});
       expect(hasNode(tree, `${CARD_TEST_ID}-level`)).toBe(true);
