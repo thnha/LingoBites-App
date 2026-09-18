@@ -187,9 +187,15 @@ export function useTranscriptSync({
         return;
       }
 
-      const targetMs = options?.exact
-        ? Math.max(0, list[index].start_ms)
-        : Math.max(0, list[index].start_ms - TRANSCRIPT_SEEK_COMPENSATION_MS);
+      let targetMs = Math.max(0, list[index].start_ms);
+      if (!options?.exact) {
+        const prevEndMs = index > 0 ? list[index - 1].end_ms : 0;
+        const safeCompensation = Math.min(
+          TRANSCRIPT_SEEK_COMPENSATION_MS,
+          Math.max(0, targetMs - prevEndMs),
+        );
+        targetMs = Math.max(0, targetMs - safeCompensation);
+      }
       const wallMs = Date.now();
       previousSampleRef.current = null;
       currentSampleRef.current = {wallMs, mediaMs: targetMs};
