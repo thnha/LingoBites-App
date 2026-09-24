@@ -1,6 +1,8 @@
 import {create} from 'zustand';
 import {
   bootAccount,
+  createAuthClient,
+  signOut,
   submitOnboardingName,
   type AuthUser,
   type BootResult,
@@ -13,6 +15,8 @@ import {
  * - `bootstrapping`: splash/loading — no account decision yet.
  * - `needs-onboarding`: bootstrap ticket held, display-name screen shown.
  * - `authenticated`: session persisted, main tabs shown.
+ * - `signed-out`: explicit post-logout gate — stable, never auto-boots, and
+ *   offers a Continue action that rejoins the normal boot path.
  * - `offline` / `merge-in-progress` / `failed`: explicit retry states, so a
  *   failed boot can never strand the app on the wrong stack.
  *
@@ -25,6 +29,7 @@ export type AccountPhase =
   | 'bootstrapping'
   | 'needs-onboarding'
   | 'authenticated'
+  | 'signed-out'
   | 'offline'
   | 'merge-in-progress'
   | 'failed';
@@ -43,6 +48,7 @@ export type AccountState = {
   ) => Promise<void>;
   retry: () => Promise<void>;
   signOutLocal: () => void;
+  logout: () => Promise<void>;
 };
 
 function fromBootResult(result: BootResult): Partial<AccountState> {
@@ -81,6 +87,13 @@ function fromBootResult(result: BootResult): Partial<AccountState> {
       };
   }
 }
+
+/**
+ * Shared in-flight store logout: concurrent `logout()` callers join one
+ * server-then-local sign-out instead of racing two terminal resets.
+ * Process-local like the boot/refresh guards; cleared on completion.
+ */
+let inFlightLogout: Promise<void> | null = null;
 
 export const useAccountStore = create<AccountState>()((set, get) => ({
   phase: 'bootstrapping',
@@ -139,10 +152,49 @@ export const useAccountStore = create<AccountState>()((set, get) => ({
       failureMessage: null,
     });
   },
+
+  logout: async () => {
+    if (inFlightLogout) {
+      await inFlightLogout;
+      return;
+    }
+    const task = (async (): Promise<void> => {
+      // Best-effort server logout, then local secure-storage wipe — the
+      // shared lifecycle. An offline/server failure with a successful local
+      // wipe still reaches `signed-out`; only a local Keychain failure
+      // keeps the current phase and reports instead of claiming logout.
+      const result = await signOut({client: createAuthClient()});
+      if (!result.ok) {
+        set({
+          failureCode: 'KEYCHAIN_ERROR',
+          failureMessage:
+            'Could not sign out on this device. Please try again.',
+        });
+        return;
+      }
+      set({
+        phase: 'signed-out',
+        user: null,
+        bootstrapTicket: null,
+        bootstrapTicketExpiresAt: null,
+        failureCode: null,
+        failureMessage: null,
+      });
+    })();
+    inFlightLogout = task;
+    try {
+      await task;
+    } finally {
+      if (inFlightLogout === task) {
+        inFlightLogout = null;
+      }
+    }
+  },
 }));
 
 /** Test seam: restores the store to its initial state between tests. */
 export function resetAccountStoreForTests(): void {
+  inFlightLogout = null;
   useAccountStore.setState({
     phase: 'bootstrapping',
     user: null,

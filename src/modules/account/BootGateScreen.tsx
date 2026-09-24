@@ -28,6 +28,32 @@ export function BootGateScreen() {
     );
   }
 
+  // Post-logout gate: stable, no spinner, no automatic bootstrap. Continue
+  // rejoins the existing retry/boot path exactly once per tap.
+  if (phase === 'signed-out') {
+    return (
+      <AppScreen>
+        <View style={styles.center}>
+          <AppText variant="h3">{t('account.signed_out_title')}</AppText>
+          <AppText color="secondary" style={styles.message}>
+            {t('account.signed_out_message')}
+          </AppText>
+          <View style={styles.retryAction}>
+            <AppButton
+              accessibilityHint={t('account.signed_out_continue_hint')}
+              accessibilityLabel={t('account.signed_out_continue')}
+              onPress={() => {
+                retry();
+              }}
+              title={t('account.signed_out_continue')}
+              variant="primary"
+            />
+          </View>
+        </View>
+      </AppScreen>
+    );
+  }
+
   const message =
     phase === 'offline'
       ? t('errors.network_lost')
