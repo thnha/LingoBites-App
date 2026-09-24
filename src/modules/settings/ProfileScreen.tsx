@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   Alert,
   Linking,
@@ -60,6 +60,8 @@ const UNSET_TRAILING = {chip: 'Chưa đặt', chipTone: 'neutral' as const};
 
 export function ProfileScreen({navigation}: Props) {
   const accountUser = useAccountStore(state => state.user);
+  const accountPhase = useAccountStore(state => state.phase);
+  const accountLogout = useAccountStore(state => state.logout);
   const displayName = accountUser?.display_name ?? PROFILE_PLACEHOLDER.name;
   const initials =
     accountUser?.display_name
@@ -76,6 +78,8 @@ export function ProfileScreen({navigation}: Props) {
   const {isFeatureEnabled} = useFeatureFlags();
   const themedStyles = React.useMemo(() => makeStyles(theme), [theme]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const isLoggingOutRef = useRef(false);
   const [isClearDataModalVisible, setIsClearDataModalVisible] = useState(false);
   const [clearDataConfirmText, setClearDataConfirmText] = useState('');
   const supportEmail = getSupportEmail();
@@ -164,6 +168,48 @@ export function ProfileScreen({navigation}: Props) {
   function handleSupport() {
     const subject = encodeURIComponent('LingoBites — Góp ý / báo lỗi');
     void Linking.openURL(`mailto:${supportEmail}?subject=${subject}`);
+  }
+
+  /**
+   * Confirmed logout (TASK-006): delegates to the single account-store
+   * logout lifecycle. A second confirm while one is pending is rejected so
+   * the UI issues at most one operation; the old token is never retained
+   * or retried here. Success transitions away through the account gate;
+   * only a local secure-storage failure shows a message — never a false
+   * success, and never a claim about remote revocation.
+   */
+  async function executeLogout() {
+    if (isLoggingOutRef.current) {
+      return;
+    }
+    isLoggingOutRef.current = true;
+    setIsLoggingOut(true);
+    try {
+      await accountLogout();
+      if (useAccountStore.getState().phase !== 'signed-out') {
+        setStatusMessage(t('account.sign_out_failed'));
+      }
+    } finally {
+      isLoggingOutRef.current = false;
+      setIsLoggingOut(false);
+    }
+  }
+
+  function handleSignOut() {
+    Alert.alert(
+      t('account.sign_out_confirm_title'),
+      t('account.sign_out_confirm_message'),
+      [
+        {text: t('account.sign_out_cancel'), style: 'cancel'},
+        {
+          text: t('account.sign_out_confirm'),
+          style: 'destructive',
+          onPress: () => {
+            void executeLogout();
+          },
+        },
+      ],
+    );
   }
 
   /** Plays the first downloaded pronunciation clip — offline playback QA (VC-4). */
@@ -410,6 +456,33 @@ export function ProfileScreen({navigation}: Props) {
               Xóa toàn bộ tiến trình học, XP, và lịch sử. Không thể khôi phục.
             </AppText>
           </View>
+
+          {accountPhase === 'authenticated' ? (
+            <View style={styles.dangerActionContainer}>
+              <Pressable
+                accessibilityHint={t('account.sign_out_hint')}
+                accessibilityLabel={t('account.sign_out')}
+                accessibilityRole="button"
+                disabled={isLoggingOut}
+                onPress={handleSignOut}
+                style={({pressed}) => [
+                  themedStyles.dangerButton,
+                  pressed && themedStyles.pressed,
+                ]}
+              >
+                <AppText color="danger" style={themedStyles.dangerButtonText}>
+                  {t('account.sign_out')}
+                </AppText>
+              </Pressable>
+              <AppText
+                color="secondary"
+                variant="caption"
+                style={styles.dangerCaption}
+              >
+                {t('account.sign_out_caption')}
+              </AppText>
+            </View>
+          ) : null}
         </View>
 
         {statusMessage ? (

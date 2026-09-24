@@ -5,6 +5,7 @@ describe('accountGateRouteForPhase (SETE-303 / T6)', () => {
     expect(accountGateRouteForPhase('authenticated')).toBe('Tabs');
     expect(accountGateRouteForPhase('needs-onboarding')).toBe('Onboarding');
     expect(accountGateRouteForPhase('bootstrapping')).toBe('BootGate');
+    expect(accountGateRouteForPhase('signed-out')).toBe('BootGate');
     expect(accountGateRouteForPhase('offline')).toBe('BootGate');
     expect(accountGateRouteForPhase('merge-in-progress')).toBe('BootGate');
     expect(accountGateRouteForPhase('failed')).toBe('BootGate');

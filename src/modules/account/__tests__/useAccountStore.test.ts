@@ -1,11 +1,13 @@
 import {open} from 'react-native-quick-sqlite';
+import * as Keychain from 'react-native-keychain';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {DB_NAME} from '../../../shared/db/constants';
 import {getDatabase, resetDatabaseForTests} from '../../../shared/db/database';
 import * as DeviceIdentityNative from '../../../shared/identity/deviceIdentityNative';
 import {resetBootStateForTests} from '../../../shared/auth/accountBootstrap';
 import {resetRefreshStateForTests} from '../../../shared/auth/authSession';
-import {installKeychainVault} from '../../../test-support/keychainVault';
+import {getActiveSession} from '../../../shared/auth/sessionStore';
+import {installKeychainVault, vault} from '../../../test-support/keychainVault';
 import {resetAccountStoreForTests, useAccountStore} from '../useAccountStore';
 import type {AuthSession, AuthUser} from '../../../shared/auth';
 
@@ -119,5 +121,171 @@ describe('useAccountStore navigation flow (SETE-303 / T6)', () => {
     );
     await useAccountStore.getState().retry();
     expect(useAccountStore.getState().phase).toBe('authenticated');
+  });
+});
+
+describe('useAccountStore logout (TASK-005 signed-out lifecycle)', () => {
+  function loggedOutResponse() {
+    return jsonResponse(200, {
+      request_id: 'l1',
+      status: 'logged_out',
+      revoked: true,
+    });
+  }
+
+  function knownDeviceResponse() {
+    return jsonResponse(200, {
+      request_id: 'b1',
+      status: 'authenticated',
+      user,
+      session: freshSession,
+    });
+  }
+
+  async function bootToAuthenticated() {
+    mockFetch.mockResolvedValueOnce(knownDeviceResponse());
+    await useAccountStore.getState().boot();
+    expect(useAccountStore.getState().phase).toBe('authenticated');
+  }
+
+  function logoutCallCount() {
+    return mockFetch.mock.calls.filter(([url]) =>
+      String(url).includes('/v1/auth/logout'),
+    ).length;
+  }
+
+  it('signs out online into a stable signed-out gate with cleared state', async () => {
+    await bootToAuthenticated();
+    mockFetch.mockResolvedValueOnce(loggedOutResponse());
+
+    await useAccountStore.getState().logout();
+
+    const state = useAccountStore.getState();
+    expect(state.phase).toBe('signed-out');
+    expect(state.user).toBeNull();
+    expect(state.bootstrapTicket).toBeNull();
+    expect(state.bootstrapTicketExpiresAt).toBeNull();
+    expect(state.failureCode).toBeNull();
+    expect(state.failureMessage).toBeNull();
+    await expect(getActiveSession()).resolves.toEqual({
+      ok: true,
+      value: null,
+    });
+  });
+
+  it('signs out locally when the server call is offline but the wipe succeeds', async () => {
+    await bootToAuthenticated();
+    mockFetch.mockRejectedValueOnce(new TypeError('Network request failed'));
+
+    await useAccountStore.getState().logout();
+
+    expect(useAccountStore.getState().phase).toBe('signed-out');
+    await expect(getActiveSession()).resolves.toEqual({
+      ok: true,
+      value: null,
+    });
+  });
+
+  it('resolves missing-token logout to signed-out without failing', async () => {
+    expect(useAccountStore.getState().phase).toBe('bootstrapping');
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse(200, {
+        request_id: 'l0',
+        status: 'logged_out',
+        revoked: false,
+      }),
+    );
+
+    await useAccountStore.getState().logout();
+
+    expect(useAccountStore.getState().phase).toBe('signed-out');
+    expect(logoutCallCount()).toBe(1);
+  });
+
+  it('keeps the session and reports KEYCHAIN_ERROR when the wipe fails', async () => {
+    await bootToAuthenticated();
+    mockFetch.mockResolvedValueOnce(loggedOutResponse());
+    (Keychain.resetGenericPassword as jest.Mock).mockRejectedValueOnce(
+      new Error('keychain locked'),
+    );
+
+    await useAccountStore.getState().logout();
+
+    const state = useAccountStore.getState();
+    expect(state.phase).toBe('authenticated');
+    expect(state.user).toEqual(user);
+    expect(state.failureCode).toBe('KEYCHAIN_ERROR');
+    expect(state.failureMessage).toBeTruthy();
+    await expect(getActiveSession()).resolves.toMatchObject({ok: true});
+  });
+
+  it('shares one server logout across concurrent calls', async () => {
+    await bootToAuthenticated();
+    mockFetch.mockImplementationOnce(
+      () =>
+        new Promise(resolve => {
+          setTimeout(() => resolve(loggedOutResponse()), 10);
+        }),
+    );
+
+    await Promise.all([
+      useAccountStore.getState().logout(),
+      useAccountStore.getState().logout(),
+    ]);
+
+    expect(logoutCallCount()).toBe(1);
+    expect(useAccountStore.getState().phase).toBe('signed-out');
+  });
+
+  it('rejoins boot through retry (Continue) after signed-out', async () => {
+    await bootToAuthenticated();
+    mockFetch.mockResolvedValueOnce(loggedOutResponse());
+    await useAccountStore.getState().logout();
+    expect(useAccountStore.getState().phase).toBe('signed-out');
+
+    mockFetch.mockResolvedValueOnce(knownDeviceResponse());
+    await useAccountStore.getState().retry();
+
+    const state = useAccountStore.getState();
+    expect(state.phase).toBe('authenticated');
+    expect(state.user).toEqual(user);
+  });
+
+  it('cold start resets to bootstrapping, not signed-out', async () => {
+    await bootToAuthenticated();
+    mockFetch.mockResolvedValueOnce(loggedOutResponse());
+    await useAccountStore.getState().logout();
+    expect(useAccountStore.getState().phase).toBe('signed-out');
+
+    resetAccountStoreForTests();
+    expect(useAccountStore.getState().phase).toBe('bootstrapping');
+  });
+
+  it('clears auth keychain entries but keeps non-auth entries and SQLite data', async () => {
+    await bootToAuthenticated();
+    vault.set('com.example.unrelated', {username: 'u', password: 'p'});
+    getDatabase().execute(
+      'INSERT OR REPLACE INTO app_settings (key, value, updated_at) VALUES (?, ?, ?);',
+      ['account.last_account_id', user.id, new Date().toISOString()],
+    );
+    mockFetch.mockResolvedValueOnce(loggedOutResponse());
+
+    await useAccountStore.getState().logout();
+
+    expect(useAccountStore.getState().phase).toBe('signed-out');
+    const services = [...vault.keys()];
+    expect(
+      services.filter(service => service.startsWith('com.lingobites.auth.')),
+    ).toEqual([]);
+    expect(vault.get('com.example.unrelated')).toEqual({
+      username: 'u',
+      password: 'p',
+    });
+    const row = getDatabase()
+      .execute('SELECT value FROM app_settings WHERE key = ? LIMIT 1;', [
+        'account.last_account_id',
+      ])
+      .rows?.item(0) as {value?: string} | undefined;
+    expect(row?.value).toBe(user.id);
   });
 });

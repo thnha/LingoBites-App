@@ -399,6 +399,18 @@
     "copy_code_hint": "Sao chép mã người dùng vào clipboard",
     "save_hint": "Lưu tên hiển thị và số điện thoại",
     "retry_hint": "Thử lại thao tác vừa rồi",
-    "continue_hint": "Tạo tài khoản với tên đã nhập"
+    "continue_hint": "Tạo tài khoản với tên đã nhập",
+    "sign_out": "Đăng xuất",
+    "sign_out_hint": "Đăng xuất khỏi thiết bị này",
+    "sign_out_caption": "Đăng xuất khỏi thiết bị này. Dữ liệu học vẫn được giữ lại.",
+    "sign_out_confirm_title": "Đăng xuất?",
+    "sign_out_confirm_message": "Bạn sẽ đăng xuất khỏi thiết bị này. Bạn có thể đăng nhập lại bất cứ lúc nào.",
+    "sign_out_cancel": "Hủy",
+    "sign_out_confirm": "Đăng xuất",
+    "sign_out_failed": "Chưa thể đăng xuất khỏi thiết bị này. Vui lòng thử lại.",
+    "signed_out_title": "Bạn đã đăng xuất",
+    "signed_out_message": "Bạn đã đăng xuất khỏi thiết bị này. Tiếp tục để đăng nhập lại.",
+    "signed_out_continue": "Tiếp tục",
+    "signed_out_continue_hint": "Đăng nhập lại trên thiết bị này"
   }
 }

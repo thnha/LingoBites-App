@@ -399,6 +399,18 @@
     "copy_code_hint": "Copy the user code to the clipboard",
     "save_hint": "Save display name and phone number",
     "retry_hint": "Retry the last action",
-    "continue_hint": "Create your account with the entered name"
+    "continue_hint": "Create your account with the entered name",
+    "sign_out": "Sign out",
+    "sign_out_hint": "Sign out on this device",
+    "sign_out_caption": "Sign out on this device. Your learning data stays put.",
+    "sign_out_confirm_title": "Sign out?",
+    "sign_out_confirm_message": "You will be signed out on this device. You can sign back in anytime.",
+    "sign_out_cancel": "Cancel",
+    "sign_out_confirm": "Sign out",
+    "sign_out_failed": "Could not sign out on this device. Please try again.",
+    "signed_out_title": "You are signed out",
+    "signed_out_message": "You signed out on this device. Continue to sign back in.",
+    "signed_out_continue": "Continue",
+    "signed_out_continue_hint": "Sign back in on this device"
   }
 }
