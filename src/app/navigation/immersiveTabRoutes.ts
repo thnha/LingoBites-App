@@ -8,6 +8,7 @@ import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 export const IMMERSIVE_STACK_ROUTES = new Set([
   'Analyzing',
   'ContentLessonRuntime',
+  'CurriculumLesson',
   'DailyReview',
   'ProgressiveLesson',
   'SpeakingRoom',

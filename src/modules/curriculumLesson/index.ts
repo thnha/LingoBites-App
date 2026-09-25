@@ -75,6 +75,14 @@ export {
 export type {CurriculumLessonBlockViewProps} from './CurriculumLessonBlockView';
 export {CurriculumLessonPlayer} from './CurriculumLessonPlayer';
 export type {CurriculumLessonPlayerProps} from './CurriculumLessonPlayer';
+export {CurriculumLessonScreen} from './CurriculumLessonScreen';
+export {CurriculumLessonsEntry} from './CurriculumLessonsEntry';
+export {fetchPublishedCurriculumLessons} from './curriculumLessonSelection';
+export type {
+  CurriculumLessonSelectionItem,
+  CurriculumLessonSelectionResult,
+  CurriculumLessonSelectionOptions,
+} from './curriculumLessonSelection';
 export {
   fetchCurriculumLesson,
   checkCurriculumLessonExercise,
