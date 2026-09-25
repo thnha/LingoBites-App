@@ -396,6 +396,19 @@ export function ProfileScreen({navigation}: Props) {
               trailing="chevron"
             />
           ) : null}
+          {/* LING-21 manual verification entry (per reporter request):
+              opens the unified Lesson catalog directly without enabling
+              the rollout flag. Dev builds only. */}
+          {__DEV__ ? (
+            <ProfileSettingsRow
+              accessibilityLabel="Mở bản xem trước Unified Lessons"
+              icon="school"
+              label="Unified Lessons (Preview)"
+              medallionTone="gold"
+              onPress={() => navigation.navigate('UnifiedLessonsPreview')}
+              trailing="chevron"
+            />
+          ) : null}
         </View>
 
         {showThemePicker ? (

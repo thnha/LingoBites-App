@@ -164,6 +164,12 @@ export type ProfileStackParamList = {
   ProgressReport: undefined;
   FeatureStatus: undefined;
   TtsSpike: undefined;
+  /**
+   * LING-21 manual verification entry (per reporter request): opens the
+   * unified catalog directly without enabling the `unifiedLesson`
+   * rollout flag. Not part of the default unified rollout.
+   */
+  UnifiedLessonsPreview: undefined;
   ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
 };
 

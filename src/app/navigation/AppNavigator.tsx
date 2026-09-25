@@ -37,6 +37,7 @@ import {PracticeScreen} from '@modules/practice';
 import {
   CurriculumLessonScreen,
   UnifiedLessonGenerationScreen,
+  UnifiedLessonsPreviewScreen,
 } from '@modules/curriculumLesson';
 import {DailyReviewScreen} from '@modules/review';
 import {TodayScreen} from '@modules/today';
@@ -359,6 +360,15 @@ function ProfileStackNavigator() {
         <ProfileStack.Screen
           component={TtsSpikeScreen}
           name="TtsSpike"
+          options={{headerShown: false}}
+        />
+      ) : null}
+      {/* LING-21 manual verification entry — dev builds only, not part
+          of the default unified rollout. */}
+      {__DEV__ ? (
+        <ProfileStack.Screen
+          component={UnifiedLessonsPreviewScreen}
+          name="UnifiedLessonsPreview"
           options={{headerShown: false}}
         />
       ) : null}

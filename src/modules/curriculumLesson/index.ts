@@ -178,6 +178,7 @@ export {
   UnifiedLessonsScreen,
   UnifiedLessonsRouteScreen,
 } from './UnifiedLessonsScreen';
+export {UnifiedLessonsPreviewScreen} from './UnifiedLessonsPreviewScreen';
 export type {UnifiedLessonCatalogViewProps} from './UnifiedLessonsScreen';
 export {
   UnifiedLessonGenerationView,
