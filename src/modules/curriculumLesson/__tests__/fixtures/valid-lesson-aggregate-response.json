@@ -11,7 +11,7 @@
         "id": "00000000-0000-4000-8000-000000000011",
         "type": "text",
         "position": 0,
-        "data": { "content": "Welcome to the lesson." }
+        "data": {"content": "Welcome to the lesson."}
       },
       {
         "id": "00000000-0000-4000-8000-000000000015",
@@ -24,8 +24,8 @@
           "prompt": "Pick the greeting.",
           "config": {
             "options": [
-              { "id": "a", "label": "Hi" },
-              { "id": "b", "label": "Bye" }
+              {"id": "a", "label": "Hi"},
+              {"id": "b", "label": "Bye"}
             ]
           }
         }
