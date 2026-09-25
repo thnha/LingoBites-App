@@ -1,0 +1,11 @@
+{
+  "serverRepository": "git@github.com:thnha/LingoBites-Server.git",
+  "serverCommitSha": "7681bb9fb9970af9972b9ca9a1eb63c73386b33b",
+  "fixtureRevision": "ling-18-task-001-r1",
+  "note": "Byte copies of the canonical learner-contract fixtures from LingoBites-Server src/modules/curriculum/lessonDelivery/model/fixtures/ at the commit above. Do not hand-edit; re-copy on Server contract change and revalidate.",
+  "files": [
+    "valid-learner-lesson-aggregate.json",
+    "valid-lesson-aggregate-response.json",
+    "valid-exercise-check-response.json"
+  ]
+}

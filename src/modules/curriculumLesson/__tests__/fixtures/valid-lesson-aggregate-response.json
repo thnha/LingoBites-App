@@ -1,0 +1,35 @@
+{
+  "request_id": "00000000-0000-4000-8000-000000000099",
+  "status": "success",
+  "lesson": {
+    "id": "00000000-0000-4000-8000-000000000010",
+    "title": "What's your name?",
+    "description": "Intro lesson",
+    "estimatedMinutes": 7,
+    "blocks": [
+      {
+        "id": "00000000-0000-4000-8000-000000000011",
+        "type": "text",
+        "position": 0,
+        "data": { "content": "Welcome to the lesson." }
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000015",
+        "type": "exercise",
+        "position": 1,
+        "exercise": {
+          "id": "00000000-0000-4000-8000-000000000040",
+          "type": "multiple_choice",
+          "instruction": "Choose one.",
+          "prompt": "Pick the greeting.",
+          "config": {
+            "options": [
+              { "id": "a", "label": "Hi" },
+              { "id": "b", "label": "Bye" }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
