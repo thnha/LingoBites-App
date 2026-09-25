@@ -46,6 +46,36 @@ export type {
   CurriculumLessonCheckParseResult,
 } from './curriculumLessonSchema';
 export {
+  defaultCurriculumLessonSoundFactory,
+  useCurriculumLessonAudio,
+} from './curriculumLessonAudio';
+export type {
+  CurriculumLessonSoundFactory,
+  CurriculumLessonSoundHandle,
+  CurriculumLessonAudioStatus,
+  UseCurriculumLessonAudioOptions,
+  UseCurriculumLessonAudioResult,
+} from './curriculumLessonAudio';
+export {
+  CURRICULUM_LESSON_BLOCK_RENDERERS,
+  resolveCurriculumLessonBlockRenderer,
+} from './blockRegistry';
+export type {CurriculumLessonBlockType} from './blockRegistry';
+export {TextBlockView} from './TextBlockView';
+export {ExampleBlockView} from './ExampleBlockView';
+export {VocabularyBlockView} from './VocabularyBlockView';
+export {MediaBlockView} from './MediaBlockView';
+export {ExerciseBlockView} from './ExerciseBlockView';
+export type {CurriculumLessonCheckFn} from './ExerciseBlockView';
+export {UnsupportedBlockView} from './UnsupportedBlockView';
+export {
+  CurriculumLessonBlockSlot,
+  CurriculumLessonBlockView,
+} from './CurriculumLessonBlockView';
+export type {CurriculumLessonBlockViewProps} from './CurriculumLessonBlockView';
+export {CurriculumLessonPlayer} from './CurriculumLessonPlayer';
+export type {CurriculumLessonPlayerProps} from './CurriculumLessonPlayer';
+export {
   fetchCurriculumLesson,
   checkCurriculumLessonExercise,
 } from './curriculumLessonClient';
