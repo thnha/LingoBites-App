@@ -50,6 +50,12 @@ jest.mock('@modules/content', () => ({
   bootstrapContentPackage: jest.fn(),
 }));
 
+// TASK-008: the distinct curriculum entry self-loads remote metadata.
+// Shell tests isolate it so no live fetch can resolve after teardown.
+jest.mock('@modules/curriculumLesson', () => ({
+  CurriculumLessonsEntry: () => null,
+}));
+
 describe('LessonsHistoryScreen Bootstrap Integration (SETE-114)', () => {
   const mockNavigation: any = {
     navigate: jest.fn(),

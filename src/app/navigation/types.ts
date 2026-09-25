@@ -124,6 +124,12 @@ export type LessonsStackParamList = {
   LessonsList: undefined;
   SavedLessonDetail: {lessonId: string};
   ProgressiveLesson: {lessonId: string; initialLesson?: LessonV2};
+  /**
+   * TASK-008 (LING-33): namespaced curriculum lesson route. Data-driven —
+   * the screen loads `GET /api/v1/lessons/:id` for the given ID and never
+   * branches on its value. Unrelated to Lesson V2 (`ProgressiveLesson`).
+   */
+  CurriculumLesson: {lessonId: string};
   FlashcardList: {lessonId?: string} | undefined;
   /** Imported content-package lessons (M1-M3), separate from the OCR flow above. */
   ContentLessonList: undefined;

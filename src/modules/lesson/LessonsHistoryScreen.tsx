@@ -9,6 +9,7 @@ import {AppText} from '@components/AppText';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {useAppTheme, type AppTheme} from '@theme';
 import {bootstrapContentPackage} from '@modules/content';
+import {CurriculumLessonsEntry} from '@modules/curriculumLesson';
 import {GrammarTabContent} from './components/GrammarTabContent';
 import {LessonsTabContent} from './components/LessonsTabContent';
 import {SearchAndFilterBar} from './components/SearchAndFilterBar';
@@ -199,6 +200,7 @@ export function LessonsHistoryScreen({navigation}: Props) {
             personalLessons={personalLessons}
             packagedLessons={packagedLessons}
           />
+          <CurriculumLessonsEntry />
         </View>
       )}
       {activeTab === 'vocabulary' && (
