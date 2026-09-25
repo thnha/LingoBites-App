@@ -17,9 +17,9 @@ import provenance from './fixtures/provenance.json';
 describe('curriculumLessonSchema provenance', () => {
   it('records the originating Server SHA and fixture revision', () => {
     expect(provenance.serverCommitSha).toBe(
-      '7681bb9fb9970af9972b9ca9a1eb63c73386b33b',
+      '8deca0b3922fcf8d654323ff729e0feda4959c5a',
     );
-    expect(provenance.fixtureRevision).toBe('ling-18-task-001-r1');
+    expect(provenance.fixtureRevision).toBe('ling-21-wave1-r1');
     expect(provenance.serverCommitSha).toBe(
       CURRICULUM_LESSON_SERVER_FIXTURE_SHA,
     );
@@ -208,5 +208,147 @@ describe('parseCurriculumLessonBlock fallback', () => {
 
   it('treats a malformed check envelope as a failure', () => {
     expect(parseCurriculumLessonCheckResponse({correct: 'yes'}).ok).toBe(false);
+  });
+});
+
+describe('curriculumLessonSchema canonical dialect (ling-21-wave1-r1)', () => {
+  const blockId = '00000000-0000-4000-8000-000000000060';
+
+  function block(type: string, payload: unknown, position = 5) {
+    return {id: blockId, type, position, ...(payload as object)};
+  }
+
+  it('parses context, grammar, and activity blocks strictly', () => {
+    expect(
+      parseCurriculumLessonBlock(
+        block('context', {
+          data: {
+            phraseEn: 'Daily stand-up',
+            phraseVi: 'Họp stand-up',
+            explanationVi: 'Giải thích',
+          },
+        }),
+      ).type,
+    ).toBe('context');
+    expect(
+      parseCurriculumLessonBlock(
+        block('grammar', {
+          data: {
+            nameEn: 'Present simple',
+            nameVi: 'Hiện tại đơn',
+            pattern: 'Subject + V',
+            explanationVi: 'Mẫu câu',
+            examples: [{en: 'I work', vi: 'Tôi làm việc'}],
+          },
+        }),
+      ).type,
+    ).toBe('grammar');
+    expect(
+      parseCurriculumLessonBlock(
+        block('activity', {
+          data: {activityKind: 'role_play', titleVi: 'Nhập vai'},
+        }),
+      ).type,
+    ).toBe('activity');
+  });
+
+  it('parses fill_blank and translation exercises without answer keys', () => {
+    for (const exerciseType of ['fill_blank', 'translation'] as const) {
+      const parsed = parseCurriculumLessonBlock(
+        block('exercise', {
+          exercise: {
+            id: '00000000-0000-4000-8000-000000000061',
+            type: exerciseType,
+            instruction: 'Answer.',
+            prompt: 'Say hello.',
+            config: exerciseType === 'translation' ? {hintVi: 'Chào'} : {},
+          },
+        }),
+      );
+      expect(parsed.type).toBe('exercise');
+      if (parsed.type !== 'exercise') continue;
+      expect(parsed.exercise.type).toBe(exerciseType);
+      expect(JSON.stringify(parsed)).not.toContain('answer_key');
+    }
+  });
+
+  it('degrades an exercise block that leaks answer_key to unsupported', () => {
+    const raw = block('exercise', {
+      exercise: {
+        id: '00000000-0000-4000-8000-000000000061',
+        type: 'fill_blank',
+        instruction: 'Fill.',
+        prompt: 'I ___ coffee.',
+        config: {},
+        answer_key: {acceptedTexts: ['like']},
+      },
+    });
+    expect(CurriculumLessonBlockSchema.safeParse(raw).success).toBe(false);
+    expect(parseCurriculumLessonBlock(raw)).toMatchObject({
+      type: 'unsupported',
+      blockId: blockId,
+    });
+  });
+
+  it('degrades a context block that leaks source_metadata to unsupported', () => {
+    const raw = block('context', {
+      data: {
+        phraseEn: 'Daily stand-up',
+        phraseVi: 'Họp stand-up',
+        explanationVi: 'Giải thích',
+        source_metadata: {sourceRefId: 'chunk-1'},
+      },
+    });
+    expect(parseCurriculumLessonBlock(raw)).toMatchObject({
+      type: 'unsupported',
+      blockId: blockId,
+    });
+  });
+
+  it('degrades malformed new block types without losing identity', () => {
+    expect(
+      parseCurriculumLessonBlock(block('grammar', {data: {}})),
+    ).toMatchObject({type: 'unsupported', blockId: blockId});
+    expect(
+      parseCurriculumLessonBlock(
+        block('activity', {data: {activityKind: 'nope', titleVi: 'X'}}),
+      ),
+    ).toMatchObject({type: 'unsupported', blockId: blockId});
+    expect(
+      parseCurriculumLessonBlock(
+        block('context', {
+          data: {
+            phraseEn: 'Hi',
+            phraseVi: 'Chào',
+            explanationVi: 'E',
+            dialogueTurns: [
+              {id: 'dt-1', speaker: 'A', textEn: 'Hi', textVi: 'Chào'},
+              {id: 'dt-1', speaker: 'B', textEn: 'Yo', textVi: 'Ê'},
+            ],
+          },
+        }),
+      ).type,
+    ).toBe('context');
+  });
+
+  it('accepts the bounded text answer variant in the check request body', () => {
+    expect(
+      CurriculumLessonCheckRequestBodySchema.safeParse({answer: {text: 'like'}})
+        .success,
+    ).toBe(true);
+    expect(
+      CurriculumLessonCheckRequestBodySchema.safeParse({answer: {text: '  '}})
+        .success,
+    ).toBe(false);
+    expect(
+      CurriculumLessonCheckRequestBodySchema.safeParse({
+        answer: {text: 'x'.repeat(513)},
+      }).success,
+    ).toBe(false);
+    expect(
+      CurriculumLessonCheckRequestBodySchema.safeParse({
+        answer: {optionId: 'a', text: 'like'},
+      }).success,
+    ).toBe(false);
   });
 });

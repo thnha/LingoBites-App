@@ -26,6 +26,7 @@ const production: ReleaseConfig = {
     reviewSystem: true,
     lessonV2: true,
     youtubeLearning: true,
+    unifiedLesson: false,
   },
 };
 

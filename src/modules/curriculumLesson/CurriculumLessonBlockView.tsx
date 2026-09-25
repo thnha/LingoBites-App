@@ -42,6 +42,12 @@ export function CurriculumLessonBlockView({
           createSound={createSound}
         />
       );
+    case 'context':
+      return <CURRICULUM_LESSON_BLOCK_RENDERERS.context data={block.data} />;
+    case 'grammar':
+      return <CURRICULUM_LESSON_BLOCK_RENDERERS.grammar data={block.data} />;
+    case 'activity':
+      return <CURRICULUM_LESSON_BLOCK_RENDERERS.activity data={block.data} />;
     case 'exercise':
       return (
         <CURRICULUM_LESSON_BLOCK_RENDERERS.exercise

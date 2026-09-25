@@ -8,13 +8,30 @@ export {
   CurriculumLessonMediaAssetSchema,
   CurriculumLessonMultipleChoiceOptionSchema,
   CurriculumLessonMultipleChoiceConfigSchema,
+  CurriculumLessonFillBlankConfigSchema,
+  CurriculumLessonTranslationConfigSchema,
+  CurriculumLessonMultipleChoiceExerciseSchema,
+  CurriculumLessonFillBlankExerciseSchema,
+  CurriculumLessonTranslationExerciseSchema,
   CurriculumLessonExerciseExplanationSchema,
   CurriculumLessonExerciseSchema,
+  CurriculumLessonDialogueTurnSchema,
+  CurriculumLessonDialogueTurnSpeakerValues,
+  CurriculumLessonContextBlockDataSchema,
+  CurriculumLessonGrammarExampleSchema,
+  CurriculumLessonGrammarTiedActionValues,
+  CurriculumLessonGrammarBlockDataSchema,
+  CurriculumLessonActivityKindValues,
+  CurriculumLessonActivityBlockDataSchema,
   CurriculumLessonTextBlockSchema,
   CurriculumLessonExampleBlockSchema,
   CurriculumLessonVocabularyBlockSchema,
   CurriculumLessonMediaBlockSchema,
   CurriculumLessonExerciseBlockSchema,
+  CurriculumLessonContextBlockSchema,
+  CurriculumLessonGrammarBlockSchema,
+  CurriculumLessonActivityBlockSchema,
+  CurriculumLessonCheckAnswerSchema,
   CurriculumLessonBlockSchema,
   CurriculumLessonUnsupportedBlockSchema,
   CurriculumLessonAggregateSchema,
@@ -34,8 +51,20 @@ export type {
   CurriculumLessonMediaAsset,
   CurriculumLessonMultipleChoiceOption,
   CurriculumLessonMultipleChoiceConfig,
+  CurriculumLessonFillBlankConfig,
+  CurriculumLessonTranslationConfig,
+  CurriculumLessonMultipleChoiceExercise,
+  CurriculumLessonFillBlankExercise,
+  CurriculumLessonTranslationExercise,
   CurriculumLessonExerciseExplanation,
   CurriculumLessonExercise,
+  CurriculumLessonDialogueTurn,
+  CurriculumLessonContextBlockData,
+  CurriculumLessonGrammarExample,
+  CurriculumLessonGrammarBlockData,
+  CurriculumLessonActivityBlockData,
+  CurriculumLessonActivityKind,
+  CurriculumLessonCheckAnswerInput,
   CurriculumLessonBlock,
   CurriculumLessonUnsupportedBlock,
   CurriculumLessonParsedBlock,
@@ -62,6 +91,9 @@ export {
 } from './blockRegistry';
 export type {CurriculumLessonBlockType} from './blockRegistry';
 export {TextBlockView} from './TextBlockView';
+export {ContextBlockView} from './ContextBlockView';
+export {GrammarBlockView} from './GrammarBlockView';
+export {ActivityBlockView} from './ActivityBlockView';
 export {ExampleBlockView} from './ExampleBlockView';
 export {VocabularyBlockView} from './VocabularyBlockView';
 export {MediaBlockView} from './MediaBlockView';

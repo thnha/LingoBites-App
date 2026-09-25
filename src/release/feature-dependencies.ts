@@ -43,4 +43,7 @@ export const featureDependencies: Record<FeatureKey, DependencyGroup[]> = {
   // Standalone v2 flow; when OFF the app keeps using the v1 lesson path (AC24).
   lessonV2: [],
   youtubeLearning: [],
+  // Unified lesson experience (LING-21); no dependencies yet — TASK-007/008
+  // define composition and activation requirements when enabling it.
+  unifiedLesson: [],
 };

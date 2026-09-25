@@ -8,7 +8,10 @@ import {
   CURRICULUM_LESSON_BLOCK_RENDERERS,
   resolveCurriculumLessonBlockRenderer,
 } from '../blockRegistry';
+import {ActivityBlockView} from '../ActivityBlockView';
+import {ContextBlockView} from '../ContextBlockView';
 import {ExampleBlockView} from '../ExampleBlockView';
+import {GrammarBlockView} from '../GrammarBlockView';
 import {
   ExerciseBlockView,
   type CurriculumLessonCheckFn,
@@ -468,5 +471,191 @@ describe('blockRegistry', () => {
       UnsupportedBlockView,
     );
     expect(resolveCurriculumLessonBlockRenderer('')).toBe(UnsupportedBlockView);
+  });
+
+  it('resolves the canonical dialect block types to their renderers', () => {
+    expect(resolveCurriculumLessonBlockRenderer('context')).toBe(
+      ContextBlockView,
+    );
+    expect(resolveCurriculumLessonBlockRenderer('grammar')).toBe(
+      GrammarBlockView,
+    );
+    expect(resolveCurriculumLessonBlockRenderer('activity')).toBe(
+      ActivityBlockView,
+    );
+  });
+});
+
+describe('ContextBlockView', () => {
+  it('renders phrase, explanation, and dialogue turns', async () => {
+    const tree = await renderWithTheme(
+      <ContextBlockView
+        data={{
+          phraseEn: 'Daily stand-up',
+          phraseVi: 'Họp stand-up',
+          explanationVi: 'Giải thích',
+          dialogueTurns: [
+            {id: 'dt-1', speaker: 'A', textEn: 'Hi', textVi: 'Chào'},
+          ],
+        }}
+      />,
+    );
+    expect(queryByTestID(tree, 'block-context')).not.toBeNull();
+    expect(textOf(tree, 'block-context-phrase-en')).toBe('Daily stand-up');
+    expect(textOf(tree, 'block-context-turn-en-dt-1')).toBe('Hi');
+    expect(textOf(tree, 'block-context-turn-vi-dt-1')).toBe('Chào');
+  });
+
+  it('omits optional sentences and turns when absent', async () => {
+    const tree = await renderWithTheme(
+      <ContextBlockView
+        data={{
+          phraseEn: 'Daily stand-up',
+          phraseVi: 'Họp stand-up',
+          explanationVi: 'Giải thích',
+        }}
+      />,
+    );
+    expect(queryByTestID(tree, 'block-context-sentence-en')).toBeNull();
+    expect(queryByTestID(tree, 'block-context-turn-dt-1')).toBeNull();
+  });
+});
+
+describe('GrammarBlockView', () => {
+  it('renders names, pattern, explanation, and examples', async () => {
+    const tree = await renderWithTheme(
+      <GrammarBlockView
+        data={{
+          nameEn: 'Present simple',
+          nameVi: 'Hiện tại đơn',
+          pattern: 'Subject + V',
+          explanationVi: 'Mẫu câu',
+          examples: [{en: 'I work', vi: 'Tôi làm việc'}],
+        }}
+      />,
+    );
+    expect(queryByTestID(tree, 'block-grammar')).not.toBeNull();
+    expect(textOf(tree, 'block-grammar-pattern')).toBe('Subject + V');
+    expect(textOf(tree, 'block-grammar-example-en-0')).toBe('I work');
+    expect(textOf(tree, 'block-grammar-example-vi-0')).toBe('Tôi làm việc');
+  });
+});
+
+describe('ActivityBlockView', () => {
+  it('renders kind, title, instructions, and dialogue lines', async () => {
+    const tree = await renderWithTheme(
+      <ActivityBlockView
+        data={{
+          activityKind: 'role_play',
+          titleVi: 'Nhập vai',
+          instructionsVi: 'Hãy nhập vai.',
+          lines: [{id: 'dt-1', speaker: 'B', textEn: 'Hello', textVi: 'Chào'}],
+        }}
+      />,
+    );
+    expect(queryByTestID(tree, 'block-activity')).not.toBeNull();
+    expect(textOf(tree, 'block-activity-kind')).toBe('Role play');
+    expect(textOf(tree, 'block-activity-title')).toBe('Nhập vai');
+    expect(textOf(tree, 'block-activity-line-en-dt-1')).toBe('Hello');
+  });
+
+  it('falls back to dialogueTurns when lines are absent', async () => {
+    const tree = await renderWithTheme(
+      <ActivityBlockView
+        data={{
+          activityKind: 'listen_and_repeat',
+          titleVi: 'Nghe và lặp lại',
+          dialogueTurns: [
+            {id: 'dt-2', speaker: 'A', textEn: 'Hi', textVi: 'Chào'},
+          ],
+        }}
+      />,
+    );
+    expect(textOf(tree, 'block-activity-line-en-dt-2')).toBe('Hi');
+    expect(queryByTestID(tree, 'block-activity-instructions')).toBeNull();
+  });
+});
+
+describe('ExerciseBlockView text answers', () => {
+  const FILL_BLANK: CurriculumLessonExercise = {
+    id: '00000000-0000-4000-8000-000000000062',
+    type: 'fill_blank',
+    instruction: 'Fill in the blank.',
+    prompt: 'I ___ coffee.',
+    config: {},
+  };
+
+  const TRANSLATION: CurriculumLessonExercise = {
+    id: '00000000-0000-4000-8000-000000000063',
+    type: 'translation',
+    instruction: 'Translate into Vietnamese.',
+    prompt: 'Hello.',
+    config: {hintVi: 'Chào hỏi.'},
+  };
+
+  function checkReturning(
+    result: CurriculumLessonCheckResult,
+  ): CurriculumLessonCheckFn {
+    return jest.fn(async () => result);
+  }
+
+  async function typeAnswer(
+    tree: ReactTestRenderer.ReactTestRenderer,
+    text: string,
+  ) {
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'exercise-text-input'})
+        .props.onChangeText(text);
+    });
+  }
+
+  it('disables submit until text is entered, then posts the text variant', async () => {
+    const onCheck = checkReturning(okCheck(true));
+    const tree = await renderWithTheme(
+      <ExerciseBlockView exercise={FILL_BLANK} onCheckExercise={onCheck} />,
+    );
+    expect(queryByTestID(tree, 'block-exercise-text-answer')).not.toBeNull();
+    expect(
+      tree.root.findByProps({testID: 'exercise-submit'}).props
+        .accessibilityState,
+    ).toEqual({disabled: true});
+    await typeAnswer(tree, 'like');
+    expect(
+      tree.root.findByProps({testID: 'exercise-submit'}).props
+        .accessibilityState,
+    ).toEqual({disabled: false});
+    await press(tree, 'exercise-submit');
+    expect(onCheck).toHaveBeenCalledWith(FILL_BLANK.id, {text: 'like'});
+    expect(queryByTestID(tree, 'exercise-feedback-correct')).not.toBeNull();
+  });
+
+  it('renders the translation hint when the server provides one', async () => {
+    const tree = await renderWithTheme(
+      <ExerciseBlockView
+        exercise={TRANSLATION}
+        onCheckExercise={checkReturning(okCheck(false))}
+      />,
+    );
+    expect(textOf(tree, 'block-exercise-hint')).toBe('Chào hỏi.');
+    await typeAnswer(tree, 'Xin chào');
+    await press(tree, 'exercise-submit');
+    expect(queryByTestID(tree, 'exercise-feedback-incorrect')).not.toBeNull();
+  });
+
+  it('shows error feedback when the text check fails without crashing', async () => {
+    const onCheck = checkReturning({
+      ok: false,
+      kind: 'server-error',
+      errorCode: 'HTTP_500',
+      message: 'Request failed.',
+      retryable: true,
+    });
+    const tree = await renderWithTheme(
+      <ExerciseBlockView exercise={FILL_BLANK} onCheckExercise={onCheck} />,
+    );
+    await typeAnswer(tree, 'like');
+    await press(tree, 'exercise-submit');
+    expect(queryByTestID(tree, 'exercise-feedback-error')).not.toBeNull();
   });
 });

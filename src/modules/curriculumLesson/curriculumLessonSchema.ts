@@ -3,8 +3,8 @@
  *
  * Mirrors the learner-safe Zod contract from LingoBites-Server
  * `src/modules/curriculum/lessonDelivery/model/` at fixture revision
- * `ling-18-task-001-r1` (Server commit
- * `7681bb9fb9970af9972b9ca9a1eb63c73386b33b`). Field names are copied
+ * `ling-21-wave1-r1` (Server commit
+ * `8deca0b3922fcf8d654323ff729e0feda4959c5a`). Field names are copied
  * from that contract — never renamed or invented here. Bounds below are
  * the same numeric limits; the Server remains authoritative and any
  * divergence must be escalated (do not "fix" it locally).
@@ -15,9 +15,9 @@
  */
 import {z} from 'zod';
 
-export const CURRICULUM_LESSON_FIXTURE_REVISION = 'ling-18-task-001-r1';
+export const CURRICULUM_LESSON_FIXTURE_REVISION = 'ling-21-wave1-r1';
 export const CURRICULUM_LESSON_SERVER_FIXTURE_SHA =
-  '7681bb9fb9970af9972b9ca9a1eb63c73386b33b';
+  '8deca0b3922fcf8d654323ff729e0feda4959c5a';
 
 const CURRICULUM_LESSON_TITLE_MAX = 512;
 const CURRICULUM_LESSON_DESCRIPTION_MAX = 10_000;
@@ -35,6 +35,13 @@ const CURRICULUM_LESSON_OPTIONS_MAX = 8;
 const CURRICULUM_LESSON_EXPLANATION_KEY_MAX = 32;
 const CURRICULUM_LESSON_EXPLANATION_TEXT_MAX = 2_000;
 const CURRICULUM_LESSON_EXPLANATION_KEYS_MAX = 8;
+const CURRICULUM_LESSON_DIALOGUE_TURNS_MAX = 64;
+const CURRICULUM_LESSON_GRAMMAR_NAME_MAX = 512;
+const CURRICULUM_LESSON_GRAMMAR_PATTERN_MAX = 2_000;
+const CURRICULUM_LESSON_GRAMMAR_EXAMPLES_MAX = 32;
+const CURRICULUM_LESSON_SOURCE_REF_ID_MAX = 128;
+const CURRICULUM_LESSON_FILL_BLANK_TEXT_MAX = 512;
+const CURRICULUM_LESSON_TRANSLATION_HINT_MAX = 512;
 
 export const CurriculumLessonTextVariantValues = [
   'body',
@@ -122,13 +129,175 @@ export const CurriculumLessonExerciseExplanationSchema = z
     }
   });
 
-export const CurriculumLessonExerciseSchema = z
+export const CurriculumLessonFillBlankConfigSchema = z.object({}).strict();
+
+export const CurriculumLessonTranslationConfigSchema = z
+  .object({
+    hintVi: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_TRANSLATION_HINT_MAX)
+      .optional(),
+  })
+  .strict();
+
+export const CurriculumLessonMultipleChoiceExerciseSchema = z
   .object({
     id: z.string().uuid(),
     type: z.literal('multiple_choice'),
     instruction: z.string(),
     prompt: z.string(),
     config: CurriculumLessonMultipleChoiceConfigSchema,
+  })
+  .strict();
+
+export const CurriculumLessonFillBlankExerciseSchema = z
+  .object({
+    id: z.string().uuid(),
+    type: z.literal('fill_blank'),
+    instruction: z.string(),
+    prompt: z.string(),
+    config: CurriculumLessonFillBlankConfigSchema,
+  })
+  .strict();
+
+export const CurriculumLessonTranslationExerciseSchema = z
+  .object({
+    id: z.string().uuid(),
+    type: z.literal('translation'),
+    instruction: z.string(),
+    prompt: z.string(),
+    config: CurriculumLessonTranslationConfigSchema,
+  })
+  .strict();
+
+/**
+ * Learner-safe exercise union. None of the variants carries `answer_key`
+ * or `source_metadata`: those server-only fields are rejected by strict
+ * parsing, so a payload that leaks them degrades to `unsupported`
+ * instead of rendering.
+ */
+export const CurriculumLessonExerciseSchema = z.discriminatedUnion('type', [
+  CurriculumLessonMultipleChoiceExerciseSchema,
+  CurriculumLessonFillBlankExerciseSchema,
+  CurriculumLessonTranslationExerciseSchema,
+]);
+
+export const CurriculumLessonDialogueTurnSpeakerValues = ['A', 'B'] as const;
+
+export const CurriculumLessonDialogueTurnSchema = z
+  .object({
+    id: z.string().trim().min(1).max(CURRICULUM_LESSON_SOURCE_REF_ID_MAX),
+    speaker: z.enum(CurriculumLessonDialogueTurnSpeakerValues),
+    textEn: z.string().trim().min(1).max(CURRICULUM_LESSON_EXAMPLE_TEXT_MAX),
+    textVi: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_EXAMPLE_TRANSLATION_MAX),
+    audio: CurriculumLessonMediaAssetSchema.nullable().optional(),
+  })
+  .strict();
+
+export const CurriculumLessonContextBlockDataSchema = z
+  .object({
+    phraseEn: z.string().trim().min(1).max(CURRICULUM_LESSON_EXAMPLE_TEXT_MAX),
+    phraseVi: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_EXAMPLE_TRANSLATION_MAX),
+    explanationVi: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_TEXT_CONTENT_MAX),
+    contextSentenceEn: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_EXAMPLE_TEXT_MAX)
+      .optional(),
+    contextSentenceVi: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_EXAMPLE_TRANSLATION_MAX)
+      .optional(),
+    dialogueTurns: z
+      .array(CurriculumLessonDialogueTurnSchema)
+      .max(CURRICULUM_LESSON_DIALOGUE_TURNS_MAX)
+      .optional(),
+  })
+  .strict();
+
+export const CurriculumLessonGrammarExampleSchema = z
+  .object({
+    en: z.string().trim().min(1).max(CURRICULUM_LESSON_EXAMPLE_TEXT_MAX),
+    vi: z.string().trim().min(1).max(CURRICULUM_LESSON_EXAMPLE_TRANSLATION_MAX),
+  })
+  .strict();
+
+export const CurriculumLessonGrammarTiedActionValues = [
+  'speaking',
+  'listening',
+  'reading',
+  'writing',
+] as const;
+
+export const CurriculumLessonGrammarBlockDataSchema = z
+  .object({
+    nameEn: z.string().trim().min(1).max(CURRICULUM_LESSON_GRAMMAR_NAME_MAX),
+    nameVi: z.string().trim().min(1).max(CURRICULUM_LESSON_GRAMMAR_NAME_MAX),
+    pattern: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_GRAMMAR_PATTERN_MAX),
+    explanationVi: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_TEXT_CONTENT_MAX),
+    examples: z
+      .array(CurriculumLessonGrammarExampleSchema)
+      .max(CURRICULUM_LESSON_GRAMMAR_EXAMPLES_MAX),
+    tiedToActions: z
+      .array(z.enum(CurriculumLessonGrammarTiedActionValues))
+      .min(1)
+      .optional(),
+  })
+  .strict();
+
+export const CurriculumLessonActivityKindValues = [
+  'listen_and_repeat',
+  'speaking_drill',
+  'role_play',
+  'fill_blank',
+  'multiple_choice',
+  'translation',
+] as const;
+
+export const CurriculumLessonActivityBlockDataSchema = z
+  .object({
+    activityKind: z.enum(CurriculumLessonActivityKindValues),
+    titleVi: z.string().trim().min(1).max(CURRICULUM_LESSON_GRAMMAR_NAME_MAX),
+    instructionsVi: z
+      .string()
+      .trim()
+      .min(1)
+      .max(CURRICULUM_LESSON_TEXT_CONTENT_MAX)
+      .optional(),
+    lines: z
+      .array(CurriculumLessonDialogueTurnSchema)
+      .max(CURRICULUM_LESSON_DIALOGUE_TURNS_MAX)
+      .optional(),
+    dialogueTurns: z
+      .array(CurriculumLessonDialogueTurnSchema)
+      .max(CURRICULUM_LESSON_DIALOGUE_TURNS_MAX)
+      .optional(),
+    linkedExerciseIds: z.array(z.string().uuid()).max(32).optional(),
   })
   .strict();
 
@@ -177,11 +346,41 @@ export const CurriculumLessonExerciseBlockSchema = z
   })
   .strict();
 
+export const CurriculumLessonContextBlockSchema = z
+  .object({
+    id: z.string().uuid(),
+    type: z.literal('context'),
+    position: z.number().int().min(0),
+    data: CurriculumLessonContextBlockDataSchema,
+  })
+  .strict();
+
+export const CurriculumLessonGrammarBlockSchema = z
+  .object({
+    id: z.string().uuid(),
+    type: z.literal('grammar'),
+    position: z.number().int().min(0),
+    data: CurriculumLessonGrammarBlockDataSchema,
+  })
+  .strict();
+
+export const CurriculumLessonActivityBlockSchema = z
+  .object({
+    id: z.string().uuid(),
+    type: z.literal('activity'),
+    position: z.number().int().min(0),
+    data: CurriculumLessonActivityBlockDataSchema,
+  })
+  .strict();
+
 export const CurriculumLessonBlockSchema = z.discriminatedUnion('type', [
   CurriculumLessonTextBlockSchema,
   CurriculumLessonExampleBlockSchema,
   CurriculumLessonVocabularyBlockSchema,
   CurriculumLessonMediaBlockSchema,
+  CurriculumLessonContextBlockSchema,
+  CurriculumLessonGrammarBlockSchema,
+  CurriculumLessonActivityBlockSchema,
   CurriculumLessonExerciseBlockSchema,
 ]);
 
@@ -214,13 +413,28 @@ export const CurriculumLessonAggregateSuccessResponseSchema = z.object({
   lesson: CurriculumLessonAggregateSchema,
 });
 
+/**
+ * Discriminated client answer input. Mirrors the Server
+ * `ExerciseCheckAnswerSchema`: `{optionId}` for multiple choice,
+ * bounded `{text}` for fill-blank/translation. Correctness stays
+ * server-authoritative; the client never interprets the answer.
+ */
+export const CurriculumLessonCheckAnswerSchema = z.union([
+  z
+    .object({
+      optionId: z.string().trim().min(1).max(CURRICULUM_LESSON_OPTION_ID_MAX),
+    })
+    .strict(),
+  z
+    .object({
+      text: z.string().trim().min(1).max(CURRICULUM_LESSON_FILL_BLANK_TEXT_MAX),
+    })
+    .strict(),
+]);
+
 export const CurriculumLessonCheckRequestBodySchema = z
   .object({
-    answer: z
-      .object({
-        optionId: z.string().trim().min(1).max(CURRICULUM_LESSON_OPTION_ID_MAX),
-      })
-      .strict(),
+    answer: CurriculumLessonCheckAnswerSchema,
   })
   .strict();
 
@@ -267,11 +481,46 @@ export type CurriculumLessonMultipleChoiceOption = z.infer<
 export type CurriculumLessonMultipleChoiceConfig = z.infer<
   typeof CurriculumLessonMultipleChoiceConfigSchema
 >;
+export type CurriculumLessonFillBlankConfig = z.infer<
+  typeof CurriculumLessonFillBlankConfigSchema
+>;
+export type CurriculumLessonTranslationConfig = z.infer<
+  typeof CurriculumLessonTranslationConfigSchema
+>;
 export type CurriculumLessonExerciseExplanation = z.infer<
   typeof CurriculumLessonExerciseExplanationSchema
 >;
+export type CurriculumLessonMultipleChoiceExercise = z.infer<
+  typeof CurriculumLessonMultipleChoiceExerciseSchema
+>;
+export type CurriculumLessonFillBlankExercise = z.infer<
+  typeof CurriculumLessonFillBlankExerciseSchema
+>;
+export type CurriculumLessonTranslationExercise = z.infer<
+  typeof CurriculumLessonTranslationExerciseSchema
+>;
 export type CurriculumLessonExercise = z.infer<
   typeof CurriculumLessonExerciseSchema
+>;
+export type CurriculumLessonDialogueTurn = z.infer<
+  typeof CurriculumLessonDialogueTurnSchema
+>;
+export type CurriculumLessonContextBlockData = z.infer<
+  typeof CurriculumLessonContextBlockDataSchema
+>;
+export type CurriculumLessonGrammarExample = z.infer<
+  typeof CurriculumLessonGrammarExampleSchema
+>;
+export type CurriculumLessonGrammarBlockData = z.infer<
+  typeof CurriculumLessonGrammarBlockDataSchema
+>;
+export type CurriculumLessonActivityBlockData = z.infer<
+  typeof CurriculumLessonActivityBlockDataSchema
+>;
+export type CurriculumLessonActivityKind =
+  (typeof CurriculumLessonActivityKindValues)[number];
+export type CurriculumLessonCheckAnswerInput = z.infer<
+  typeof CurriculumLessonCheckAnswerSchema
 >;
 export type CurriculumLessonBlock = z.infer<typeof CurriculumLessonBlockSchema>;
 export type CurriculumLessonUnsupportedBlock = z.infer<

@@ -1,6 +1,9 @@
 import type {ComponentType} from 'react';
+import {ActivityBlockView} from './ActivityBlockView';
+import {ContextBlockView} from './ContextBlockView';
 import {ExampleBlockView} from './ExampleBlockView';
 import {ExerciseBlockView} from './ExerciseBlockView';
+import {GrammarBlockView} from './GrammarBlockView';
 import {MediaBlockView} from './MediaBlockView';
 import {TextBlockView} from './TextBlockView';
 import {UnsupportedBlockView} from './UnsupportedBlockView';
@@ -21,6 +24,9 @@ export const CURRICULUM_LESSON_BLOCK_RENDERERS = {
   example: ExampleBlockView,
   vocabulary: VocabularyBlockView,
   media: MediaBlockView,
+  context: ContextBlockView,
+  grammar: GrammarBlockView,
+  activity: ActivityBlockView,
   exercise: ExerciseBlockView,
   unsupported: UnsupportedBlockView,
 } as const satisfies Record<string, ComponentType<any>>;
