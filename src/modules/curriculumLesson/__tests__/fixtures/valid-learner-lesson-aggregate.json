@@ -1,0 +1,67 @@
+{
+  "id": "00000000-0000-4000-8000-000000000010",
+  "title": "What's your name?",
+  "description": "Intro lesson",
+  "estimatedMinutes": 7,
+  "blocks": [
+    {
+      "id": "00000000-0000-4000-8000-000000000011",
+      "type": "text",
+      "position": 0,
+      "data": { "content": "Welcome to the lesson.", "variant": "body" }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000012",
+      "type": "example",
+      "position": 1,
+      "data": {
+        "source": "What's your name?",
+        "translation": "Bạn tên gì?"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000013",
+      "type": "vocabulary",
+      "position": 2,
+      "items": [
+        {
+          "id": "00000000-0000-4000-8000-000000000020",
+          "lemma": "name",
+          "meaning": "tên",
+          "ipa": "/neɪm/",
+          "audio": null,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000014",
+      "type": "media",
+      "position": 3,
+      "media": {
+        "id": "00000000-0000-4000-8000-000000000030",
+        "type": "image",
+        "url": "https://cdn.example.com/curriculum/hello.png",
+        "altText": "Greeting illustration",
+        "caption": null
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000015",
+      "type": "exercise",
+      "position": 4,
+      "exercise": {
+        "id": "00000000-0000-4000-8000-000000000040",
+        "type": "multiple_choice",
+        "instruction": "Choose the best answer.",
+        "prompt": "How do you ask someone's name?",
+        "config": {
+          "options": [
+            { "id": "a", "label": "What's your name?" },
+            { "id": "b", "label": "Where are you?" }
+          ]
+        }
+      }
+    }
+  ]
+}
