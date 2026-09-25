@@ -16,10 +16,17 @@ import {useAppTheme} from '@theme';
 import {getTextLengthBucket, trackEvent} from '../analytics';
 import {validateConfirmedText} from '@shared/utils/textValidation';
 import {useFeatureFlags} from '@/release';
+import type {NavigationProp} from '@react-navigation/native';
+import type {RootTabParamList} from '@/app/navigation/types';
 import {
   resolveLessonDestination,
   startLessonFromConfirmedText,
 } from '@shared/lesson/startLessonFromConfirmedText';
+import {
+  createLessonGenerationJob,
+  isUnifiedLessonReady,
+  useLessonServerCapabilities,
+} from '@modules/curriculumLesson';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<CreateStackParamList, 'PasteText'>;
@@ -38,6 +45,9 @@ export function PasteTextScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
   const {config} = useFeatureFlags();
+  const lessonCapabilities = useLessonServerCapabilities(
+    config.features.unifiedLesson === true,
+  );
   const [text, setText] = useState('');
   const [screenState, setScreenState] = useState<ScreenState>({type: 'input'});
   const [creating, setCreating] = useState(false);
@@ -71,7 +81,9 @@ export function PasteTextScreen({navigation, route}: Props) {
       edited_after_ocr: false,
     });
 
-    const destination = resolveLessonDestination(config.features);
+    const destination = resolveLessonDestination(config.features, {
+      unifiedReady: isUnifiedLessonReady(config.features, lessonCapabilities),
+    });
     if (destination === 'v1_analyze') {
       setScreenState({type: 'input'});
     } else {
@@ -85,12 +97,21 @@ export function PasteTextScreen({navigation, route}: Props) {
       destination,
       origin: 'PasteText',
       navigate: (screen, params) => {
-        if (screen === 'Analyzing' && 'confirmedText' in params) {
+        if (screen === 'Analyzing' && 'sourceType' in params) {
           navigation.navigate('Analyzing', params);
         } else if (screen === 'ProgressiveLesson' && 'lessonId' in params) {
           navigation.navigate('ProgressiveLesson', params);
+        } else if (screen === 'UnifiedLessonGeneration' && 'jobId' in params) {
+          const {jobId, confirmedText, level} = params;
+          navigation
+            .getParent<NavigationProp<RootTabParamList>>()
+            ?.navigate('Lessons', {
+              screen: 'UnifiedLessonGeneration',
+              params: {jobId, confirmedText, level},
+            });
         }
       },
+      createGenerationJob: createLessonGenerationJob,
     });
 
     if (!result.ok) {
@@ -154,23 +175,19 @@ export function PasteTextScreen({navigation, route}: Props) {
             opacity: !hasText
               ? theme.states.disabledOpacity
               : pressed
-                ? theme.states.pressedOpacity
-                : 1,
+              ? theme.states.pressedOpacity
+              : 1,
             paddingHorizontal: theme.spacing.sm,
           })}
         >
           <MaterialIcon
-            color={
-              !hasText ? theme.colors.text.muted : theme.colors.primary
-            }
+            color={!hasText ? theme.colors.text.muted : theme.colors.primary}
             name="delete"
             size={20}
           />
           <AppText
             style={{
-              color: !hasText
-                ? theme.colors.text.muted
-                : theme.colors.primary,
+              color: !hasText ? theme.colors.text.muted : theme.colors.primary,
               fontWeight: '600',
             }}
           >

@@ -34,7 +34,10 @@ import {
   FlashcardListScreen,
 } from '@modules/lesson';
 import {PracticeScreen} from '@modules/practice';
-import {CurriculumLessonScreen} from '@modules/curriculumLesson';
+import {
+  CurriculumLessonScreen,
+  UnifiedLessonGenerationScreen,
+} from '@modules/curriculumLesson';
 import {DailyReviewScreen} from '@modules/review';
 import {TodayScreen} from '@modules/today';
 import {
@@ -256,6 +259,11 @@ function LessonsStackNavigator() {
       <LessonsStack.Screen
         component={CurriculumLessonScreen}
         name="CurriculumLesson"
+        options={{headerShown: false, gestureEnabled: false}}
+      />
+      <LessonsStack.Screen
+        component={UnifiedLessonGenerationScreen}
+        name="UnifiedLessonGeneration"
         options={{headerShown: false, gestureEnabled: false}}
       />
       <LessonsStack.Screen

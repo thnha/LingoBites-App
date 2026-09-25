@@ -130,6 +130,18 @@ export type LessonsStackParamList = {
    * branches on its value. Unrelated to Lesson V2 (`ProgressiveLesson`).
    */
   CurriculumLesson: {lessonId: string};
+  /**
+   * LING-21 TASK-007: unified generation progress (job-only UI). The
+   * screen polls `GET /api/v1/lesson-jobs/:id` and replaces itself with
+   * the canonical `CurriculumLesson` route on materialization.
+   * `confirmedText`/`level` enable retry as a fresh job; both are
+   * optional so deep links without creation context still render.
+   */
+  UnifiedLessonGeneration: {
+    jobId: string;
+    confirmedText?: string;
+    level?: string;
+  };
   FlashcardList: {lessonId?: string} | undefined;
   /** Imported content-package lessons (M1-M3), separate from the OCR flow above. */
   ContentLessonList: undefined;

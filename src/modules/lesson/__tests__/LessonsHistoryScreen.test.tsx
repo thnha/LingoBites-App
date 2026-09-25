@@ -41,8 +41,19 @@ jest.mock('@modules/content', () => ({
 
 // TASK-008: the distinct curriculum entry self-loads remote metadata.
 // Shell tests isolate it so no live fetch can resolve after teardown.
+// LING-21 TASK-007: the unified catalog path stays off here — the
+// capability hook resolves to all-false and the readiness predicate to
+// false, pinning the legacy composition under test.
 jest.mock('@modules/curriculumLesson', () => ({
   CurriculumLessonsEntry: () => null,
+  UnifiedLessonsScreen: () => null,
+  isUnifiedLessonReady: () => false,
+  useLessonServerCapabilities: () => ({
+    catalog: false,
+    canonicalDelivery: false,
+    aiMaterialization: false,
+    packagedImport: false,
+  }),
 }));
 
 const mockListLessons = jest.fn(() => []);
@@ -159,12 +170,15 @@ describe('LessonsHistoryScreen', () => {
       <LessonsHistoryScreen navigation={navigation} route={route} />,
     );
 
-    expect(tree.root.findByProps({testID: 'library-practice-row'}))
-      .toBeDefined();
-    expect(tree.root.findByProps({testID: 'library-practice-review'}))
-      .toBeDefined();
-    expect(tree.root.findByProps({testID: 'library-practice-speaking'}))
-      .toBeDefined();
+    expect(
+      tree.root.findByProps({testID: 'library-practice-row'}),
+    ).toBeDefined();
+    expect(
+      tree.root.findByProps({testID: 'library-practice-review'}),
+    ).toBeDefined();
+    expect(
+      tree.root.findByProps({testID: 'library-practice-speaking'}),
+    ).toBeDefined();
     expect(() =>
       tree.root.findByProps({testID: 'library-practice-quick'}),
     ).toThrow();
