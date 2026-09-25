@@ -8,7 +8,7 @@
       "id": "00000000-0000-4000-8000-000000000011",
       "type": "text",
       "position": 0,
-      "data": { "content": "Welcome to the lesson.", "variant": "body" }
+      "data": {"content": "Welcome to the lesson.", "variant": "body"}
     },
     {
       "id": "00000000-0000-4000-8000-000000000012",
@@ -57,8 +57,8 @@
         "prompt": "How do you ask someone's name?",
         "config": {
           "options": [
-            { "id": "a", "label": "What's your name?" },
-            { "id": "b", "label": "Where are you?" }
+            {"id": "a", "label": "What's your name?"},
+            {"id": "b", "label": "Where are you?"}
           ]
         }
       }
