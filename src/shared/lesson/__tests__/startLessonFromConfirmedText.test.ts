@@ -20,6 +20,30 @@ describe('startLessonFromConfirmedText', () => {
     expect(resolveLessonDestination({lessonV2: false})).toBe('v1_analyze');
   });
 
+  it('resolves unified only when the flag and readiness agree', () => {
+    expect(
+      resolveLessonDestination(
+        {lessonV2: true, unifiedLesson: true},
+        {unifiedReady: true},
+      ),
+    ).toBe('unified_lesson');
+    expect(
+      resolveLessonDestination(
+        {lessonV2: true, unifiedLesson: true},
+        {unifiedReady: false},
+      ),
+    ).toBe('v2_progressive');
+    expect(
+      resolveLessonDestination({lessonV2: true, unifiedLesson: true}),
+    ).toBe('v2_progressive');
+    expect(
+      resolveLessonDestination(
+        {lessonV2: false, unifiedLesson: true},
+        {unifiedReady: true},
+      ),
+    ).toBe('unified_lesson');
+  });
+
   it('keeps the V1 route and does not call the V2 API when the flag is off', async () => {
     const navigate = jest.fn();
     const result = await startLessonFromConfirmedText({
@@ -51,6 +75,70 @@ describe('startLessonFromConfirmedText', () => {
 
     expect(result.ok).toBe(false);
     expect(createSkeleton).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('creates one job and navigates to generation progress for unified', async () => {
+    const navigate = jest.fn();
+    const createGenerationJob = jest.fn().mockResolvedValue({
+      ok: true,
+      job: {id: 'job-1'},
+    });
+    const result = await startLessonFromConfirmedText({
+      confirmedText: 'hello world',
+      sourceType: 'paste_text',
+      destination: 'unified_lesson',
+      origin: 'PasteText',
+      navigate,
+      createGenerationJob,
+    });
+
+    expect(result).toEqual({ok: true});
+    expect(createSkeleton).not.toHaveBeenCalled();
+    expect(createGenerationJob).toHaveBeenCalledWith({
+      confirmedText: 'hello world',
+    });
+    expect(navigate).toHaveBeenCalledWith('UnifiedLessonGeneration', {
+      jobId: 'job-1',
+      confirmedText: 'hello world',
+    });
+  });
+
+  it('fails closed for unified when no job creator is injected', async () => {
+    const navigate = jest.fn();
+    const result = await startLessonFromConfirmedText({
+      confirmedText: 'hello world',
+      sourceType: 'paste_text',
+      destination: 'unified_lesson',
+      origin: 'PasteText',
+      navigate,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('maps unified creation failure to the retryable contract', async () => {
+    const navigate = jest.fn();
+    const createGenerationJob = jest.fn().mockResolvedValue({
+      ok: false,
+      message: 'Server busy.',
+      retryable: true,
+    });
+    const result = await startLessonFromConfirmedText({
+      confirmedText: 'hello world',
+      sourceType: 'paste_text',
+      destination: 'unified_lesson',
+      origin: 'PasteText',
+      navigate,
+      createGenerationJob,
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      message: 'Server busy.',
+      retryable: true,
+    });
     expect(navigate).not.toHaveBeenCalled();
   });
 });

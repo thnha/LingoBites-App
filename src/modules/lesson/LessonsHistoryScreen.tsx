@@ -8,8 +8,14 @@ import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {useAppTheme, type AppTheme} from '@theme';
+import {useFeatureFlags} from '@/release';
 import {bootstrapContentPackage} from '@modules/content';
-import {CurriculumLessonsEntry} from '@modules/curriculumLesson';
+import {
+  CurriculumLessonsEntry,
+  UnifiedLessonsScreen,
+  isUnifiedLessonReady,
+  useLessonServerCapabilities,
+} from '@modules/curriculumLesson';
 import {GrammarTabContent} from './components/GrammarTabContent';
 import {LessonsTabContent} from './components/LessonsTabContent';
 import {SearchAndFilterBar} from './components/SearchAndFilterBar';
@@ -48,6 +54,11 @@ export function LessonsHistoryScreen({navigation}: Props) {
   const [activeTab, setActiveTab] = useState<
     'lessons' | 'vocabulary' | 'grammar'
   >('lessons');
+  const {config} = useFeatureFlags();
+  const lessonCapabilities = useLessonServerCapabilities(
+    config.features.unifiedLesson === true,
+  );
+  const unifiedMode = isUnifiedLessonReady(config.features, lessonCapabilities);
 
   const {
     personalLessons,
@@ -65,14 +76,16 @@ export function LessonsHistoryScreen({navigation}: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      bootstrapContentPackage().catch(() => {});
+      if (!unifiedMode) {
+        bootstrapContentPackage().catch(() => {});
+      }
       refresh();
       setDueCount(getDueFlashcards().length);
       const personal = listLessons();
       const {questions, title} = resolveQuickPractice(personal, getLessonById);
       setQuickQuestions(questions);
       setQuickTitle(title);
-    }, [refresh, getDueFlashcards, getLessonById, listLessons]),
+    }, [refresh, getDueFlashcards, getLessonById, listLessons, unifiedMode]),
   );
 
   const practiceChips: PracticeChip[] = useMemo(() => {
@@ -114,27 +127,21 @@ export function LessonsHistoryScreen({navigation}: Props) {
       });
     }
     return chips;
-  }, [
-    dueCount,
-    navigation,
-    quickQuestions,
-    quickTitle,
-    t,
-  ]);
+  }, [dueCount, navigation, quickQuestions, quickTitle, t]);
 
   const currentFilter =
     activeTab === 'lessons'
       ? lessonsFilter
       : activeTab === 'vocabulary'
-        ? vocabularyFilter
-        : grammarFilter;
+      ? vocabularyFilter
+      : grammarFilter;
 
   const setCurrentFilter =
     activeTab === 'lessons'
       ? setLessonsFilter
       : activeTab === 'vocabulary'
-        ? setVocabularyFilter
-        : setGrammarFilter;
+      ? setVocabularyFilter
+      : setGrammarFilter;
 
   return (
     <AppScreen>
@@ -183,24 +190,36 @@ export function LessonsHistoryScreen({navigation}: Props) {
 
       <SegmentedTabBar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <SearchAndFilterBar
-        searchQuery={currentFilter.searchQuery}
-        sourceFilter={currentFilter.sourceFilter}
-        onSearchChange={query =>
-          setCurrentFilter({...currentFilter, searchQuery: query})
-        }
-        onFilterChange={filter =>
-          setCurrentFilter({...currentFilter, sourceFilter: filter})
-        }
-      />
+      {!(unifiedMode && activeTab === 'lessons') && (
+        <SearchAndFilterBar
+          searchQuery={currentFilter.searchQuery}
+          sourceFilter={currentFilter.sourceFilter}
+          onSearchChange={query =>
+            setCurrentFilter({...currentFilter, searchQuery: query})
+          }
+          onFilterChange={filter =>
+            setCurrentFilter({...currentFilter, sourceFilter: filter})
+          }
+        />
+      )}
 
       {activeTab === 'lessons' && (
         <View style={themedStyles.tabContent} testID="lessons-tab-content">
-          <LessonsTabContent
-            personalLessons={personalLessons}
-            packagedLessons={packagedLessons}
-          />
-          <CurriculumLessonsEntry />
+          {unifiedMode ? (
+            <UnifiedLessonsScreen
+              onOpenLesson={lessonId =>
+                navigation.navigate('CurriculumLesson', {lessonId})
+              }
+            />
+          ) : (
+            <>
+              <LessonsTabContent
+                personalLessons={personalLessons}
+                packagedLessons={packagedLessons}
+              />
+              <CurriculumLessonsEntry />
+            </>
+          )}
         </View>
       )}
       {activeTab === 'vocabulary' && (

@@ -252,6 +252,15 @@ export const featureRegistry = [
     limitations: ["Disabled until T16 corpus thresholds and T17 operations evidence pass (SETE-159)."],
   },
   {
+    key: 'unifiedLesson',
+    module: 'modules/curriculumLesson',
+    required: false,
+    releaseGroup: 'foundation',
+    status: 'not_implemented',
+    entryPoint: 'Lessons -> UnifiedLessonCatalog (not yet composed)',
+    limitations: ["Canonical schemas/renderers land in LING-21 TASK-006 without activation; catalog/player composition (TASK-007) and parity/capability evidence (TASK-008) must precede enablement."],
+  },
+  {
     key: 'youtubeLearning',
     module: 'modules/youtube',
     required: false,

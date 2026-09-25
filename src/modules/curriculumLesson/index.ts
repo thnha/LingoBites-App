@@ -8,13 +8,30 @@ export {
   CurriculumLessonMediaAssetSchema,
   CurriculumLessonMultipleChoiceOptionSchema,
   CurriculumLessonMultipleChoiceConfigSchema,
+  CurriculumLessonFillBlankConfigSchema,
+  CurriculumLessonTranslationConfigSchema,
+  CurriculumLessonMultipleChoiceExerciseSchema,
+  CurriculumLessonFillBlankExerciseSchema,
+  CurriculumLessonTranslationExerciseSchema,
   CurriculumLessonExerciseExplanationSchema,
   CurriculumLessonExerciseSchema,
+  CurriculumLessonDialogueTurnSchema,
+  CurriculumLessonDialogueTurnSpeakerValues,
+  CurriculumLessonContextBlockDataSchema,
+  CurriculumLessonGrammarExampleSchema,
+  CurriculumLessonGrammarTiedActionValues,
+  CurriculumLessonGrammarBlockDataSchema,
+  CurriculumLessonActivityKindValues,
+  CurriculumLessonActivityBlockDataSchema,
   CurriculumLessonTextBlockSchema,
   CurriculumLessonExampleBlockSchema,
   CurriculumLessonVocabularyBlockSchema,
   CurriculumLessonMediaBlockSchema,
   CurriculumLessonExerciseBlockSchema,
+  CurriculumLessonContextBlockSchema,
+  CurriculumLessonGrammarBlockSchema,
+  CurriculumLessonActivityBlockSchema,
+  CurriculumLessonCheckAnswerSchema,
   CurriculumLessonBlockSchema,
   CurriculumLessonUnsupportedBlockSchema,
   CurriculumLessonAggregateSchema,
@@ -34,8 +51,20 @@ export type {
   CurriculumLessonMediaAsset,
   CurriculumLessonMultipleChoiceOption,
   CurriculumLessonMultipleChoiceConfig,
+  CurriculumLessonFillBlankConfig,
+  CurriculumLessonTranslationConfig,
+  CurriculumLessonMultipleChoiceExercise,
+  CurriculumLessonFillBlankExercise,
+  CurriculumLessonTranslationExercise,
   CurriculumLessonExerciseExplanation,
   CurriculumLessonExercise,
+  CurriculumLessonDialogueTurn,
+  CurriculumLessonContextBlockData,
+  CurriculumLessonGrammarExample,
+  CurriculumLessonGrammarBlockData,
+  CurriculumLessonActivityBlockData,
+  CurriculumLessonActivityKind,
+  CurriculumLessonCheckAnswerInput,
   CurriculumLessonBlock,
   CurriculumLessonUnsupportedBlock,
   CurriculumLessonParsedBlock,
@@ -62,6 +91,9 @@ export {
 } from './blockRegistry';
 export type {CurriculumLessonBlockType} from './blockRegistry';
 export {TextBlockView} from './TextBlockView';
+export {ContextBlockView} from './ContextBlockView';
+export {GrammarBlockView} from './GrammarBlockView';
+export {ActivityBlockView} from './ActivityBlockView';
 export {ExampleBlockView} from './ExampleBlockView';
 export {VocabularyBlockView} from './VocabularyBlockView';
 export {MediaBlockView} from './MediaBlockView';
@@ -87,6 +119,72 @@ export {
   fetchCurriculumLesson,
   checkCurriculumLessonExercise,
 } from './curriculumLessonClient';
+export {
+  fetchLessonCatalogPage,
+  UnifiedLessonSummarySchema,
+  UnifiedLessonCatalogResponseSchema,
+  LESSON_CATALOG_LIMIT_MIN,
+  LESSON_CATALOG_LIMIT_MAX,
+  LESSON_CATALOG_LIMIT_DEFAULT,
+} from './lessonCatalogClient';
+export type {
+  UnifiedLessonSummary,
+  LessonCatalogErrorKind,
+  LessonCatalogError,
+  LessonCatalogResult,
+  LessonCatalogClientOptions,
+} from './lessonCatalogClient';
+export {
+  createLessonGenerationJob,
+  fetchLessonGenerationJob,
+  isLessonGenerationTerminal,
+  LessonGenerationJobStatusValues,
+  LessonGenerationWarningSchema,
+  LessonGenerationErrorSchema,
+  LessonGenerationJobSchema,
+  LessonGenerationJobEnvelopeSchema,
+} from './lessonJobClient';
+export type {
+  LessonGenerationJob,
+  LessonGenerationJobStatus,
+  LessonJobErrorKind,
+  LessonJobError,
+  LessonJobResult,
+  LessonJobClientOptions,
+  CreateLessonGenerationJobInput,
+} from './lessonJobClient';
+export {
+  fetchLessonServerCapabilities,
+  useLessonServerCapabilities,
+  isUnifiedLessonReady,
+} from './lessonCapabilities';
+export type {
+  LessonServerCapabilities,
+  UnifiedLessonReleaseFlags,
+} from './lessonCapabilities';
+export {useLessonCatalog} from './useLessonCatalog';
+export type {
+  LessonCatalogState,
+  UseLessonCatalogOptions,
+  UseLessonCatalogResult,
+} from './useLessonCatalog';
+export {useLessonGenerationJob} from './useLessonGenerationJob';
+export type {
+  LessonGenerationState,
+  UseLessonGenerationJobOptions,
+} from './useLessonGenerationJob';
+export {
+  UnifiedLessonCatalogView,
+  UnifiedLessonsScreen,
+  UnifiedLessonsRouteScreen,
+} from './UnifiedLessonsScreen';
+export {UnifiedLessonsPreviewScreen} from './UnifiedLessonsPreviewScreen';
+export type {UnifiedLessonCatalogViewProps} from './UnifiedLessonsScreen';
+export {
+  UnifiedLessonGenerationView,
+  UnifiedLessonGenerationScreen,
+} from './UnifiedLessonGenerationScreen';
+export type {UnifiedLessonGenerationViewProps} from './UnifiedLessonGenerationScreen';
 export type {
   CurriculumLessonErrorKind,
   CurriculumLessonError,

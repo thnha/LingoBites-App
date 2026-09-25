@@ -20,10 +20,17 @@ import {
 } from '@shared/utils/textValidation';
 import {extractText} from './OCRService';
 import {useFeatureFlags} from '@/release';
+import type {NavigationProp} from '@react-navigation/native';
+import type {RootTabParamList} from '@/app/navigation/types';
 import {
   resolveLessonDestination,
   startLessonFromConfirmedText,
 } from '@shared/lesson/startLessonFromConfirmedText';
+import {
+  createLessonGenerationJob,
+  isUnifiedLessonReady,
+  useLessonServerCapabilities,
+} from '@modules/curriculumLesson';
 
 type Props = NativeStackScreenProps<CreateStackParamList, 'OCRReview'>;
 
@@ -41,6 +48,9 @@ export function OCRReviewScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
   const {config} = useFeatureFlags();
+  const lessonCapabilities = useLessonServerCapabilities(
+    config.features.unifiedLesson === true,
+  );
   const {
     imageUri,
     fileName,
@@ -101,9 +111,11 @@ export function OCRReviewScreen({navigation, route}: Props) {
       edited_after_ocr: validation.value.trim() !== initialExtractedText.trim(),
     });
 
-    const destination = resolveLessonDestination(config.features);
+    const destination = resolveLessonDestination(config.features, {
+      unifiedReady: isUnifiedLessonReady(config.features, lessonCapabilities),
+    });
     setScreenState({type: 'input'});
-    setCreating(destination === 'v2_progressive');
+    setCreating(destination !== 'v1_analyze');
 
     const result = await startLessonFromConfirmedText({
       confirmedText: validation.value,
@@ -111,12 +123,21 @@ export function OCRReviewScreen({navigation, route}: Props) {
       destination,
       origin: 'OCRReview',
       navigate: (screen, params) => {
-        if (screen === 'Analyzing' && 'confirmedText' in params) {
+        if (screen === 'Analyzing' && 'sourceType' in params) {
           navigation.navigate('Analyzing', params);
         } else if (screen === 'ProgressiveLesson' && 'lessonId' in params) {
           navigation.navigate('ProgressiveLesson', params);
+        } else if (screen === 'UnifiedLessonGeneration' && 'jobId' in params) {
+          const {jobId, confirmedText, level} = params;
+          navigation
+            .getParent<NavigationProp<RootTabParamList>>()
+            ?.navigate('Lessons', {
+              screen: 'UnifiedLessonGeneration',
+              params: {jobId, confirmedText, level},
+            });
         }
       },
+      createGenerationJob: createLessonGenerationJob,
     });
 
     if (!result.ok) {

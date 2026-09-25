@@ -317,10 +317,38 @@ describe('checkCurriculumLessonExercise', () => {
     });
   });
 
+  it('posts the text answer variant for fill-blank/translation', async () => {
+    const fetchImpl = jest
+      .fn()
+      .mockResolvedValue(jsonResponse(checkResponseFixture));
+    const result = await checkCurriculumLessonExercise(
+      EXERCISE_ID,
+      {text: 'like'},
+      {fetchImpl},
+    );
+
+    expect(result).toMatchObject({ok: true, correct: true});
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
+    expect(init.body).toBe(JSON.stringify({answer: {text: 'like'}}));
+  });
+
   it('rejects an empty answer locally without a network call', async () => {
     const fetchImpl = jest.fn();
     await expect(
       checkCurriculumLessonExercise(EXERCISE_ID, {optionId: '  '}, {fetchImpl}),
+    ).resolves.toMatchObject({
+      ok: false,
+      kind: 'invalid-answer',
+      errorCode: 'INVALID_EXERCISE_ANSWER',
+    });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('rejects blank text locally without a network call', async () => {
+    const fetchImpl = jest.fn();
+    await expect(
+      checkCurriculumLessonExercise(EXERCISE_ID, {text: '   '}, {fetchImpl}),
     ).resolves.toMatchObject({
       ok: false,
       kind: 'invalid-answer',

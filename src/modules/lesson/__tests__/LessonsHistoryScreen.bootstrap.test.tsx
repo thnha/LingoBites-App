@@ -52,8 +52,17 @@ jest.mock('@modules/content', () => ({
 
 // TASK-008: the distinct curriculum entry self-loads remote metadata.
 // Shell tests isolate it so no live fetch can resolve after teardown.
+// LING-21 TASK-007: keep the unified catalog path off here.
 jest.mock('@modules/curriculumLesson', () => ({
   CurriculumLessonsEntry: () => null,
+  UnifiedLessonsScreen: () => null,
+  isUnifiedLessonReady: () => false,
+  useLessonServerCapabilities: () => ({
+    catalog: false,
+    canonicalDelivery: false,
+    aiMaterialization: false,
+    packagedImport: false,
+  }),
 }));
 
 describe('LessonsHistoryScreen Bootstrap Integration (SETE-114)', () => {

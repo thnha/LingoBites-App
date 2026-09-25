@@ -197,12 +197,43 @@ export async function fetchCurriculumLesson(
   return {ok: true, requestId: parsed.requestId, lesson: parsed.lesson};
 }
 
-export type CurriculumLessonAnswerInput = {
-  optionId: string;
-};
+/**
+ * Discriminated answer input. `{optionId}` targets multiple-choice
+ * exercises; `{text}` targets fill-blank/translation exercises.
+ * Correctness is always evaluated server-side.
+ */
+export type CurriculumLessonAnswerInput = {optionId: string} | {text: string};
+
+function invalidAnswer(message: string): CurriculumLessonError {
+  return {
+    ok: false,
+    kind: 'invalid-answer',
+    errorCode: 'INVALID_EXERCISE_ANSWER',
+    message,
+    retryable: false,
+  };
+}
+
+function toAnswerBody(
+  answer: CurriculumLessonAnswerInput,
+): {optionId: string} | {text: string} | null {
+  if (typeof answer !== 'object' || answer === null) return null;
+  if ('optionId' in answer) {
+    return typeof answer.optionId === 'string' &&
+      answer.optionId.trim().length > 0
+      ? {optionId: answer.optionId}
+      : null;
+  }
+  if ('text' in answer) {
+    return typeof answer.text === 'string' && answer.text.trim().length > 0
+      ? {text: answer.text}
+      : null;
+  }
+  return null;
+}
 
 /**
- * Check one multiple-choice answer server-side. The answer key never
+ * Check one exercise answer server-side. The answer key never
  * leaves the Server; nothing is persisted on either side.
  */
 export async function checkCurriculumLessonExercise(
@@ -210,17 +241,9 @@ export async function checkCurriculumLessonExercise(
   answer: CurriculumLessonAnswerInput,
   options: CurriculumLessonClientOptions = {},
 ): Promise<CurriculumLessonCheckResult> {
-  if (
-    typeof answer?.optionId !== 'string' ||
-    answer.optionId.trim().length === 0
-  ) {
-    return {
-      ok: false,
-      kind: 'invalid-answer',
-      errorCode: 'INVALID_EXERCISE_ANSWER',
-      message: 'Answer must include an option.',
-      retryable: false,
-    };
+  const answerBody = toAnswerBody(answer);
+  if (!answerBody) {
+    return invalidAnswer('Answer must include an option or text.');
   }
   if (options.signal?.aborted) return cancelledError();
   const {apiBaseUrl} = getAppConfig();
@@ -236,7 +259,7 @@ export async function checkCurriculumLessonExercise(
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({answer: {optionId: answer.optionId}}),
+        body: JSON.stringify({answer: answerBody}),
         signal: options.signal,
       },
       options.fetchImpl,
