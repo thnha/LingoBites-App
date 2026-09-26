@@ -4,8 +4,10 @@ import {DB_NAME} from '../constants';
 import {getDatabase, resetDatabaseForTests} from '../database';
 import {
   CANONICAL_LEGACY_CLEAR_MARKER,
+  CANONICAL_LEGACY_TABLES_TO_DROP,
   LEGACY_CLEAR_MARKER,
   executeLegacyClear,
+  executeCanonicalLegacyClear,
 } from '../legacyClear';
 import {clearLessonTokens} from '../../security/lessonTokenStore';
 import {deleteLocalFiles} from '../../localData/localFileCleanup';
@@ -333,5 +335,159 @@ describe('executeLegacyClear', () => {
         CANONICAL_LEGACY_CLEAR_MARKER,
       ]),
     ).toBe(0);
+  });
+});
+
+describe('executeCanonicalLegacyClear', () => {
+  beforeEach(() => {
+    __resetMockDatabases();
+    resetDatabaseForTests(open({name: DB_NAME}));
+    getDatabase();
+    jest.clearAllMocks();
+    (clearLessonTokens as jest.Mock).mockResolvedValue(undefined);
+  });
+
+  it('throws when authorization reference is missing or whitespace', async () => {
+    await expect(
+      executeCanonicalLegacyClear({authorizationRef: ''}),
+    ).rejects.toThrow(
+      'Explicit Checkpoint B authorization reference required for canonical legacy cleanup',
+    );
+
+    await expect(
+      executeCanonicalLegacyClear(undefined as any),
+    ).rejects.toThrow(
+      'Explicit Checkpoint B authorization reference required for canonical legacy cleanup',
+    );
+  });
+
+  it('transactionally drops all seven legacy tables and clears tokens when authorized', async () => {
+    const db = getDatabase();
+    seedLessonFixtures(db);
+
+    db.execute('INSERT INTO flashcards (id, lesson_id, vocabulary_id, word, meaning_vi, is_saved, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', [
+      'fc1',
+      V1_LESSON_ID,
+      'v1',
+      'word',
+      'nghĩa',
+      0,
+      CREATED_AT,
+      CREATED_AT,
+    ]);
+
+    const result = await executeCanonicalLegacyClear({
+      authorizationRef: '01a0de32-7f74-7145-a78f-a546b4b5d54b',
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      alreadyCleared: false,
+      clearedTokenCount: 2,
+      droppedTablesCount: 7,
+    });
+
+    expect(clearLessonTokens).toHaveBeenCalledTimes(1);
+    const clearedIds = (clearLessonTokens as jest.Mock).mock.calls[0][0];
+    expect(clearedIds.sort()).toEqual([V1_LESSON_ID, V2_LESSON_ID].sort());
+
+    for (const table of CANONICAL_LEGACY_TABLES_TO_DROP) {
+      const check = db.execute(
+        `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`,
+        [table],
+      );
+      expect(check.rows?.length ?? 0).toBe(0);
+    }
+
+    const markerRow = db.execute(
+      'SELECT value FROM app_settings WHERE key = ? LIMIT 1;',
+      [CANONICAL_LEGACY_CLEAR_MARKER],
+    );
+    expect(markerRow.rows?.item(0)?.value).toBe(
+      '01a0de32-7f74-7145-a78f-a546b4b5d54b',
+    );
+
+    expect(countRows(db, 'SELECT * FROM flashcards WHERE id = ?;', ['fc1'])).toBe(1);
+  });
+
+  it('is idempotent and short-circuits when marker is present', async () => {
+    const db = getDatabase();
+    seedLessonFixtures(db);
+    db.execute(
+      'INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?);',
+      [CANONICAL_LEGACY_CLEAR_MARKER, '01a0de32-7f74-7145-a78f-a546b4b5d54b', CREATED_AT],
+    );
+
+    const result = await executeCanonicalLegacyClear({
+      authorizationRef: '01a0de32-7f74-7145-a78f-a546b4b5d54b',
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      alreadyCleared: true,
+      clearedTokenCount: 0,
+      droppedTablesCount: 0,
+    });
+
+    expect(clearLessonTokens).not.toHaveBeenCalled();
+    expectAllOne(lessonRowCounts(db));
+  });
+
+  it('aborts before database table drops if token cleanup fails', async () => {
+    const db = getDatabase();
+    seedLessonFixtures(db);
+
+    (clearLessonTokens as jest.Mock).mockRejectedValueOnce(
+      new Error('KEYCHAIN_UNAVAILABLE'),
+    );
+
+    await expect(
+      executeCanonicalLegacyClear({authorizationRef: 'AUTH-FAIL'}),
+    ).rejects.toThrow('KEYCHAIN_UNAVAILABLE');
+
+    expectAllOne(lessonRowCounts(db));
+
+    const markerCheck = db.execute(
+      'SELECT value FROM app_settings WHERE key = ? LIMIT 1;',
+      [CANONICAL_LEGACY_CLEAR_MARKER],
+    );
+    expect(markerCheck.rows?.length ?? 0).toBe(0);
+  });
+
+  it('rolls back database transaction if a drop operation fails', async () => {
+    const db = getDatabase();
+    seedLessonFixtures(db);
+
+    const realExecute = db.execute.bind(db);
+    const spy = jest.spyOn(db, 'execute').mockImplementation(
+      (sql: string, params?: Array<string | number | null>) => {
+        if (sql.toLowerCase().includes('drop table if exists lesson_v2_units')) {
+          throw new Error('SQLITE_BUSY');
+        }
+        return realExecute(sql, params as never);
+      },
+    );
+
+    try {
+      await expect(
+        executeCanonicalLegacyClear({authorizationRef: 'AUTH-DROP-FAIL'}),
+      ).rejects.toThrow('SQLITE_BUSY');
+    } finally {
+      spy.mockRestore();
+    }
+
+    expectAllOne(lessonRowCounts(db));
+
+    const markerCheck = db.execute(
+      'SELECT value FROM app_settings WHERE key = ? LIMIT 1;',
+      [CANONICAL_LEGACY_CLEAR_MARKER],
+    );
+    expect(markerCheck.rows?.length ?? 0).toBe(0);
+
+    const retryResult = await executeCanonicalLegacyClear({
+      authorizationRef: 'AUTH-RETRY',
+    });
+    expect(retryResult.ok).toBe(true);
+    expect(retryResult.alreadyCleared).toBe(false);
   });
 });

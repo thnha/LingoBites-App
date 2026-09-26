@@ -51,6 +51,7 @@ function createMockDatabase() {
   const youtubeSentences = [];
   // SETE-290 / DEV-3: per-video resume progress
   const youtubeProgress = [];
+  const droppedTables = new Set();
 
   const execute = (sql, params = []) => {
     const normalized = sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -60,6 +61,25 @@ function createMockDatabase() {
       normalized.startsWith('create index')
     ) {
       return {rowsAffected: 0};
+    }
+
+    if (
+      normalized.startsWith('drop table') ||
+      normalized.startsWith('drop index')
+    ) {
+      if (normalized.startsWith('drop table')) {
+        const match = normalized.match(/^drop table (if exists )?([a-z0-9_]+)/);
+        if (match && match[2]) {
+          droppedTables.add(match[2]);
+        }
+      }
+      return {rowsAffected: 0};
+    }
+
+    for (const dropped of droppedTables) {
+      if (normalized.includes(`from ${dropped}`) || normalized.includes(`into ${dropped}`)) {
+        throw new Error(`no such table: ${dropped}`);
+      }
     }
 
     if (normalized.startsWith('insert or replace into youtube_lessons')) {
@@ -556,6 +576,12 @@ function createMockDatabase() {
       );
       return toRows(rows);
     }
+    if (
+      normalized.startsWith('select') &&
+      /\bfrom lesson_v2\b/.test(normalized)
+    ) {
+      return toRows(lessonV2);
+    }
     for (const [table, collection] of Object.entries({
       lesson_v2_sentences: lessonV2Sentences,
       lesson_v2_chunks: lessonV2Chunks,
@@ -930,6 +956,10 @@ function createMockDatabase() {
       return toRows(limited);
     }
 
+    if (normalized.startsWith('select') && normalized.includes('from lessons')) {
+      return toRows(lessons);
+    }
+
     if (normalized === 'delete from lessons;') {
       const count = lessons.length;
       lessons.length = 0;
@@ -950,7 +980,8 @@ function createMockDatabase() {
         'account.fallback_device_id',
         'account.signup_idempotency_key',
         'current_account_id',
-        'account.legacy_clear_completed_v1'
+        'account.legacy_clear_completed_v1',
+        'lesson.canonical_legacy_clear_v1',
       ].includes(row.key));
       const removed = appSettings.length - remaining.length;
       appSettings.length = 0;

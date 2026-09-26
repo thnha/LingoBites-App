@@ -66,6 +66,7 @@ export type BootDeps = {
   platform?: 'android' | 'ios';
   client?: AuthHttpClient;
   randomUuid?: () => string;
+  canonicalCleanupAuthRef?: string;
 };
 
 function readSetting(key: string): string | null {
@@ -156,13 +157,22 @@ export function bootAccount(deps: BootDeps = {}): Promise<BootResult> {
   return task;
 }
 
-import {executeLegacyClear} from '../db/legacyClear';
+import {
+  executeLegacyClear,
+  executeCanonicalLegacyClear,
+} from '../db/legacyClear';
 
 async function runBoot(deps: BootDeps): Promise<BootResult> {
   const platform =
     deps.platform ?? (Platform.OS === 'android' ? 'android' : 'ios');
   const client = deps.client ?? createAuthClient();
   const randomUuid = deps.randomUuid ?? createRequestId;
+
+  if (deps.canonicalCleanupAuthRef) {
+    await executeCanonicalLegacyClear({
+      authorizationRef: deps.canonicalCleanupAuthRef,
+    });
+  }
 
   // Checkpoint A quarantine: the generic boot clear must not delete v1/v2
   // lesson rows or lesson tokens before the parity gate. Only the gated
