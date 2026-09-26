@@ -17,6 +17,7 @@ import {SectionHeader} from '@components/SectionHeader';
 import {useAppTheme, type AppTheme} from '@theme';
 import {generateStudyBlock, REASON_CODE_VI_LABELS} from './adaptationEngine';
 import {getLearnerStateSnapshot} from './todayAdapter';
+import {resolveTodayNavigation} from './todayNavigation';
 import type {StudyActivityItem, StudyBlockPlan, TodayMode} from './types';
 
 type TodayNavigationParamList = HomeStackParamList &
@@ -56,21 +57,18 @@ export function TodayScreen() {
   }
 
   function handleExecuteActivity(activity: StudyActivityItem) {
-    const target = activity.navigationTarget;
-    // Map navigation target to screen
-    if (target.screen === 'DailyReview') {
-      navigation.navigate('DailyReview');
-    } else if (target.screen === 'ContentLessonRuntime') {
-      const lessonId = target.params?.lessonId;
-      if (lessonId) {
-        navigation.navigate('SavedLessonDetail', {lessonId});
-      } else {
-        navigation.navigate('DailyReview');
-      }
-    } else if (target.screen === 'SpeakingRoom') {
+    const resolved = resolveTodayNavigation(activity.navigationTarget);
+    // Map navigation target to a surviving screen (LING-48 / TASK-007):
+    // `ContentLessonRuntime` targets open the content-package runtime
+    // screen (never the removed v1 `SavedLessonDetail`), and `FlashcardList`
+    // targets fall back to `DailyReview` (never the removed v1
+    // `FlashcardList` screen).
+    if (resolved.screen === 'ContentLessonRuntime') {
+      navigation.navigate('ContentLessonRuntime', {
+        lessonId: resolved.lessonId,
+      });
+    } else if (resolved.screen === 'LessonsList') {
       navigation.navigate('LessonsList');
-    } else if (target.screen === 'FlashcardList') {
-      navigation.navigate('FlashcardList');
     } else {
       navigation.navigate('DailyReview');
     }

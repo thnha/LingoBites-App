@@ -1,5 +1,5 @@
 import {listAudioAssetLocalPaths} from '@shared/db/AudioAssetRepository';
-import {clearAllLocalData as clearAllLocalDatabaseRows} from '@shared/db/LessonRepository';
+import {clearAllLocalDatabaseRows} from '@shared/db/localDataWipe';
 import {
   clearSpeakingData,
   listSpeakingRecordingFilePaths,

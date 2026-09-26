@@ -29,5 +29,7 @@ export {
   hasMinimumValidatedSource,
   isTerminalLessonForPractice,
 } from './practiceEligibility';
+export type {PracticeEligibleLesson} from './practiceEligibility';
+export type {PracticeQuestion as LegacyPracticeQuestion} from './practiceQuestion';
 export {usePracticeController} from './usePracticeController';
 export {usePracticeSessionScreen} from './usePracticeSessionScreen';

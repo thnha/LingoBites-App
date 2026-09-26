@@ -96,7 +96,10 @@ import type {
 } from '@/app/navigation/types';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useBookmarkOptimistic, useFlashcardLibrary} from '@modules/lesson';
+import {
+  useBookmarkOptimistic,
+  useFlashcardLibrary,
+} from '@modules/review';
 import {mapTranscriptToPractice} from '../utils/practiceMapper';
 import type {YouTubePlaybackRate} from '../utils/playbackRate';
 

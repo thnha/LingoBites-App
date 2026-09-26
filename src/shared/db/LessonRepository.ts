@@ -4,10 +4,7 @@ import {createRequestId} from '../api/requestId';
 import {getOrCreateAnonymousUserId} from './anonymousUserId';
 import {getDatabase} from './database';
 import {computeLessonInputHash} from './lessonInputHash';
-import {
-  clearLessonTokens,
-  deleteLessonToken,
-} from '../security/lessonTokenStore';
+import {deleteLessonToken} from '../security/lessonTokenStore';
 import type {LessonSubjectKey} from '@/types/lesson';
 import type {
   LessonListItem,
@@ -218,40 +215,9 @@ export function deleteLesson(lessonId: string): boolean {
   }
 }
 
-export function clearAllLocalData(): Promise<void> {
-  const db = getDatabase();
-  const lessonIds = new Set<string>();
-  for (const table of ['lessons', 'lesson_v2']) {
-    try {
-      const rows = db.execute(
-        `SELECT ${
-          table === 'lessons' ? 'id' : 'lesson_id'
-        } AS lesson_id FROM ${table};`,
-      ).rows;
-      for (let index = 0; index < (rows?.length ?? 0); index += 1) {
-        const row = rows?.item(index) as {lesson_id?: string} | undefined;
-        if (row?.lesson_id) lessonIds.add(row.lesson_id);
-      }
-    } catch {
-      // Older databases may not have the v2 table yet.
-    }
-  }
-  const tokenCleanup = clearLessonTokens([...lessonIds]);
-  db.execute('DELETE FROM review_sessions;');
-  db.execute('DELETE FROM review_schedule;');
-  db.execute('DELETE FROM flashcards;');
-  db.execute('DELETE FROM lessons;');
-  db.execute('DELETE FROM app_settings;');
-  db.execute('DELETE FROM gamification_events;');
-  db.execute('DELETE FROM speaking_recordings;');
-  db.execute('DELETE FROM error_events;');
-  db.execute('DELETE FROM sync_outbox;');
-  db.execute('DELETE FROM audio_assets;');
-  db.execute('DELETE FROM content_review_items;');
-  db.execute('DELETE FROM grammar_bookmarks;');
-  db.execute('DELETE FROM content_lesson_state;');
-  db.execute('DELETE FROM lesson_v2;');
-  db.execute('DELETE FROM youtube_sentences;');
-  db.execute('DELETE FROM youtube_lessons;');
-  return tokenCleanup;
-}
+/**
+ * Generic local-data wipe moved to `./localDataWipe` (LING-48 / TASK-007).
+ * `LessonRepository` no longer owns database-clear behavior; use
+ * `clearAllLocalDatabaseRows` from `./localDataWipe` instead.
+ */
+export {clearAllLocalDatabaseRows as clearAllLocalData} from './localDataWipe';

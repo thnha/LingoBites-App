@@ -16,7 +16,7 @@ import {QuizOption, type QuizOptionState} from '@components/QuizOption';
 import {ScreenHeader} from '@components/ScreenHeader';
 import {useTranslation} from 'react-i18next';
 import {useAppTheme, type AppTheme} from '@theme';
-import type {PracticeQuestion as LegacyPracticeQuestion} from '@shared/schemas/ai-output-v1';
+import type {PracticeQuestion as LegacyPracticeQuestion} from './practiceQuestion';
 import type {PracticeQuestion, ResultSummary} from '@shared/schemas/practice';
 import {useQuiz} from './useQuiz';
 import {hasInvalidMetaOptions} from './quizEngine';
