@@ -301,7 +301,7 @@ export function recordFlashcardRating(
         ],
       );
 
-      const anonymousUserId = getOrCreateAnonymousUserId();
+      getOrCreateAnonymousUserId();
       enqueueSyncOutboxEvent({
         id: sessionId,
         entityId: input.flashcardId,

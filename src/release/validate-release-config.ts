@@ -1,4 +1,3 @@
-import {featureKeys} from './feature-registry';
 import type {DependencyGroup} from './feature-dependencies';
 import type {
   FeatureRegistryEntry,

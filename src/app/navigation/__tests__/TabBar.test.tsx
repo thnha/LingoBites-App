@@ -14,7 +14,6 @@ import {
   FLOATING_TAB_BAR_CONTENT_GAP,
   FLOATING_TAB_BAR_HEIGHT,
   getFloatingTabBarClearance,
-  getTabBarVisualHeight,
 } from '../tabBarMetrics';
 import {stickerSoftTheme} from '@theme/themes/stickerSoft';
 
