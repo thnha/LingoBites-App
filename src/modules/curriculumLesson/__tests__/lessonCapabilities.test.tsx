@@ -25,6 +25,8 @@ function fullCapsBody(overrides: Record<string, boolean> = {}) {
         canonical_delivery: true,
         ai_materialization: true,
         packaged_import: true,
+        partial_retry: true,
+        private_library: true,
         ...overrides,
       },
     },
@@ -43,6 +45,8 @@ describe('fetchLessonServerCapabilities', () => {
       canonicalDelivery: true,
       aiMaterialization: true,
       packagedImport: true,
+      partialRetry: true,
+      privateLibrary: true,
     });
     expect(mockFetch).toHaveBeenCalledWith(
       'http://localhost:3000/v1/capabilities',
@@ -59,6 +63,30 @@ describe('fetchLessonServerCapabilities', () => {
       canonicalDelivery: false,
       aiMaterialization: false,
       packagedImport: false,
+      partialRetry: false,
+      privateLibrary: false,
+    });
+  });
+
+  it('fails closed when the TASK-004 fields are missing (pre-retry server)', async () => {
+    const {lessons, ...rest} = (
+      fullCapsBody() as {capabilities: Record<string, unknown>}
+    ).capabilities as unknown as {
+      lessons: Record<string, boolean>;
+    } & Record<string, unknown>;
+    const {partial_retry, private_library, ...legacyLessons} = lessons;
+    expect(partial_retry).toBe(true);
+    expect(private_library).toBe(true);
+    mockFetch.mockResolvedValue(
+      jsonResponse(true, {capabilities: {...rest, lessons: legacyLessons}}),
+    );
+    await expect(fetchLessonServerCapabilities()).resolves.toEqual({
+      catalog: false,
+      canonicalDelivery: false,
+      aiMaterialization: false,
+      packagedImport: false,
+      partialRetry: false,
+      privateLibrary: false,
     });
   });
 
@@ -68,6 +96,8 @@ describe('fetchLessonServerCapabilities', () => {
       canonicalDelivery: false,
       aiMaterialization: false,
       packagedImport: false,
+      partialRetry: false,
+      privateLibrary: false,
     };
     mockFetch.mockResolvedValue(jsonResponse(false, fullCapsBody()));
     await expect(fetchLessonServerCapabilities()).resolves.toEqual(allOff);
@@ -86,15 +116,19 @@ describe('isUnifiedLessonReady', () => {
     canonicalDelivery: true,
     aiMaterialization: true,
     packagedImport: true,
+    partialRetry: true,
+    privateLibrary: true,
   };
   const off = {
     catalog: false,
     canonicalDelivery: false,
     aiMaterialization: false,
     packagedImport: false,
+    partialRetry: false,
+    privateLibrary: false,
   };
 
-  it('requires the flag and catalog, delivery, and materialization', () => {
+  it('requires the flag and all five canonical capabilities', () => {
     expect(isUnifiedLessonReady({unifiedLesson: true}, on)).toBe(true);
     expect(isUnifiedLessonReady({unifiedLesson: false}, on)).toBe(false);
     expect(isUnifiedLessonReady({}, on)).toBe(false);
@@ -108,6 +142,27 @@ describe('isUnifiedLessonReady', () => {
         {...on, aiMaterialization: false},
       ),
     ).toBe(false);
+  });
+
+  it('stays off when targeted retry or the private library is unavailable', () => {
+    expect(
+      isUnifiedLessonReady({unifiedLesson: true}, {...on, partialRetry: false}),
+    ).toBe(false);
+    expect(
+      isUnifiedLessonReady(
+        {unifiedLesson: true},
+        {...on, privateLibrary: false},
+      ),
+    ).toBe(false);
+  });
+
+  it('does not gate on packaged import (separate content concern)', () => {
+    expect(
+      isUnifiedLessonReady(
+        {unifiedLesson: true},
+        {...on, packagedImport: false},
+      ),
+    ).toBe(true);
   });
 });
 

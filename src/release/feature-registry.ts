@@ -256,9 +256,12 @@ export const featureRegistry = [
     module: 'modules/curriculumLesson',
     required: false,
     releaseGroup: 'foundation',
-    status: 'not_implemented',
-    entryPoint: 'Lessons -> UnifiedLessonCatalog (not yet composed)',
-    limitations: ["Canonical schemas/renderers land in LING-21 TASK-006 without activation; catalog/player composition (TASK-007) and parity/capability evidence (TASK-008) must precede enablement."],
+    status: 'beta',
+    entryPoint:
+      'PasteText/OCRReview -> UnifiedLessonGeneration; Lessons -> UnifiedLessonsScreen -> CurriculumLesson; Home rail -> CurriculumLesson',
+    limitations: [
+      'Activates only when all five Server lesson capabilities agree (LING-41 TASK-006); pre-cleanup legacy v1/v2 fallback retained for rollback until Checkpoint B.',
+    ],
   },
   {
     key: 'youtubeLearning',

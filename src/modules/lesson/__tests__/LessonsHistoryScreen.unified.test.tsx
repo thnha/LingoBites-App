@@ -59,6 +59,8 @@ jest.mock('@modules/curriculumLesson', () => {
       canonicalDelivery: true,
       aiMaterialization: true,
       packagedImport: true,
+      partialRetry: true,
+      privateLibrary: true,
     }),
   };
 });

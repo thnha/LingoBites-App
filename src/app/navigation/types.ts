@@ -41,6 +41,13 @@ export type HomeStackParamList = {
   HomeMain: undefined;
   ContentLessonRuntime: {lessonId: string};
   SavedLessonDetail: {lessonId: string};
+  /**
+   * LING-41 TASK-006: canonical lesson player reachable from Home
+   * without leaving the tab. Data-driven — the screen loads
+   * `GET /api/v1/lessons/:id` for the given ID. Same route as the
+   * Lessons stack `CurriculumLesson`; unrelated to Lesson V2.
+   */
+  CurriculumLesson: {lessonId: string};
   FlashcardList: {lessonId?: string} | undefined;
   DailyReview: undefined;
   Today: undefined;
