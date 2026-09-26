@@ -2,11 +2,14 @@
  * Unified-lesson server capability probe: `GET /v1/capabilities`.
  *
  * Mirrors the Server `CapabilitiesResponseSchema` from LingoBites-Server
- * `src/app/controller/capabilities.ts` (TASK-003/005). The `lessons`
- * section is optional so an old server (no `lessons` key at all) still
- * parses and resolves every capability to `false` — new-app/old-server
- * keeps unified mode off. Fail-closed like `fetchYouTubeCapability`:
- * any network, parse, or config problem resolves to all-`false`.
+ * `src/app/controller/capabilities.ts` (TASK-004: `partial_retry` and
+ * `private_library` join the `lessons` section). The `lessons` section
+ * is optional so an old server (no `lessons` key at all) still parses
+ * and resolves every capability to `false` — new-app/old-server keeps
+ * unified mode off. A server that answers without the two TASK-004
+ * fields fails the strict parse below and also resolves to all-`false`.
+ * Fail-closed like `fetchYouTubeCapability`: any network, parse, or
+ * config problem resolves to all-`false`.
  */
 import {authenticatedFetch} from '@shared/api/authenticatedFetch';
 import {getAppConfig} from '@shared/api/appConfig';
@@ -21,6 +24,8 @@ export const LessonServerCapabilitiesSchema = z.object({
         canonical_delivery: z.boolean(),
         ai_materialization: z.boolean(),
         packaged_import: z.boolean(),
+        partial_retry: z.boolean(),
+        private_library: z.boolean(),
       })
       .optional(),
   }),
@@ -31,6 +36,8 @@ export type LessonServerCapabilities = {
   canonicalDelivery: boolean;
   aiMaterialization: boolean;
   packagedImport: boolean;
+  partialRetry: boolean;
+  privateLibrary: boolean;
 };
 
 const ALL_OFF: LessonServerCapabilities = {
@@ -38,6 +45,8 @@ const ALL_OFF: LessonServerCapabilities = {
   canonicalDelivery: false,
   aiMaterialization: false,
   packagedImport: false,
+  partialRetry: false,
+  privateLibrary: false,
 };
 
 export async function fetchLessonServerCapabilities(
@@ -59,6 +68,8 @@ export async function fetchLessonServerCapabilities(
       canonicalDelivery: lessons.canonical_delivery,
       aiMaterialization: lessons.ai_materialization,
       packagedImport: lessons.packaged_import,
+      partialRetry: lessons.partial_retry,
+      privateLibrary: lessons.private_library,
     };
   } catch {
     return ALL_OFF;
@@ -96,9 +107,14 @@ export function useLessonServerCapabilities(
 }
 
 /**
- * Release gate for the unified lesson experience. Old servers (or an
- * unreachable backend) resolve capabilities to all-`false`, keeping
- * unified mode off and the app on its legacy flows.
+ * Release gate for the unified lesson experience (LING-41 TASK-006).
+ * Canonical mode activates only when the release flag AND all five
+ * Server capabilities agree: catalog, canonical delivery,
+ * AI materialization, targeted part retry, and the private library.
+ * `packagedImport` stays probed but ungated (packaged content is a
+ * separate concern). Old servers (or an unreachable backend) resolve
+ * capabilities to all-`false`, keeping unified mode off and the app on
+ * its pre-cleanup legacy flows — the reversible rollback path.
  */
 export function isUnifiedLessonReady(
   flags: UnifiedLessonReleaseFlags,
@@ -108,6 +124,8 @@ export function isUnifiedLessonReady(
     flags.unifiedLesson === true &&
     capabilities.catalog &&
     capabilities.canonicalDelivery &&
-    capabilities.aiMaterialization
+    capabilities.aiMaterialization &&
+    capabilities.partialRetry &&
+    capabilities.privateLibrary
   );
 }

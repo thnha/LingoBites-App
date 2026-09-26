@@ -1,7 +1,10 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import type {LessonsStackParamList} from '@/app/navigation/types';
+import type {
+  HomeStackParamList,
+  LessonsStackParamList,
+} from '@/app/navigation/types';
 import {AppButton} from '@components/AppButton';
 import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
@@ -16,7 +19,14 @@ import {
 import type {CurriculumLesson} from './curriculumLessonSchema';
 import {CurriculumLessonPlayer} from './CurriculumLessonPlayer';
 
-type Props = NativeStackScreenProps<LessonsStackParamList, 'CurriculumLesson'>;
+/**
+ * Mounted in both the Lessons and Home stacks (LING-41 TASK-006: Home
+ * opens the canonical player without leaving the tab). Both routes
+ * carry the same `{lessonId}` params; only `goBack` navigation is used.
+ */
+type Props =
+  | NativeStackScreenProps<LessonsStackParamList, 'CurriculumLesson'>
+  | NativeStackScreenProps<HomeStackParamList, 'CurriculumLesson'>;
 
 type ScreenState =
   | {status: 'loading'}

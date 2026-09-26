@@ -26,6 +26,13 @@ import {
 } from '@shared/db/YoutubeLessonRepository';
 import {useYouTubeServerEnabled} from '@shared/api/youtubeCapabilities';
 import {useFeatureFlags} from '@/release';
+import {
+  isUnifiedLessonReady,
+  useLessonCatalog,
+  useLessonServerCapabilities,
+  type UnifiedLessonSummary,
+} from '@modules/curriculumLesson';
+import {trackEvent} from '../analytics';
 import {useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
@@ -57,7 +64,7 @@ type ExploreCell = {
 };
 
 type RecentItem = {
-  kind: 'personal' | 'packaged';
+  kind: 'personal' | 'packaged' | 'canonical';
   id: string;
   title: string;
   meta: string;
@@ -73,6 +80,9 @@ type RelearnTarget = {
 
 const RECENT_LIMIT = 3;
 const SUGGESTION_LIMIT = 3;
+// LING-41 TASK-006: unified rail shows the first canonical catalog page
+// (same budget as the legacy personal + suggestion rails combined).
+const UNIFIED_RAIL_LIMIT = RECENT_LIMIT + SUGGESTION_LIMIT;
 const LINK_HIT_SLOP = {top: 10, bottom: 10, left: 10, right: 10};
 
 // SETE-281: hero card palette sampled from the design reference (deep-blue
@@ -88,6 +98,23 @@ const HERO_BADGE_INK = '#134F7E';
 const HERO_TITLE = '#FFFFFF';
 const HERO_CTA_BG = '#FFD35E';
 const HERO_CTA_INK = '#40320D';
+
+/**
+ * LING-41 TASK-006: map one canonical catalog summary to a rail card.
+ * Summaries carry no level; duration (when present) is the meta, with
+ * the description as fallback so the card never renders an empty row.
+ */
+function toCanonicalRecentItem(item: UnifiedLessonSummary): RecentItem {
+  return {
+    kind: 'canonical',
+    id: item.id,
+    title: item.title,
+    meta:
+      item.estimatedMinutes != null
+        ? `${item.estimatedMinutes} phút`
+        : item.description ?? '',
+  };
+}
 
 /**
  * Paper-cut home (SETE-279): hero → 2×2 explore grid → "Tiếp tục học" rail.
@@ -113,6 +140,17 @@ export function HomeScreen({navigation}: Props) {
     tabNavigation?.getParent<NavigationProp<RootStackParamList>>('RootStack');
   const {getContentLessonById, listActivePackageLessons} = useContentLibrary();
   const {getLessonById, listLessons} = useLessonRepository();
+  // LING-41 TASK-006: canonical mode reads backend summaries instead of
+  // local lesson rows. Fail-closed: any missing capability keeps the
+  // pre-cleanup legacy composition below (rollback path until
+  // Checkpoint B).
+  const lessonCapabilities = useLessonServerCapabilities(
+    config.features.unifiedLesson === true,
+  );
+  const unifiedMode = isUnifiedLessonReady(config.features, lessonCapabilities);
+  const canonicalCatalog = useLessonCatalog({enabled: unifiedMode});
+  const canonicalRefresh = canonicalCatalog.refresh;
+  const canonicalItems = canonicalCatalog.items;
   const [startedLesson, setStartedLesson] = useState<ContentLessonRow | null>(
     null,
   );
@@ -137,6 +175,9 @@ export function HomeScreen({navigation}: Props) {
   // every focus.
   useFocusEffect(
     useCallback(() => {
+      if (unifiedMode) {
+        canonicalRefresh();
+      }
       setStreak(getGamificationSnapshot().currentStreak);
       const started = listStartedLessons()[0];
       const startedRow = started
@@ -234,11 +275,13 @@ export function HomeScreen({navigation}: Props) {
         setYoutubeLessonCount(null);
       }
     }, [
+      canonicalRefresh,
       getContentLessonById,
       getLessonById,
       listActivePackageLessons,
       listLessons,
       t,
+      unifiedMode,
     ]),
   );
 
@@ -340,7 +383,16 @@ export function HomeScreen({navigation}: Props) {
 
   // "Tiếp tục học" rail: the started lesson first, then personal and
   // packaged candidates, deduplicated by id.
+  // LING-41 TASK-006: in canonical mode the rail is one flat list of
+  // backend summaries (same account on two sessions sees the same
+  // dataset) and every item opens the canonical player. Capability
+  // failure falls through to the legacy composition (rollback path).
   const railItems: RecentItem[] = useMemo(() => {
+    if (unifiedMode) {
+      return canonicalItems
+        .slice(0, UNIFIED_RAIL_LIMIT)
+        .map(toCanonicalRecentItem);
+    }
     const seen = new Set<string>();
     const items: RecentItem[] = [];
     if (startedLesson) {
@@ -359,9 +411,17 @@ export function HomeScreen({navigation}: Props) {
       items.push(item);
     }
     return items;
-  }, [startedLesson, ownItems, suggestions]);
+  }, [unifiedMode, canonicalItems, startedLesson, ownItems, suggestions]);
 
   const openRecentItem = (item: RecentItem) => {
+    if (item.kind === 'canonical') {
+      trackEvent('unified_lesson_opened', {
+        lesson_id: item.id,
+        source: 'home_rail',
+      });
+      navigation.navigate('CurriculumLesson', {lessonId: item.id});
+      return;
+    }
     if (item.kind === 'personal') {
       navigation.navigate('SavedLessonDetail', {lessonId: item.id});
     } else {

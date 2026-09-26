@@ -87,6 +87,14 @@ function HomeStackNavigator() {
         name="ContentLessonRuntime"
         options={{headerShown: false, gestureEnabled: false}}
       />
+      {/* LING-41 TASK-006: canonical player reachable from Home in
+          unified mode without leaving the tab. Always mounted — the
+          screen itself owns loading/error states for unknown IDs. */}
+      <HomeStack.Screen
+        component={CurriculumLessonScreen}
+        name="CurriculumLesson"
+        options={{headerShown: false, gestureEnabled: false}}
+      />
       <HomeStack.Screen
         component={SavedLessonDetailScreen}
         name="SavedLessonDetail"
