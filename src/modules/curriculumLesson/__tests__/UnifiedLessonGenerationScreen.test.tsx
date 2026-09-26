@@ -10,23 +10,36 @@ jest.mock('../lessonJobClient', () => ({
   ...jest.requireActual('../lessonJobClient'),
   fetchLessonGenerationJob: jest.fn(),
   createLessonGenerationJob: jest.fn(),
+  retryLessonJobPart: jest.fn(),
 }));
 
 jest.mock('@modules/analytics', () => ({
   trackEvent: jest.fn(),
 }));
 
-const {fetchLessonGenerationJob, createLessonGenerationJob} = jest.requireMock(
-  '../lessonJobClient',
-) as {
+const {
+  fetchLessonGenerationJob,
+  createLessonGenerationJob,
+  retryLessonJobPart,
+} = jest.requireMock('../lessonJobClient') as {
   fetchLessonGenerationJob: jest.Mock;
   createLessonGenerationJob: jest.Mock;
+  retryLessonJobPart: jest.Mock;
 };
 
 const tracked = trackEvent as jest.Mock;
 
 const JOB_ID = '00000000-0000-4000-8000-000000000070';
 const LESSON_ID = '00000000-0000-4000-8000-000000000071';
+
+const FAILED_CHUNK = {
+  id: 'c1',
+  status: 'failed',
+  attempts: 2,
+  errorCode: 'AI_UNIT_INVALID_OUTPUT',
+  retryable: true,
+  revision: 2,
+};
 
 function jobResult(status: string, overrides: Record<string, unknown> = {}) {
   return {
@@ -38,6 +51,8 @@ function jobResult(status: string, overrides: Record<string, unknown> = {}) {
       revision: 3,
       pollAfterMs: 1000,
       lessonId: null,
+      chunks: [],
+      units: [],
       error: null,
       warnings: [],
       ...overrides,
@@ -147,6 +162,92 @@ describe('UnifiedLessonGenerationScreen', () => {
       job_id: JOB_ID,
       outcome: 'failed',
     });
+  });
+
+  it('retries a failed part in place and stays on the screen', async () => {
+    const failedJob = jobResult('failed', {
+      chunks: [
+        {
+          id: 'c0',
+          status: 'ready',
+          attempts: 1,
+          errorCode: null,
+          retryable: false,
+          revision: 1,
+        },
+        FAILED_CHUNK,
+      ],
+      error: {code: 'X', message: 'Boom.'},
+    });
+    fetchLessonGenerationJob.mockResolvedValue(failedJob);
+    const acceptedJob = {
+      ...(failedJob as {job: Record<string, unknown>}).job,
+      status: 'partially_ready',
+      revision: 4,
+      error: null,
+    };
+    retryLessonJobPart.mockResolvedValue({
+      ok: true,
+      requestId: 'req-2',
+      job: acceptedJob,
+    });
+    const {navigation, props} = screenProps();
+    const tree = await renderScreen(props);
+
+    const partButton = tree.root.findByProps({
+      testID: 'unified-generation-retry-chunk-c1',
+    });
+    expect(partButton.props.accessibilityLabel).toBe('Retry Section c1');
+    await act(async () => {
+      partButton.props.onPress();
+    });
+    expect(retryLessonJobPart).toHaveBeenCalledTimes(1);
+    const [input] = retryLessonJobPart.mock.calls[0] as [
+      Record<string, unknown>,
+    ];
+    expect(input).toMatchObject({
+      jobId: JOB_ID,
+      target: {kind: 'chunk', id: 'c1'},
+      expectedRevision: 3,
+    });
+    expect(typeof input.idempotencyKey).toBe('string');
+    expect(navigation.replace).not.toHaveBeenCalledWith(
+      'UnifiedLessonGeneration',
+      expect.anything(),
+    );
+    expect(
+      tree.root.findByProps({testID: 'unified-generation-parts-progress'}).props
+        .children,
+    ).toBe('1 of 2 parts ready.');
+  });
+
+  it('shows a conflict notice after a stale part retry', async () => {
+    fetchLessonGenerationJob.mockResolvedValue(
+      jobResult('failed', {
+        chunks: [FAILED_CHUNK],
+        error: {code: 'X', message: 'Boom.'},
+      }),
+    );
+    retryLessonJobPart.mockResolvedValue({
+      ok: false,
+      kind: 'conflict',
+      errorCode: 'JOB_REVISION_CONFLICT',
+      message: 'Stale.',
+      retryable: false,
+      status: 409,
+    });
+    const {props} = screenProps();
+    const tree = await renderScreen(props);
+
+    await act(async () => {
+      tree.root
+        .findByProps({testID: 'unified-generation-retry-chunk-c1'})
+        .props.onPress();
+    });
+    expect(
+      tree.root.findByProps({testID: 'unified-generation-notice'}).props
+        .children,
+    ).toBe('The lesson changed while retrying. Showing the latest status.');
   });
 
   it('hides retry without creation context and goes back', async () => {

@@ -15,7 +15,8 @@ export type AnalyticsEventName =
   | 'lesson_reopened'
   | 'unified_catalog_opened'
   | 'unified_generation_started'
-  | 'unified_generation_completed';
+  | 'unified_generation_completed'
+  | 'unified_generation_part_retry';
 
 export type InputMethod = 'camera' | 'gallery' | 'paste_text';
 

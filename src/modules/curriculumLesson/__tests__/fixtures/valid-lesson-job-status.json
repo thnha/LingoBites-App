@@ -1,0 +1,65 @@
+{
+  "request_id": "req-canonical-job-001",
+  "status": "success",
+  "job": {
+    "id": "01931234-5678-9abc-def0-123456789abc",
+    "status": "partially_ready",
+    "revision": 3,
+    "pollAfterMs": 1500,
+    "lessonId": null,
+    "chunks": [
+      {
+        "id": "c0",
+        "status": "ready",
+        "attempts": 1,
+        "errorCode": null,
+        "retryable": false,
+        "revision": 1
+      },
+      {
+        "id": "c1",
+        "status": "failed",
+        "attempts": 2,
+        "errorCode": "AI_UNIT_INVALID_OUTPUT",
+        "retryable": true,
+        "revision": 2
+      }
+    ],
+    "units": [
+      {
+        "key": "vocabulary",
+        "status": "ready",
+        "attempts": 1,
+        "errorCode": null,
+        "retryable": false,
+        "revision": 1
+      },
+      {
+        "key": "grammar",
+        "status": "pending",
+        "attempts": 0,
+        "errorCode": null,
+        "retryable": true,
+        "revision": 1
+      },
+      {
+        "key": "ipa_resolve",
+        "status": "skipped",
+        "attempts": 0,
+        "errorCode": null,
+        "retryable": false,
+        "revision": 1
+      },
+      {
+        "key": "practice",
+        "status": "pending",
+        "attempts": 0,
+        "errorCode": null,
+        "retryable": true,
+        "revision": 1
+      }
+    ],
+    "warnings": [],
+    "error": null
+  }
+}

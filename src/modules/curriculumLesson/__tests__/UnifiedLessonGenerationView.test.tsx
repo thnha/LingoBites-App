@@ -17,6 +17,7 @@ const JOB_ID = '00000000-0000-4000-8000-000000000070';
 
 function pollingJob(
   status: LessonGenerationJob['status'],
+  overrides: Partial<LessonGenerationJob> = {},
 ): LessonGenerationJob {
   return {
     id: JOB_ID,
@@ -24,10 +25,39 @@ function pollingJob(
     revision: 2,
     pollAfterMs: 1000,
     lessonId: null,
+    chunks: [],
+    units: [],
     error: null,
     warnings: [],
+    ...overrides,
   };
 }
+
+const FAILED_CHUNK_PART = {
+  kind: 'chunk' as const,
+  chunk: {
+    id: 'c1',
+    status: 'failed' as const,
+    attempts: 2,
+    errorCode: 'AI_UNIT_INVALID_OUTPUT',
+    retryable: true,
+    revision: 2,
+  },
+};
+
+const FAILED_UNIT_PART = {
+  kind: 'unit' as const,
+  unit: {
+    key: 'grammar',
+    status: 'failed' as const,
+    attempts: 1,
+    errorCode: 'X',
+    retryable: true,
+    revision: 2,
+  },
+};
+
+const FAILED_PARTS = [FAILED_CHUNK_PART, FAILED_UNIT_PART];
 
 function renderView(
   props: Partial<React.ComponentProps<typeof UnifiedLessonGenerationView>> = {},
@@ -39,6 +69,9 @@ function renderView(
     notice: null,
     onRetry: jest.fn(),
     onBack: jest.fn(),
+    parts: [],
+    retryingPart: null,
+    onRetryPart: jest.fn(),
     ...props,
   };
   let tree!: ReactTestRenderer.ReactTestRenderer;
@@ -123,6 +156,92 @@ describe('UnifiedLessonGenerationView', () => {
         .props.onPress();
     });
     expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
+  it('lists failed parts with targeted retry actions and progress', () => {
+    const onRetryPart = jest.fn();
+    const {tree} = renderView({
+      generation: {
+        status: 'polling',
+        job: pollingJob('partially_ready', {
+          chunks: [
+            {
+              id: 'c0',
+              status: 'ready',
+              attempts: 1,
+              errorCode: null,
+              retryable: false,
+              revision: 1,
+            },
+            FAILED_CHUNK_PART.chunk,
+          ],
+          units: [FAILED_UNIT_PART.unit],
+        }),
+      },
+      parts: FAILED_PARTS,
+      onRetryPart,
+    });
+    expect(
+      tree.root.findByProps({testID: 'unified-generation-failed-parts'}),
+    ).toBeDefined();
+    expect(
+      tree.root.findByProps({testID: 'unified-generation-parts-progress'}).props
+        .children,
+    ).toBe('1 of 3 parts ready.');
+    const chunkButton = tree.root.findByProps({
+      testID: 'unified-generation-retry-chunk-c1',
+    });
+    expect(chunkButton.props.accessibilityLabel).toBe('Retry Section c1');
+    expect(chunkButton.props.accessibilityState).toMatchObject({
+      disabled: false,
+    });
+    const unitButton = tree.root.findByProps({
+      testID: 'unified-generation-retry-unit-grammar',
+    });
+    expect(unitButton.props.accessibilityLabel).toBe('Retry Grammar');
+    act(() => {
+      unitButton.props.onPress();
+    });
+    expect(onRetryPart).toHaveBeenCalledWith({kind: 'unit', key: 'grammar'});
+  });
+
+  it('disables part actions while a retry is in flight', () => {
+    const {tree} = renderView({
+      generation: {
+        status: 'failed',
+        job: pollingJob('failed', {
+          chunks: [FAILED_CHUNK_PART.chunk],
+          error: {code: 'X', message: 'Boom.'},
+        }),
+        error: {
+          ok: false,
+          kind: 'server-error',
+          errorCode: 'X',
+          message: 'Boom.',
+          retryable: true,
+        },
+      },
+      canRetry: true,
+      parts: [FAILED_CHUNK_PART],
+      retryingPart: {kind: 'chunk', id: 'c1'},
+    });
+    const button = tree.root.findByProps({
+      testID: 'unified-generation-retry-chunk-c1',
+    });
+    expect(button.props.accessibilityState).toMatchObject({disabled: true});
+    expect(button.props.disabled).toBe(true);
+  });
+
+  it('hides the failed-parts section when no part needs retry', () => {
+    const {tree} = renderView({
+      generation: {
+        status: 'polling',
+        job: pollingJob('partially_ready'),
+      },
+    });
+    expect(
+      tree.root.findAllByProps({testID: 'unified-generation-failed-parts'}),
+    ).toHaveLength(0);
   });
 
   it('hides retry when creation context is missing and shows notices', () => {
