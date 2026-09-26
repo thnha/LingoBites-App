@@ -1,5 +1,12 @@
-import {getDatabase, wipeDatabase} from '../database';
-import {executeLegacyClear} from '../legacyClear';
+import {open} from 'react-native-quick-sqlite';
+import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
+import {DB_NAME} from '../constants';
+import {getDatabase, resetDatabaseForTests} from '../database';
+import {
+  CANONICAL_LEGACY_CLEAR_MARKER,
+  LEGACY_CLEAR_MARKER,
+  executeLegacyClear,
+} from '../legacyClear';
 import {clearLessonTokens} from '../../security/lessonTokenStore';
 import {deleteLocalFiles} from '../../localData/localFileCleanup';
 import {listSpeakingRecordingFilePaths} from '../SpeakingRepository';
@@ -10,46 +17,321 @@ jest.mock('../SpeakingRepository', () => ({
   listSpeakingRecordingFilePaths: jest.fn(),
 }));
 
+const V1_LESSON_ID = 'lesson-v1-1';
+const V2_LESSON_ID = 'lesson-v2-1';
+const CREATED_AT = '2026-09-14T00:00:00.000Z';
+
 function getCount(db: any, query: string, params: any[] = []): number {
   const result = db.execute(query, params);
   const row = result.rows?.item(0);
   return row?.count ?? 0;
 }
 
+function countRows(db: any, query: string, params: any[] = []): number {
+  const result = db.execute(query, params);
+  return result.rows?.length ?? 0;
+}
+
+/** Seeds one v1 lesson row plus a full v2 lesson (parent + 5 child rows). */
+function seedLessonFixtures(db: any): void {
+  db.execute(
+    'INSERT INTO lessons (id, anonymous_user_id, lesson_input_hash, title, source_type, confirmed_text, vietnamese_translation, level, ai_output_json, is_saved, created_at, updated_at, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+    [
+      V1_LESSON_ID,
+      'anon1',
+      'hash1',
+      'title',
+      'paste_text',
+      'text',
+      'trans',
+      'A1',
+      '{}',
+      0,
+      CREATED_AT,
+      CREATED_AT,
+      'vocabulary',
+    ],
+  );
+  db.execute(
+    `INSERT OR REPLACE INTO lesson_v2 (
+      lesson_id, anonymous_user_id, input_hash, schema_version, request_id,
+      status, revision, source_text, word_count, char_count,
+      detected_language, title, level, prompt_version, is_saved,
+      warnings_json, error_json, practice_json, expires_at, created_at,
+      updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+    [
+      V2_LESSON_ID,
+      'anon1',
+      'hash-v2',
+      1,
+      'req-1',
+      'ready',
+      1,
+      'hello world',
+      2,
+      11,
+      'en',
+      'v2 title',
+      'A1',
+      'pv1',
+      0,
+      '[]',
+      null,
+      '{}',
+      null,
+      CREATED_AT,
+      CREATED_AT,
+    ],
+  );
+  db.execute(
+    'INSERT INTO lesson_v2_sentences (lesson_id, sentence_id, idx, text, char_start, char_end, chunk_id, status, translation, simple_meaning, phrases_json, tts_json, related_vocabulary_ids_json, related_grammar_ids_json, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+    [
+      V2_LESSON_ID,
+      's1',
+      0,
+      'hello',
+      0,
+      5,
+      'c1',
+      'ready',
+      'xin chào',
+      'chào',
+      '[]',
+      '{}',
+      '[]',
+      '[]',
+      CREATED_AT,
+    ],
+  );
+  db.execute(
+    'INSERT INTO lesson_v2_chunks (lesson_id, chunk_id, idx, sentence_ids_json, status, attempts, error_code, retryable) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
+    [V2_LESSON_ID, 'c1', 0, '["s1"]', 'ready', 1, null, 0],
+  );
+  db.execute(
+    'INSERT INTO lesson_v2_vocabulary (lesson_id, vocab_id, word, phrase_from_text, word_type, meaning_vi, ipa, ipa_source, source_sentence_id, example, example_translation, tts_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+    [
+      V2_LESSON_ID,
+      'w1',
+      'hello',
+      'hello',
+      'interjection',
+      'xin chào',
+      'həˈloʊ',
+      'ai',
+      's1',
+      'hello!',
+      'xin chào!',
+      '{}',
+    ],
+  );
+  db.execute(
+    'INSERT INTO lesson_v2_grammar (lesson_id, grammar_id, name, name_vi, pattern, found_in_sentence_id, found_in_text, explanation_vi, beginner_tip, examples_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+    [
+      V2_LESSON_ID,
+      'g1',
+      'greeting',
+      'chào hỏi',
+      'hello',
+      's1',
+      'hello',
+      'lời chào',
+      'tip',
+      '[]',
+    ],
+  );
+  db.execute(
+    'INSERT INTO lesson_v2_units (lesson_id, unit_key, status, attempts, error_code, retryable) VALUES (?, ?, ?, ?, ?, ?);',
+    [V2_LESSON_ID, 'vocabulary', 'ready', 1, null, 0],
+  );
+}
+
+const V2_TABLES = [
+  'lesson_v2',
+  'lesson_v2_sentences',
+  'lesson_v2_chunks',
+  'lesson_v2_vocabulary',
+  'lesson_v2_grammar',
+  'lesson_v2_units',
+] as const;
+
+/** Row counts for the seven quarantined v1/v2 lesson tables. */
+function lessonRowCounts(db: any): Record<string, number> {
+  const counts: Record<string, number> = {
+    lessons: countRows(
+      db,
+      'SELECT * FROM lessons ORDER BY datetime(created_at) DESC;',
+    ),
+  };
+  for (const table of V2_TABLES) {
+    counts[table] = countRows(
+      db,
+      `SELECT * FROM ${table} WHERE lesson_id = ?;`,
+      [V2_LESSON_ID],
+    );
+  }
+  return counts;
+}
+
+function expectAllOne(counts: Record<string, number>): void {
+  for (const table of ['lessons', ...V2_TABLES]) {
+    expect(counts[table]).toBe(1);
+  }
+}
+
 describe('executeLegacyClear', () => {
   beforeEach(() => {
-    const db = getDatabase();
-    wipeDatabase(db);
+    __resetMockDatabases();
+    resetDatabaseForTests(open({name: DB_NAME}));
+    getDatabase();
     jest.clearAllMocks();
+    (listSpeakingRecordingFilePaths as jest.Mock).mockReturnValue([
+      '/path/to/file.mp4',
+    ]);
   });
 
-  it('performs exhaustive idempotent clear', async () => {
+  it('preserves v1/v2 lesson rows and tokens while clearing non-lesson surfaces', async () => {
     const db = getDatabase();
-    
-    db.execute("INSERT INTO lessons (id, anonymous_user_id, lesson_input_hash, title, source_type, confirmed_text, vietnamese_translation, level, ai_output_json, is_saved, created_at, updated_at, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", 
-      ['l1', 'anon1', 'hash1', 'title', 'paste_text', 'text', 'trans', 'A1', '{}', 0, '2026-09-14T00:00:00Z', '2026-09-14T00:00:00Z', 'vocabulary']);
-    db.execute("INSERT OR REPLACE INTO practice_sets (id, contract_version, status, lesson_id, lesson_revision, source_fingerprint, config_hash, seed, difficulty, requested_count, set_revision, generator_json, validation_summary_json, created_at, ready_at, error_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-      ['ps1', 1, 'ready', 'l1', 1, 'hash', 'hash', null, 'A1', 10, 1, '{}', null, '2026-09-14T00:00:00Z', '2026-09-14T00:00:00Z', null]);
-    db.execute("INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?);", ['legacy_key', '1', '2026-09-14T00:00:00Z']);
-    db.execute("INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?);", ['current_account_id', 'user1', '2026-09-14T00:00:00Z']);
+    seedLessonFixtures(db);
+    db.execute(
+      'INSERT OR REPLACE INTO practice_sets (id, contract_version, status, lesson_id, lesson_revision, source_fingerprint, config_hash, seed, difficulty, requested_count, set_revision, generator_json, validation_summary_json, created_at, ready_at, error_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+      [
+        'ps1',
+        1,
+        'ready',
+        V1_LESSON_ID,
+        1,
+        'hash',
+        'hash',
+        null,
+        'A1',
+        10,
+        1,
+        '{}',
+        null,
+        CREATED_AT,
+        CREATED_AT,
+        null,
+      ],
+    );
+    db.execute('INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?);', [
+      'legacy_key',
+      '1',
+      CREATED_AT,
+    ]);
+    db.execute('INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?);', [
+      'current_account_id',
+      'user1',
+      CREATED_AT,
+    ]);
 
-    (listSpeakingRecordingFilePaths as jest.Mock).mockReturnValue(['/path/to/file.mp4']);
+    const before = lessonRowCounts(db);
+    expectAllOne(before);
 
     await executeLegacyClear();
 
-    expect(getCount(db, 'SELECT COUNT(*) as count FROM lessons')).toBe(0);
-    expect(getCount(db, 'SELECT COUNT(*) as count FROM practice_sets')).toBe(0);
-    expect(getCount(db, "SELECT COUNT(*) as count FROM app_settings WHERE key = ?", ['legacy_key'])).toBe(0);
-    
-    expect(getCount(db, "SELECT COUNT(*) as count FROM app_settings WHERE key = ?", ['current_account_id'])).toBe(1);
-    expect(getCount(db, "SELECT COUNT(*) as count FROM app_settings WHERE key = ?", ['account.legacy_clear_completed_v1'])).toBe(1);
+    // Checkpoint A quarantine: every lesson row survives.
+    const after = lessonRowCounts(db);
+    expect(after).toEqual(before);
+    expectAllOne(after);
 
-    expect(clearLessonTokens).toHaveBeenCalled();
+    // Lesson capability tokens are never touched pre-parity.
+    expect(clearLessonTokens).not.toHaveBeenCalled();
+
+    // Unrelated cleanup still runs.
     expect(deleteLocalFiles).toHaveBeenCalledWith(['/path/to/file.mp4']);
-    
-    jest.clearAllMocks();
+    expect(
+      countRows(db, 'SELECT * FROM practice_sets WHERE id = ?;', ['ps1']),
+    ).toBe(0);
+    expect(
+      getCount(db, 'SELECT COUNT(*) as count FROM app_settings WHERE key = ?', [
+        'legacy_key',
+      ]),
+    ).toBe(0);
+    expect(
+      getCount(db, 'SELECT COUNT(*) as count FROM app_settings WHERE key = ?', [
+        'current_account_id',
+      ]),
+    ).toBe(1);
+    expect(
+      getCount(db, 'SELECT COUNT(*) as count FROM app_settings WHERE key = ?', [
+        LEGACY_CLEAR_MARKER,
+      ]),
+    ).toBe(1);
+
+    // The old marker is written, but it is NOT canonical cleanup evidence.
+    expect(
+      getCount(db, 'SELECT COUNT(*) as count FROM app_settings WHERE key = ?', [
+        CANONICAL_LEGACY_CLEAR_MARKER,
+      ]),
+    ).toBe(0);
+  });
+
+  it('is idempotent: repeated runs are no-ops and never record canonical evidence', async () => {
+    const db = getDatabase();
+    seedLessonFixtures(db);
+
     await executeLegacyClear();
+    jest.clearAllMocks();
+
+    await executeLegacyClear();
+
     expect(clearLessonTokens).not.toHaveBeenCalled();
     expect(deleteLocalFiles).not.toHaveBeenCalled();
+    expectAllOne(lessonRowCounts(db));
+    expect(
+      getCount(db, 'SELECT COUNT(*) as count FROM app_settings WHERE key = ?', [
+        CANONICAL_LEGACY_CLEAR_MARKER,
+      ]),
+    ).toBe(0);
+  });
+
+  it('a pre-existing old marker short-circuits without canonical evidence', async () => {
+    const db = getDatabase();
+    seedLessonFixtures(db);
+    db.execute('INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?);', [
+      LEGACY_CLEAR_MARKER,
+      '1',
+      CREATED_AT,
+    ]);
+
+    await executeLegacyClear();
+
+    expect(clearLessonTokens).not.toHaveBeenCalled();
+    expect(deleteLocalFiles).not.toHaveBeenCalled();
+    expectAllOne(lessonRowCounts(db));
+    expect(
+      getCount(db, 'SELECT COUNT(*) as count FROM app_settings WHERE key = ?', [
+        CANONICAL_LEGACY_CLEAR_MARKER,
+      ]),
+    ).toBe(0);
+  });
+
+  it('preserves lesson rows when a non-lesson delete fails', async () => {
+    const db = getDatabase();
+    seedLessonFixtures(db);
+    const realExecute = db.execute.bind(db);
+    const spy = jest.spyOn(db, 'execute').mockImplementation(
+      (sql: string, params?: Array<string | number | null>) => {
+        if (sql.toLowerCase().includes('delete from flashcards')) {
+          throw new Error('SQLITE_IOERR');
+        }
+        return realExecute(sql, params as never);
+      },
+    );
+
+    try {
+      await expect(executeLegacyClear()).rejects.toThrow('SQLITE_IOERR');
+    } finally {
+      spy.mockRestore();
+    }
+
+    expectAllOne(lessonRowCounts(db));
+    expect(clearLessonTokens).not.toHaveBeenCalled();
+    expect(
+      getCount(db, 'SELECT COUNT(*) as count FROM app_settings WHERE key = ?', [
+        CANONICAL_LEGACY_CLEAR_MARKER,
+      ]),
+    ).toBe(0);
   });
 });

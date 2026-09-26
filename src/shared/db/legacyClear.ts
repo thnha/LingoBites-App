@@ -1,9 +1,20 @@
 import {getDatabase} from './database';
-import {clearLessonTokens} from '../security/lessonTokenStore';
 import {listSpeakingRecordingFilePaths} from './SpeakingRepository';
 import {deleteLocalFiles} from '../localData/localFileCleanup';
 
 export const LEGACY_CLEAR_MARKER = 'account.legacy_clear_completed_v1';
+
+/**
+ * Reserved for the future canonical cleanup (Checkpoint B).
+ *
+ * No pre-parity boot path may read or write this marker: the legacy
+ * `account.legacy_clear_completed_v1` marker cannot prove canonical cleanup
+ * because it may have run before parity. The gated cleanup task owns the
+ * first (and only) write of this marker alongside the lesson token clear
+ * and the seven v1/v2 lesson table drops.
+ */
+export const CANONICAL_LEGACY_CLEAR_MARKER =
+  'lesson.canonical_legacy_clear_v1';
 
 export async function executeLegacyClear(): Promise<void> {
   const db = getDatabase();
@@ -13,43 +24,26 @@ export async function executeLegacyClear(): Promise<void> {
     return; // Already cleared
   }
 
-  // 1. Gather all lesson IDs for token cleanup
-  const lessonIds = new Set<string>();
-  for (const table of ['lessons', 'lesson_v2', 'youtube_lessons', 'practice_sets']) {
-    try {
-      const idCol = table === 'lessons' || table === 'youtube_lessons' ? 'id' : 'lesson_id';
-      const rows = db.execute(`SELECT ${idCol} AS lesson_id FROM ${table};`).rows;
-      for (let i = 0; i < (rows?.length ?? 0); i++) {
-        const row = rows?.item(i) as {lesson_id?: string} | undefined;
-        if (row?.lesson_id) lessonIds.add(row.lesson_id);
-      }
-    } catch {
-      // ignore missing tables
-    }
-  }
-
-  await clearLessonTokens(Array.from(lessonIds));
-
-  // 2. Clear user-created files
+  // 1. Clear user-created files
   const recordingFiles = listSpeakingRecordingFilePaths();
   await deleteLocalFiles(recordingFiles);
 
-  // 3. Clear DB tables
+  // 2. Clear DB tables
+  //
+  // Checkpoint A quarantine (NFR-002): v1/v2 lesson data is intentionally
+  // NOT touched here. The seven lesson tables (`lessons`, `lesson_v2`,
+  // `lesson_v2_sentences`, `lesson_v2_chunks`, `lesson_v2_vocabulary`,
+  // `lesson_v2_grammar`, `lesson_v2_units`) and the per-lesson capability
+  // tokens survive every pre-parity boot; only the gated canonical cleanup
+  // may clear them and record CANONICAL_LEGACY_CLEAR_MARKER.
   db.execute('BEGIN');
   try {
-    // V1 Analysis Surface
-    db.execute('DELETE FROM lessons;');
+    // V1 Analysis Surface (lesson rows quarantined — see above)
     db.execute('DELETE FROM flashcards;');
     db.execute('DELETE FROM review_schedule;');
     db.execute('DELETE FROM review_sessions;');
 
-    // V2 Analysis Surface
-    db.execute('DELETE FROM lesson_v2;');
-    db.execute('DELETE FROM lesson_v2_sentences;');
-    db.execute('DELETE FROM lesson_v2_chunks;');
-    db.execute('DELETE FROM lesson_v2_vocabulary;');
-    db.execute('DELETE FROM lesson_v2_grammar;');
-    db.execute('DELETE FROM lesson_v2_units;');
+    // V2 Analysis Surface (lesson rows quarantined — see above)
 
     // Practice Surface
     db.execute('DELETE FROM practice_sets;');

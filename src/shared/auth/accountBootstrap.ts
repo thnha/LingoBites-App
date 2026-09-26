@@ -164,6 +164,9 @@ async function runBoot(deps: BootDeps): Promise<BootResult> {
   const client = deps.client ?? createAuthClient();
   const randomUuid = deps.randomUuid ?? createRequestId;
 
+  // Checkpoint A quarantine: the generic boot clear must not delete v1/v2
+  // lesson rows or lesson tokens before the parity gate. Only the gated
+  // canonical cleanup (marker `lesson.canonical_legacy_clear_v1`) may do so.
   await executeLegacyClear();
 
   if (!hasInstallMarker()) {
