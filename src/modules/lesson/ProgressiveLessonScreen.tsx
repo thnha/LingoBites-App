@@ -31,9 +31,11 @@ import type {
   VocabularyV2,
 } from '@shared/schemas/lesson-v2';
 import {useAppTheme, type AppTheme} from '@theme';
-import {PracticeEntryCard} from '@modules/practice/PracticeEntryCard';
-import {isLessonEligibleForPractice} from '@modules/practice/practiceEligibility';
-import {usePracticeController} from '@modules/practice/usePracticeController';
+import {
+  PracticeEntryCard,
+  isLessonEligibleForPractice,
+  usePracticeController,
+} from '@modules/practice';
 import {LessonV2HubView, type LessonV2UnitKey} from './LessonV2HubView';
 
 type LessonsProps = NativeStackScreenProps<

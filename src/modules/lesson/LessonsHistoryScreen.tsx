@@ -22,7 +22,7 @@ import {SearchAndFilterBar} from './components/SearchAndFilterBar';
 import {SegmentedTabBar} from './components/SegmentedTabBar';
 import {VocabularyTabContent} from './components/VocabularyTabContent';
 import type {PracticeQuestion} from '@shared/schemas/ai-output-v1';
-import {resolveQuickPractice} from '../practice/resolveQuickPractice';
+import {resolveQuickPractice} from '@modules/practice';
 import {useFlashcardLibrary} from './useFlashcardLibrary';
 import {useLessonRepository} from './useLessonRepository';
 import {useLibrarySegments} from './useLibrarySegments';

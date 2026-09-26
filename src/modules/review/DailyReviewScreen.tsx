@@ -13,7 +13,7 @@ import {IconButton} from '@components/IconButton';
 import {MaterialIcon} from '@components/MaterialIcon';
 import {Medallion} from '@components/Medallion';
 import {RatingControl} from '@components/RatingControl';
-import {speak} from '@modules/audio/ttsService';
+import {speak} from '@modules/audio';
 import {useFeatureEnabled} from '@/release';
 import {requestSync} from '@modules/sync';
 import {useFlashcardLibrary} from './useFlashcardLibrary';

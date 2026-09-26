@@ -39,7 +39,6 @@ import {
   CARD_BORDER_RADIUS_PT,
   CARD_HEADER_HEIGHT_PT,
   PINNED_AUDIO_BUTTON_SIZE_PT,
-  formatCardHeaderTitle,
   formatGrammarBottomHint,
   formatNextSentencePrompt,
   getCardWidth,
@@ -637,8 +636,6 @@ export function SentenceCard({
 
   const grammarPoints = enrichment?.grammar ?? [];
   const grammarCount = grammarPoints.length;
-
-  const headerTitle = formatCardHeaderTitle(segment.index + 1, totalSegments);
 
   const hasLevelBadge = level != null && level.trim() !== '';
 

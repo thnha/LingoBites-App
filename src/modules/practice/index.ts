@@ -33,3 +33,4 @@ export type {PracticeEligibleLesson} from './practiceEligibility';
 export type {PracticeQuestion as LegacyPracticeQuestion} from './practiceQuestion';
 export {usePracticeController} from './usePracticeController';
 export {usePracticeSessionScreen} from './usePracticeSessionScreen';
+export {resolveQuickPractice} from './resolveQuickPractice';

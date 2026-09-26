@@ -128,7 +128,7 @@ export async function runPullWorker() {
       const db = getDatabase();
       withTransaction(db, () => {
         for (const record of res.data.records) {
-          try { applySyncRecord(record); } catch (e) {}
+          try { applySyncRecord(record); } catch (_e) {}
         }
         cursor = res.data.next_cursor;
         saveCursor(cursor);

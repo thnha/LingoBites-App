@@ -164,7 +164,7 @@ export function HomeScreen({navigation}: Props) {
   const [youtubeLessonCount, setYoutubeLessonCount] = useState<number | null>(
     null,
   );
-  const [continueLearningId, setContinueLearningId] = useState<string | null>(
+  const [_continueLearningId, setContinueLearningId] = useState<string | null>(
     null,
   );
 
