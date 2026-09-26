@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useAppTheme, type AppTheme} from '@theme';
 import {blockBaseStyles} from './blockStyles';
@@ -6,6 +6,14 @@ import {CurriculumLessonBlockSlot} from './CurriculumLessonBlockView';
 import type {CurriculumLessonSoundFactory} from './curriculumLessonAudio';
 import type {CurriculumLessonCheckFn} from './ExerciseBlockView';
 import type {CurriculumLesson} from './curriculumLessonSchema';
+import {
+  completeLessonProgress,
+  markVocabularySeen,
+} from '@shared/api/learningClient';
+
+function fireAndForget(task: Promise<unknown>): void {
+  task.catch(() => undefined);
+}
 
 export type CurriculumLessonPlayerProps = {
   /** Parsed lesson snapshot. Treated as immutable; never written to. */
@@ -72,6 +80,27 @@ export function CurriculumLessonPlayer({
 
   const [currentBlockIndex, setCurrentBlockIndex] = useState(0);
   const [complete, setComplete] = useState(false);
+  const seenVocabRef = useRef<Set<string>>(new Set());
+  const completedRef = useRef(false);
+
+  useEffect(() => {
+    const currentBlock = orderedBlocks[currentBlockIndex];
+    if (currentBlock && currentBlock.type === 'vocabulary') {
+      currentBlock.items.forEach(item => {
+        if (!seenVocabRef.current.has(item.id)) {
+          seenVocabRef.current.add(item.id);
+          fireAndForget(markVocabularySeen(item.id));
+        }
+      });
+    }
+  }, [currentBlockIndex, orderedBlocks]);
+
+  useEffect(() => {
+    if (complete && !completedRef.current) {
+      completedRef.current = true;
+      fireAndForget(completeLessonProgress(lesson.id));
+    }
+  }, [complete, lesson.id]);
 
   if (orderedBlocks.length === 0) {
     return (

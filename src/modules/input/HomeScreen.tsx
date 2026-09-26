@@ -37,6 +37,7 @@ import {useLessonRepository} from '../lesson';
 import {useAppTheme, type AppTheme} from '@theme';
 import {useFloatingTabBarClearance} from '@/app/navigation/tabBarMetrics';
 import {useTranslation} from 'react-i18next';
+import {fetchContinueLearning} from '@shared/api/learningClient';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;
 
@@ -163,6 +164,9 @@ export function HomeScreen({navigation}: Props) {
   const [youtubeLessonCount, setYoutubeLessonCount] = useState<number | null>(
     null,
   );
+  const [continueLearningId, setContinueLearningId] = useState<string | null>(
+    null,
+  );
 
   // SETE-311: header streak pill. Recomputed from the persisted event log on
   // every focus — the same pattern as ProfileScreen — so the pill can never
@@ -178,6 +182,13 @@ export function HomeScreen({navigation}: Props) {
       if (unifiedMode) {
         canonicalRefresh();
       }
+      fetchContinueLearning().then(res => {
+        if (res.ok && res.progress) {
+          setContinueLearningId(res.progress.lesson_id);
+        } else {
+          setContinueLearningId(null);
+        }
+      }).catch(() => undefined);
       setStreak(getGamificationSnapshot().currentStreak);
       const started = listStartedLessons()[0];
       const startedRow = started

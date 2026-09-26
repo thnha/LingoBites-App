@@ -18,6 +18,10 @@ import {
 } from './curriculumLessonClient';
 import type {CurriculumLesson} from './curriculumLessonSchema';
 import {CurriculumLessonPlayer} from './CurriculumLessonPlayer';
+import {
+  startLessonProgress,
+  submitExerciseAttempt,
+} from '@shared/api/learningClient';
 
 /**
  * Mounted in both the Lessons and Home stacks (LING-41 TASK-006: Home
@@ -169,12 +173,14 @@ export function CurriculumLessonScreen({navigation, route}: Props) {
     };
   }, [lessonId, attempt]);
 
-  useEffect(
-    () => () => {
-      abortRef.current?.abort();
-    },
-    [],
-  );
+  const startedLessonIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (state.status === 'ready' && startedLessonIdRef.current !== state.lesson.id) {
+      startedLessonIdRef.current = state.lesson.id;
+      fireAndForget(startLessonProgress(state.lesson.id));
+    }
+  }, [state]);
 
   const handleExit = useCallback(() => {
     navigation.goBack();
@@ -185,11 +191,13 @@ export function CurriculumLessonScreen({navigation, route}: Props) {
   }, []);
 
   const handleCheckExercise = useCallback(
-    (
+    async (
       exerciseId: string,
       answer: CurriculumLessonAnswerInput,
-    ): Promise<CurriculumLessonCheckResult> =>
-      checkCurriculumLessonExercise(exerciseId, answer),
+    ): Promise<CurriculumLessonCheckResult> => {
+      fireAndForget(submitExerciseAttempt(exerciseId, answer));
+      return checkCurriculumLessonExercise(exerciseId, answer);
+    },
     [],
   );
 
