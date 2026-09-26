@@ -35,7 +35,11 @@ export async function clearAllLocalDatabaseRows(): Promise<void> {
   db.execute('DELETE FROM review_sessions;');
   db.execute('DELETE FROM review_schedule;');
   db.execute('DELETE FROM flashcards;');
-  db.execute('DELETE FROM lessons;');
+  try {
+    db.execute('DELETE FROM lessons;');
+  } catch {
+    // Table may be dropped after canonical legacy clear
+  }
   db.execute('DELETE FROM app_settings;');
   db.execute('DELETE FROM gamification_events;');
   db.execute('DELETE FROM speaking_recordings;');
@@ -45,7 +49,11 @@ export async function clearAllLocalDatabaseRows(): Promise<void> {
   db.execute('DELETE FROM content_review_items;');
   db.execute('DELETE FROM grammar_bookmarks;');
   db.execute('DELETE FROM content_lesson_state;');
-  db.execute('DELETE FROM lesson_v2;');
+  try {
+    db.execute('DELETE FROM lesson_v2;');
+  } catch {
+    // Table may be dropped after canonical legacy clear
+  }
   db.execute('DELETE FROM youtube_sentences;');
   db.execute('DELETE FROM youtube_lessons;');
   return tokenCleanup;

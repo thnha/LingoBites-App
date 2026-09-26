@@ -1,6 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {executeLegacyClear} from '../../db/legacyClear';
-jest.mock('../../db/legacyClear', () => ({ executeLegacyClear: jest.fn().mockResolvedValue(undefined) }));
+import {executeLegacyClear, executeCanonicalLegacyClear} from '../../db/legacyClear';
+jest.mock('../../db/legacyClear', () => ({
+  executeLegacyClear: jest.fn().mockResolvedValue(undefined),
+  executeCanonicalLegacyClear: jest.fn().mockResolvedValue(undefined),
+}));
 import {open} from 'react-native-quick-sqlite';
 import {__resetMockDatabases} from '../../../../test-utils/sqliteMock';
 import {DB_NAME} from '../../db/constants';
@@ -306,6 +308,7 @@ describe('submitOnboardingName idempotency (SETE-303 / T6)', () => {
 describe('accountBootstrap lesson quarantine (Checkpoint A)', () => {
   const realLegacyClear = jest.requireActual('../../db/legacyClear') as {
     executeLegacyClear: () => Promise<void>;
+    executeCanonicalLegacyClear: (opts: {authorizationRef: string}) => Promise<any>;
     CANONICAL_LEGACY_CLEAR_MARKER: string;
   };
 
@@ -466,15 +469,20 @@ describe('accountBootstrap lesson quarantine (Checkpoint A)', () => {
   }
 
   beforeEach(() => {
+    resetBootStateForTests();
     // Route boot through the REAL legacy clear so these tests pin what
     // generic account boot actually does to lesson rows pre-parity.
     (executeLegacyClear as unknown as jest.Mock).mockImplementation(() =>
       realLegacyClear.executeLegacyClear(),
     );
+    (executeCanonicalLegacyClear as unknown as jest.Mock).mockImplementation(opts =>
+      realLegacyClear.executeCanonicalLegacyClear(opts),
+    );
   });
 
   afterEach(() => {
     (executeLegacyClear as unknown as jest.Mock).mockResolvedValue(undefined);
+    (executeCanonicalLegacyClear as unknown as jest.Mock).mockResolvedValue(undefined);
   });
 
   it('fresh-install boot preserves populated v1/v2 lesson rows', async () => {
@@ -562,5 +570,22 @@ describe('accountBootstrap lesson quarantine (Checkpoint A)', () => {
     expect(result.status).toBe('needs-onboarding');
     expectLessonsIntact(lessonRowCounts());
     expect(canonicalMarkerCount()).toBe(0);
+  });
+
+  it('authorized boot cleanup drops legacy lesson tables and writes canonical marker', async () => {
+    seedLessonFixtures();
+    mockFetch.mockResolvedValue(ticketResponse());
+
+    const result = await bootAccount({
+      platform: 'ios',
+      randomUuid: () => FALLBACK_UUID,
+      canonicalCleanupAuthRef: '01a0de32-7f74-7145-a78f-a546b4b5d54b',
+    });
+
+    expect(result.status).toBe('needs-onboarding');
+    expect(executeCanonicalLegacyClear).toHaveBeenCalledWith({
+      authorizationRef: '01a0de32-7f74-7145-a78f-a546b4b5d54b',
+    });
+    expect(canonicalMarkerCount()).toBe(1);
   });
 });
