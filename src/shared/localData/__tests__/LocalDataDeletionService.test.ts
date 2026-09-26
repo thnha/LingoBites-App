@@ -17,7 +17,7 @@ import {
   clearAllLocalDataWithFiles,
   clearSpeakingLocalData,
 } from '../LocalDataDeletionService';
-import * as LessonRepository from '@shared/db/LessonRepository';
+import * as LocalDataWipe from '@shared/db/localDataWipe';
 import * as SpeakingRepository from '@shared/db/SpeakingRepository';
 
 describe('LocalDataDeletionService', () => {
@@ -84,7 +84,7 @@ describe('LocalDataDeletionService', () => {
         return ['/tmp/rec-1.m4a'];
       });
     const clearDbSpy = jest
-      .spyOn(LessonRepository, 'clearAllLocalData')
+      .spyOn(LocalDataWipe, 'clearAllLocalDatabaseRows')
       .mockImplementation(async () => {
         callOrder.push('clear-db');
       });
@@ -183,7 +183,7 @@ describe('LocalDataDeletionService', () => {
 
   it('returns dbCleared: false if database clearing throws', async () => {
     const clearDbSpy = jest
-      .spyOn(LessonRepository, 'clearAllLocalData')
+      .spyOn(LocalDataWipe, 'clearAllLocalDatabaseRows')
       .mockImplementation(async () => {
         throw new Error('DB error');
       });

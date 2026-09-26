@@ -1,10 +1,22 @@
-import type {LessonV2} from '@shared/schemas/lesson-v2';
+/**
+ * Minimal structural source for practice eligibility, owned by the practice
+ * domain (LING-48 / TASK-007). `LessonV2` from `@shared/schemas/lesson-v2`
+ * satisfies this shape, but eligibility no longer imports the v2 lesson
+ * schema scheduled for removal (TASK-010).
+ */
+export type PracticeEligibleLesson = {
+  status: string;
+  vocabulary: {meaning_vi: string}[];
+  sentences: {status: string; translation?: string | null}[];
+};
 
 /** D3 minimum validated source thresholds (configurable product policy). */
 export const PRACTICE_MIN_VOCABULARY_WITH_MEANING = 4;
 export const PRACTICE_MIN_SENTENCES_WITH_TRANSLATION = 1;
 
-export function isTerminalLessonForPractice(lesson: LessonV2): boolean {
+export function isTerminalLessonForPractice(
+  lesson: PracticeEligibleLesson,
+): boolean {
   return (
     lesson.status === 'ready' ||
     lesson.status === 'ready_with_warnings' ||
@@ -12,7 +24,7 @@ export function isTerminalLessonForPractice(lesson: LessonV2): boolean {
   );
 }
 
-export function countValidatedSources(lesson: LessonV2): {
+export function countValidatedSources(lesson: PracticeEligibleLesson): {
   vocabularyWithMeaning: number;
   sentencesWithTranslation: number;
 } {
@@ -28,7 +40,9 @@ export function countValidatedSources(lesson: LessonV2): {
   return {vocabularyWithMeaning, sentencesWithTranslation};
 }
 
-export function hasMinimumValidatedSource(lesson: LessonV2): boolean {
+export function hasMinimumValidatedSource(
+  lesson: PracticeEligibleLesson,
+): boolean {
   const counts = countValidatedSources(lesson);
   return (
     counts.vocabularyWithMeaning >= PRACTICE_MIN_VOCABULARY_WITH_MEANING ||
@@ -36,6 +50,8 @@ export function hasMinimumValidatedSource(lesson: LessonV2): boolean {
   );
 }
 
-export function isLessonEligibleForPractice(lesson: LessonV2): boolean {
+export function isLessonEligibleForPractice(
+  lesson: PracticeEligibleLesson,
+): boolean {
   return isTerminalLessonForPractice(lesson) && hasMinimumValidatedSource(lesson);
 }

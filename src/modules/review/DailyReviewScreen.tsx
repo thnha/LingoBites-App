@@ -16,7 +16,7 @@ import {RatingControl} from '@components/RatingControl';
 import {speak} from '@modules/audio/ttsService';
 import {useFeatureEnabled} from '@/release';
 import {requestSync} from '@modules/sync';
-import {useFlashcardLibrary} from '@modules/lesson';
+import {useFlashcardLibrary} from './useFlashcardLibrary';
 import type {FlashcardRecord, ReviewRating} from '@shared/db/types';
 import {
   reconcileReminders,

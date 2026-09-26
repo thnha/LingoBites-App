@@ -1,4 +1,4 @@
-import type {PracticeQuestion} from '../../../shared/schemas/ai-output-v1';
+import type {LegacyPracticeQuestion as PracticeQuestion} from '@modules/practice';
 import type {YouTubeSegment} from '../../../shared/schemas/youtube-transcript-v1';
 
 export function mapTranscriptToPractice(
