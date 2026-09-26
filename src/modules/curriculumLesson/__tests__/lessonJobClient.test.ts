@@ -3,8 +3,12 @@ import {
   createLessonGenerationJob,
   fetchLessonGenerationJob,
   isLessonGenerationTerminal,
+  LessonGenerationJobEnvelopeSchema,
   LessonGenerationJobSchema,
+  listRetryableJobParts,
+  retryLessonJobPart,
 } from '../lessonJobClient';
+import jobStatusFixture from './fixtures/valid-lesson-job-status.json';
 
 const validSession = {
   status: 'valid' as const,
@@ -30,6 +34,8 @@ function jobEnvelope(overrides: Record<string, unknown> = {}) {
       revision: 1,
       pollAfterMs: 1000,
       lessonId: null,
+      chunks: [],
+      units: [],
       error: null,
       warnings: [],
       ...overrides,
@@ -174,6 +180,194 @@ describe('fetchLessonGenerationJob', () => {
   });
 });
 
+describe('canonical job/part contract (TASK-002 fixture)', () => {
+  it('parses the Server-owned fixture without transformation', () => {
+    const parsed =
+      LessonGenerationJobEnvelopeSchema.safeParse(jobStatusFixture);
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.job.status).toBe('partially_ready');
+    expect(parsed.data.job.chunks).toHaveLength(2);
+    expect(parsed.data.job.units).toHaveLength(4);
+  });
+
+  it('rejects a part snapshot with an unknown status', () => {
+    const parsed = LessonGenerationJobEnvelopeSchema.safeParse({
+      ...jobStatusFixture,
+      job: {
+        ...(jobStatusFixture.job as Record<string, unknown>),
+        chunks: [
+          {
+            id: 'c1',
+            status: 'retrying',
+            attempts: 2,
+            errorCode: null,
+            retryable: true,
+            revision: 2,
+          },
+        ],
+      },
+    });
+    expect(parsed.success).toBe(false);
+  });
+
+  it('rejects a job envelope missing chunks/units', () => {
+    const {
+      chunks: _chunks,
+      units: _units,
+      ...job
+    } = jobEnvelope().job as Record<string, unknown> & {
+      chunks: unknown;
+      units: unknown;
+    };
+    expect(
+      LessonGenerationJobEnvelopeSchema.safeParse({
+        request_id: 'req-job',
+        status: 'success',
+        job,
+      }).success,
+    ).toBe(false);
+    expect(_chunks).toBeDefined();
+    expect(_units).toBeDefined();
+  });
+
+  it('lists only failed retryable parts', () => {
+    const parsed = LessonGenerationJobEnvelopeSchema.parse(jobStatusFixture);
+    const parts = listRetryableJobParts(parsed.job);
+    expect(parts).toHaveLength(1);
+    expect(parts[0]).toMatchObject({kind: 'chunk', chunk: {id: 'c1'}});
+  });
+});
+
+describe('retryLessonJobPart', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(AuthSession, 'ensureValidSession')
+      .mockResolvedValue(validSession);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('posts the chunk retry path with key, revision and request id', async () => {
+    const fetchImpl = jest.fn().mockResolvedValue(jsonResponse(jobEnvelope()));
+    const result = await retryLessonJobPart(
+      {
+        jobId: JOB_ID,
+        target: {kind: 'chunk', id: 'c1'},
+        expectedRevision: 3,
+        idempotencyKey: 'retry-key-1',
+      },
+      {fetchImpl},
+    );
+
+    expect(result.ok).toBe(true);
+    const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(
+      `http://localhost:3000/api/v1/lesson-jobs/${JOB_ID}/chunks/c1/retry`,
+    );
+    expect(init.method).toBe('POST');
+    expect((init.headers as Record<string, string>)['Idempotency-Key']).toBe(
+      'retry-key-1',
+    );
+    expect(JSON.parse(init.body as string)).toMatchObject({
+      expected_revision: 3,
+    });
+    expect(typeof JSON.parse(init.body as string).request_id).toBe('string');
+  });
+
+  it('posts the unit retry path for the selected target only', async () => {
+    const fetchImpl = jest.fn().mockResolvedValue(jsonResponse(jobEnvelope()));
+    await retryLessonJobPart(
+      {
+        jobId: JOB_ID,
+        target: {kind: 'unit', key: 'grammar'},
+        expectedRevision: 3,
+        idempotencyKey: 'retry-key-2',
+      },
+      {fetchImpl},
+    );
+
+    const [url] = fetchImpl.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(
+      `http://localhost:3000/api/v1/lesson-jobs/${JOB_ID}/units/grammar/retry`,
+    );
+    expect(url).not.toContain('/chunks/');
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it('accepts a 202 queued retry as success', async () => {
+    const fetchImpl = jest
+      .fn()
+      .mockResolvedValue(jsonResponse(jobEnvelope(), 202));
+    const result = await retryLessonJobPart(
+      {
+        jobId: JOB_ID,
+        target: {kind: 'unit', key: 'vocabulary'},
+        expectedRevision: 3,
+      },
+      {fetchImpl},
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  it.each([
+    'JOB_REVISION_CONFLICT',
+    'RETRY_NOT_ALLOWED',
+    'IDEMPOTENCY_CONFLICT',
+  ])('maps 409 %s to a conflict result', async code => {
+    const fetchImpl = jest.fn().mockResolvedValue(
+      jsonResponse(
+        {
+          request_id: 'r1',
+          status: 'failed',
+          error: {code, message: 'Conflict.'},
+        },
+        409,
+      ),
+    );
+    await expect(
+      retryLessonJobPart(
+        {
+          jobId: JOB_ID,
+          target: {kind: 'chunk', id: 'c1'},
+          expectedRevision: 2,
+        },
+        {fetchImpl},
+      ),
+    ).resolves.toMatchObject({
+      ok: false,
+      kind: 'conflict',
+      errorCode: code,
+      retryable: false,
+    });
+  });
+
+  it('maps a foreign job or target to not-found', async () => {
+    const fetchImpl = jest.fn().mockResolvedValue(
+      jsonResponse(
+        {
+          request_id: 'r1',
+          status: 'failed',
+          error: {code: 'LESSON_NOT_FOUND', message: 'Gone.'},
+        },
+        404,
+      ),
+    );
+    await expect(
+      retryLessonJobPart(
+        {
+          jobId: JOB_ID,
+          target: {kind: 'unit', key: 'nope'},
+          expectedRevision: 3,
+        },
+        {fetchImpl},
+      ),
+    ).resolves.toMatchObject({ok: false, kind: 'not-found'});
+  });
+});
+
 describe('isLessonGenerationTerminal', () => {
   it('treats ready, ready_with_warnings, and failed as terminal', () => {
     const base = {
@@ -181,6 +375,8 @@ describe('isLessonGenerationTerminal', () => {
       revision: 2,
       pollAfterMs: 1000,
       lessonId: JOB_ID,
+      chunks: [],
+      units: [],
       error: null,
       warnings: [],
     };

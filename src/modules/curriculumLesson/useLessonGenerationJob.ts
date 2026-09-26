@@ -1,5 +1,6 @@
 /**
- * Unified generation-job polling hook over `fetchLessonGenerationJob`.
+ * Unified generation-job polling hook over `fetchLessonGenerationJob`,
+ * extended with targeted part retry over `retryLessonJobPart`.
  *
  * Polls only job status (never content) pacing each round by the
  * server's `pollAfterMs` clamped to sane bounds, with an overall
@@ -7,12 +8,23 @@
  * with a materialized `lessonId`, or `failed`). Stale-poll safe: only
  * the latest in-flight round can commit state, and unmount/cancel
  * aborts the loop without committing.
+ *
+ * Part retry sends exactly one target with the last observed job
+ * revision and a fresh per-operation idempotency key. On success the
+ * returned snapshot replaces local state (successful parts stay as the
+ * server returned them) and polling resumes. On 409 conflict the hook
+ * refetches the current snapshot instead of minting another mutation.
+ * In-flight retry suppression is UX only — correctness stays
+ * server-enforced.
  */
 import {useCallback, useEffect, useRef, useState} from 'react';
+import {createRequestId} from '@shared/api/requestId';
 import {
   fetchLessonGenerationJob,
   isLessonGenerationTerminal,
+  retryLessonJobPart,
   type LessonGenerationJob,
+  type LessonGenerationPartTarget,
   type LessonJobError,
 } from './lessonJobClient';
 
@@ -29,6 +41,24 @@ export type UseLessonGenerationJobOptions = {
   jobId: string;
   fetchImpl?: typeof fetch;
   now?: () => number;
+};
+
+export type PartRetryOutcome =
+  | {ok: true; job: LessonGenerationJob}
+  | {
+      ok: false;
+      error: LessonJobError;
+      conflicted: boolean;
+      job: LessonGenerationJob | null;
+    };
+
+export type UseLessonGenerationJobResult = {
+  generation: LessonGenerationState;
+  retrying: LessonGenerationPartTarget | null;
+  retryPart: (
+    target: LessonGenerationPartTarget,
+    retryOptions?: {idempotencyKey?: string},
+  ) => Promise<PartRetryOutcome>;
 };
 
 function clampPollAfterMs(pollAfterMs: number): number {
@@ -52,16 +82,43 @@ function waitFor(ms: number, signal: AbortSignal): Promise<boolean> {
   });
 }
 
+function terminalState(job: LessonGenerationJob): LessonGenerationState {
+  if (job.status === 'failed' || !job.lessonId) {
+    return {
+      status: 'failed',
+      job,
+      error: {
+        ok: false,
+        kind: 'server-error',
+        errorCode: job.error?.code ?? 'GENERATION_FAILED',
+        message: job.error?.message ?? 'Lesson generation failed. Try again.',
+        retryable: true,
+      },
+    };
+  }
+  return {status: 'succeeded', job, lessonId: job.lessonId};
+}
+
 export function useLessonGenerationJob(
   options: UseLessonGenerationJobOptions,
-): LessonGenerationState {
+): UseLessonGenerationJobResult {
   const {jobId, fetchImpl, now = Date.now} = options;
-  const [state, setState] = useState<LessonGenerationState>({
+  const [generation, setGeneration] = useState<LessonGenerationState>({
     status: 'polling',
     job: null,
   });
+  const [retrying, setRetrying] = useState<LessonGenerationPartTarget | null>(
+    null,
+  );
   const roundRef = useRef(0);
   const controllerRef = useRef<AbortController | null>(null);
+  const retryingRef = useRef(false);
+  const jobRef = useRef<LessonGenerationJob | null>(null);
+
+  const commit = useCallback((next: LessonGenerationState) => {
+    jobRef.current = next.job;
+    setGeneration(next);
+  }, []);
 
   const poll = useCallback(async () => {
     const round = roundRef.current + 1;
@@ -90,7 +147,7 @@ export function useLessonGenerationJob(
       if (!isCurrent()) return;
       if (!result.ok) {
         if (result.cancelled) return;
-        setState({
+        commit({
           status: 'failed',
           job: null,
           error: result.retryable
@@ -104,29 +161,14 @@ export function useLessonGenerationJob(
       }
       const {job} = result;
       if (isLessonGenerationTerminal(job)) {
-        if (job.status === 'failed' || !job.lessonId) {
-          setState({
-            status: 'failed',
-            job,
-            error: {
-              ok: false,
-              kind: 'server-error',
-              errorCode: job.error?.code ?? 'GENERATION_FAILED',
-              message:
-                job.error?.message ?? 'Lesson generation failed. Try again.',
-              retryable: true,
-            },
-          });
-          return;
-        }
-        setState({status: 'succeeded', job, lessonId: job.lessonId});
+        commit(terminalState(job));
         return;
       }
       delay = clampPollAfterMs(job.pollAfterMs);
-      setState({status: 'polling', job});
+      commit({status: 'polling', job});
     }
     if (isCurrent()) {
-      setState({
+      commit({
         status: 'failed',
         job: null,
         error: {
@@ -138,17 +180,152 @@ export function useLessonGenerationJob(
         },
       });
     }
-  }, [jobId, fetchImpl, now]);
+  }, [jobId, fetchImpl, now, commit]);
+
+  const retryPart = useCallback(
+    async (
+      target: LessonGenerationPartTarget,
+      retryOptions: {idempotencyKey?: string} = {},
+    ): Promise<PartRetryOutcome> => {
+      const run = roundRef.current;
+      const isCurrent = () => roundRef.current === run;
+      if (retryingRef.current) {
+        return {
+          ok: false,
+          error: {
+            ok: false,
+            kind: 'network-error',
+            errorCode: 'RETRY_IN_FLIGHT',
+            message: 'A retry is already running.',
+            retryable: false,
+          },
+          conflicted: false,
+          job: jobRef.current,
+        };
+      }
+      const observed = jobRef.current;
+      if (!observed) {
+        return {
+          ok: false,
+          error: {
+            ok: false,
+            kind: 'invalid-input',
+            errorCode: 'NO_JOB_SNAPSHOT',
+            message: 'No job status yet. Wait and try again.',
+            retryable: false,
+          },
+          conflicted: false,
+          job: null,
+        };
+      }
+      retryingRef.current = true;
+      setRetrying(target);
+      const release = () => {
+        retryingRef.current = false;
+        if (isCurrent()) setRetrying(null);
+      };
+      try {
+        const result = await retryLessonJobPart(
+          {
+            jobId,
+            target,
+            expectedRevision: observed.revision,
+            idempotencyKey: retryOptions.idempotencyKey ?? createRequestId(),
+          },
+          {fetchImpl},
+        );
+        if (!isCurrent()) {
+          return result.ok
+            ? {ok: true, job: result.job}
+            : {
+                ok: false,
+                error: result,
+                conflicted: result.kind === 'conflict',
+                job: jobRef.current,
+              };
+        }
+        if (result.ok) {
+          commit({status: 'polling', job: result.job});
+          release();
+          void poll();
+          return {ok: true, job: result.job};
+        }
+        if (result.cancelled) {
+          return {
+            ok: false,
+            error: result,
+            conflicted: false,
+            job: jobRef.current,
+          };
+        }
+        if (result.kind === 'conflict') {
+          const refetched = await fetchLessonGenerationJob(jobId, {
+            fetchImpl,
+          });
+          if (!isCurrent()) {
+            return {
+              ok: false,
+              error: result,
+              conflicted: true,
+              job: jobRef.current,
+            };
+          }
+          if (refetched.ok) {
+            const {job} = refetched;
+            if (isLessonGenerationTerminal(job)) {
+              commit(terminalState(job));
+            } else {
+              commit({status: 'polling', job});
+              release();
+              void poll();
+            }
+            return {
+              ok: false,
+              error: result,
+              conflicted: true,
+              job,
+            };
+          }
+          if (!refetched.cancelled) {
+            commit({
+              status: 'failed',
+              job: null,
+              error: refetched.retryable
+                ? refetched
+                : {...refetched, retryable: true},
+            });
+          }
+          return {
+            ok: false,
+            error: result,
+            conflicted: true,
+            job: null,
+          };
+        }
+        return {
+          ok: false,
+          error: result,
+          conflicted: false,
+          job: jobRef.current,
+        };
+      } finally {
+        release();
+      }
+    },
+    [jobId, fetchImpl, commit, poll],
+  );
 
   useEffect(() => {
-    setState({status: 'polling', job: null});
+    commit({status: 'polling', job: null});
+    setRetrying(null);
+    retryingRef.current = false;
     void poll();
     return () => {
       roundRef.current += 1;
       controllerRef.current?.abort();
       controllerRef.current = null;
     };
-  }, [poll]);
+  }, [poll, commit]);
 
-  return state;
+  return {generation, retrying, retryPart};
 }

@@ -17,7 +17,13 @@ import {AppScreen} from '@components/AppScreen';
 import {AppText} from '@components/AppText';
 import {trackEvent} from '@modules/analytics';
 import {useAppTheme, type AppTheme} from '@theme';
-import {createLessonGenerationJob} from './lessonJobClient';
+import {
+  createLessonGenerationJob,
+  listRetryableJobParts,
+  type LessonGenerationJob,
+  type LessonGenerationPartTarget,
+  type RetryableLessonGenerationPart,
+} from './lessonJobClient';
 import {
   useLessonGenerationJob,
   type LessonGenerationState,
@@ -56,6 +62,10 @@ function createStyles(theme: AppTheme) {
       fontSize: theme.typography.size.md,
       fontWeight: theme.typography.weight.medium,
     },
+    partRow: {
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
     back: {
       alignItems: 'center',
       justifyContent: 'center',
@@ -72,7 +82,121 @@ export type UnifiedLessonGenerationViewProps = {
   notice: string | null;
   onRetry: () => void;
   onBack: () => void;
+  parts: RetryableLessonGenerationPart[];
+  retryingPart: LessonGenerationPartTarget | null;
+  onRetryPart: (target: LessonGenerationPartTarget) => void;
 };
+
+const UNIT_PART_LABELS: Record<string, string> = {
+  vocabulary: 'Vocabulary',
+  grammar: 'Grammar',
+  ipa_resolve: 'Pronunciation',
+  practice: 'Practice',
+};
+
+export function partLabel(part: RetryableLessonGenerationPart): string {
+  if (part.kind === 'unit') {
+    return UNIT_PART_LABELS[part.unit.key] ?? part.unit.key;
+  }
+  return `Section ${part.chunk.id}`;
+}
+
+export function partTargetOf(
+  part: RetryableLessonGenerationPart,
+): LessonGenerationPartTarget {
+  return part.kind === 'chunk'
+    ? {kind: 'chunk', id: part.chunk.id}
+    : {kind: 'unit', key: part.unit.key};
+}
+
+function targetKey(target: LessonGenerationPartTarget): string {
+  return target.kind === 'chunk' ? `chunk:${target.id}` : `unit:${target.key}`;
+}
+
+function isRetryingTarget(
+  part: RetryableLessonGenerationPart,
+  retryingPart: LessonGenerationPartTarget | null,
+): boolean {
+  if (!retryingPart) return false;
+  return targetKey(partTargetOf(part)) === targetKey(retryingPart);
+}
+
+function countReadyParts(job: LessonGenerationJob): {
+  ready: number;
+  total: number;
+} {
+  const chunks = job.chunks ?? [];
+  const units = job.units ?? [];
+  const ready =
+    chunks.filter(chunk => chunk.status === 'ready').length +
+    units.filter(unit => unit.status === 'ready').length;
+  return {ready, total: chunks.length + units.length};
+}
+
+function PartsProgress({job}: {job: LessonGenerationJob}) {
+  const {ready, total} = countReadyParts(job);
+  if (total === 0) return null;
+  return (
+    <AppText
+      variant="caption"
+      color="secondary"
+      testID="unified-generation-parts-progress"
+    >
+      {`${ready} of ${total} parts ready.`}
+    </AppText>
+  );
+}
+
+function FailedPartsSection({
+  styles,
+  parts,
+  retryingPart,
+  onRetryPart,
+}: {
+  styles: ReturnType<typeof createStyles>;
+  parts: RetryableLessonGenerationPart[];
+  retryingPart: LessonGenerationPartTarget | null;
+  onRetryPart: (target: LessonGenerationPartTarget) => void;
+}) {
+  if (parts.length === 0) return null;
+  return (
+    <View testID="unified-generation-failed-parts">
+      {parts.map(part => {
+        const target = partTargetOf(part);
+        const label = partLabel(part);
+        const busy = isRetryingTarget(part, retryingPart);
+        const testID =
+          part.kind === 'chunk'
+            ? `unified-generation-retry-chunk-${part.chunk.id}`
+            : `unified-generation-retry-unit-${part.unit.key}`;
+        return (
+          <View key={testID} style={styles.partRow}>
+            <AppText
+              variant="label"
+              color="secondary"
+              testID={`${testID}-label`}
+            >
+              {`${label} needs retry.`}
+            </AppText>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Retry ${label}`}
+              accessibilityState={{disabled: busy || retryingPart !== null}}
+              disabled={busy || retryingPart !== null}
+              onPress={() => onRetryPart(target)}
+              testID={testID}
+              style={styles.retry}
+            >
+              <AppText style={styles.retryText}>
+                {busy ? 'Retrying…' : `Retry ${label}`}
+              </AppText>
+            </Pressable>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
 
 export function UnifiedLessonGenerationView({
   generation,
@@ -81,6 +205,9 @@ export function UnifiedLessonGenerationView({
   notice,
   onRetry,
   onBack,
+  parts,
+  retryingPart,
+  onRetryPart,
 }: UnifiedLessonGenerationViewProps) {
   const {theme} = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -119,6 +246,13 @@ export function UnifiedLessonGenerationView({
             {`${generation.job.warnings.length} warning(s) reported.`}
           </AppText>
         ) : null}
+        {generation.job ? <PartsProgress job={generation.job} /> : null}
+        <FailedPartsSection
+          styles={styles}
+          parts={parts}
+          retryingPart={retryingPart}
+          onRetryPart={onRetryPart}
+        />
         {canRetry ? (
           <Pressable
             accessibilityRole="button"
@@ -170,6 +304,13 @@ export function UnifiedLessonGenerationView({
       <AppText variant="label" color="secondary" style={styles.message}>
         This usually takes under a minute. You can wait here.
       </AppText>
+      {generation.job ? <PartsProgress job={generation.job} /> : null}
+      <FailedPartsSection
+        styles={styles}
+        parts={parts}
+        retryingPart={retryingPart}
+        onRetryPart={onRetryPart}
+      />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Go back"
@@ -185,7 +326,15 @@ export function UnifiedLessonGenerationView({
 
 export function UnifiedLessonGenerationScreen({navigation, route}: Props) {
   const {jobId, confirmedText, level} = route.params;
-  const generation = useLessonGenerationJob({jobId});
+  const {
+    generation,
+    retrying: retryingPart,
+    retryPart,
+  } = useLessonGenerationJob({jobId});
+  const parts = useMemo(
+    () => (generation.job ? listRetryableJobParts(generation.job) : []),
+    [generation],
+  );
   const [retrying, setRetrying] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const openedRef = useRef<string | null>(null);
@@ -247,6 +396,40 @@ export function UnifiedLessonGenerationScreen({navigation, route}: Props) {
     navigation.goBack();
   }, [navigation]);
 
+  const handleRetryPart = useCallback(
+    async (target: LessonGenerationPartTarget) => {
+      setNotice(null);
+      trackEvent('unified_generation_part_retry', {
+        job_id: jobId,
+        target_kind: target.kind,
+        target_id: target.kind === 'chunk' ? target.id : target.key,
+        outcome: 'started',
+      });
+      const outcome = await retryPart(target);
+      if (outcome.ok) {
+        trackEvent('unified_generation_part_retry', {
+          job_id: jobId,
+          target_kind: target.kind,
+          target_id: target.kind === 'chunk' ? target.id : target.key,
+          outcome: 'accepted',
+        });
+        return;
+      }
+      trackEvent('unified_generation_part_retry', {
+        job_id: jobId,
+        target_kind: target.kind,
+        target_id: target.kind === 'chunk' ? target.id : target.key,
+        outcome: outcome.conflicted ? 'conflict' : 'failed',
+      });
+      setNotice(
+        outcome.conflicted
+          ? 'The lesson changed while retrying. Showing the latest status.'
+          : outcome.error.message,
+      );
+    },
+    [jobId, retryPart],
+  );
+
   return (
     <AppScreen>
       <UnifiedLessonGenerationView
@@ -256,6 +439,11 @@ export function UnifiedLessonGenerationScreen({navigation, route}: Props) {
         notice={notice}
         onRetry={() => void handleRetry()}
         onBack={handleBack}
+        parts={parts}
+        retryingPart={retryingPart}
+        onRetryPart={(target: LessonGenerationPartTarget) =>
+          void handleRetryPart(target)
+        }
       />
     </AppScreen>
   );

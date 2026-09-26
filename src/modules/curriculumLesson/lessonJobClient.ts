@@ -1,5 +1,8 @@
 /**
- * Unified generation job client: job-only `POST/GET /api/v1/lesson-jobs`.
+ * Unified generation job client: job-only `POST/GET /api/v1/lesson-jobs`
+ * plus targeted part retry
+ * (`POST /api/v1/lesson-jobs/:jobId/chunks/:chunkId/retry` and
+ * `.../units/:unitKey/retry`).
  *
  * Mirrors the Server `LessonJobStatusDtoSchema` /
  * `LessonJobStatusEnvelopeSchema` from LingoBites-Server
@@ -36,12 +39,41 @@ export const LessonGenerationErrorSchema = z.object({
   message: z.string(),
 });
 
+export const LessonGenerationJobPartStatusValues = [
+  'pending',
+  'processing',
+  'ready',
+  'failed',
+] as const;
+
+const LessonJobPartSnapshotSchema = z.object({
+  status: z.enum(LessonGenerationJobPartStatusValues),
+  attempts: z.number().int().nonnegative(),
+  errorCode: z.string().nullable(),
+  retryable: z.boolean(),
+  revision: z.number().int().positive(),
+});
+
+export const LessonGenerationJobChunkSchema =
+  LessonJobPartSnapshotSchema.extend({
+    id: z.string().min(1),
+  });
+
+export const LessonGenerationJobUnitSchema = LessonJobPartSnapshotSchema.extend(
+  {
+    key: z.string().min(1),
+    status: z.enum([...LessonGenerationJobPartStatusValues, 'skipped']),
+  },
+);
+
 export const LessonGenerationJobSchema = z.object({
   id: z.string().uuid(),
   status: z.enum(LessonGenerationJobStatusValues),
   revision: z.number().int(),
   pollAfterMs: z.number().int(),
   lessonId: z.string().uuid().nullable(),
+  chunks: z.array(LessonGenerationJobChunkSchema),
+  units: z.array(LessonGenerationJobUnitSchema),
   error: LessonGenerationErrorSchema.nullable(),
   warnings: z.array(LessonGenerationWarningSchema),
 });
@@ -55,6 +87,36 @@ export const LessonGenerationJobEnvelopeSchema = z.object({
 export type LessonGenerationJob = z.infer<typeof LessonGenerationJobSchema>;
 export type LessonGenerationJobStatus =
   (typeof LessonGenerationJobStatusValues)[number];
+export type LessonGenerationJobChunk = z.infer<
+  typeof LessonGenerationJobChunkSchema
+>;
+export type LessonGenerationJobUnit = z.infer<
+  typeof LessonGenerationJobUnitSchema
+>;
+
+export type LessonGenerationPartTarget =
+  | {kind: 'chunk'; id: string}
+  | {kind: 'unit'; key: string};
+
+export type RetryableLessonGenerationPart =
+  | {kind: 'chunk'; chunk: LessonGenerationJobChunk}
+  | {kind: 'unit'; unit: LessonGenerationJobUnit};
+
+/**
+ * Failed + retryable parts only. Successful, pending, processing and
+ * skipped parts are never retry targets — retry preserves them.
+ */
+export function listRetryableJobParts(
+  job: LessonGenerationJob,
+): RetryableLessonGenerationPart[] {
+  const chunks = job.chunks
+    .filter(chunk => chunk.status === 'failed' && chunk.retryable)
+    .map(chunk => ({kind: 'chunk' as const, chunk}));
+  const units = job.units
+    .filter(unit => unit.status === 'failed' && unit.retryable)
+    .map(unit => ({kind: 'unit' as const, unit}));
+  return [...chunks, ...units];
+}
 
 export function isLessonGenerationTerminal(job: LessonGenerationJob): boolean {
   return (
@@ -70,7 +132,8 @@ export type LessonJobErrorKind =
   | 'auth-error'
   | 'network-error'
   | 'server-error'
-  | 'content-error';
+  | 'content-error'
+  | 'conflict';
 
 export type LessonJobError = {
   ok: false;
@@ -281,4 +344,77 @@ export async function fetchLessonGenerationJob(
     await readJson(response),
     'LESSON_NOT_FOUND',
   );
+}
+
+/**
+ * Parse a targeted-retry response. Unlike create/poll, a 409 here is a
+ * first-class conflict (`RETRY_NOT_ALLOWED`, `JOB_REVISION_CONFLICT` or
+ * `IDEMPOTENCY_CONFLICT`): the caller must refetch the current snapshot
+ * instead of minting another mutation.
+ */
+function parseRetryEnvelope(status: number, body: unknown): LessonJobResult {
+  if (status === 409) {
+    const details = errorDetails(body);
+    return {
+      ok: false,
+      kind: 'conflict',
+      errorCode: details?.code ?? 'HTTP_409',
+      message: details?.message ?? 'Lesson changed. Refresh and try again.',
+      retryable: false,
+      status,
+    };
+  }
+  return parseJobEnvelope(status, body, 'LESSON_NOT_FOUND');
+}
+
+export type RetryLessonJobPartInput = {
+  jobId: string;
+  target: LessonGenerationPartTarget;
+  expectedRevision: number;
+  idempotencyKey?: string;
+};
+
+/**
+ * Retry exactly one failed chunk/unit of a generation job. Sends a fresh
+ * per-operation idempotency key unless the caller passes one, plus the
+ * job revision the caller last observed. Accepts 200 and 202 — a queued
+ * target answers 202 with the updated job envelope.
+ */
+export async function retryLessonJobPart(
+  input: RetryLessonJobPartInput,
+  options: LessonJobClientOptions = {},
+): Promise<LessonJobResult> {
+  if (options.signal?.aborted) return cancelledError();
+  const targetPath =
+    input.target.kind === 'chunk'
+      ? `chunks/${encodeURIComponent(input.target.id)}/retry`
+      : `units/${encodeURIComponent(input.target.key)}/retry`;
+  const {apiBaseUrl} = getAppConfig();
+  let response: Response;
+  try {
+    response = await authenticatedFetch(
+      `${apiBaseUrl}${LESSON_JOBS_PATH}/${encodeURIComponent(
+        input.jobId,
+      )}/${targetPath}`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Idempotency-Key': input.idempotencyKey ?? createRequestId(),
+        },
+        body: JSON.stringify({
+          request_id: createRequestId(),
+          expected_revision: input.expectedRevision,
+        }),
+        signal: options.signal,
+      },
+      options.fetchImpl,
+    );
+  } catch (error) {
+    return isAbortError(error) || options.signal?.aborted
+      ? cancelledError()
+      : networkError();
+  }
+  return parseRetryEnvelope(response.status, await readJson(response));
 }

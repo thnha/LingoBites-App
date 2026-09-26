@@ -7,5 +7,11 @@
     "valid-learner-lesson-aggregate.json",
     "valid-lesson-aggregate-response.json",
     "valid-exercise-check-response.json"
-  ]
+  ],
+  "jobContract": {
+    "serverCommitSha": "20f771bb3c2449e488221d790a33b5867153e77e",
+    "fixtureRevision": "ling-41-task002-r1",
+    "note": "Byte copy of the canonical job/part status fixture from LingoBites-Server test/fixtures/canonical-lesson-job-status.json at the TASK-002 (LING-43) commit above. Do not hand-edit; re-copy on Server contract change and revalidate.",
+    "files": ["valid-lesson-job-status.json"]
+  }
 }
