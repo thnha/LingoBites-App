@@ -29,6 +29,8 @@ export interface LibrarySectionConfig {
     /** `video`: public videos only; their six-step lessons open from them. */
     kind?: LessonCatalogKind;
   };
+  /** E5: the learner's "Khoảnh khắc" moments, read from the server list. */
+  moments?: boolean;
   unit: 'bài' | 'từ' | 'quy tắc';
 }
 
