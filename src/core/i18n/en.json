@@ -1212,6 +1212,17 @@
     "card_awaiting": "Confirm the situation",
     "card_ready": "Your moment is ready",
     "card_default_title": "Your moment",
-    "replay_listen": "Listen to this sentence"
+    "replay_listen": "Listen to this sentence",
+    "hide_line_hint": "Hides or shows this line with personal information.",
+    "confirm_yes_hint": "Creates the lesson for the situation as the AI understood it.",
+    "confirm_edit_hint": "Goes back to edit the situation without using a credit.",
+    "open_lesson_hint": "Opens the lesson that was just created.",
+    "situation_pick_hint": "Creates a lesson for this situation.",
+    "send_hint": "Sends the situation so the AI can build a lesson.",
+    "library_card_hint": "Opens the lesson for this moment.",
+    "source_photo_hint": "The photo this lesson was made from.",
+    "replay_listen_hint": "Reads this sentence aloud.",
+    "delete_lesson_hint": "Deletes this lesson from your account after you confirm.",
+    "library_retry_hint": "Load the list of moments again."
   }
 }

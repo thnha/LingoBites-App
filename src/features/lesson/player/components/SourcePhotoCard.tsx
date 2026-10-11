@@ -45,7 +45,7 @@ export function SourcePhotoCard({
       const result = await fetchSourcePhoto(lessonId);
       if (cancelled || !result.ok || result.value === null) return;
       setPhoto(result.value);
-      void cacheSourcePhoto(lessonId, result.value.uri);
+      cacheSourcePhoto(lessonId, result.value.uri);
     })();
     return () => {
       cancelled = true;
@@ -59,6 +59,7 @@ export function SourcePhotoCard({
       testID="canonical-hub-source-photo"
     >
       <Image
+        accessibilityHint={t('moment.source_photo_hint')}
         accessibilityIgnoresInvertColors
         accessibilityLabel={t('moment.review_title')}
         resizeMode="cover"

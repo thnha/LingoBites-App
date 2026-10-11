@@ -56,7 +56,7 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
   }, []);
 
   useEffect(() => {
-    void load();
+    load();
   }, [load]);
 
   if (state.status === 'loading') {
@@ -72,7 +72,10 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
           {offline ? t('moment.library_offline') : state.message}
         </AppText>
         <AppButton
-          onPress={() => void load()}
+          accessibilityHint={t('moment.library_retry_hint')}
+          onPress={() => {
+            load();
+          }}
           title={t('common.retry')}
           variant="secondary"
         />
@@ -106,6 +109,7 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
       keyExtractor={item => item.lessonId}
       renderItem={({item}) => (
         <Pressable
+          accessibilityHint={t('moment.library_card_hint')}
           accessibilityRole="button"
           accessibilityLabel={item.title}
           onPress={() => {

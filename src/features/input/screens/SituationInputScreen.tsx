@@ -144,11 +144,13 @@ export function SituationInputScreen({navigation, route}: Props) {
             <AppText variant="label">{t('moment.understood_title')}</AppText>
             <AppText variant="h3">{status.situation_vi ?? ''}</AppText>
             <PrimaryActionButton
+              accessibilityHint={t('moment.confirm_yes_hint')}
               accessibilityLabel={t('moment.confirm_yes')}
               label={t('moment.confirm_yes')}
               onPress={() => answer(true)}
             />
             <Pressable
+              accessibilityHint={t('moment.confirm_edit_hint')}
               accessibilityLabel={t('moment.confirm_edit')}
               accessibilityRole="button"
               onPress={() => answer(false)}
@@ -174,6 +176,7 @@ export function SituationInputScreen({navigation, route}: Props) {
 
         {!kids && status?.status === 'succeeded' && status.lesson_id ? (
           <PrimaryActionButton
+            accessibilityHint={t('moment.open_lesson_hint')}
             accessibilityLabel={t('moment.open_lesson')}
             label={t('moment.open_lesson')}
             onPress={() => appNavigation.finishCreate(status.lesson_id!)}
@@ -204,6 +207,7 @@ export function SituationInputScreen({navigation, route}: Props) {
             {situations.map(situation => (
               <Pressable
                 key={situation.id}
+                accessibilityHint={t('moment.situation_pick_hint')}
                 accessibilityLabel={situation.title_vi}
                 accessibilityRole="button"
                 disabled={offline}
@@ -229,6 +233,7 @@ export function SituationInputScreen({navigation, route}: Props) {
               value={typed}
             />
             <PrimaryActionButton
+              accessibilityHint={t('moment.send_hint')}
               accessibilityLabel={t('moment.send')}
               disabled={offline || typed.trim().length < 3}
               label={t('moment.send')}

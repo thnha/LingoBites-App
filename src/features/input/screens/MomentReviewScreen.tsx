@@ -208,6 +208,7 @@ export function MomentReviewScreen({navigation, route}: Props) {
                 {isHidden ? t('moment.hidden_line') : t('moment.pii_warning')}
               </AppText>
               <Pressable
+                accessibilityHint={t('moment.hide_line_hint')}
                 accessibilityLabel={t('moment.hide_line')}
                 accessibilityRole="button"
                 onPress={() => toggleHidden(number)}
@@ -229,6 +230,7 @@ export function MomentReviewScreen({navigation, route}: Props) {
 
         {canDescribe ? (
           <Pressable
+            accessibilityHint={t('moment.intent_describe_desc')}
             accessibilityLabel={t('moment.intent_describe')}
             accessibilityRole="button"
             disabled={busy || offline}
@@ -245,6 +247,7 @@ export function MomentReviewScreen({navigation, route}: Props) {
 
         {hasText ? (
           <Pressable
+            accessibilityHint={t('moment.intent_understand_desc')}
             accessibilityLabel={t('moment.intent_understand')}
             accessibilityRole="button"
             disabled={busy || offline}
@@ -260,6 +263,7 @@ export function MomentReviewScreen({navigation, route}: Props) {
         ) : null}
 
         <Pressable
+          accessibilityHint={t('moment.intent_use_desc')}
           accessibilityLabel={t('moment.intent_use')}
           accessibilityRole="button"
           disabled={!hasText || offline}
