@@ -8,12 +8,11 @@ describe('buildNavigationMountSnapshot', () => {
       'authenticated',
       makeTestReleaseConfig(CORE_WITH_REVIEW).features,
     );
+    // The moment screens are always mounted now, so they are not gated by a flag.
     expect(Object.keys(snapshot.ingestionRoutes).sort()).toEqual([
       'ImageCapture',
-      'MomentReview',
       'OCRReview',
       'PasteText',
-      'SituationInput',
     ]);
   });
 });

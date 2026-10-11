@@ -266,15 +266,11 @@ function AuthenticatedRootStack() {
       {canMount('OCRReview') && (
         <RootStack.Screen component={OCRReviewScreen} name="OCRReview" />
       )}
-      {canMount('MomentReview') && (
-        <RootStack.Screen component={MomentReviewScreen} name="MomentReview" />
-      )}
-      {canMount('SituationInput') && (
-        <RootStack.Screen
-          component={SituationInputScreen}
-          name="SituationInput"
-        />
-      )}
+      <RootStack.Screen component={MomentReviewScreen} name="MomentReview" />
+      <RootStack.Screen
+        component={SituationInputScreen}
+        name="SituationInput"
+      />
       <RootStack.Screen
         component={LessonCreationScreen}
         name="LessonCreation"

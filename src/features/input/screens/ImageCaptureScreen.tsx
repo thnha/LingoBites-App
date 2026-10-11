@@ -1,5 +1,5 @@
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
   ActivityIndicator,
@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import {getImageSizeCategory, trackEvent} from '@features/analytics';
-import {extractText} from '@features/ocr';
 
 import {AppButton} from '@ui/components/AppButton';
 import {AppCard} from '@ui/components/AppCard';
@@ -22,8 +21,6 @@ import {ErrorCard} from '@ui/components/ErrorCard';
 import {MaterialIcon} from '@ui/components/MaterialIcon';
 import {ScreenHeader} from '@ui/components/ScreenHeader';
 import {useAppTheme} from '@ui/theme';
-
-import {useFeatureFlags} from '@core/release';
 
 import {
   type PickedImage,
@@ -48,22 +45,11 @@ type ScreenState =
 export function ImageCaptureScreen({navigation, route}: Props) {
   const {theme} = useAppTheme();
   const {t} = useTranslation();
-  const {config} = useFeatureFlags();
-  const momentFlow = config.features.momentFlow === true;
   const {sourceType} = route.params;
   const isGallery = sourceType === 'gallery';
   const [screenState, setScreenState] = useState<ScreenState>(
     isGallery ? {type: 'upload_idle'} : {type: 'picking'},
   );
-  const ocrAbortRef = useRef<AbortController | null>(null);
-  const ocrRequestIdRef = useRef(0);
-
-  useEffect(() => {
-    return () => {
-      ocrAbortRef.current?.abort();
-    };
-  }, []);
-
   const launchPicker = useCallback(async () => {
     setScreenState({type: 'picking'});
     const result =
@@ -110,7 +96,7 @@ export function ImageCaptureScreen({navigation, route}: Props) {
     }
   }, [isGallery, launchPicker]);
 
-  /** E3 (P1, P8): with momentFlow on, the server reads and checks the photo, then the learner chooses. */
+  /** E3 (P1, P8): the server reads and checks the photo, then the learner chooses. */
   async function analyzeForMoment(image: PickedImage) {
     const consented = await ensurePhotoConsent({
       title: t('moment.consent_title'),
@@ -148,56 +134,7 @@ export function ImageCaptureScreen({navigation, route}: Props) {
   }
 
   async function handleContinue(image: PickedImage) {
-    if (momentFlow) {
-      await analyzeForMoment(image);
-      return;
-    }
-    ocrAbortRef.current?.abort();
-    const controller = new AbortController();
-    ocrAbortRef.current = controller;
-    const requestId = ++ocrRequestIdRef.current;
-
-    setScreenState({type: 'ocr_loading', image});
-
-    const result = await extractText(
-      {
-        uri: image.uri,
-        fileName: image.fileName,
-        type: image.type,
-        width: image.width,
-        height: image.height,
-        sourceType,
-      },
-      controller.signal,
-    );
-
-    if (requestId !== ocrRequestIdRef.current) {
-      return;
-    }
-
-    if (!result.ok) {
-      if (result.cancelled) {
-        return;
-      }
-
-      setScreenState({
-        type: 'error',
-        message: result.message,
-        image,
-      });
-      return;
-    }
-
-    navigation.replace('OCRReview', {
-      imageUri: image.uri,
-      fileName: image.fileName,
-      mimeType: image.type,
-      width: image.width,
-      height: image.height,
-      sourceType,
-      extractedText: result.extractedText,
-      warnings: result.warnings,
-    });
+    await analyzeForMoment(image);
   }
 
   function handleBack() {
