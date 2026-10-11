@@ -39,7 +39,7 @@ export function DataSettingsScreen({navigation}: Props) {
           text: 'Rút đồng ý',
           style: 'destructive',
           onPress: () => {
-            void withdrawPhotoConsent();
+            withdrawPhotoConsent();
           },
         },
       ],

@@ -56,7 +56,7 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
   }, []);
 
   useEffect(() => {
-    void load();
+    load();
   }, [load]);
 
   if (state.status === 'loading') {
@@ -72,7 +72,9 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
           {offline ? t('moment.library_offline') : state.message}
         </AppText>
         <AppButton
-          onPress={() => void load()}
+          onPress={() => {
+            load();
+          }}
           title={t('common.retry')}
           variant="secondary"
         />
@@ -107,6 +109,7 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
       renderItem={({item}) => (
         <Pressable
           accessibilityRole="button"
+          accessibilityHint={t('moment.library_card_hint')}
           accessibilityLabel={item.title}
           onPress={() => {
             trackEvent('moment_reopened', {intent: item.intent ?? 'unknown'});
