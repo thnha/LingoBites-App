@@ -1150,16 +1150,6 @@
     "words_progress": "{{count}}/{{max}} từ"
   },
   "moment": {
-    "hide_line_hint": "Ẩn hoặc hiện lại dòng có thông tin cá nhân này.",
-    "confirm_yes_hint": "Tạo bài học theo tình huống AI vừa hiểu.",
-    "confirm_edit_hint": "Quay lại sửa tình huống, không tốn lượt.",
-    "open_lesson_hint": "Mở bài học vừa tạo.",
-    "situation_pick_hint": "Tạo bài học cho tình huống này.",
-    "send_hint": "Gửi tình huống để AI tạo bài học.",
-    "library_card_hint": "Mở bài học của khoảnh khắc này.",
-    "source_photo_hint": "Ảnh dùng để tạo bài học này.",
-    "replay_listen_hint": "Đọc to câu này.",
-    "delete_lesson_hint": "Xoá bài học khỏi tài khoản sau khi xác nhận.",
     "title": "Học từ tình huống",
     "tile_title": "Kể tình huống",
     "tile_desc": "Học nói cho việc bạn sắp gặp.",
@@ -1222,6 +1212,17 @@
     "card_awaiting": "Chờ bạn xác nhận tình huống",
     "card_ready": "Khoảnh khắc đã sẵn sàng",
     "card_default_title": "Khoảnh khắc của bạn",
-    "replay_listen": "Nghe câu này"
+    "replay_listen": "Nghe câu này",
+    "hide_line_hint": "Ẩn hoặc hiện lại dòng có thông tin cá nhân này.",
+    "confirm_yes_hint": "Tạo bài học theo tình huống AI vừa hiểu.",
+    "confirm_edit_hint": "Quay lại sửa tình huống, không tốn lượt.",
+    "open_lesson_hint": "Mở bài học vừa tạo.",
+    "situation_pick_hint": "Tạo bài học cho tình huống này.",
+    "send_hint": "Gửi tình huống để AI tạo bài học.",
+    "library_card_hint": "Mở bài học của khoảnh khắc này.",
+    "source_photo_hint": "Ảnh dùng để tạo bài học này.",
+    "replay_listen_hint": "Đọc to câu này.",
+    "delete_lesson_hint": "Xoá bài học khỏi tài khoản sau khi xác nhận.",
+    "library_retry_hint": "Tải lại danh sách khoảnh khắc."
   }
 }

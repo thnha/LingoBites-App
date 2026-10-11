@@ -72,6 +72,7 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
           {offline ? t('moment.library_offline') : state.message}
         </AppText>
         <AppButton
+          accessibilityHint={t('moment.library_retry_hint')}
           onPress={() => {
             load();
           }}
@@ -108,8 +109,8 @@ export function MomentLibraryList({emptyHint}: {emptyHint: string}) {
       keyExtractor={item => item.lessonId}
       renderItem={({item}) => (
         <Pressable
-          accessibilityRole="button"
           accessibilityHint={t('moment.library_card_hint')}
+          accessibilityRole="button"
           accessibilityLabel={item.title}
           onPress={() => {
             trackEvent('moment_reopened', {intent: item.intent ?? 'unknown'});

@@ -59,8 +59,8 @@ export function SourcePhotoCard({
       testID="canonical-hub-source-photo"
     >
       <Image
-        accessibilityIgnoresInvertColors
         accessibilityHint={t('moment.source_photo_hint')}
+        accessibilityIgnoresInvertColors
         accessibilityLabel={t('moment.review_title')}
         resizeMode="cover"
         source={{uri: photo.uri}}

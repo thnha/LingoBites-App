@@ -145,17 +145,17 @@ describe('CreateScreen (SETE-247)', () => {
     ).toBe(0);
   });
 
-  it('renders an empty state instead of a blank screen when all sources are off', async () => {
+  it('keeps the situation tile when every other source is off', async () => {
     const tree = await renderCreate(
       navigation(),
       makeTestReleaseConfig(OFFLINE_REVIEW_MVP),
     );
     expect(
-      tree.root.findAll(node => node.props.testID === 'create-empty-state')
+      tree.root.findAll(node => node.props.testID === 'create-tile-situation')
         .length,
     ).toBeGreaterThan(0);
     expect(
-      tree.root.findAll(node => node.props.testID === 'create-hero-camera')
+      tree.root.findAll(node => node.props.testID === 'create-empty-state')
         .length,
     ).toBe(0);
   });

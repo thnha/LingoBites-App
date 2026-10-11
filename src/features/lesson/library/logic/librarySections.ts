@@ -29,7 +29,7 @@ export interface LibrarySectionConfig {
     /** `video`: public videos only; their six-step lessons open from them. */
     kind?: LessonCatalogKind;
   };
-  /** Moments section: lists the learner's moment lessons from the server. */
+  /** E5: the learner's "Khoảnh khắc" moments, read from the server list. */
   moments?: boolean;
   unit: 'bài' | 'từ' | 'quy tắc';
 }
