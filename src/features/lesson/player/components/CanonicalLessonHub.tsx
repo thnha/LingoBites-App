@@ -348,6 +348,7 @@ export function CanonicalLessonHub({
                 <AppText variant="h3">{replay.after}</AppText>
                 {onSpeakText ? (
                   <Pressable
+                    accessibilityHint={t('moment.replay_listen_hint')}
                     accessibilityLabel={t('moment.replay_listen')}
                     accessibilityRole="button"
                     onPress={() => onSpeakText(replay.after)}
@@ -375,6 +376,7 @@ export function CanonicalLessonHub({
         ) : null}
         {onDeleteLesson ? (
           <Pressable
+            accessibilityHint={t('moment.delete_lesson_hint')}
             accessibilityLabel={t('moment.delete_lesson')}
             accessibilityRole="button"
             disabled={offline}
